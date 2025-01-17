@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <script>
-    // Create a URL object with the current page URL
     const urlParams = new URLSearchParams(window.location.search);
 
     var office = urlParams.get('office') || 'MVS';
     console.log('office: ', office);
 
-    // Calculate the document root
     const documentRoot = window.location.protocol + "//" + window.location.host + "/";
 
-    // Determine the default value of cda based on documentRoot
     const cdaDefault = (documentRoot === `https://wm.${office.toLocaleLowerCase()}.ds.usace.army.mil/`) ? "internal" : "public";
-    // console.log("cdaDefault: ", cdaDefault);
+    console.log("cdaDefault: ", cdaDefault);
 
     // Get the value of a specific parameter
     var cda = urlParams.get('cda') || cdaDefault;
@@ -157,6 +154,17 @@
 
 
                                     <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/lake.js'></script>
+                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget1.js'></script>
+                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget2.js'></script>
+                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget3.js'></script>
+                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget4.js'></script>
+                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget5.js'></script>
+                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget6.js'></script>
+                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget7.js'></script>
+                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget8.js'></script>
+                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget9.js'></script>
+                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget10.js'></script>
+                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget10.js'></script>
                                 </div>
                             </div>
                         </div>
