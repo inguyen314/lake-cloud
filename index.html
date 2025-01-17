@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>
+    // Create a URL object with the current page URL
+    const urlParams = new URLSearchParams(window.location.search);
+
+    var office = urlParams.get('office') || 'MVS';
+    console.log('office: ', office);
+
+    // Calculate the document root
+    const documentRoot = window.location.protocol + "//" + window.location.host + "/";
+
+    // Determine the default value of cda based on documentRoot
+    const cdaDefault = (documentRoot === `https://wm.${office.toLocaleLowerCase()}.ds.usace.army.mil/`) ? "internal" : "public";
+    // console.log("cdaDefault: ", cdaDefault);
+
+    // Get the value of a specific parameter
+    var cda = urlParams.get('cda') || cdaDefault;
+    console.log('cda: ', cda);
+
+    var type = urlParams.get('type') || null;
+    console.log('type: ', type);
+
+    var lake = urlParams.get('lake') || 'Lk Shelbyville';
+    console.log('lake: ', lake);
+
+    var datetime = urlParams.get('datetime') || new Date().toLocaleDateString('en-US').replace(/\//g, '-');
+    console.log('datetime: ', datetime);
+</script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lake</title>
+    <meta name="Description" content="U.S. Army Corps of Engineers St. Louis District Home Page" />
+    <link rel="stylesheet" href="css/body.css" />
+    <link rel="stylesheet" href="css/breadcrumbs.css" />
+    <link rel="stylesheet" href="css/jumpMenu.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script type="text/javascript" src="js/main.js"></script>
+    <!-- Add sidebar.css IF NOT LOAD SIDEBAR TEMPLATE -->
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <!-- Include Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <!-- Include the Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include the Moment.js adapter for Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
+</head>
+
+<body>
+    <div id="page-container">
+        <header id="header">
+            <!--Header content populated here by JavaScript Tag at end of body -->
+        </header>
+        <div class="page-wrap">
+            <div class="container-fluid">
+                <div id="breadcrumbs">
+                </div>
+                <div class="page-content">
+                    <sidebar id="sidebar"></sidebar>
+                    <div id="topPane" class="col-md backend-cp-collapsible">
+                        <div class="box-usace">
+                            <h2 class="box-header-striped">
+                                <span class="titleLabel title">Lake</span>
+                                <span class="rss"></span>
+                            </h2>
+                            <div class="box-content" style="background-color:white;margin:auto">
+                                <div class="content">
+                                    <!-- <div id="loading_alarm_datman" style="display: none;"><img
+                                            src="https://wm.mvs.ds.usace.army.mil/apps/alarms/images/loading4.gif"
+                                            style='height: 50px; width: 50px;' alt="Loading..." /></div>
+                                    <div id="table_container_alarm_datman"></div> -->
+
+
+
+                                    <div class="widgets-container">
+                                        <div class="widget full-width" id="widget1">
+                                            <h3>Widget 1</h3>
+                                            <button class="save-btn" onclick="saveData(1)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(1)">Fetch Data</button>
+                                            <div class="output" id="output1"></div>
+                                        </div>
+
+                                        <div class="widget full-width" id="widget2">
+                                            <h3>Widget 2</h3>
+                                            <button class="save-btn" onclick="saveData(2)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(2)">Fetch Data</button>
+                                            <div class="output" id="output2"></div>
+                                        </div>
+
+                                        <div class="widget half-width" id="widget3">
+                                            <h3>Widget 3</h3>
+                                            <button class="save-btn" onclick="saveData(3)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(3)">Fetch Data</button>
+                                            <div class="output" id="output3"></div>
+                                        </div>
+
+                                        <div class="widget half-width" id="widget4">
+                                            <h3>Widget 4</h3>
+                                            <button class="save-btn" onclick="saveData(4)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(4)">Fetch Data</button>
+                                            <div class="output" id="output4"></div>
+                                        </div>
+
+                                        <div class="widget half-width" id="widget5">
+                                            <h3>Widget 5</h3>
+                                            <button class="save-btn" onclick="saveData(5)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(5)">Fetch Data</button>
+                                            <div class="output" id="output5"></div>
+                                        </div>
+
+                                        <div class="widget half-width" id="widget6">
+                                            <h3>Widget 6</h3>
+                                            <button class="save-btn" onclick="saveData(6)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(6)">Fetch Data</button>
+                                            <div class="output" id="output6"></div>
+                                        </div>
+
+                                        <div class="widget full-width" id="widget7">
+                                            <h3>Widget 7</h3>
+                                            <button class="save-btn" onclick="saveData(7)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(7)">Fetch Data</button>
+                                            <div class="output" id="output7"></div>
+                                        </div>
+
+                                        <div class="widget full-width" id="widget8">
+                                            <h3>Widget 8</h3>
+                                            <button class="save-btn" onclick="saveData(8)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(8)">Fetch Data</button>
+                                            <div class="output" id="output8"></div>
+                                        </div>
+
+                                        <div class="widget full-width" id="widget9">
+                                            <h3>Widget 9</h3>
+                                            <button class="save-btn" onclick="saveData(9)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(9)">Fetch Data</button>
+                                            <div class="output" id="output9"></div>
+                                        </div>
+
+                                        <div class="widget full-width" id="widget10">
+                                            <h3>Widget 10</h3>
+                                            <button class="save-btn" onclick="saveData(10)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(10)">Fetch Data</button>
+                                            <div class="output" id="output10"></div>
+                                        </div>
+
+                                        <div class="widget full-width" id="widget11">
+                                            <h3>Widget 11</h3>
+                                            <button class="save-btn" onclick="saveData(11)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(11)">Fetch Data</button>
+                                            <div class="output" id="output11"></div>
+                                        </div>
+                                    </div>
+
+
+                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/lake.js'></script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button id="returnTop" title="Return to Top of Page">Top</button>
+        </div>
+    </div>
+    <footer id="footer">
+        <!--Footer content populated here by script tag at end of body -->
+    </footer>
+    <script src="js/libraries/jQuery-3.3.6.min.js"></script>
+    <script defer>
+        // When the document has loaded pull in the page header and footer skins
+        $(document).ready(function () {
+            $('#header').load('templates/DISTRICT.header.html');
+            $('#footer').load('templates/DISTRICT.footer.html');
+        })
+    </script>
+</body>
+
+</html>
+
+<script>
+    if (lake) {
+        const titleSpan = document.querySelector('.titleLabel.title');
+        const headerTitle = document.querySelector('header .title');
+
+        if (titleSpan) {
+            titleSpan.textContent = `${lake} - ${datetime}`;
+        }
+
+        // Set the title in the header
+        if (headerTitle) {
+            headerTitle.textContent = `${lake} - ${datetime}`;
+        }
+    }
+</script>
