@@ -29,22 +29,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lake</title>
+    <title></title>
     <meta name="Description" content="U.S. Army Corps of Engineers St. Louis District Home Page" />
     <link rel="stylesheet" href="css/body.css" />
     <link rel="stylesheet" href="css/breadcrumbs.css" />
     <link rel="stylesheet" href="css/jumpMenu.css" />
     <link rel="stylesheet" href="css/sidebar.css" />
     <link rel="stylesheet" href="css/style.css" />
-    <script type="text/javascript" src="js/main.js"></script>
-    <!-- Add sidebar.css IF NOT LOAD SIDEBAR TEMPLATE -->
-    <link rel="stylesheet" href="css/sidebar.css" />
-    <!-- Include Moment.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <!-- Include the Chart.js library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Include the Moment.js adapter for Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
+    <script src="js/main.js"></script>
+    <script src="js/moment.min.js"></script>
+    <script src="js/moment-timezone-with-data.js"></script>
+    <script src="js/chart.js"></script>
+    <script src="js/chartjs-adapter-moment.min.js"></script>
 </head>
 
 <body>
@@ -61,7 +57,7 @@
                     <div id="topPane" class="col-md backend-cp-collapsible">
                         <div class="box-usace">
                             <h2 class="box-header-striped">
-                                <span class="titleLabel title">Lake</span>
+                                <span class="titleLabel title"></span>
                                 <span class="rss"></span>
                             </h2>
                             <div class="box-content" style="background-color:white;margin:auto">
@@ -190,7 +186,7 @@
 </html>
 
 <script>
-    if (lake) {
+    if (lake !== null && datetime !== null) {
         const titleSpan = document.querySelector('.titleLabel.title');
         const headerTitle = document.querySelector('header .title');
 
