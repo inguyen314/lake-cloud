@@ -67,7 +67,131 @@
                                             style='height: 50px; width: 50px;' alt="Loading..." /></div>
                                     <div id="table_container_alarm_datman"></div> -->
 
+                                    <!-- Basin Selection -->
+                                    <div id="container"></div>
+                                    <script>
+                                        // Create table element
+                                        var table = document.createElement('table');
+                                        table.id = 'basins';
 
+                                        // Create tbody element
+                                        var tbody = document.createElement('tbody');
+                                        table.appendChild(tbody);
+
+                                        // Create tr element
+                                        var tr = document.createElement('tr');
+                                        tbody.appendChild(tr);
+
+                                        // Create th elements
+                                        for (var i = 0; i < 3; i++) {
+                                            var th = document.createElement('th');
+                                            th.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+                                            tr.appendChild(th);
+                                        }
+
+                                        let basins = null;
+
+                                        let apiUrl = null;
+                                        if (cda === "internal") {
+                                            apiUrl = `https://coe-${office.toLocaleLowerCase()}uwa04${office.toLocaleLowerCase()}.${office.toLocaleLowerCase()}.usace.army.mil:8243/${office.toLocaleLowerCase()}-data/location/group?office=${office}&include-assigned=false&location-category-like=Lakes`;
+                                        } else if (cda === "public") {
+                                            apiUrl = `https://cwms-data.usace.army.mil/cwms-data/location/group?office=${office}&include-assigned=false&location-category-like=Lakes`;
+                                        }
+                                        fetch(apiUrl)
+                                            .then(response => {
+                                                if (!response.ok) {
+                                                    throw new Error('Network response was not ok');
+                                                }
+                                                return response.json();
+                                            })
+                                            .then(data => {
+                                                if (!Array.isArray(data) || data.length === 0) {
+                                                    console.warn('No data available from the initial fetch.');
+                                                    return;
+                                                }
+
+                                                console.log('Data fetched:', data);
+
+                                                const targetCategory = { "office-id": office, "id": "Lakes" };
+
+                                                function filterByLocationCategory(array, category) {
+                                                    return array.filter(item =>
+                                                        item['location-category'] &&
+                                                        item['location-category']['office-id'] === category['office-id'] &&
+                                                        item['location-category']['id'] === category['id']
+                                                    );
+                                                }
+
+                                                const filteredArray = filterByLocationCategory(data, targetCategory);
+                                                console.log(filteredArray);
+
+                                                // Extract the "id" values from each object
+                                                basins = filteredArray.map(item => item.id);
+                                                if (basins.length === 0) {
+                                                    console.warn('No basins found for the given category.');
+                                                    return;
+                                                }
+
+                                                console.log("basins: ", basins);
+
+                                                let basinsOrder = null;
+                                                if (office === "MVS") {
+                                                    basinsOrder = ['Mississippi', 'Ohio', 'Salt', 'Cuivre', 'Illinois', 'Missouri', 'Meramec', 'Kaskaskia', 'Big Muddy', 'St Francis'];
+                                                }
+
+                                                const removeBasins = ['Castor'];
+
+                                                // Filter out basins that should be removed
+                                                const filteredBasins = basins.filter(basin => !removeBasins.includes(basin));
+
+                                                // Create a lookup object for sorting
+                                                const orderMap = Object.fromEntries(basinsOrder.map((basin, index) => [basin, index]));
+
+                                                // Sort basins based on the order in basinsOrder
+                                                const sortedBasins = filteredBasins.sort((a, b) => orderMap[a] - orderMap[b]);
+
+                                                console.log("sortedBasins: ", sortedBasins);
+
+                                                basins = sortedBasins;
+
+                                                if (cda === "public") {
+                                                    for (var i = 0; i < basins.length; i++) {
+                                                        var th = document.createElement('th');
+                                                        var link = document.createElement('a');
+                                                        link.href = 'index.html?office=' + office + '&basin=' + basins[i] + '&type=' + type + "&cda=public";
+                                                        link.innerHTML = '<strong>' + basins[i] + '</strong>';
+                                                        var p = document.createElement('p');
+                                                        p.appendChild(link);
+                                                        th.appendChild(p);
+                                                        tr.appendChild(th);
+                                                    }
+                                                } else if (cda === "internal") {
+                                                    for (var i = 0; i < basins.length; i++) {
+                                                        var th = document.createElement('th');
+                                                        var link = document.createElement('a');
+                                                        link.href = 'index.html?office=' + office + '&basin=' + basins[i] + '&type=' + type + "&cda=internal";
+                                                        link.innerHTML = '<strong>' + basins[i] + '</strong>';
+                                                        var p = document.createElement('p');
+                                                        p.appendChild(link);
+                                                        th.appendChild(p);
+                                                        tr.appendChild(th);
+                                                    }
+                                                } else {
+
+                                                }
+
+
+                                                // Create th elements for remaining spaces
+                                                for (var i = 0; i < 2; i++) {
+                                                    var th = document.createElement('th');
+                                                    th.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+                                                    tr.appendChild(th);
+                                                }
+
+                                                // Append table to the container div<strong>May 2024 - Version V2.1</strong> - gage_control3.json was used <br> 
+                                                document.getElementById('container').appendChild(table);
+                                            });
+                                    </script>
 
                                     <div class="widgets-container">
                                         <div class="widget full-width" id="widget1">
@@ -163,20 +287,20 @@
                                         </div>
                                     </div>
 
-
-
-                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/lake.js'></script>
-                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget1.js'></script>
-                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget2.js'></script>
-                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget3.js'></script>
-                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget4.js'></script>
-                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget5.js'></script>
-                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget6.js'></script>
-                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget7.js'></script>
-                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget8.js'></script>
-                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget9.js'></script>
-                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget10.js'></script>
-                                    <script src='https://wm.mvs.ds.usace.army.mil/apps/lake/widget10.js'></script>
+                                    <script src='lake.js'></script>
+                                    <script src='widget_01/widget_01.js'></script>
+                                    <script src='widget_02/widget_02.js'></script>
+                                    <script src='widget_03/widget_03.js'></script>
+                                    <script src='widget_04/widget_04.js'></script>
+                                    <script src='widget_05/widget_05.js'></script>
+                                    <script src='widget_06/widget_06.js'></script>
+                                    <script src='widget_07/widget_07.js'></script>
+                                    <script src='widget_08/widget_08.js'></script>
+                                    <script src='widget_09/widget_09.js'></script>
+                                    <script src='widget_10/widget_10.js'></script>
+                                    <script src='widget_11/widget_11.js'></script>
+                                    <script src='widget_12/widget_12.js'></script>
+                                    <script src='widget_13/widget_13.js'></script>
                                 </div>
                             </div>
                         </div>
