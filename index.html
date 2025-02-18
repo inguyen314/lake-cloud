@@ -62,46 +62,49 @@
                             </h2>
                             <div class="box-content" style="background-color:white;margin:auto">
                                 <div class="content">
-                                    <!-- <div id="loading_alarm_datman" style="display: none;"><img
+                                    <div id="loading" style="display: none;"><img
                                             src="https://wm.mvs.ds.usace.army.mil/apps/alarms/images/loading4.gif"
                                             style='height: 50px; width: 50px;' alt="Loading..." /></div>
-                                    <div id="table_container_alarm_datman"></div> -->
-
-                                    <!-- Basin Selection -->
                                     <div id="container"></div>
                                     <script>
-                                        // Create table element
-                                        var table = document.createElement('table');
-                                        table.id = 'basins';
-
-                                        // Create tbody element
-                                        var tbody = document.createElement('tbody');
-                                        table.appendChild(tbody);
-
-                                        // Create tr element
-                                        var tr = document.createElement('tr');
-                                        tbody.appendChild(tr);
-
-                                        // Create th elements
-                                        for (var i = 0; i < 3; i++) {
-                                            var th = document.createElement('th');
-                                            th.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-                                            tr.appendChild(th);
-                                        }
-
-                                        let basins = null;
-
-                                        let apiUrl = null;
+                                        let setBaseUrl = null;
                                         if (cda === "internal") {
-                                            apiUrl = `https://coe-${office.toLocaleLowerCase()}uwa04${office.toLocaleLowerCase()}.${office.toLocaleLowerCase()}.usace.army.mil:8243/${office.toLocaleLowerCase()}-data/location/group?office=${office}&include-assigned=false&location-category-like=Lakes`;
+                                            setBaseUrl = `https://wm.${office.toLowerCase()}.ds.usace.army.mil:8243/${office.toLowerCase()}-data/`;
+                                        } else if (cda === "internal-coop") {
+                                            setBaseUrl = `https://wm-${office.toLowerCase()}coop.mvk.ds.usace.army.mil:8243/${office.toLowerCase()}-data/`;
                                         } else if (cda === "public") {
-                                            apiUrl = `https://cwms-data.usace.army.mil/cwms-data/location/group?office=${office}&include-assigned=false&location-category-like=Lakes`;
+                                            setBaseUrl = `https://cwms-data.usace.army.mil/cwms-data/`;
                                         }
-                                        fetch(apiUrl)
+                                        console.log("setBaseUrl: ", setBaseUrl);
+
+                                        const lakeLocs = [
+                                            "Lk Shelbyville-Kaskaskia",
+                                            "Carlyle Lk-Kaskaskia",
+                                            "Rend Lk-Big Muddy",
+                                            "Wappapello Lk-St Francis",
+                                            "Mark Twain Lk-Salt"
+                                        ];
+
+                                        const loadingIndicator = document.getElementById(`loading`);
+                                        loadingIndicator.style.display = 'block';
+
+                                        let setLocationCategory = null;
+                                        let setLocationGroupOwner = null;
+
+                                        setLocationCategory = "Lakes";
+                                        setLocationGroupOwner = "Project";
+
+                                        const categoryApiUrl = `${setBaseUrl}location/group?office=${office}&include-assigned=false&location-category-like=${setLocationCategory}`;
+
+                                        // Fetch data functions with promise arrays for async processing
+                                        const apiPromises = [];
+
+                                        let combinedData = [];
+
+                                        // Initial category fetch
+                                        fetch(categoryApiUrl)
                                             .then(response => {
-                                                if (!response.ok) {
-                                                    throw new Error('Network response was not ok');
-                                                }
+                                                if (!response.ok) throw new Error('Network response was not ok');
                                                 return response.json();
                                             })
                                             .then(data => {
@@ -110,87 +113,131 @@
                                                     return;
                                                 }
 
-                                                console.log('Data fetched:', data);
-
-                                                const targetCategory = { "office-id": office, "id": "Lakes" };
-
-                                                function filterByLocationCategory(array, category) {
-                                                    return array.filter(item =>
-                                                        item['location-category'] &&
-                                                        item['location-category']['office-id'] === category['office-id'] &&
-                                                        item['location-category']['id'] === category['id']
-                                                    );
-                                                }
-
+                                                // Filter data where category is "Basins"
+                                                const targetCategory = { "office-id": office, "id": setLocationCategory };
                                                 const filteredArray = filterByLocationCategory(data, targetCategory);
-                                                console.log(filteredArray);
-
-                                                // Extract the "id" values from each object
-                                                basins = filteredArray.map(item => item.id);
+                                                let basins = filteredArray.map(item => item.id);
                                                 if (basins.length === 0) {
                                                     console.warn('No basins found for the given category.');
                                                     return;
                                                 }
 
-                                                console.log("basins: ", basins);
+                                                // Loop through each basin and get all the assigned locations
+                                                basins.forEach(basin => {
+                                                    const basinApiUrl = `${setBaseUrl}location/group/${basin}?office=${office}&category-id=${setLocationCategory}`;
+                                                    apiPromises.push(
+                                                        fetch(basinApiUrl)
+                                                            .then(response => {
+                                                                if (!response.ok) throw new Error(`Network response was not ok for basin ${basin}`);
+                                                                return response.json();
+                                                            })
+                                                            .then(getBasin => {
+                                                                // console.log("getBasin: ", getBasin);
 
-                                                let basinsOrder = null;
-                                                if (office === "MVS") {
-                                                    basinsOrder = ['Mississippi', 'Ohio', 'Salt', 'Cuivre', 'Illinois', 'Missouri', 'Meramec', 'Kaskaskia', 'Big Muddy', 'St Francis'];
-                                                }
+                                                                if (getBasin) {
+                                                                    // Fetch additional data needed for filtering
+                                                                    const additionalDataPromises = getBasin['assigned-locations'].map(location => {
+                                                                        return fetchAdditionalLocationGroupOwnerData(location[`location-id`], setBaseUrl, setLocationGroupOwner, office);
+                                                                    });
 
-                                                const removeBasins = ['Castor'];
+                                                                    // console.log("additionalDataPromises: ", additionalDataPromises);
 
-                                                // Filter out basins that should be removed
-                                                const filteredBasins = basins.filter(basin => !removeBasins.includes(basin));
+                                                                    // Wait for all promises to resolve
+                                                                    Promise.all(additionalDataPromises)
+                                                                        .then(results => {
+                                                                            results = results[0];
+                                                                            // console.log("results: ", results);
 
-                                                // Create a lookup object for sorting
-                                                const orderMap = Object.fromEntries(basinsOrder.map((basin, index) => [basin, index]));
+                                                                            // Loop through getBasin['assigned-locations'] and compare with results
+                                                                            getBasin['assigned-locations'] = getBasin['assigned-locations'].filter(location => {
+                                                                                let matchedData;
+                                                                                // Check if 'assigned-locations' exists in the results object
+                                                                                if (results && results['assigned-locations']) {
+                                                                                    for (const loc of results['assigned-locations']) {
+                                                                                        // console.log('Comparing:', loc['location-id'], 'with', location['location-id']);
+                                                                                        if (loc['location-id'] === location['location-id']) {
+                                                                                            matchedData = results;
+                                                                                            break;
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                                // console.log("matchedData: ", matchedData);
 
-                                                // Sort basins based on the order in basinsOrder
-                                                const sortedBasins = filteredBasins.sort((a, b) => orderMap[a] - orderMap[b]);
+                                                                                if (matchedData) {
+                                                                                    // If matchedData exists and contains a location with the same location-id, keep the location
+                                                                                    return true;
+                                                                                } else {
+                                                                                    // Log the location that has been removed
+                                                                                    console.log("Removed location: ", location);
+                                                                                    return false;  // Remove location if there is no match
+                                                                                }
+                                                                            });
 
-                                                console.log("sortedBasins: ", sortedBasins);
+                                                                            // Filter locations with attribute <= 900
+                                                                            getBasin['assigned-locations'] = getBasin['assigned-locations'].filter(location => location.attribute <= 900);
 
-                                                basins = sortedBasins;
+                                                                            // Sort the locations by their attribute
+                                                                            getBasin['assigned-locations'].sort((a, b) => a.attribute - b.attribute);
 
-                                                if (cda === "public") {
-                                                    for (var i = 0; i < basins.length; i++) {
-                                                        var th = document.createElement('th');
-                                                        var link = document.createElement('a');
-                                                        link.href = 'index.html?office=' + office + '&basin=' + basins[i] + '&type=' + type + "&cda=public";
-                                                        link.innerHTML = '<strong>' + basins[i] + '</strong>';
-                                                        var p = document.createElement('p');
-                                                        p.appendChild(link);
-                                                        th.appendChild(p);
-                                                        tr.appendChild(th);
-                                                    }
-                                                } else if (cda === "internal") {
-                                                    for (var i = 0; i < basins.length; i++) {
-                                                        var th = document.createElement('th');
-                                                        var link = document.createElement('a');
-                                                        link.href = 'index.html?office=' + office + '&basin=' + basins[i] + '&type=' + type + "&cda=internal";
-                                                        link.innerHTML = '<strong>' + basins[i] + '</strong>';
-                                                        var p = document.createElement('p');
-                                                        p.appendChild(link);
-                                                        th.appendChild(p);
-                                                        tr.appendChild(th);
-                                                    }
-                                                } else {
+                                                                            // Push the updated basin data to combinedData
+                                                                            combinedData.push(getBasin);
 
-                                                }
+                                                                            // console.log('All combinedData fetched and filtered successfully:', combinedData);
 
-
-                                                // Create th elements for remaining spaces
-                                                for (var i = 0; i < 2; i++) {
-                                                    var th = document.createElement('th');
-                                                    th.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-                                                    tr.appendChild(th);
-                                                }
-
-                                                // Append table to the container div<strong>May 2024 - Version V2.1</strong> - gage_control3.json was used <br> 
-                                                document.getElementById('container').appendChild(table);
+                                                                            loadingIndicator.style.display = 'none';
+                                                                        })
+                                                                        .catch(error => {
+                                                                            console.error('Error in fetching additional data:', error);
+                                                                        });
+                                                                }
+                                                            })
+                                                            .catch(error => console.error(`Problem with the fetch operation for basin ${basin}:`, error))
+                                                    );
+                                                });
+                                            })
+                                            .catch(error => {
+                                                console.error('There was a problem with the initial fetch operation:', error);
+                                                loadingIndicator.style.display = 'none';
                                             });
+
+                                        console.log('combinedData:', combinedData);
+
+                                        function filterByLocationCategory(array, setLocationCategory) {
+                                            return array.filter(item =>
+                                                item['location-category'] &&
+                                                item['location-category']['office-id'] === setLocationCategory['office-id'] &&
+                                                item['location-category']['id'] === setLocationCategory['id']
+                                            );
+                                        }
+
+                                        function fetchAdditionalLocationGroupOwnerData(locationId, setBaseUrl, setLocationGroupOwner, office) {
+                                            // Construct the URL
+                                            const additionalDataUrl = `${setBaseUrl}location/group/${setLocationGroupOwner}?office=${office}&category-id=${office}`;
+
+                                            return fetch(additionalDataUrl, {
+                                                method: 'GET'
+                                            })
+                                                .then(response => {
+                                                    // If response is not OK, log the status and return null
+                                                    if (!response.ok) {
+                                                        console.warn(`Response not ok for ${locationId}: Status ${response.status}`);
+                                                        return null;
+                                                    }
+                                                    return response.json();
+                                                })
+                                                .then(data => {
+                                                    // If data is not null, log the fetched data
+                                                    if (data) {
+                                                        // console.log(`Fetched additional data for ${locationId}:`, data);
+                                                    }
+                                                    return data;
+                                                })
+                                                .catch(error => {
+                                                    // Catch any errors and log them
+                                                    console.error(`Error fetching additional data for ${locationId}:`, error);
+                                                    return null; // Return null in case of error
+                                                });
+                                        }
                                     </script>
 
                                     <div class="widgets-container">
