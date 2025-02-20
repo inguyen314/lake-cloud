@@ -121,29 +121,16 @@
                                         }
                                         console.log("setBaseUrl: ", setBaseUrl);
 
-                                        // const lakeLocs = [
-                                        //     "Lk Shelbyville-Kaskaskia",
-                                        //     "Carlyle Lk-Kaskaskia",
-                                        //     "Rend Lk-Big Muddy",
-                                        //     "Wappapello Lk-St Francis",
-                                        //     "Mark Twain Lk-Salt"
-                                        // ];
-
                                         const loadingIndicator = document.getElementById(`loading`);
                                         loadingIndicator.style.display = 'block';
 
-                                        let setLocationCategory = null;
-                                        let setLocationGroupOwner = null;
-
-                                        setLocationCategory = "Lakes";
-                                        setLocationGroupOwner = "Project";
+                                        let setLocationCategory = "Lakes";
+                                        let setLocationGroupOwner = "Project";
 
                                         const basinCategoryApiUrl = `${setBaseUrl}location/group?office=${office}&include-assigned=false&location-category-like=${setLocationCategory}`;
                                         console.log("basinCategoryApiUrl: ", basinCategoryApiUrl);
 
-                                        // Fetch data functions with promise arrays for async processing
-                                        const apiPromises = [];
-
+                                        let apiPromises = [];
                                         let combinedData = [];
 
                                         // Initial category fetch
@@ -158,19 +145,20 @@
                                                     return;
                                                 }
 
-                                                // Filter data where category is "Basins"
                                                 const targetCategory = { "office-id": office, "id": setLocationCategory };
                                                 const filteredArray = filterByLocationCategory(data, targetCategory);
                                                 let basins = filteredArray.map(item => item.id);
+
                                                 if (basins.length === 0) {
                                                     console.warn('No basins found for the given category.');
                                                     return;
                                                 }
 
-                                                // Loop through each basin and get all the assigned locations
+                                                // Loop through each basin and fetch assigned locations
                                                 basins.forEach(basin => {
                                                     const basinGroupLocationApiUrl = `${setBaseUrl}location/group/${basin}?office=${office}&category-id=${setLocationCategory}`;
                                                     console.log("basinGroupLocationApiUrl: ", basinGroupLocationApiUrl);
+
                                                     apiPromises.push(
                                                         fetch(basinGroupLocationApiUrl)
                                                             .then(response => {
@@ -178,79 +166,38 @@
                                                                 return response.json();
                                                             })
                                                             .then(getBasin => {
-                                                                // console.log("getBasin: ", getBasin);
-
-                                                                if (getBasin) {
-                                                                    // Fetch additional data needed for filtering
-                                                                    const additionalDataPromises = getBasin['assigned-locations'].map(location => {
-                                                                        return fetchAdditionalLocationGroupOwnerData(location[`location-id`], setBaseUrl, setLocationGroupOwner, office);
-                                                                    });
-
-                                                                    // console.log("additionalDataPromises: ", additionalDataPromises);
-
-                                                                    // Wait for all promises to resolve
-                                                                    Promise.all(additionalDataPromises)
-                                                                        .then(results => {
-                                                                            results = results[0];
-                                                                            // console.log("results: ", results);
-
-                                                                            // Loop through getBasin['assigned-locations'] and compare with results
-                                                                            getBasin['assigned-locations'] = getBasin['assigned-locations'].filter(location => {
-                                                                                let matchedData;
-                                                                                // Check if 'assigned-locations' exists in the results object
-                                                                                if (results && results['assigned-locations']) {
-                                                                                    for (const loc of results['assigned-locations']) {
-                                                                                        // console.log('Comparing:', loc['location-id'], 'with', location['location-id']);
-                                                                                        if (loc['location-id'] === location['location-id']) {
-                                                                                            matchedData = results;
-                                                                                            break;
-                                                                                        }
-                                                                                    }
-                                                                                }
-                                                                                // console.log("matchedData: ", matchedData);
-
-                                                                                if (matchedData) {
-                                                                                    // If matchedData exists and contains a location with the same location-id, keep the location
-                                                                                    return true;
-                                                                                } else {
-                                                                                    // Log the location that has been removed
-                                                                                    console.log("Removed location: ", location);
-                                                                                    return false;  // Remove location if there is no match
-                                                                                }
-                                                                            });
-
-                                                                            // Filter locations with attribute <= 900
-                                                                            getBasin['assigned-locations'] = getBasin['assigned-locations'].filter(location => location.attribute <= 900);
-
-                                                                            // Sort the locations by their attribute
-                                                                            getBasin['assigned-locations'].sort((a, b) => a.attribute - b.attribute);
-
-                                                                            // Push the updated basin data to combinedData
-                                                                            combinedData.push(getBasin);
-
-                                                                            // console.log('All combinedData fetched and filtered successfully:', combinedData);
-
-                                                                            loadingIndicator.style.display = 'none';
-                                                                        })
-                                                                        .catch(error => {
-                                                                            console.error('Error in fetching additional data:', error);
-                                                                        });
+                                                                if (!getBasin || !getBasin['assigned-locations']) {
+                                                                    console.warn(`No assigned locations for basin ${basin}`);
+                                                                    return;
                                                                 }
+
+                                                                // Filter locations with attribute <= 900
+                                                                getBasin['assigned-locations'] = getBasin['assigned-locations'].filter(
+                                                                    location => location.attribute <= 900
+                                                                );
+
+                                                                // Sort the locations by their attribute
+                                                                getBasin['assigned-locations'].sort((a, b) => a.attribute - b.attribute);
+
+                                                                combinedData.push(getBasin);
                                                             })
                                                             .catch(error => console.error(`Problem with the fetch operation for basin ${basin}:`, error))
                                                     );
                                                 });
+
+                                                return Promise.all(apiPromises);
+                                            })
+                                            .then(() => {
+                                                console.log('All combinedData fetched and filtered successfully:', combinedData);
+                                                loadingIndicator.style.display = 'none';
+
+                                                // Call createTable once all data is processed
+                                                createTable(combinedData);
                                             })
                                             .catch(error => {
                                                 console.error('There was a problem with the initial fetch operation:', error);
                                                 loadingIndicator.style.display = 'none';
                                             });
-
-                                        console.log('combinedData:', combinedData);
-
-                                        document.addEventListener("DOMContentLoaded", () => {
-                                            createTable(combinedData); // Pass combinedData explicitly
-                                        });
 
                                         function createTable(data) {
                                             if (!Array.isArray(data)) {
