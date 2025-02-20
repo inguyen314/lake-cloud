@@ -1,59 +1,6 @@
 /*** ===================================================================================== ***/
 /*** YOUR REPORT STYLE GOES HERE ***/
 /*** ===================================================================================== ***/
-#customers {
-    border-collapse: collapse;
-    width: 100%;
-	margin-top: 5px;
-	margin-bottom: 25px;
-}
-
-#customers th {
-    padding-top: 10px;
-    padding-bottom: 10px;
-    text-align: left;
-    background-color: darkblue;
-    color: white;
-}
-
-#customers td, #customers th {
-	border: 1px solid #ddd;
-	padding: 5px;
-}
-
-#customers th a {
-	color: white;
-	text-decoration: none;
-}
-
-#customers td a {
-	color: black;
-	text-decoration: none;
-}
-
-#customers td a:hover, #customers th a:hover {
-	text-decoration: underline;
-}
-
-#customers tr:nth-child(even){
-	background-color: #f2f2f2;
-	
-}
-
-#customers tr:hover {background-color: #ddd;}
-
-.blinking-text {
-	color: red;
-	animation: blink 1s infinite;
-}
-@keyframes blink {
-	0% { opacity: 1; }
-	50% { opacity: 0; }
-	100% { opacity: 1; }
-}
-/*** ===================================================================================== ***/
-/*** YOUR REPORT STYLE GOES HERE ***/
-/*** ===================================================================================== ***/
 .widgets-container {
 	display: flex;
 	flex-wrap: wrap;
@@ -62,7 +9,7 @@
 }
 .widget {
 	border: 2px solid #007BFF;
-	border-radius: 10px;
+	border-radius: 0px;
 	padding: 20px;
 	text-align: center;
 	background-color: #f9f9f9;
@@ -93,26 +40,4 @@ button {
 	margin-top: 10px;
 	font-size: 14px;
 	color: #333;
-}
-/*** ===================================================================================== ***/
-/*** BASIN SELECTOR ***/
-/*** ===================================================================================== ***/
-#basins {
-    border-collapse: collapse;
-    width: 100%;
-}
-#basins th {
-    padding-top: 30px;
-    padding-bottom: 10px;
-    text-align: center;
-}
-#basins td {
-	text-decoration: none;
-}
-#basins td a, #basins th a {
-	color: black;
-	text-decoration: none;
-}
-#basins td a:hover, #basins th a:hover {
-	text-decoration: underline;
 }

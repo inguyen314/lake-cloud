@@ -138,7 +138,8 @@
                                         setLocationCategory = "Lakes";
                                         setLocationGroupOwner = "Project";
 
-                                        const categoryApiUrl = `${setBaseUrl}location/group?office=${office}&include-assigned=false&location-category-like=${setLocationCategory}`;
+                                        const basinCategoryApiUrl = `${setBaseUrl}location/group?office=${office}&include-assigned=false&location-category-like=${setLocationCategory}`;
+                                        console.log("basinCategoryApiUrl: ", basinCategoryApiUrl);
 
                                         // Fetch data functions with promise arrays for async processing
                                         const apiPromises = [];
@@ -146,7 +147,7 @@
                                         let combinedData = [];
 
                                         // Initial category fetch
-                                        fetch(categoryApiUrl)
+                                        fetch(basinCategoryApiUrl)
                                             .then(response => {
                                                 if (!response.ok) throw new Error('Network response was not ok');
                                                 return response.json();
@@ -168,9 +169,10 @@
 
                                                 // Loop through each basin and get all the assigned locations
                                                 basins.forEach(basin => {
-                                                    const basinApiUrl = `${setBaseUrl}location/group/${basin}?office=${office}&category-id=${setLocationCategory}`;
+                                                    const basinGroupLocationApiUrl = `${setBaseUrl}location/group/${basin}?office=${office}&category-id=${setLocationCategory}`;
+                                                    console.log("basinGroupLocationApiUrl: ", basinGroupLocationApiUrl);
                                                     apiPromises.push(
-                                                        fetch(basinApiUrl)
+                                                        fetch(basinGroupLocationApiUrl)
                                                             .then(response => {
                                                                 if (!response.ok) throw new Error(`Network response was not ok for basin ${basin}`);
                                                                 return response.json();
