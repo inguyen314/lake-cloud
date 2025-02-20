@@ -6,14 +6,28 @@
     var office = urlParams.get('office') || 'MVS';
     console.log('office: ', office);
 
-    const documentRoot = window.location.protocol + "//" + window.location.host + "/";
+    // Get the value of a specific parameter
+    var cda = urlParams.get('cda');
+    console.log('cda: ', cda);
 
-    const cdaDefault = (documentRoot === `https://wm.${office.toLocaleLowerCase()}.ds.usace.army.mil/`) ? "internal" : "public";
+    // Calculate the document root
+    const documentRoot = window.location.protocol + "//" + window.location.host + "/";
+    console.log("documentRoot: ", documentRoot);
+
+    // Determine the default value of cda based on documentRoot
+    if (documentRoot === `https://wm.${office.toLocaleLowerCase()}.ds.usace.army.mil/` || `http://localhost:5173/` || `https://wm.rsgis.dev/` || `https://wm-${office.toLocaleLowerCase()}coop.mvk.ds.usace.army.mil/`) {
+        cdaDefault = "internal";
+    } else if (documentRoot === `https://wm-${office.toLocaleLowerCase()}coop.mvk.ds.usace.army.mil/`) {
+        cdaDefault = "internal-coop";
+    } else {
+        cdaDefault = "public";
+    }
     console.log("cdaDefault: ", cdaDefault);
 
-    // Get the value of a specific parameter
-    var cda = urlParams.get('cda') || cdaDefault;
-    console.log('cda: ', cda);
+    if (cda === null) {
+        cda = cdaDefault;
+    }
+    console.log("cda: ", cda);
 
     var type = urlParams.get('type') || null;
     console.log('type: ', type);
@@ -21,15 +35,22 @@
     var lake = urlParams.get('lake') || 'Lk Shelbyville';
     console.log('lake: ', lake);
 
-    var datetime = urlParams.get('datetime') || new Date().toLocaleDateString('en-US').replace(/\//g, '-');
+    var datetime = urlParams.get('datetime') || formatDate(new Date());
     console.log('datetime: ', datetime);
+
+    function formatDate(date) {
+        let month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure two-digit month
+        let day = String(date.getDate()).padStart(2, '0'); // Ensure two-digit day
+        let year = date.getFullYear();
+        return `${month}-${day}-${year}`;
+    }
 </script>
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>Lake Sheet</title>
     <meta name="Description" content="U.S. Army Corps of Engineers St. Louis District Home Page" />
     <link rel="stylesheet" href="css/body.css" />
     <link rel="stylesheet" href="css/breadcrumbs.css" />
@@ -41,6 +62,29 @@
     <script src="js/moment-timezone-with-data.js"></script>
     <script src="js/chart.js"></script>
     <script src="js/chartjs-adapter-moment.min.js"></script>
+    <style>
+        #container {
+            display: flex;
+            justify-content: center;
+            /* Center horizontally */
+            align-items: center;
+            /* Center vertically */
+            /* height: 10vh; */
+            /* Full viewport height */
+            margin-bottom: 15px;
+        }
+
+        table {
+            border-collapse: collapse;
+            border: 1px solid black;
+            text-align: center;
+        }
+
+        td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+    </style>
 </head>
 
 <body>
@@ -77,13 +121,13 @@
                                         }
                                         console.log("setBaseUrl: ", setBaseUrl);
 
-                                        const lakeLocs = [
-                                            "Lk Shelbyville-Kaskaskia",
-                                            "Carlyle Lk-Kaskaskia",
-                                            "Rend Lk-Big Muddy",
-                                            "Wappapello Lk-St Francis",
-                                            "Mark Twain Lk-Salt"
-                                        ];
+                                        // const lakeLocs = [
+                                        //     "Lk Shelbyville-Kaskaskia",
+                                        //     "Carlyle Lk-Kaskaskia",
+                                        //     "Rend Lk-Big Muddy",
+                                        //     "Wappapello Lk-St Francis",
+                                        //     "Mark Twain Lk-Salt"
+                                        // ];
 
                                         const loadingIndicator = document.getElementById(`loading`);
                                         loadingIndicator.style.display = 'block';
@@ -201,6 +245,47 @@
                                             });
 
                                         console.log('combinedData:', combinedData);
+
+                                        document.addEventListener("DOMContentLoaded", () => {
+                                            createTable(combinedData); // Pass combinedData explicitly
+                                        });
+
+                                        function createTable(data) {
+                                            if (!Array.isArray(data)) {
+                                                console.error("combinedData is not an array!", data);
+                                                return;
+                                            }
+
+                                            const container = document.getElementById("container");
+                                            if (!container) return;
+
+                                            const table = document.createElement("table");
+                                            table.border = "1";
+
+                                            const row = document.createElement("tr");
+
+                                            data.forEach(item => {
+                                                item["assigned-locations"].forEach(location => {
+                                                    const cell = document.createElement("td");
+
+                                                    // Extract part before the dash
+                                                    const locationName = location["location-id"].split("-")[0].trim();
+                                                    const locationId = location["location-id"];
+
+                                                    // Create link
+                                                    const link = document.createElement("a");
+                                                    link.href = `https://wm.mvs.ds.usace.army.mil/mvs/lake/index.html?office=MVS&lake=${encodeURIComponent(locationId)}`;
+                                                    link.textContent = locationName;
+                                                    // link.target = "_blank"; // Opens in a new tab
+
+                                                    cell.appendChild(link);
+                                                    row.appendChild(cell);
+                                                });
+                                            });
+
+                                            table.appendChild(row);
+                                            container.appendChild(table);
+                                        }
 
                                         function filterByLocationCategory(array, setLocationCategory) {
                                             return array.filter(item =>
@@ -373,17 +458,19 @@
 </html>
 
 <script>
-    if (lake !== null && datetime !== null) {
-        const titleSpan = document.querySelector('.titleLabel.title');
-        const headerTitle = document.querySelector('header .title');
+    document.addEventListener("DOMContentLoaded", function () {
+        if (lake !== null && datetime !== null) {
+            const titleSpan = document.querySelector('.titleLabel.title');
+            const headerTitle = document.querySelector('header .title');
 
-        if (titleSpan) {
-            titleSpan.textContent = `${lake} - ${datetime}`;
-        }
+            if (titleSpan) {
+                titleSpan.textContent = `${lake.split("-")[0].trim()} - ${datetime}`;
+            }
 
-        // Set the title in the header
-        if (headerTitle) {
-            headerTitle.textContent = `${lake} - ${datetime}`;
+            // Set the title in the header
+            if (headerTitle) {
+                headerTitle.textContent = `${lake.split("-")[0].trim()} - ${datetime}`;
+            }
         }
-    }
+    });
 </script>
