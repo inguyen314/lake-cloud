@@ -182,16 +182,31 @@ document.addEventListener("DOMContentLoaded", function () {
     // Append the combined dateCell to the table row
     tableRow.appendChild(dateCell);
 
-    // Create and append the submit button cell
+    // Create and append the submit link cell (instead of button)
     const submitCell = document.createElement('td');
     submitCell.setAttribute('width', '9%');
     submitCell.setAttribute('align', 'center');
-    const submitButton = document.createElement('input');
-    submitButton.setAttribute('name', 'op');
-    submitButton.setAttribute('type', 'submit');
-    submitButton.setAttribute('value', 'Submit');
-    submitButton.classList.add('modern-button'); // Apply modern button class
-    submitCell.appendChild(submitButton);
+
+    const submitLink = document.createElement('a');
+    submitLink.setAttribute('href', '#'); // Placeholder link (will be updated dynamically)
+    submitLink.setAttribute('class', 'modern-link'); // Apply modern link style
+    submitLink.innerText = 'Submit';
+
+    // Set the click event for the link to redirect dynamically
+    submitLink.addEventListener('click', function (event) {
+        event.preventDefault(); // Prevent the default link behavior
+
+        // Get the dynamic date from the input field
+        const datetime = dateInput.value;
+
+        // Create the URL with the dynamic lake and datetime values
+        const url = `https://wm.mvs.ds.usace.army.mil/mvs/lake/index.html?office=MVS&lake=${lake}&datetime=${datetime}`;
+
+        // Redirect to the URL
+        window.location.href = url;
+    });
+
+    submitCell.appendChild(submitLink);
     tableRow.appendChild(submitCell);
 
     // Create and append the "previous day" button cell
