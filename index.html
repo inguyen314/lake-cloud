@@ -426,16 +426,13 @@
     document.addEventListener("DOMContentLoaded", function () {
         if (lake !== null && datetime !== null) {
             const titleSpan = document.querySelector('.titleLabel.title');
-            const headerTitle = document.querySelector('header .title');
 
             if (titleSpan) {
-                titleSpan.textContent = `${lake.split("-")[0].trim()} - ${datetime}`;
+                titleSpan.textContent = `${lake.split("-")[0].trim()}: ${datetime}`;
             }
 
             // Set the title in the header
-            if (headerTitle) {
-                headerTitle.textContent = `${lake.split("-")[0].trim()} - ${datetime}`;
-            }
+            document.title = `${lake.split("-")[0].trim()}: ${datetime}`;
         }
     });
 </script>
