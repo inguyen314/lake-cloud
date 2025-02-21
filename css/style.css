@@ -46,7 +46,7 @@ button {
 /*** ===================================================================================== ***/
 /* Container styles */
 /* Container styles */
-#container {
+#container, #container_date_selection {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -72,13 +72,13 @@ th {
     color: #ffffff; /* White text */
     font-family: 'Arial', sans-serif;
     font-weight: bold;
-    padding: 12px 20px;
+    padding: 12px 12px;
 }
 
 /* Table cell styles */
 td {
     border: 1px solid #e0e0e0; /* Light gray border for cells */
-    padding: 12px 20px;
+    padding: 12px 12px;
     font-family: 'Arial', sans-serif;
     color: #333; /* Dark text for readability */
 }

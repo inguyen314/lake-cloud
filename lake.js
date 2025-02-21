@@ -150,6 +150,106 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("widget12").style.display = "none";
         document.getElementById("widget13").style.display = "none";
     }
+
+    // Create the table row
+    const tableRow = document.createElement('tr');
+    tableRow.setAttribute('valign', 'bottom');
+    tableRow.setAttribute('bgcolor', '#CCCCCC');
+
+    // Create and append the combined cell (DATE label, input field, and calendar button)
+    const dateCell = document.createElement('td');
+    dateCell.setAttribute('width', '20%'); // Adjusted width to accommodate label, input, and calendar button
+    dateCell.setAttribute('align', 'center');
+    dateCell.setAttribute('valign', 'middle');
+
+    const dateLabel = document.createElement('span');
+    dateLabel.innerText = 'Date: ';
+
+    const dateInput = document.createElement('input');
+    dateInput.setAttribute('name', 'p_dt');
+    dateInput.setAttribute('type', 'text');
+    dateInput.setAttribute('value', datetime);
+    dateInput.setAttribute('size', '10');
+    dateInput.setAttribute('maxlength', '10');
+
+    const calendarLink = document.createElement('a');
+    calendarLink.setAttribute('href', '##');
+    calendarLink.setAttribute('onclick', "openCalendar(event)");
+
+    // const calendarImage = document.createElement('img');
+    // calendarImage.setAttribute('src', 'images/cal.png');
+    // calendarImage.setAttribute('border', '0');
+    // calendarImage.width = 20;
+    // calendarImage.length = 20;
+    // calendarLink.appendChild(calendarImage);
+
+    // Append the label, input, and calendar link to the same cell
+    dateCell.appendChild(dateLabel);
+    dateCell.appendChild(dateInput);
+    dateCell.appendChild(calendarLink);
+
+    // Append the combined dateCell to the table row
+    tableRow.appendChild(dateCell);
+
+    // Create and append the submit button cell
+    const submitCell = document.createElement('td');
+    submitCell.setAttribute('width', '9%');
+    submitCell.setAttribute('align', 'center');
+    const submitButton = document.createElement('input');
+    submitButton.setAttribute('name', 'op');
+    submitButton.setAttribute('type', 'submit');
+    submitButton.setAttribute('value', 'Submit');
+    submitCell.appendChild(submitButton);
+    tableRow.appendChild(submitCell);
+
+    // Create and append the "previous day" button cell
+    const previousDayCell = document.createElement('td');
+    previousDayCell.setAttribute('width', '16%');
+    previousDayCell.setAttribute('align', 'center');
+    const previousDayButton = document.createElement('input');
+    previousDayButton.setAttribute('name', 'op');
+    previousDayButton.setAttribute('type', 'submit');
+    previousDayButton.setAttribute('value', 'Previous day');
+    previousDayCell.appendChild(previousDayButton);
+    tableRow.appendChild(previousDayCell);
+
+    // Create and append the "next day" button cell
+    const nextDayCell = document.createElement('td');
+    nextDayCell.setAttribute('width', '12%');
+    nextDayCell.setAttribute('align', 'center');
+    const nextDayButton = document.createElement('input');
+    nextDayButton.setAttribute('name', 'op');
+    nextDayButton.setAttribute('type', 'submit');
+    nextDayButton.setAttribute('value', 'Next day');
+    nextDayCell.appendChild(nextDayButton);
+    tableRow.appendChild(nextDayCell);
+
+    // Create and append the "print page large" button cell
+    const printCell = document.createElement('td');
+    printCell.setAttribute('width', '17%');
+    printCell.setAttribute('align', 'center');
+    const printButton = document.createElement('input');
+    printButton.setAttribute('name', 'op');
+    printButton.setAttribute('type', 'submit');
+    printButton.setAttribute('value', 'Print Page');
+    printCell.appendChild(printButton);
+    tableRow.appendChild(printCell);
+
+    // Create the table and append the row to it
+    const table = document.createElement('table');
+    table.appendChild(tableRow);
+
+    // Append the table inside the container
+    document.getElementById('container_date_selection').appendChild(table);
+
+    // Function to initialize the calendar date picker
+    function openCalendar(event) {
+        event.preventDefault(); // Prevent link from following the URL
+        flatpickr(dateInput, {
+            dateFormat: 'm-d-Y',
+            defaultDate: dateInput.value, // Set the default date as the current value
+        }).open(); // Open the calendar popup
+    }
 });
 
 function saveData(widgetId) {

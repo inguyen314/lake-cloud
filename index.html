@@ -59,6 +59,10 @@
     <script src="js/moment-timezone-with-data.js"></script>
     <script src="js/chart.js"></script>
     <script src="js/chartjs-adapter-moment.min.js"></script>
+    <!-- Add these in the <head> of your HTML -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 </head>
 
 <body>
@@ -80,10 +84,10 @@
                             </h2>
                             <div class="box-content" style="background-color:white;margin:auto">
                                 <div class="content">
-                                    <div id="loading" style="display: none;"><img
-                                            src="images/loading4.gif"
+                                    <div id="loading" style="display: none;"><img src="images/loading4.gif"
                                             style='height: 50px; width: 50px;' alt="Loading..." /></div>
                                     <div id="container"></div>
+                                    <div id="container_date_selection"></div>
                                     <div class="widgets-container">
                                         <div class="widget full-width" id="widget1">
                                             <h3>Widget 1: Upstream</h3>
