@@ -41,3 +41,111 @@ button {
 	font-size: 14px;
 	color: #333;
 }
+/*** ===================================================================================== ***/
+/*** LAKE SELECTION CONTAINER ***/
+/*** ===================================================================================== ***/
+/* Container styles */
+/* Container styles */
+#container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    background-color: #ffffff; /* Light blue background */
+    padding: 5px;
+}
+
+/* Table styles */
+table {
+    border-collapse: collapse;
+    width: 100%; /* Full width on smaller screens */
+    background-color: #ffffff; /* White background for the table */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for modern look */
+    border-radius: 8px; /* Rounded corners */
+    overflow: hidden;
+    margin: 0 auto; /* Center the table */
+}
+
+/* Table header styles */
+th {
+    background-color: #007BFF; /* Blue color for the header */
+    color: #ffffff; /* White text */
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+    padding: 12px 20px;
+}
+
+/* Table cell styles */
+td {
+    border: 1px solid #e0e0e0; /* Light gray border for cells */
+    padding: 12px 20px;
+    font-family: 'Arial', sans-serif;
+    color: #333; /* Dark text for readability */
+}
+
+/* Hover effect for table rows */
+tr:hover {
+    background-color: #f1faff; /* Light blue background on hover */
+}
+
+/* Cell alignment for a modern feel */
+td, th {
+    text-align: center;
+}
+
+/* Add alternating row colors for readability */
+tr:nth-child(even) {
+    background-color: #f9f9f9; /* Slightly different background for even rows */
+}
+
+tr:nth-child(odd) {
+    background-color: #ffffff; /* Standard white background for odd rows */
+}
+
+/* Add a subtle border for the table */
+table {
+    border: 1px solid #d1d1d1;
+}
+
+/* Mobile responsiveness: stack the table on small screens */
+@media (max-width: 768px) {
+    #container {
+        padding: 10px; /* Less padding on small screens */
+    }
+
+    table {
+        width: 100%; /* Make the table take full width on smaller screens */
+    }
+
+    th, td {
+        padding: 10px 15px; /* Reduce padding for better fit */
+    }
+
+    /* Stack header content for better readability on mobile */
+    th {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+
+    td {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+
+    tr:hover {
+        background-color: #f1faff; /* Light blue background on hover */
+    }
+}
+
+/* Mobile-first: ensure the table has enough space */
+@media (max-width: 480px) {
+    th, td {
+        font-size: 12px; /* Slightly smaller text on very small screens */
+        padding: 8px 10px; /* Adjust padding for tighter fit */
+    }
+
+    /* Reduce spacing between the table and container */
+    #container {
+        padding: 10px;
+    }
+}
