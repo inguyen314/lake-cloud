@@ -2,74 +2,92 @@
 /*** YOUR REPORT STYLE GOES HERE ***/
 /*** ===================================================================================== ***/
 .widgets-container {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 20px;
-	width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
 }
+
 .widget {
-	border: 2px solid #007BFF;
-	border-radius: 0px;
-	padding: 20px;
-	text-align: center;
-	background-color: #f9f9f9;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 2px solid #007BFF;
+    border-radius: 0px;
+    padding: 20px;
+    text-align: center;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 .widget.full-width {
-	width: 100%;
+    width: 100%;
 }
+
 .widget.half-width {
-    width: calc(50% - 10px); /* Adjusted for the gap */
+    width: calc(50% - 10px);
+    /* Adjusted for the gap */
 }
+
 button {
-	margin: 10px 0;
-	padding: 10px 20px;
-	border: none;
-	border-radius: 5px;
-	cursor: pointer;
+    margin: 10px 0;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
+
 .save-btn {
-	background-color: #28a745;
-	color: white;
+    background-color: #28a745;
+    color: white;
 }
+
 .fetch-btn {
-	background-color: #007BFF;
-	color: white;
+    background-color: #007BFF;
+    color: white;
 }
+
 .output {
-	margin-top: 10px;
-	font-size: 14px;
-	color: #333;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
 }
+
 /*** ===================================================================================== ***/
 /*** LAKE SELECTION CONTAINER ***/
 /*** ===================================================================================== ***/
 /* Container styles */
 /* Container styles */
-#container, #container_date_selection {
+#container,
+#container_date_selection {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 15px;
-    background-color: #ffffff; /* Light blue background */
+    background-color: #ffffff;
+    /* Light blue background */
     padding: 5px;
 }
 
 /* Table styles */
 table {
     border-collapse: collapse;
-    width: 100%; /* Full width on smaller screens */
-    background-color: #ffffff; /* White background for the table */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for modern look */
-    border-radius: 8px; /* Rounded corners */
+    width: 100%;
+    /* Full width on smaller screens */
+    background-color: #ffffff;
+    /* White background for the table */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    /* Soft shadow for modern look */
+    border-radius: 8px;
+    /* Rounded corners */
     overflow: hidden;
-    margin: 0 auto; /* Center the table */
+    margin: 0 auto;
+    /* Center the table */
 }
 
 /* Table header styles */
 th {
-    background-color: #007BFF; /* Blue color for the header */
-    color: #ffffff; /* White text */
+    background-color: #007BFF;
+    /* Blue color for the header */
+    color: #ffffff;
+    /* White text */
     font-family: 'Arial', sans-serif;
     font-weight: bold;
     padding: 12px 12px;
@@ -77,29 +95,35 @@ th {
 
 /* Table cell styles */
 td {
-    border: 1px solid #e0e0e0; /* Light gray border for cells */
+    border: 1px solid #e0e0e0;
+    /* Light gray border for cells */
     padding: 12px 12px;
     font-family: 'Arial', sans-serif;
-    color: #333; /* Dark text for readability */
+    color: #333;
+    /* Dark text for readability */
 }
 
 /* Hover effect for table rows */
 tr:hover {
-    background-color: #f1faff; /* Light blue background on hover */
+    background-color: #f1faff;
+    /* Light blue background on hover */
 }
 
 /* Cell alignment for a modern feel */
-td, th {
+td,
+th {
     text-align: center;
 }
 
 /* Add alternating row colors for readability */
 tr:nth-child(even) {
-    background-color: #f9f9f9; /* Slightly different background for even rows */
+    background-color: #f9f9f9;
+    /* Slightly different background for even rows */
 }
 
 tr:nth-child(odd) {
-    background-color: #ffffff; /* Standard white background for odd rows */
+    background-color: #ffffff;
+    /* Standard white background for odd rows */
 }
 
 /* Add a subtle border for the table */
@@ -110,15 +134,19 @@ table {
 /* Mobile responsiveness: stack the table on small screens */
 @media (max-width: 768px) {
     #container {
-        padding: 10px; /* Less padding on small screens */
+        padding: 10px;
+        /* Less padding on small screens */
     }
 
     table {
-        width: 100%; /* Make the table take full width on smaller screens */
+        width: 100%;
+        /* Make the table take full width on smaller screens */
     }
 
-    th, td {
-        padding: 10px 15px; /* Reduce padding for better fit */
+    th,
+    td {
+        padding: 10px 15px;
+        /* Reduce padding for better fit */
     }
 
     /* Stack header content for better readability on mobile */
@@ -133,19 +161,64 @@ table {
     }
 
     tr:hover {
-        background-color: #f1faff; /* Light blue background on hover */
+        background-color: #f1faff;
+        /* Light blue background on hover */
     }
 }
 
 /* Mobile-first: ensure the table has enough space */
 @media (max-width: 480px) {
-    th, td {
-        font-size: 12px; /* Slightly smaller text on very small screens */
-        padding: 8px 10px; /* Adjust padding for tighter fit */
+
+    th,
+    td {
+        font-size: 12px;
+        /* Slightly smaller text on very small screens */
+        padding: 8px 10px;
+        /* Adjust padding for tighter fit */
     }
 
     /* Reduce spacing between the table and container */
     #container {
         padding: 10px;
     }
+}
+
+/*** ===================================================================================== ***/
+/*** BUTTON ***/
+/*** ===================================================================================== ***/
+/* General button styles */
+.modern-button {
+    background-color: #007bff;
+    /* Blue background */
+    color: white;
+    /* White text */
+    border: none;
+    /* Remove border */
+    padding: 10px 20px;
+    /* Padding */
+    font-size: 14px;
+    /* Font size */
+    border-radius: 5px;
+    /* Rounded corners */
+    cursor: pointer;
+    /* Pointer on hover */
+    transition: all 0.3s ease;
+    /* Smooth transition */
+}
+
+/* Button hover effect */
+.modern-button:hover {
+    background-color: #0056b3;
+    /* Darker blue on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow */
+}
+
+/* Active button effect */
+.modern-button:active {
+    background-color: #004085;
+    /* Even darker blue on click */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(2px);
+    /* Slightly move button down on click */
 }

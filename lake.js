@@ -153,14 +153,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Create the table row
     const tableRow = document.createElement('tr');
-    tableRow.setAttribute('valign', 'bottom');
-    tableRow.setAttribute('bgcolor', '#CCCCCC');
 
     // Create and append the combined cell (DATE label, input field, and calendar button)
     const dateCell = document.createElement('td');
-    dateCell.setAttribute('width', '20%'); // Adjusted width to accommodate label, input, and calendar button
+    dateCell.setAttribute('width', '20%');
     dateCell.setAttribute('align', 'center');
-    dateCell.setAttribute('valign', 'middle');
+    dateCell.classList.add('date-cell'); // Apply flex layout
 
     const dateLabel = document.createElement('span');
     dateLabel.innerText = 'Date: ';
@@ -175,13 +173,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const calendarLink = document.createElement('a');
     calendarLink.setAttribute('href', '##');
     calendarLink.setAttribute('onclick', "openCalendar(event)");
-
-    // const calendarImage = document.createElement('img');
-    // calendarImage.setAttribute('src', 'images/cal.png');
-    // calendarImage.setAttribute('border', '0');
-    // calendarImage.width = 20;
-    // calendarImage.length = 20;
-    // calendarLink.appendChild(calendarImage);
 
     // Append the label, input, and calendar link to the same cell
     dateCell.appendChild(dateLabel);
@@ -199,6 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
     submitButton.setAttribute('name', 'op');
     submitButton.setAttribute('type', 'submit');
     submitButton.setAttribute('value', 'Submit');
+    submitButton.classList.add('modern-button'); // Apply modern button class
     submitCell.appendChild(submitButton);
     tableRow.appendChild(submitCell);
 
@@ -210,6 +202,7 @@ document.addEventListener("DOMContentLoaded", function () {
     previousDayButton.setAttribute('name', 'op');
     previousDayButton.setAttribute('type', 'submit');
     previousDayButton.setAttribute('value', 'Previous day');
+    previousDayButton.classList.add('modern-button');
     previousDayCell.appendChild(previousDayButton);
     tableRow.appendChild(previousDayCell);
 
@@ -221,6 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
     nextDayButton.setAttribute('name', 'op');
     nextDayButton.setAttribute('type', 'submit');
     nextDayButton.setAttribute('value', 'Next day');
+    nextDayButton.classList.add('modern-button');
     nextDayCell.appendChild(nextDayButton);
     tableRow.appendChild(nextDayCell);
 
@@ -232,6 +226,7 @@ document.addEventListener("DOMContentLoaded", function () {
     printButton.setAttribute('name', 'op');
     printButton.setAttribute('type', 'submit');
     printButton.setAttribute('value', 'Print Page');
+    printButton.classList.add('modern-button');
     printCell.appendChild(printButton);
     tableRow.appendChild(printCell);
 
