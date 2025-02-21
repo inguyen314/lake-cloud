@@ -87,6 +87,16 @@ document.addEventListener("DOMContentLoaded", function () {
             loadingIndicator.style.display = 'none';
         });
 
+    // Check if the lake is not "Mark Twain Lk"
+    if (lake !== "Mark Twain Lk-Salt") {
+        // Hide widgets 3, 12, and 13
+        document.getElementById("widget3").style.display = "none";
+        document.getElementById("widget12").style.display = "none";
+        document.getElementById("widget13").style.display = "none";
+    }
+
+    createTableWithDynamicDate(datetime, lake);
+
     function createTable(data) {
         if (!Array.isArray(data)) {
             console.error("combinedData is not an array!", data);
@@ -143,122 +153,149 @@ document.addEventListener("DOMContentLoaded", function () {
         document.title = `${lake.split("-")[0].trim()}: ${datetime}`;
     }
 
-    // Check if the lake is not "Mark Twain Lk"
-    if (lake !== "Mark Twain Lk-Salt") {
-        // Hide widgets 3, 12, and 13
-        document.getElementById("widget3").style.display = "none";
-        document.getElementById("widget12").style.display = "none";
-        document.getElementById("widget13").style.display = "none";
-    }
+    function createTableWithDynamicDate(datetime, lake) {
+        // Create the table row
+        const tableRow = document.createElement('tr');
 
-    // Create the table row
-    const tableRow = document.createElement('tr');
+        // Create and append the combined cell (DATE label, input field, and calendar button)
+        const dateCell = document.createElement('td');
+        dateCell.setAttribute('width', '20%');
+        dateCell.setAttribute('align', 'center');
+        dateCell.classList.add('date-cell'); // Apply flex layout
 
-    // Create and append the combined cell (DATE label, input field, and calendar button)
-    const dateCell = document.createElement('td');
-    dateCell.setAttribute('width', '20%');
-    dateCell.setAttribute('align', 'center');
-    dateCell.classList.add('date-cell'); // Apply flex layout
+        const dateLabel = document.createElement('span');
+        dateLabel.innerText = 'Date: ';
 
-    const dateLabel = document.createElement('span');
-    dateLabel.innerText = 'Date: ';
+        const dateInput = document.createElement('input');
+        dateInput.setAttribute('name', 'p_dt');
+        dateInput.setAttribute('type', 'text');
+        dateInput.setAttribute('value', datetime);
+        dateInput.setAttribute('size', '10');
+        dateInput.setAttribute('maxlength', '10');
 
-    const dateInput = document.createElement('input');
-    dateInput.setAttribute('name', 'p_dt');
-    dateInput.setAttribute('type', 'text');
-    dateInput.setAttribute('value', datetime);
-    dateInput.setAttribute('size', '10');
-    dateInput.setAttribute('maxlength', '10');
+        const calendarLink = document.createElement('a');
+        calendarLink.setAttribute('href', '##');
+        calendarLink.setAttribute('onclick', "openCalendar(event)");
 
-    const calendarLink = document.createElement('a');
-    calendarLink.setAttribute('href', '##');
-    calendarLink.setAttribute('onclick', "openCalendar(event)");
+        // Append the label, input, and calendar link to the same cell
+        dateCell.appendChild(dateLabel);
+        dateCell.appendChild(dateInput);
+        dateCell.appendChild(calendarLink);
 
-    // Append the label, input, and calendar link to the same cell
-    dateCell.appendChild(dateLabel);
-    dateCell.appendChild(dateInput);
-    dateCell.appendChild(calendarLink);
+        // Append the combined dateCell to the table row
+        tableRow.appendChild(dateCell);
 
-    // Append the combined dateCell to the table row
-    tableRow.appendChild(dateCell);
+        // Function to adjust the date by one day (forward or backward)
+        function adjustDate(byDays) {
+            // Get the current date from dateInput value
+            const currentDate = new Date(dateInput.value);
 
-    // Create and append the submit link cell (instead of button)
-    const submitCell = document.createElement('td');
-    submitCell.setAttribute('width', '9%');
-    submitCell.setAttribute('align', 'center');
+            // Adjust the date by the specified number of days (byDays can be positive or negative)
+            currentDate.setDate(currentDate.getDate() + byDays);
 
-    const submitLink = document.createElement('a');
-    submitLink.setAttribute('href', '#'); // Placeholder link (will be updated dynamically)
-    submitLink.setAttribute('class', 'modern-link'); // Apply modern link style
-    submitLink.innerText = 'Submit';
+            // Format the new date as MM-DD-YYYY
+            const newDate = formatDate(currentDate);
 
-    // Set the click event for the link to redirect dynamically
-    submitLink.addEventListener('click', function (event) {
-        event.preventDefault(); // Prevent the default link behavior
+            // Update the dateInput value with the new date
+            dateInput.value = newDate;
+        }
 
-        // Get the dynamic date from the input field
-        const datetime = dateInput.value;
+        // Function to format the date as MM-DD-YYYY
+        function formatDate(date) {
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Add leading zero if necessary
+            const day = String(date.getDate()).padStart(2, '0'); // Add leading zero if necessary
+            const year = date.getFullYear();
+            return `${month}-${day}-${year}`;
+        }
 
-        // Create the URL with the dynamic lake and datetime values
-        const url = `https://wm.mvs.ds.usace.army.mil/mvs/lake/index.html?office=MVS&lake=${lake}&datetime=${datetime}`;
+        // Create and append the submit link cell (instead of button)
+        const submitCell = document.createElement('td');
+        submitCell.setAttribute('width', '9%');
+        submitCell.setAttribute('align', 'center');
 
-        // Redirect to the URL
-        window.location.href = url;
-    });
+        const submitLink = document.createElement('a');
+        submitLink.setAttribute('href', '#'); // Placeholder link (will be updated dynamically)
+        submitLink.setAttribute('class', 'modern-link'); // Apply modern link style
+        submitLink.innerText = 'Submit';
 
-    submitCell.appendChild(submitLink);
-    tableRow.appendChild(submitCell);
+        // Set the click event for the link to redirect dynamically
+        submitLink.addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent the default link behavior
 
-    // Create and append the "previous day" button cell
-    const previousDayCell = document.createElement('td');
-    previousDayCell.setAttribute('width', '16%');
-    previousDayCell.setAttribute('align', 'center');
-    const previousDayButton = document.createElement('input');
-    previousDayButton.setAttribute('name', 'op');
-    previousDayButton.setAttribute('type', 'submit');
-    previousDayButton.setAttribute('value', 'Previous day');
-    previousDayButton.classList.add('modern-button');
-    previousDayCell.appendChild(previousDayButton);
-    tableRow.appendChild(previousDayCell);
+            // Get dynamic datetime value from input field
+            const datetime = dateInput.value;
 
-    // Create and append the "next day" button cell
-    const nextDayCell = document.createElement('td');
-    nextDayCell.setAttribute('width', '12%');
-    nextDayCell.setAttribute('align', 'center');
-    const nextDayButton = document.createElement('input');
-    nextDayButton.setAttribute('name', 'op');
-    nextDayButton.setAttribute('type', 'submit');
-    nextDayButton.setAttribute('value', 'Next day');
-    nextDayButton.classList.add('modern-button');
-    nextDayCell.appendChild(nextDayButton);
-    tableRow.appendChild(nextDayCell);
+            // Create the URL with the dynamic lake and datetime values
+            const url = `https://wm.mvs.ds.usace.army.mil/mvs/lake/index.html?office=MVS&lake=${lake}&datetime=${datetime}`;
 
-    // Create and append the "print page large" button cell
-    const printCell = document.createElement('td');
-    printCell.setAttribute('width', '17%');
-    printCell.setAttribute('align', 'center');
-    const printButton = document.createElement('input');
-    printButton.setAttribute('name', 'op');
-    printButton.setAttribute('type', 'submit');
-    printButton.setAttribute('value', 'Print Page');
-    printButton.classList.add('modern-button');
-    printCell.appendChild(printButton);
-    tableRow.appendChild(printCell);
+            // Redirect to the URL
+            window.location.href = url;
+        });
 
-    // Create the table and append the row to it
-    const table = document.createElement('table');
-    table.appendChild(tableRow);
+        submitCell.appendChild(submitLink);
+        tableRow.appendChild(submitCell);
 
-    // Append the table inside the container
-    document.getElementById('container_date_selection').appendChild(table);
+        // Create and append the "previous day" button cell
+        const previousDayCell = document.createElement('td');
+        previousDayCell.setAttribute('width', '16%');
+        previousDayCell.setAttribute('align', 'center');
+        const previousDayButton = document.createElement('input');
+        previousDayButton.setAttribute('name', 'op');
+        previousDayButton.setAttribute('type', 'submit');
+        previousDayButton.setAttribute('value', 'Previous day');
+        previousDayButton.classList.add('modern-button');
 
-    // Function to initialize the calendar date picker
-    function openCalendar(event) {
-        event.preventDefault(); // Prevent link from following the URL
-        flatpickr(dateInput, {
-            dateFormat: 'm-d-Y',
-            defaultDate: dateInput.value, // Set the default date as the current value
-        }).open(); // Open the calendar popup
+        // Event listener for the "Previous day" button
+        previousDayButton.addEventListener('click', function (event) {
+            adjustDate(-1); // Decrease the date by 1 day
+        });
+        previousDayCell.appendChild(previousDayButton);
+        tableRow.appendChild(previousDayCell);
+
+        // Create and append the "next day" button cell
+        const nextDayCell = document.createElement('td');
+        nextDayCell.setAttribute('width', '12%');
+        nextDayCell.setAttribute('align', 'center');
+        const nextDayButton = document.createElement('input');
+        nextDayButton.setAttribute('name', 'op');
+        nextDayButton.setAttribute('type', 'submit');
+        nextDayButton.setAttribute('value', 'Next day');
+        nextDayButton.classList.add('modern-button');
+
+        // Event listener for the "Next day" button
+        nextDayButton.addEventListener('click', function (event) {
+            adjustDate(1); // Increase the date by 1 day
+        });
+        nextDayCell.appendChild(nextDayButton);
+        tableRow.appendChild(nextDayCell);
+
+        // Create and append the "print page large" button cell
+        const printCell = document.createElement('td');
+        printCell.setAttribute('width', '17%');
+        printCell.setAttribute('align', 'center');
+        const printButton = document.createElement('input');
+        printButton.setAttribute('name', 'op');
+        printButton.setAttribute('type', 'submit');
+        printButton.setAttribute('value', 'Print Page');
+        printButton.classList.add('modern-button');
+        printCell.appendChild(printButton);
+        tableRow.appendChild(printCell);
+
+        // Create the table and append the row to it
+        const table = document.createElement('table');
+        table.appendChild(tableRow);
+
+        // Append the table inside the container
+        document.getElementById('container_date_selection').appendChild(table);
+
+        // Function to initialize the calendar date picker
+        function openCalendar(event) {
+            event.preventDefault(); // Prevent link from following the URL
+            flatpickr(dateInput, {
+                dateFormat: 'm-d-Y',
+                defaultDate: dateInput.value, // Set the default date as the current value
+            }).open(); // Open the calendar popup
+        }
     }
 });
 
