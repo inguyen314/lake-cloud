@@ -6,15 +6,12 @@
     var office = urlParams.get('office') || 'MVS';
     console.log('office: ', office);
 
-    // Get the value of a specific parameter
     var cda = urlParams.get('cda');
     console.log('cda: ', cda);
 
-    // Calculate the document root
     const documentRoot = window.location.protocol + "//" + window.location.host + "/";
     console.log("documentRoot: ", documentRoot);
 
-    // Determine the default value of cda based on documentRoot
     if (documentRoot === `https://wm.${office.toLocaleLowerCase()}.ds.usace.army.mil/` || `http://localhost:5173/` || `https://wm.rsgis.dev/` || `https://wm-${office.toLocaleLowerCase()}coop.mvk.ds.usace.army.mil/`) {
         cdaDefault = "internal";
     } else if (documentRoot === `https://wm-${office.toLocaleLowerCase()}coop.mvk.ds.usace.army.mil/`) {
@@ -107,7 +104,7 @@
                             <div class="box-content" style="background-color:white;margin:auto">
                                 <div class="content">
                                     <div id="loading" style="display: none;"><img
-                                            src="https://wm.mvs.ds.usace.army.mil/apps/alarms/images/loading4.gif"
+                                            src="images/loading4.gif"
                                             style='height: 50px; width: 50px;' alt="Loading..." /></div>
                                     <div id="container"></div>
                                     <script>
@@ -352,7 +349,6 @@
                                             <div class="output" id="output11"></div>
                                         </div>
 
-                                        <!-- Updated Widget 12 and Widget 13 to half-width -->
                                         <div class="widget half-width" id="widget12">
                                             <h3>Widget 12: Generation and Release (Optional)</h3>
                                             <button class="save-btn" onclick="saveData(12)">Save</button>
@@ -367,7 +363,6 @@
                                             <div class="output" id="output13"></div>
                                         </div>
 
-                                        <!-- Adding Widget 14 and Widget 15 as full-width -->
                                         <div class="widget full-width" id="widget14">
                                             <h3>Widget 14: TW</h3>
                                             <button class="save-btn" onclick="saveData(14)">Save</button>
@@ -382,8 +377,6 @@
                                             <div class="output" id="output15"></div>
                                         </div>
                                     </div>
-
-
                                     <script src='lake.js'></script>
                                     <script src='widget_01/widget_01.js'></script>
                                     <script src='widget_02/widget_02.js'></script>
@@ -433,6 +426,14 @@
 
             // Set the title in the header
             document.title = `${lake.split("-")[0].trim()}: ${datetime}`;
+        }
+
+        // Check if the lake is not "Mark Twain Lk"
+        if (lake !== "Mark Twain Lk-Salt") {
+            // Hide widgets 3, 12, and 13
+            document.getElementById("widget3").style.display = "none";
+            document.getElementById("widget12").style.display = "none";
+            document.getElementById("widget13").style.display = "none";
         }
     });
 </script>
