@@ -1,4 +1,22 @@
 document.addEventListener("DOMContentLoaded", function () {
+    if (lake !== "Mark Twain Lk-Salt") {
+        // Hide widgets 3, 12, and 13
+        document.getElementById("widget3").style.display = "none";
+        document.getElementById("widget12").style.display = "none";
+        document.getElementById("widget13").style.display = "none";
+    }
+
+    if (lake !== null && datetime !== null) {
+        const titleSpan = document.querySelector('.titleLabel.title');
+
+        if (titleSpan) {
+            titleSpan.textContent = `${lake.split("-")[0].trim()}: ${datetime}`;
+        }
+
+        // Set the title in the header
+        document.title = `${lake.split("-")[0].trim()}: ${datetime}`;
+    }
+
     let setBaseUrl = null;
     if (cda === "internal") {
         setBaseUrl = `https://wm.${office.toLowerCase()}.ds.usace.army.mil:8243/${office.toLowerCase()}-data/`;
@@ -13,7 +31,6 @@ document.addEventListener("DOMContentLoaded", function () {
     loadingIndicator.style.display = 'block';
 
     let setLocationCategory = "Lakes";
-    let setLocationGroupOwner = "Project";
 
     const basinCategoryApiUrl = `${setBaseUrl}location/group?office=${office}&include-assigned=false&location-category-like=${setLocationCategory}`;
     console.log("basinCategoryApiUrl: ", basinCategoryApiUrl);
@@ -87,15 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
             loadingIndicator.style.display = 'none';
         });
 
-    // Check if the lake is not "Mark Twain Lk"
-    if (lake !== "Mark Twain Lk-Salt") {
-        // Hide widgets 3, 12, and 13
-        document.getElementById("widget3").style.display = "none";
-        document.getElementById("widget12").style.display = "none";
-        document.getElementById("widget13").style.display = "none";
-    }
-
-    createTableWithDynamicDate(datetime, lake);
+    createTableDatePicker(datetime, lake);
 
     function createTable(data) {
         if (!Array.isArray(data)) {
@@ -142,18 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     }
 
-    if (lake !== null && datetime !== null) {
-        const titleSpan = document.querySelector('.titleLabel.title');
-
-        if (titleSpan) {
-            titleSpan.textContent = `${lake.split("-")[0].trim()}: ${datetime}`;
-        }
-
-        // Set the title in the header
-        document.title = `${lake.split("-")[0].trim()}: ${datetime}`;
-    }
-
-    function createTableWithDynamicDate(datetime, lake) {
+    function createTableDatePicker(datetime, lake) {
         // Create the table row
         const tableRow = document.createElement('tr');
 
