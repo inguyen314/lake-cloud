@@ -59,6 +59,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+            console.log('Basins:', basins);
+
             // Loop through each basin and fetch assigned locations
             basins.forEach(basin => {
                 const basinGroupLocationApiUrl = `${setBaseUrl}location/group/${basin}?office=${office}&category-id=${setLocationCategory}`;
@@ -85,6 +87,8 @@ document.addEventListener("DOMContentLoaded", function () {
                             getBasin['assigned-locations'].sort((a, b) => a.attribute - b.attribute);
 
                             combinedData.push(getBasin);
+
+                            console.log('getBasin:', getBasin);
                         })
                         .catch(error => console.error(`Problem with the fetch operation for basin ${basin}:`, error))
                 );
@@ -120,26 +124,44 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const row = document.createElement("tr");
 
-        data.forEach(item => {
-            item["assigned-locations"].forEach(location => {
-                const cell = document.createElement("td");
+        const locationOrder = [
+            "Lk Shelbyville-Kaskaskia",
+            "Carlyle Lk-Kaskaskia",
+            "Wappapello Lk-St Francis",
+            "Mark Twain Lk-Salt",
+            "Rend Lk-Big Muddy"
+        ];
 
-                // Extract part before the dash
-                const locationName = location["location-id"].split("-")[0].trim();
-                const locationId = location["location-id"];
+        // Loop through each location in locationOrder and add it as a column in the single row
+        locationOrder.forEach(locationId => {
+            const cell = document.createElement("td");
 
-                // Create link
-                const link = document.createElement("a");
-                link.href = `https://wm.mvs.ds.usace.army.mil/mvs/lake/index.html?office=MVS&lake=${encodeURIComponent(locationId)}`;
-                link.textContent = locationName;
-                // link.target = "_blank"; // Opens in a new tab
+            // Find the location in the data
+            let locationFound = false;
+            data.forEach(item => {
+                const location = item["assigned-locations"].find(loc => loc["location-id"] === locationId);
 
-                cell.appendChild(link);
-                row.appendChild(cell);
+                if (location) {
+                    locationFound = true;
+                    const link = document.createElement("a");
+                    link.href = `https://wm.mvs.ds.usace.army.mil/mvs/lake/index.html?office=MVS&lake=${encodeURIComponent(location["location-id"])}`;
+                    link.textContent = location["location-id"].split("-")[0];  // Location name before the dash
+                    cell.appendChild(link);
+                }
             });
+
+            // If location is not found, show "N/A"
+            if (!locationFound) {
+                cell.textContent = "N/A";
+            }
+
+            row.appendChild(cell);
         });
 
+        // Append the single row to the table
         table.appendChild(row);
+
+        // Append the table to the container
         container.appendChild(table);
     }
 
