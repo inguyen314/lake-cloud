@@ -331,3 +331,10 @@ function fetchData(widgetId) {
         output.textContent = `Fetched data for Widget ${widgetId}: [Sample Data]`;
     }, 1000);
 }
+
+function testData(widgetId, lake, datetime) {
+    // Define the URL to open in a new tab
+    const url = `https://wm.mvs.ds.usace.army.mil/mvs/lake/widget_04_test.html?office=MVS&lake=${lake}&datetime=${datetime}`;  // Replace with the desired URL
+    // Open the URL in a new tab
+    window.open(url, '_blank');
+}

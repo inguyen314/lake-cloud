@@ -44,6 +44,11 @@ button {
     color: white;
 }
 
+.test-btn {
+    background-color: darkgray;
+    color: white;
+}
+
 .output {
     margin-top: 10px;
     font-size: 14px;
