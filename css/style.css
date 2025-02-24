@@ -227,3 +227,9 @@ table {
     transform: translateY(2px);
     /* Slightly move button down on click */
 }
+
+#reportIssueBtn {
+    display: block;
+    margin: 0 auto; /* This will center the button horizontally */
+    text-align: center;
+}

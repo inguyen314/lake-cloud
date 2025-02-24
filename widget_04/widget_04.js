@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const data = await response.json();
                 return data;
             } catch (error) {
-                console.error("Error fetching time series data:", error);
+                console.error("Error fetching time series data:", error);  
             }
         };
 
@@ -157,36 +157,36 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Extract the last two values
                     const lastValue = formattedData2[formattedData2.length - 1].value;
                     const secondLastValue = formattedData2[formattedData2.length - 2].value;
-                
+
                     // Calculate the average of the last two values
                     const averageValue = (lastValue + secondLastValue) / 2;
-                
+
                     // Create the table structure
                     const table = document.createElement("table");
-                
+
                     // Apply the ID "gate-settings" to the table
                     table.id = "gate-settings";
-                
+
                     // Create the header row
                     const headerRow = table.insertRow();
                     const col1 = headerRow.insertCell();
                     const col2 = headerRow.insertCell();
-                
+
                     col1.textContent = "Average Outflow for Yesterday:";
                     col2.textContent = averageValue.toFixed(0);  // Format the average value to 0 decimal places
                     col2.style.fontWeight = "bold";
-                
+
                     // Set column widths: 2/3 for col1 and 1/3 for col2
                     col1.style.width = "66%";  // 2/3 width
                     col2.style.width = "33%";  // 1/3 width
-                
+
                     // Add a title for the tooltip when hovering over col2
                     col2.title = `The average outflow value for yesterday is: ${lastValue.toFixed(0)}/${secondLastValue.toFixed(0)} =  ${averageValue.toFixed(0)}`;
-                
+
                     // Insert the table into the "output4" div
                     const outputDiv = document.getElementById("output4");
                     outputDiv.appendChild(table);
-                }                             
+                }
 
                 // Call the function with formattedData1 and formattedData2
                 createTable(formattedData1, formattedData2);
@@ -196,6 +196,18 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             } catch (error) {
                 console.error("Error fetching tsid data:", error);
+
+                // Show the "Report Issue" button
+                document.getElementById('reportIssueBtn').style.display = "block";
+
+                // Ensure sendEmail is globally accessible
+                window.sendEmail = function () {
+                    const subject = encodeURIComponent("Cloud Database Down");
+                    const body = encodeURIComponent("Hello,\n\nIt appears that the cloud database is down. Please investigate the issue." + setBaseUrl);
+                    const email = "DLL-CEMVS-WM-SysAdmins@usace.army.mil"; // Replace with actual support email
+
+                    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+                };
             }
         };
 
