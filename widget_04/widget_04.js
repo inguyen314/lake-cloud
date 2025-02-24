@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         console.log('currentDateTime:', currentDateTime);
 
         // Subtract thirty hours from current date and time
-        const currentDateTimeMinus30Hours = subtractHoursFromDate(currentDateTime, 20);
+        const currentDateTimeMinus30Hours = subtractHoursFromDate(currentDateTime, 8*24);
         console.log('currentDateTimeMinus30Hours :', currentDateTimeMinus30Hours);
 
         const urltsid1 = `${setBaseUrl}timeseries/group/Stage?office=${office}&category-id=${lake}`;
@@ -50,29 +50,68 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const tsid1 = tsidData1['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
                 const tsid2 = tsidData2['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
 
+                console.log("tsid1:", tsid1);
+                console.log("tsid2:", tsid2);
+
                 // Fetch time series data using tsid values
                 const timeSeriesData1 = await fetchTimeSeriesData(tsid1);
                 const timeSeriesData2 = await fetchTimeSeriesData(tsid2);
 
                 // Call getHourlyDataOnTopOfHour for both time series data
-                const hourlyData1 = getHourlyDataOnTopOfHour(timeSeriesData1, tsid1);
-                const hourlyData2 = getHourlyDataOnTopOfHour(timeSeriesData2, tsid2);
+                const hourlyData1 = getMidnightData(timeSeriesData1, tsid1);
+                const hourlyData2 = getMidnightData(timeSeriesData2, tsid2);
 
-                const formattedData = hourlyData1.map(entry => {
+                console.log("hourlyData1:", hourlyData1);
+                console.log("hourlyData2:", hourlyData2);
+
+                const formattedData1 = hourlyData1.map(entry => {
+                    const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
+                    // console.log("Original (hourlyData1):", entry.timestamp, "Formatted:", formattedTimestamp);
                     return {
                         ...entry,
-                        formattedTimestamp: formatISODate2ReadableDate(entry.timestamp)
+                        formattedTimestamp
                     };
                 });
 
-                // Now you have the hourly data for both time series
-                console.log("Hourly Data for Time Series 1:", hourlyData1);
-                console.log("Hourly Data for Time Series 2:", hourlyData2);
+                const formattedData2 = hourlyData2.map(entry => {
+                    const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
+                    // console.log("Original (hourlyData2):", entry.timestamp, "Formatted:", formattedTimestamp);
+                    return {
+                        ...entry,
+                        formattedTimestamp
+                    };
+                });
+
+                // Now you have formatted data for both datasets
+                console.log("Formatted Data for HourlyData1:", formattedData1);
+                console.log("Formatted Data for HourlyData2:", formattedData2);
+
 
             } catch (error) {
                 console.error("Error fetching tsid data:", error);
             }
         };
+
+        function formatISODate2ReadableDate(timestamp) {
+            if (typeof timestamp !== "number") {
+                console.error("Invalid timestamp:", timestamp);
+                return "Invalid Date";
+            }
+
+            const date = new Date(timestamp); // Ensure timestamp is in milliseconds
+            if (isNaN(date.getTime())) {
+                console.error("Invalid date conversion:", timestamp);
+                return "Invalid Date";
+            }
+
+            const mm = String(date.getMonth() + 1).padStart(2, '0'); // Month
+            const dd = String(date.getDate()).padStart(2, '0'); // Day
+            const yyyy = date.getFullYear(); // Year
+            const hh = String(date.getHours()).padStart(2, '0'); // Hours
+            const min = String(date.getMinutes()).padStart(2, '0'); // Minutes
+            return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
+        }
+
 
         function getHourlyDataOnTopOfHour(data, tsid) {
             const hourlyData = [];
@@ -106,15 +145,37 @@ document.addEventListener('DOMContentLoaded', async function () {
             return hourlyData;
         };
 
-        function formatISODate2ReadableDate(timestamp) {
-            const date = new Date(timestamp);
-            const mm = String(date.getMonth() + 1).padStart(2, '0'); // Month
-            const dd = String(date.getDate()).padStart(2, '0'); // Day
-            const yyyy = date.getFullYear(); // Year
-            const hh = String(date.getHours()).padStart(2, '0'); // Hours
-            const min = String(date.getMinutes()).padStart(2, '0'); // Minutes
-            return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
-        }
+        function getMidnightData(data, tsid) {
+            const midnightData = [];
+
+            data.values.forEach(entry => {
+                const [timestamp, value, qualityCode] = entry;
+
+                // Normalize the timestamp
+                let date;
+                if (typeof timestamp === "string") {
+                    date = new Date(timestamp.replace(/-/g, '/')); // Replace hyphens with slashes for iOS
+                } else if (typeof timestamp === "number") {
+                    date = new Date(timestamp); // Assume it's a UNIX timestamp
+                } else {
+                    console.warn("Unrecognized timestamp format:", timestamp);
+                    return; // Skip invalid entries
+                }
+
+                // Validate date
+                if (isNaN(date.getTime())) {
+                    console.warn("Invalid date:", timestamp);
+                    return; // Skip invalid dates
+                }
+
+                // Check if the time is exactly midnight (00:00:00)
+                if (date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0) {
+                    midnightData.push({ timestamp, value, qualityCode, tsid });
+                }
+            });
+
+            return midnightData;
+        };
 
         // Call the function to fetch the data
         fetchTsidData();
