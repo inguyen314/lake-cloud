@@ -1,0 +1,47 @@
+#gate-settings {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-family: 'Arial', sans-serif;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#gate-settings th, #gate-settings td {
+    padding: 5px 5px;
+    text-align: center; /* Center-align both header and data cell text */
+    border: 1px solid #ddd;
+}
+
+#gate-settings th {
+    background-color: darkblue;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#gate-settings tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#gate-settings tr:hover {
+    background-color: #f1f1f1;
+}
+
+#gate-settings td {
+    font-size: 14px;
+}
+
+#gate-settings td a {
+    color: darkblue;
+    text-decoration: none;
+}
+
+#gate-settings td a:hover {
+    text-decoration: underline;
+}
+
+#gate-settings caption {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}

@@ -87,42 +87,53 @@ document.addEventListener('DOMContentLoaded', async function () {
                 function createTable(formattedData1, formattedData2) {
                     // Create the table element
                     const table = document.createElement("table");
-                    table.border = "1"; // Add border for the table
-                
+
+                    // Apply the ID "gate-settings" to the table
+                    table.id = "gate-settings";
+
                     // Create the table header row
                     const headerRow = document.createElement("tr");
-                
+
+                    const dateHeader = document.createElement("th");
+                    dateHeader.textContent = "Date";
+                    headerRow.appendChild(dateHeader);
+
                     const stageHeader = document.createElement("th");
                     stageHeader.textContent = "Stage";
                     headerRow.appendChild(stageHeader);
-                
+
                     const outflowHeader = document.createElement("th");
                     outflowHeader.textContent = "Outflow";
                     headerRow.appendChild(outflowHeader);
-                
+
                     table.appendChild(headerRow);
-                
+
                     // Combine the data based on matching timestamps
                     let i = 0;
                     let j = 0;
-                
+
                     while (i < formattedData1.length && j < formattedData2.length) {
                         // Find matching formattedTimestamps
                         if (formattedData1[i].formattedTimestamp === formattedData2[j].formattedTimestamp) {
                             const row = document.createElement("tr");
-                
+
+                            // Date column (from formattedData1)
+                            const dateCell = document.createElement("td");
+                            dateCell.textContent = formattedData1[i].formattedTimestamp; // Display formattedTimestamp as Date
+                            row.appendChild(dateCell);
+
                             // Stage column (from formattedData1)
                             const stageCell = document.createElement("td");
                             stageCell.textContent = formattedData1[i].value.toFixed(2); // Assuming stage is from formattedData1
                             row.appendChild(stageCell);
-                
+
                             // Outflow column (from formattedData2)
                             const outflowCell = document.createElement("td");
                             outflowCell.textContent = formattedData2[j].value.toFixed(0); // Assuming outflow is from formattedData2
                             row.appendChild(outflowCell);
-                
+
                             table.appendChild(row);
-                
+
                             // Move to next entry in both datasets
                             i++;
                             j++;
@@ -134,7 +145,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             j++;
                         }
                     }
-                
+
                     // Append the table to the specific container (id="output4")
                     const output4Div = document.getElementById("output4");
                     output4Div.innerHTML = ""; // Clear any existing content
@@ -143,7 +154,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Call the function with formattedData1 and formattedData2
                 createTable(formattedData1, formattedData2);
-                
+
             } catch (error) {
                 console.error("Error fetching tsid data:", error);
             }
