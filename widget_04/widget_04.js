@@ -13,13 +13,14 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
         console.log("setBaseUrl: ", setBaseUrl);
 
-        // Get current date and time
-        const currentDateTime = new Date();
+        const [month, day, year] = datetime.split('-');
+        const currentDateTime = new Date(year, month - 1, day);
+
         console.log('currentDateTime:', currentDateTime);
 
         // Subtract thirty hours from current date and time
         const currentDateTimeMinus30Hours = subtractHoursFromDate(currentDateTime, 8 * 24);
-        console.log('currentDateTimeMinus30Hours :', currentDateTimeMinus30Hours);
+        console.log('currentDateTimeMinus30Hours:', currentDateTimeMinus30Hours);
 
         const urltsid1 = `${setBaseUrl}timeseries/group/Stage?office=${office}&category-id=${lake}`;
         const urltsid2 = `${setBaseUrl}timeseries/group/Flow?office=${office}&category-id=${lake}`;
@@ -152,8 +153,46 @@ document.addEventListener('DOMContentLoaded', async function () {
                     output4Div.appendChild(table);
                 }
 
+                function createTableAvg(formattedData2) {
+                    // Extract the last two values
+                    const lastValue = formattedData2[formattedData2.length - 1].value;
+                    const secondLastValue = formattedData2[formattedData2.length - 2].value;
+                
+                    // Calculate the average of the last two values
+                    const averageValue = (lastValue + secondLastValue) / 2;
+                
+                    // Create the table structure
+                    const table = document.createElement("table");
+                
+                    // Apply the ID "gate-settings" to the table
+                    table.id = "gate-settings";
+                
+                    // Create the header row
+                    const headerRow = table.insertRow();
+                    const col1 = headerRow.insertCell();
+                    const col2 = headerRow.insertCell();
+                
+                    col1.textContent = "Average Outflow for Yesterday:";
+                    col2.textContent = averageValue.toFixed(0);  // Format the average value to 0 decimal places
+                    col2.style.fontWeight = "bold";
+                
+                    // Set column widths: 2/3 for col1 and 1/3 for col2
+                    col1.style.width = "66%";  // 2/3 width
+                    col2.style.width = "33%";  // 1/3 width
+                
+                    // Add a title for the tooltip when hovering over col2
+                    col2.title = `The average outflow value for yesterday is: ${lastValue.toFixed(0)}/${secondLastValue.toFixed(0)} =  ${averageValue.toFixed(0)}`;
+                
+                    // Insert the table into the "output4" div
+                    const outputDiv = document.getElementById("output4");
+                    outputDiv.appendChild(table);
+                }                             
+
                 // Call the function with formattedData1 and formattedData2
                 createTable(formattedData1, formattedData2);
+
+                // Call the function
+                createTableAvg(formattedData2);
 
             } catch (error) {
                 console.error("Error fetching tsid data:", error);

@@ -4,6 +4,7 @@
     margin: 20px 0;
     font-family: 'Arial', sans-serif;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    table-layout: fixed; /* Ensure all columns have the same width */
 }
 
 #gate-settings th, #gate-settings td {
