@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+
+    var office = urlParams.get('office') || 'MVS';
+    console.log('office: ', office);
+
+    var cda = urlParams.get('cda');
+    console.log('cda: ', cda);
+
+    const documentRoot = window.location.protocol + "//" + window.location.host + "/";
+    console.log("documentRoot: ", documentRoot);
+
+    if (documentRoot === `https://wm.${office.toLocaleLowerCase()}.ds.usace.army.mil/` || `http://localhost:5173/` || `https://wm.rsgis.dev/` || `https://wm-${office.toLocaleLowerCase()}coop.mvk.ds.usace.army.mil/`) {
+        cdaDefault = "internal";
+    } else if (documentRoot === `https://wm-${office.toLocaleLowerCase()}coop.mvk.ds.usace.army.mil/`) {
+        cdaDefault = "internal-coop";
+    } else {
+        cdaDefault = "public";
+    }
+    console.log("cdaDefault: ", cdaDefault);
+
+    if (cda === null) {
+        cda = cdaDefault;
+    }
+    console.log("cda: ", cda);
+
+    var type = urlParams.get('type') || null;
+    console.log('type: ', type);
+
+    var lake = urlParams.get('lake') || 'Lk Shelbyville';
+    console.log('lake: ', lake);
+
+    var datetime = urlParams.get('datetime') || formatDate(new Date());
+    console.log('datetime: ', datetime);
+
+    function formatDate(date) {
+        let month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure two-digit month
+        let day = String(date.getDate()).padStart(2, '0'); // Ensure two-digit day
+        let year = date.getFullYear();
+        return `${month}-${day}-${year}`;
+    }
+</script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lake Sheet</title>
+    <meta name="Description" content="U.S. Army Corps of Engineers St. Louis District Home Page" />
+    <link rel="stylesheet" href="css/body.css" />
+    <link rel="stylesheet" href="css/breadcrumbs.css" />
+    <link rel="stylesheet" href="css/jumpMenu.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/gate-settings.css" />
+    <script src="js/main.js"></script>
+    <script src="js/libraries/moment.min.js"></script>
+    <script src="js/libraries/moment-timezone-with-data.js"></script>
+    <script src="js/libraries/chart.js"></script>
+    <script src="js/libraries/chartjs-adapter-moment.min.js"></script>
+</head>
+
+<body>
+    <div id="page-container">
+        <header id="header">
+            <!--Header content populated here by JavaScript Tag at end of body -->
+        </header>
+        <div class="page-wrap">
+            <div class="container-fluid">
+                <div id="breadcrumbs">
+                </div>
+                <div class="page-content">
+                    <sidebar id="sidebar"></sidebar>
+                    <div id="topPane" class="col-md backend-cp-collapsible">
+                        <div class="box-usace">
+                            <h2 class="box-header-striped">
+                                <span class="titleLabel title">Widget 4</span>
+                                <span class="rss"></span>
+                            </h2>
+                            <div class="box-content" style="background-color:white;margin:auto">
+                                <div class="content">
+                                    <div id="loading" style="display: none;"><img src="images/loading4.gif"
+                                            style='height: 50px; width: 50px;' alt="Loading..." /></div>
+                                    <div id="container"></div>
+                                    <div id="container_date_selection"></div>
+                                    <div class="widgets-container">
+                                        <div class="widget half-width" id="widget4">
+                                            <h3>Widget 4: Gate Settings</h3>
+                                            <button class="save-btn" onclick="saveData(4)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(4)">Fetch Data</button>
+                                            <div class="output" id="output4"></div>
+                                            <button id="reportIssueBtn" style="display: none;"
+                                                onclick="sendEmail()">Report Issue</button>
+                                        </div>
+                                    </div>
+                                    <script src='js/lake.js'></script>
+                                    <script src='widget_04/widget_04.js'></script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button id="returnTop" title="Return to Top of Page">Top</button>
+        </div>
+    </div>
+    <footer id="footer">
+        <!--Footer content populated here by script tag at end of body -->
+    </footer>
+    <script src="js/libraries/jQuery-3.3.6.min.js"></script>
+    <script defer>
+        // When the document has loaded pull in the page header and footer skins
+        $(document).ready(function () {
+            $('#header').load('templates/DISTRICT.header.html');
+            $('#footer').load('templates/DISTRICT.footer.html');
+        })
+    </script>
+</body>
+
+</html>

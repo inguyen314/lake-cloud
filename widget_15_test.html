@@ -76,7 +76,7 @@
                     <div id="topPane" class="col-md backend-cp-collapsible">
                         <div class="box-usace">
                             <h2 class="box-header-striped">
-                                <span class="titleLabel title"></span>
+                                <span class="titleLabel title">Widget 15</span>
                                 <span class="rss"></span>
                             </h2>
                             <div class="box-content" style="background-color:white;margin:auto">
@@ -86,15 +86,16 @@
                                     <div id="container"></div>
                                     <div id="container_date_selection"></div>
                                     <div class="widgets-container">
-                                        <div class="widget half-width" id="widget4">
-                                            <h3>Widget 4: Gate Settings</h3>
-                                            <button class="save-btn" onclick="saveData(4)">Save</button>
-                                            <button class="fetch-btn" onclick="fetchData(4)">Fetch Data</button>
-                                            <div class="output" id="output4"></div>
+                                        <div class="widget full-width" id="widget15">
+                                            <h3>Widget 15: Downstream</h3>
+                                            <button class="save-btn" onclick="saveData(15)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(15)">Fetch Data</button>
+                                            <button class="test-btn" onclick="testData(15, lake, datetime)">Test</button>
+                                            <div class="output" id="output15"></div>
                                         </div>
                                     </div>
                                     <script src='js/lake.js'></script>
-                                    <script src='widget_04/widget_04.js'></script>
+                                    <script src='widget_15/widget_15.js'></script>
                                 </div>
                             </div>
                         </div>

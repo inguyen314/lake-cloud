@@ -1,9 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
-    if (lake !== "Mark Twain Lk-Salt") {
-        // Hide widgets 3, 12, and 13
+    if (lake === "Mark Twain Lk-Salt") {
+        document.getElementById("widget3").style.display = "block";
+        document.getElementById("widget12").style.display = "block";
+        document.getElementById("widget13").style.display = "block"; 
+    } else {
         document.getElementById("widget3").style.display = "none";
         document.getElementById("widget12").style.display = "none";
-        document.getElementById("widget13").style.display = "none";
+        document.getElementById("widget13").style.display = "none"; 
     }
 
     if (lake !== null && datetime !== null) {
@@ -334,7 +337,7 @@ function fetchData(widgetId) {
 
 function testData(widgetId, lake, datetime) {
     // Define the URL to open in a new tab
-    const url = `https://wm.mvs.ds.usace.army.mil/mvs/lake/widget_04_test.html?office=MVS&lake=${lake}&datetime=${datetime}`;  // Replace with the desired URL
+    const url = `https://wm.mvs.ds.usace.army.mil/mvs/lake/widget_${widgetId}_test.html?office=MVS&lake=${lake}&datetime=${datetime}`;  // Replace with the desired URL
     // Open the URL in a new tab
     window.open(url, '_blank');
 }
