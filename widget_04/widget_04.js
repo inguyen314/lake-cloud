@@ -18,13 +18,12 @@ document.addEventListener('DOMContentLoaded', async function () {
         console.log('currentDateTime:', currentDateTime);
 
         // Subtract thirty hours from current date and time
-        const currentDateTimeMinus30Hours = subtractHoursFromDate(currentDateTime, 8*24);
+        const currentDateTimeMinus30Hours = subtractHoursFromDate(currentDateTime, 8 * 24);
         console.log('currentDateTimeMinus30Hours :', currentDateTimeMinus30Hours);
 
         const urltsid1 = `${setBaseUrl}timeseries/group/Stage?office=${office}&category-id=${lake}`;
         const urltsid2 = `${setBaseUrl}timeseries/group/Flow?office=${office}&category-id=${lake}`;
 
-        // Function to fetch time series data for a given tsid
         const fetchTimeSeriesData = async (tsid) => {
             const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
             // console.log('tsidData:', tsidData);
@@ -37,7 +36,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         };
 
-        // Function to fetch tsid from the URLs
         const fetchTsidData = async () => {
             try {
                 const response1 = await fetch(urltsid1);
@@ -86,11 +84,72 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log("Formatted Data for HourlyData1:", formattedData1);
                 console.log("Formatted Data for HourlyData2:", formattedData2);
 
+                function createTable(formattedData1, formattedData2) {
+                    // Create the table element
+                    const table = document.createElement("table");
+                    table.border = "1"; // Add border for the table
+                
+                    // Create the table header row
+                    const headerRow = document.createElement("tr");
+                
+                    const stageHeader = document.createElement("th");
+                    stageHeader.textContent = "Stage";
+                    headerRow.appendChild(stageHeader);
+                
+                    const outflowHeader = document.createElement("th");
+                    outflowHeader.textContent = "Outflow";
+                    headerRow.appendChild(outflowHeader);
+                
+                    table.appendChild(headerRow);
+                
+                    // Combine the data based on matching timestamps
+                    let i = 0;
+                    let j = 0;
+                
+                    while (i < formattedData1.length && j < formattedData2.length) {
+                        // Find matching formattedTimestamps
+                        if (formattedData1[i].formattedTimestamp === formattedData2[j].formattedTimestamp) {
+                            const row = document.createElement("tr");
+                
+                            // Stage column (from formattedData1)
+                            const stageCell = document.createElement("td");
+                            stageCell.textContent = formattedData1[i].value.toFixed(2); // Assuming stage is from formattedData1
+                            row.appendChild(stageCell);
+                
+                            // Outflow column (from formattedData2)
+                            const outflowCell = document.createElement("td");
+                            outflowCell.textContent = formattedData2[j].value.toFixed(0); // Assuming outflow is from formattedData2
+                            row.appendChild(outflowCell);
+                
+                            table.appendChild(row);
+                
+                            // Move to next entry in both datasets
+                            i++;
+                            j++;
+                        } else if (formattedData1[i].formattedTimestamp < formattedData2[j].formattedTimestamp) {
+                            // If the timestamp in formattedData1 is earlier, just move to the next entry in formattedData1
+                            i++;
+                        } else {
+                            // If the timestamp in formattedData2 is earlier, just move to the next entry in formattedData2
+                            j++;
+                        }
+                    }
+                
+                    // Append the table to the specific container (id="output4")
+                    const output4Div = document.getElementById("output4");
+                    output4Div.innerHTML = ""; // Clear any existing content
+                    output4Div.appendChild(table);
+                }
 
+                // Call the function with formattedData1 and formattedData2
+                createTable(formattedData1, formattedData2);
+                
             } catch (error) {
                 console.error("Error fetching tsid data:", error);
             }
         };
+
+        fetchTsidData();
 
         function formatISODate2ReadableDate(timestamp) {
             if (typeof timestamp !== "number") {
@@ -111,7 +170,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             const min = String(date.getMinutes()).padStart(2, '0'); // Minutes
             return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
         }
-
 
         function getHourlyDataOnTopOfHour(data, tsid) {
             const hourlyData = [];
@@ -177,9 +235,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             return midnightData;
         };
 
-        // Call the function to fetch the data
-        fetchTsidData();
-
         function subtractHoursFromDate(date, hoursToSubtract) {
             return new Date(date.getTime() - (hoursToSubtract * 60 * 60 * 1000));
         }
@@ -201,5 +256,4 @@ document.addEventListener('DOMContentLoaded', async function () {
         console.log('datetime: ', datetime);
 
     }
-
 });
