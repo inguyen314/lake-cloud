@@ -25,23 +25,26 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         const now = new Date();
 
-        const isoDateToday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).toISOString();
-        const isoDateDay1 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1)).toISOString();
-        const isoDateDay2 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 2)).toISOString();
-        const isoDateDay3 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 3)).toISOString();
-        const isoDateDay4 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 4)).toISOString();
-        const isoDateDay5 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 5)).toISOString();
-        const isoDateDay6 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 6)).toISOString();
-        const isoDateDay7 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 7)).toISOString();
+        // const isoDateToday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).toISOString();
+        const isoDateToday = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0)).toISOString();
+        // Create the ISO strings for Day 1 to Day 7 by manually adding the days
+        const isoDateDay1 = new Date(Date.UTC(year, month - 1, day + 1, 0, 0, 0, 0)).toISOString();
+        const isoDateDay2 = new Date(Date.UTC(year, month - 1, day + 2, 0, 0, 0, 0)).toISOString();
+        const isoDateDay3 = new Date(Date.UTC(year, month - 1, day + 3, 0, 0, 0, 0)).toISOString();
+        const isoDateDay4 = new Date(Date.UTC(year, month - 1, day + 4, 0, 0, 0, 0)).toISOString();
+        const isoDateDay5 = new Date(Date.UTC(year, month - 1, day + 5, 0, 0, 0, 0)).toISOString();
+        const isoDateDay6 = new Date(Date.UTC(year, month - 1, day + 6, 0, 0, 0, 0)).toISOString();
+        const isoDateDay7 = new Date(Date.UTC(year, month - 1, day + 7, 0, 0, 0, 0)).toISOString();
 
-        console.log("isoDateToday: ", isoDateToday);
-        console.log("isoDateDay1: ", isoDateDay1);
-        console.log("isoDateDay2: ", isoDateDay2);
-        console.log("isoDateDay3: ", isoDateDay3);
-        console.log("isoDateDay4: ", isoDateDay4);
-        console.log("isoDateDay5: ", isoDateDay5);
-        console.log("isoDateDay6: ", isoDateDay6);
-        console.log("isoDateDay7: ", isoDateDay7);
+        // Log all the generated ISO dates
+        console.log("isoDateToday:", isoDateToday);
+        console.log("isoDateDay1:", isoDateDay1);
+        console.log("isoDateDay2:", isoDateDay2);
+        console.log("isoDateDay3:", isoDateDay3);
+        console.log("isoDateDay4:", isoDateDay4);
+        console.log("isoDateDay5:", isoDateDay5);
+        console.log("isoDateDay6:", isoDateDay6);
+        console.log("isoDateDay7:", isoDateDay7);
 
         const urltsid1 = `${setBaseUrl}timeseries/group/Forecast-Lake?office=${office}&category-id=${lake}`;
 
@@ -129,45 +132,45 @@ document.addEventListener('DOMContentLoaded', async function () {
                     function createTable(formattedData1) {
                         // Create the table element
                         const table = document.createElement("table");
-                    
+
                         // Apply the ID "gate-settings" to the table
                         table.id = "gate-settings";
-                    
+
                         // Create the table header row
                         const headerRow = document.createElement("tr");
-                    
+
                         const dateHeader = document.createElement("th");
                         dateHeader.textContent = "Date";
                         headerRow.appendChild(dateHeader);
-                    
+
                         const stageHeader = document.createElement("th");
                         stageHeader.textContent = "Stage";
                         headerRow.appendChild(stageHeader);
-                    
+
                         table.appendChild(headerRow);
-                    
+
                         // Iterate through formattedData1 and populate the table
                         formattedData1.forEach(entry => {
                             const row = document.createElement("tr");
-                    
+
                             // Date column
                             const dateCell = document.createElement("td");
                             dateCell.textContent = entry.formattedTimestamp;
                             row.appendChild(dateCell);
-                    
+
                             // Stage column
                             const stageCell = document.createElement("td");
                             stageCell.textContent = entry[1].toFixed(2); // Access the stage value from entry[1]
                             row.appendChild(stageCell);
-                    
+
                             table.appendChild(row);
                         });
-                    
+
                         // Append the table to the specific container (id="output6")
                         const output6Div = document.getElementById("output6");
                         output6Div.innerHTML = ""; // Clear any existing content
                         output6Div.appendChild(table);
-                    }                    
+                    }
 
                     // Call the function with formattedData1
                     createTable(formattedData1);
@@ -194,33 +197,33 @@ document.addEventListener('DOMContentLoaded', async function () {
             function createEmptyTable() {
                 // Create the empty table element
                 const table = document.createElement("table");
-            
+
                 // Apply the ID "gate-settings" to the table
                 table.id = "gate-settings";
-            
+
                 // Create the table header row
                 const headerRow = document.createElement("tr");
-            
+
                 const dateHeader = document.createElement("th");
                 dateHeader.textContent = "Date";
                 headerRow.appendChild(dateHeader);
-            
+
                 const stageHeader = document.createElement("th");
                 stageHeader.textContent = "Stage";
                 headerRow.appendChild(stageHeader);
-            
+
                 table.appendChild(headerRow);
-            
+
                 // Create an empty row
                 const row = document.createElement("tr");
-            
+
                 const emptyCell = document.createElement("td");
                 emptyCell.colSpan = 2; // Span across both columns
                 emptyCell.textContent = "No data available";
                 row.appendChild(emptyCell);
-            
+
                 table.appendChild(row);
-            
+
                 // Append the table to the specific container (id="output6")
                 const output6Div = document.getElementById("output6");
                 output6Div.innerHTML = ""; // Clear any existing content
