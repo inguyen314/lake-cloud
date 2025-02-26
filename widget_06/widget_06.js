@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     createTable(formattedData1);
                 } else {
                     // If no data, create an empty table
-                    createEmptyTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7);
+                    createEmptyTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid1);
                 }
             } catch (error) {
                 console.error("Error fetching tsid data:", error);
@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             }
 
-            function createEmptyTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7) {
+            function createEmptyTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name) {
                 // Create the empty table element
                 const table = document.createElement("table");
 
@@ -212,17 +212,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const headerRow = document.createElement("tr");
 
                 const dateHeader = document.createElement("th");
-                dateHeader.textContent = "Date";
+                dateHeader.textContent = "Day";
                 headerRow.appendChild(dateHeader);
 
                 const stageHeader = document.createElement("th");
-                stageHeader.textContent = "Stage";
+                stageHeader.textContent = "Forecast Outflow (cfs)";
                 headerRow.appendChild(stageHeader);
 
                 table.appendChild(headerRow);
 
                 // Create the data rows with the given dates and empty "Stage" fields
-                const dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
+                const dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7];
 
                 dates.forEach(date => {
                     const row = document.createElement("tr");
@@ -237,6 +237,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const stageInput = document.createElement("input");
                     stageInput.type = "text"; // Make the input editable
                     stageInput.value = ""; // Initially empty
+                    stageInput.id = `stageInput-${date}`; // Assign a unique ID for each input
                     stageCell.appendChild(stageInput);
                     row.appendChild(stageCell);
 
@@ -247,7 +248,119 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const output6Div = document.getElementById("output6");
                 output6Div.innerHTML = ""; // Clear any existing content
                 output6Div.appendChild(table);
+
+                // Create and append the submit button below the table
+                const submitButton = document.createElement("button");
+                submitButton.textContent = "Submit";
+                submitButton.id = "cda-btn"; // Use the cda-btn ID for the button
+                submitButton.disabled = false; // Initially disable the button
+                output6Div.appendChild(submitButton);
+
+                // Add event listener to the submit button
+                submitButton.addEventListener("click", async () => {
+                    // Prepare the new payload format
+                    // const name = "Mark Twain Lk-Salt.Flow-Out.Inst.~1Day.0.lakerep-rev-forecast";
+                    const units = "cfs";
+                    const office = "MVS";
+
+                    const payload = {
+                        "date-version-type": "MAX_AGGREGATE",
+                        "name": name,
+                        "office-id": office,
+                        "units": units,
+                        "values": dates.map((date, index) => {
+                            let stageValue = document.getElementById(`stageInput-${date}`).value; // Get value from input field
+
+                            // If stageValue is empty or null, set it to 909
+                            if (!stageValue) {
+                                stageValue = "909"; // Default value when empty or null
+                            }
+
+                            // Determine the corresponding day timestamp (replace with actual dates)
+                            const day = new Date();
+                            day.setDate(day.getDate() + index); // Add index to get the correct day (Day 0, Day 1, ...)
+                            const timestamp = day.getTime(); // Timestamp for the corresponding day
+
+                            return [
+                                timestamp,  // Timestamp for the day at 6 AM
+                                parseInt(stageValue), // Stage value (forecast outflow) as number
+                                0 // Placeholder for the third value (set to 0 for now)
+                            ];
+                        }),
+                        "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
+                    };
+
+                    console.log("payload: ", payload);
+                });
+
             }
+
+            async function createVersionTS(payload) {
+                if (!payload) throw new Error("You must specify a payload!");
+                try {
+                    const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?store-rule=REPLACE%20ALL", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json;version=2",
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                    }
+
+                    return true;
+                } catch (error) {
+                    console.error('Error writing timeseries:', error);
+                    throw error;
+                }
+            }
+
+            async function isLoggedIn() {
+                try {
+                    const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", {
+                        method: "GET"
+                    });
+
+                    if (response.status === 401) return false;
+
+                    console.log('status', response.status);
+                    return true;
+
+                } catch (error) {
+                    console.error('Error checking login status:', error);
+                    return false;
+                }
+            }
+
+            async function loginCDA() {
+                if (await isLoggedIn()) return true;
+
+                // Redirect to login page
+                window.location.href = `https://wm.mvs.ds.usace.army.mil:8243/CWMSLogin/login?OriginalLocation=${encodeURIComponent(window.location.href)}`;
+            }
+
+            const cdaSaveBtn = document.getElementById("cda-btn");
+
+            async function loginStateController() {
+                cdaSaveBtn.disabled = true; // Disable button while checking login state
+
+                // Update button text based on login status
+                if (await isLoggedIn()) {
+                    cdaSaveBtn.innerText = "Save";
+                    cdaSaveBtn.disabled = false; // Enable button if logged in
+                } else {
+                    cdaSaveBtn.innerText = "Login";
+                    cdaSaveBtn.disabled = true; // Keep the button disabled if not logged in
+                }
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                loginStateController(); // Call login state check when the page is loaded
+            });
+
         };
 
         fetchTsidData();
