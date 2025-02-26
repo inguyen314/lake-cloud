@@ -95,10 +95,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
         }
 
-        function subtractHoursFromDate(date, hoursToSubtract) {
-            return new Date(date.getTime() - (hoursToSubtract * 60 * 60 * 1000));
-        }
-
         function addHoursFromDate(date, hoursToSubtract) {
             return new Date(date.getTime() + (hoursToSubtract * 60 * 60 * 1000));
         }
@@ -134,7 +130,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Now you have formatted data for both datasets
                     console.log("Formatted Data for formattedData1:", formattedData1);
 
-                    function createTable(formattedData1) {
+                    function createForecastOutflowTable(formattedData1) {
                         // Create the table element
                         const table = document.createElement("table");
 
@@ -177,15 +173,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                         output6Div.appendChild(table);
                     }
 
+                    console.log("Calling createForecastOutflowTable ...");
+
                     // Call the function with formattedData1
-                    createTable(formattedData1);
+                    createForecastOutflowTable(formattedData1);
                 } else {
                     // If no data, create an empty table
-                    createEmptyTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid1);
+                    console.log("Calling dataForecastOutflowEntryTable ...");
+                    dataForecastOutflowEntryTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid1);
 
                     let cdaSaveBtn;
-
-
 
                     async function isLoggedIn() {
                         try {
@@ -241,7 +238,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             }
 
-            function createEmptyTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name) {
+            function dataForecastOutflowEntryTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name) {
                 // Create the empty table element
                 const table = document.createElement("table");
 
@@ -297,6 +294,22 @@ document.addEventListener('DOMContentLoaded', async function () {
                 cdaSaveBtn.disabled = true; // Initially disable the button
                 output6Div.appendChild(cdaSaveBtn);
 
+                // Create a div with class "status"
+                const statusDiv = document.createElement("div");
+                statusDiv.className = "status";
+
+                // Create and append the submit button below the table
+                const cdaStatusBtn = document.createElement("button");
+                cdaStatusBtn.textContent = "";
+                cdaStatusBtn.id = "cda-btn"; // Use the cda-btn ID for the button
+                cdaStatusBtn.disabled = false; // Initially disable the button
+
+                // Append the button to the status div
+                statusDiv.appendChild(cdaStatusBtn);
+
+                // Append the status div to output6Div
+                output6Div.appendChild(statusDiv);
+
                 // Add event listener to the submit button
                 cdaSaveBtn.addEventListener("click", async () => {
                     // Prepare the new payload format
@@ -317,7 +330,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             }
 
                             // Convert ISO date string to timestamp
-                            const timestamp = date; // Correct timestamp conversion
+                            const timestamp = new Date(date).getTime(); // Correct timestamp conversion
 
                             return [
                                 timestamp,  // Timestamp for the day at 6 AM
@@ -372,26 +385,26 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     // "accept": "*/*",
                                     "Content-Type": "application/json;version=2",
                                 },
-
-
+                
+                
                                 body: JSON.stringify(payload)
                             });
-
+                
                             if (!response.ok) {
                                 const errorText = await response.text();
                                 throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
                             }
-
+                
                             // const data = await response.json();
                             // console.log('Success:', data);
                             // return data;
                             return true;
-
+                
                         } catch (error) {
                             console.error('Error writing timeseries:', error);
                             throw error;
                         }
-
+                
                     }
 
                     if (cdaSaveBtn.innerText === "Login") {
@@ -400,16 +413,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                         if (loginResult) {
                             cdaSaveBtn.innerText = "Submit";
                         } else {
-                            alert("Login failed!");
+                            cdaStatusBtn.innerText = "Failed to Login!";
                         }
                     } else {
                         try {
                             // Write timeseries to CDA
                             console.log("Write!");
                             await createVersionTS(payload);
-                            alert("Data written successfully!");
+                            cdaStatusBtn.innerText = "Write successful!";
                         } catch (error) {
-                            alert("Error writing data!");
+                            cdaStatusBtn.innerText = "Failed to write data!";
                         }
                     }
                 });
