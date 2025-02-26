@@ -23,20 +23,25 @@ document.addEventListener('DOMContentLoaded', async function () {
         const endDateTime = addHoursFromDate(beginDateTime, 5 * 24);
         console.log('endDateTime:', endDateTime);
 
-        const now = new Date();
-
-        // const isoDateToday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).toISOString();
+        // Initialize the date object correctly
         const isoDateToday = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0)).toISOString();
-        // Create the ISO strings for Day 1 to Day 7 by manually adding the days
-        const isoDateDay1 = new Date(Date.UTC(year, month - 1, day + 1, 0, 0, 0, 0)).toISOString();
-        const isoDateDay2 = new Date(Date.UTC(year, month - 1, day + 2, 0, 0, 0, 0)).toISOString();
-        const isoDateDay3 = new Date(Date.UTC(year, month - 1, day + 3, 0, 0, 0, 0)).toISOString();
-        const isoDateDay4 = new Date(Date.UTC(year, month - 1, day + 4, 0, 0, 0, 0)).toISOString();
-        const isoDateDay5 = new Date(Date.UTC(year, month - 1, day + 5, 0, 0, 0, 0)).toISOString();
-        const isoDateDay6 = new Date(Date.UTC(year, month - 1, day + 6, 0, 0, 0, 0)).toISOString();
-        const isoDateDay7 = new Date(Date.UTC(year, month - 1, day + 7, 0, 0, 0, 0)).toISOString();
 
-        // Log all the generated ISO dates
+        // Function to generate ISO string for a given day offset
+        function getIsoDateWithOffset(year, month, day, offset) {
+            const date = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0)); // Set the initial date
+            date.setUTCDate(date.getUTCDate() + offset); // Add the offset (day)
+            return date.toISOString();
+        }
+
+        // Generate ISO strings for Day 1 to Day 7
+        const isoDateDay1 = getIsoDateWithOffset(year, month, day, 1);
+        const isoDateDay2 = getIsoDateWithOffset(year, month, day, 2);
+        const isoDateDay3 = getIsoDateWithOffset(year, month, day, 3);
+        const isoDateDay4 = getIsoDateWithOffset(year, month, day, 4);
+        const isoDateDay5 = getIsoDateWithOffset(year, month, day, 5);
+        const isoDateDay6 = getIsoDateWithOffset(year, month, day, 6);
+        const isoDateDay7 = getIsoDateWithOffset(year, month, day, 7);
+
         console.log("isoDateToday:", isoDateToday);
         console.log("isoDateDay1:", isoDateDay1);
         console.log("isoDateDay2:", isoDateDay2);
@@ -45,6 +50,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         console.log("isoDateDay5:", isoDateDay5);
         console.log("isoDateDay6:", isoDateDay6);
         console.log("isoDateDay7:", isoDateDay7);
+
+
 
         const urltsid1 = `${setBaseUrl}timeseries/group/Forecast-Lake?office=${office}&category-id=${lake}`;
 
@@ -176,7 +183,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     createTable(formattedData1);
                 } else {
                     // If no data, create an empty table
-                    createEmptyTable();
+                    createEmptyTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7);
                 }
             } catch (error) {
                 console.error("Error fetching tsid data:", error);
@@ -194,7 +201,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             }
 
-            function createEmptyTable() {
+            function createEmptyTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7) {
                 // Create the empty table element
                 const table = document.createElement("table");
 
@@ -214,15 +221,27 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 table.appendChild(headerRow);
 
-                // Create an empty row
-                const row = document.createElement("tr");
+                // Create the data rows with the given dates and empty "Stage" fields
+                const dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
 
-                const emptyCell = document.createElement("td");
-                emptyCell.colSpan = 2; // Span across both columns
-                emptyCell.textContent = "No data available";
-                row.appendChild(emptyCell);
+                dates.forEach(date => {
+                    const row = document.createElement("tr");
 
-                table.appendChild(row);
+                    // Date cell
+                    const dateCell = document.createElement("td");
+                    dateCell.textContent = date;
+                    row.appendChild(dateCell);
+
+                    // Stage cell (editable)
+                    const stageCell = document.createElement("td");
+                    const stageInput = document.createElement("input");
+                    stageInput.type = "text"; // Make the input editable
+                    stageInput.value = ""; // Initially empty
+                    stageCell.appendChild(stageInput);
+                    row.appendChild(stageCell);
+
+                    table.appendChild(row);
+                });
 
                 // Append the table to the specific container (id="output6")
                 const output6Div = document.getElementById("output6");
