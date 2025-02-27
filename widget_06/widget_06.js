@@ -16,22 +16,22 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         const [month, day, year] = datetime.split('-');
 
-        const beginDateTime = new Date(year, month - 1, day);
-        beginDateTime.setHours(0, 0, 0, 0);
-        console.log('beginDateTime:', beginDateTime);
+        // const beginDateTime = new Date(year, month - 1, day);
+        // beginDateTime.setHours(0, 0, 0, 0);
+        // console.log('beginDateTime:', beginDateTime);
 
-        const endDateTime = addHoursFromDate(beginDateTime, 6 * 24);
-        console.log('endDateTime:', endDateTime);
+        // const endDateTime = addHoursFromDate(beginDateTime, 6 * 24);
+        // console.log('endDateTime:', endDateTime);
 
         // Generate ISO strings for Today and the next 7 days
-        const isoDateToday = getIsoDateWithOffset(year, month, day, 0);
-        const isoDateDay1 = getIsoDateWithOffset(year, month, day, 1);
-        const isoDateDay2 = getIsoDateWithOffset(year, month, day, 2);
-        const isoDateDay3 = getIsoDateWithOffset(year, month, day, 3);
-        const isoDateDay4 = getIsoDateWithOffset(year, month, day, 4);
-        const isoDateDay5 = getIsoDateWithOffset(year, month, day, 5);
-        const isoDateDay6 = getIsoDateWithOffset(year, month, day, 6);
-        const isoDateDay7 = getIsoDateWithOffset(year, month, day, 7);
+        const isoDateToday = getIsoDateWithOffset2(year, month, day, 0);
+        const isoDateDay1 = getIsoDateWithOffset2(year, month, day, 1);
+        const isoDateDay2 = getIsoDateWithOffset2(year, month, day, 2);
+        const isoDateDay3 = getIsoDateWithOffset2(year, month, day, 3);
+        const isoDateDay4 = getIsoDateWithOffset2(year, month, day, 4);
+        const isoDateDay5 = getIsoDateWithOffset2(year, month, day, 5);
+        const isoDateDay6 = getIsoDateWithOffset2(year, month, day, 6);
+        const isoDateDay7 = getIsoDateWithOffset2(year, month, day, 7);
 
         console.log("isoDateToday:", isoDateToday);
         console.log("isoDateDay1:", isoDateDay1);
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 if (timeSeriesData1 && timeSeriesData1.values && timeSeriesData1.values.length > 0) {
                     const formattedData1 = timeSeriesData1.values.map(entry => {
                         const timestamp = entry[0]; // Timestamp is in milliseconds in the array
-                        const formattedTimestamp = formatISODate2ReadableDate(Number(timestamp)); // Ensure timestamp is a number
+                        const formattedTimestamp = formatISODate2ReadableDate2(Number(timestamp)); // Ensure timestamp is a number
 
                         return {
                             ...entry, // Retain other data
@@ -313,13 +313,34 @@ document.addEventListener('DOMContentLoaded', async function () {
                         return formattedData;
                     }
 
+                    // Function to show the spinner while waiting
+                    function showSpinner() {
+                        const spinner = document.createElement('img');
+                        spinner.src = 'images/loading4.gif';
+                        spinner.id = 'loadingSpinner';
+                        spinner.style.width = '40px';  // Set the width to 40px
+                        spinner.style.height = '40px'; // Set the height to 40px
+                        document.body.appendChild(spinner);
+                    }
+
+                    // Function to hide the spinner once the operation is complete
+                    function hideSpinner() {
+                        const spinner = document.getElementById('loadingSpinner');
+                        if (spinner) {
+                            spinner.remove();
+                        }
+                    }
 
                     if (cdaSaveBtn.innerText === "Login") {
+                        showSpinner(); // Show the spinner before the login
                         const loginResult = await loginCDA();
+                        hideSpinner(); // Hide the spinner after login is complete
+
                         cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
                         cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
                     } else {
                         try {
+                            showSpinner(); // Show the spinner before creating the version
                             await createVersionTS(payload);
                             cdaStatusBtn.innerText = "Write successful!";
 
@@ -333,12 +354,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                             const updatedData = await fetchUpdatedData(name, isoDateDay1, isoDateDay5, isoDateToday);
                             createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, updatedData);
                         } catch (error) {
+                            hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
                             console.error(error);
                         }
+
+                        hideSpinner(); // Hide the spinner after the operation completes
                     }
-
-
                 });
 
             }
@@ -364,15 +386,31 @@ document.addEventListener('DOMContentLoaded', async function () {
                 table.appendChild(headerRow);
 
                 // Create the data rows with the given dates and empty "Stage" fields
-                const dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7];
+                // const dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7];
+                const dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
                 console.log("dates:", dates);
 
-                dates.forEach(date => {
+                // Convert each date from UTC to CST and format it
+                const options = { timeZone: 'America/Chicago', hour12: false };
+
+                const formattedDates = dates.map(date => {
+                    const d = new Date(date);
+                    const cstDate = d.toLocaleString('en-US', options);
+
+                    // Extract the date and time parts and format as MM-DD-YYYY HH:mm
+                    const [month, day, year, hour, minute] = cstDate.match(/(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{1,2}):(\d{2})/).slice(1);
+
+                    return `${month.padStart(2, '0')}-${day.padStart(2, '0')}-${year} ${hour}:${minute}`;
+                });
+
+                console.log("formattedDates:", formattedDates);
+
+                dates.forEach((date, index) => {
                     const row = document.createElement("tr");
 
                     // Date cell
                     const dateCell = document.createElement("td");
-                    dateCell.textContent = date;
+                    dateCell.textContent = formattedDates[index];  // Use the corresponding formatted date
                     row.appendChild(dateCell);
 
                     // Stage cell (editable)
@@ -428,6 +466,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "units": units,
                         "values": dates.map((date, index) => {
                             let stageValue = document.getElementById(`stageInput-${date}`).value; // Get value from input field
+                            console.log("stageValue:", stageValue);
 
                             // If stageValue is empty or null, set it to 909
                             if (!stageValue) {
@@ -512,23 +551,82 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     }
 
-                    if (cdaSaveBtn.innerText === "Login") {
-                        const loginResult = await loginCDA();
-                        console.log({ loginResult });
-                        if (loginResult) {
-                            cdaSaveBtn.innerText = "Submit";
-                        } else {
-                            cdaStatusBtn.innerText = "Failed to Login!";
+                    async function fetchUpdatedData(name, isoDateDay1, isoDateDay5, isoDateToday) {
+                        const response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
+                            headers: {
+                                "Accept": "application/json;version=2", // Ensuring the correct version is used
+                                "cache-control": "no-cache"
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch updated data: ${response.status}`);
                         }
+
+                        const data = await response.json();
+
+                        // Log the raw data received
+                        console.log('Fetched Data:', data);
+
+                        // Transform the data to match the format expected by createTable (formattedData1)
+                        const formattedData = data.values.map(([timestamp, value]) => ({
+                            formattedTimestamp: new Date(timestamp).toISOString().split('T')[0],  // Reformat date for display
+                            1: value
+                        }));
+
+                        // Log the transformed data
+                        console.log('Formatted Data:', formattedData);
+
+                        return formattedData;
+                    }
+
+                    // Function to show the spinner while waiting
+                    function showSpinner() {
+                        const spinner = document.createElement('img');
+                        spinner.src = 'images/loading4.gif';
+                        spinner.id = 'loadingSpinner';
+                        spinner.style.width = '40px';  // Set the width to 40px
+                        spinner.style.height = '40px'; // Set the height to 40px
+                        document.body.appendChild(spinner);
+                    }
+
+                    // Function to hide the spinner once the operation is complete
+                    function hideSpinner() {
+                        const spinner = document.getElementById('loadingSpinner');
+                        if (spinner) {
+                            spinner.remove();
+                        }
+                    }
+
+                    if (cdaSaveBtn.innerText === "Login") {
+                        showSpinner(); // Show the spinner before the login
+                        const loginResult = await loginCDA();
+                        hideSpinner(); // Hide the spinner after login is complete
+
+                        cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
+                        cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
                     } else {
                         try {
-                            // Write timeseries to CDA
-                            console.log("Write!");
+                            showSpinner(); // Show the spinner before creating the version
                             await createVersionTS(payload);
                             cdaStatusBtn.innerText = "Write successful!";
+
+                            // Log the waiting message before the 2-second wait
+                            console.log("Waiting for 2 seconds before fetching updated data...");
+
+                            // Wait 2 seconds before fetching the updated data
+                            await new Promise(resolve => setTimeout(resolve, 2000));
+
+                            // Fetch updated data and refresh the table
+                            const updatedData = await fetchUpdatedData(name, isoDateDay1, isoDateDay5, isoDateToday);
+                            createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, updatedData);
                         } catch (error) {
+                            hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
+                            console.error(error);
                         }
+
+                        hideSpinner(); // Hide the spinner after the operation completes
                     }
                 });
 
@@ -572,7 +670,42 @@ document.addEventListener('DOMContentLoaded', async function () {
         return date.toISOString();
     }
 
+    function getIsoDateWithOffset2(year, month, day, offset) {
+        // Create a date object in UTC (midnight UTC)
+        const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0)); // Set the initial time at 6 AM UTC
+
+        // Convert the date to CST (UTC -6)
+        const cstOffset = 6 * 60; // CST is UTC -6 hours, in minutes
+        date.setMinutes(date.getMinutes() + cstOffset); // Adjust to CST
+
+        // Add the offset in days (if positive, it moves forward, if negative, backward)
+        date.setUTCDate(date.getUTCDate() + offset);
+
+        // Return the ISO string
+        return date.toISOString();
+    }
+
     function formatISODate2ReadableDate(timestamp) {
+        if (typeof timestamp !== "number") {
+            console.error("Invalid timestamp:", timestamp);
+            return "Invalid Date";
+        }
+
+        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
+        if (isNaN(date.getTime())) {
+            console.error("Invalid date conversion:", timestamp);
+            return "Invalid Date";
+        }
+
+        const mm = String(date.getMonth() + 1).padStart(2, '0'); // Month
+        const dd = String(date.getDate()).padStart(2, '0'); // Day
+        const yyyy = date.getFullYear(); // Year
+        const hh = String(date.getHours()).padStart(2, '0'); // Hours
+        const min = String(date.getMinutes()).padStart(2, '0'); // Minutes
+        return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
+    }
+
+    function formatISODate2ReadableDate2(timestamp) {
         if (typeof timestamp !== "number") {
             console.error("Invalid timestamp:", timestamp);
             return "Invalid Date";
@@ -596,3 +729,12 @@ document.addEventListener('DOMContentLoaded', async function () {
         return new Date(date.getTime() + (hoursToSubtract * 60 * 60 * 1000));
     }
 });
+
+
+// BEGIN
+//     CWMS_20.CWMS_TS.DELETE_TS(
+//         p_cwms_ts_id    => 'Lk Shelbyville-Kaskaskia.Flow-Out.Inst.~1Day.0.lakerep-rev-forecast',
+//         p_delete_action => CWMS_UTIL.DELETE_TS_DATA,  -- Only delete the data, keeping metadata
+//         p_db_office_id  => 'MVS'
+//     );
+// END; 
