@@ -6,9 +6,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         let setBaseUrl = null;
         if (cda === "internal") {
-            setBaseUrl = `https://wm.${office.toLowerCase()}.ds.usace.army.mil:8243/${office.toLowerCase()}-data/`;
+            setBaseUrl = `https://wm.${office.toLowerCase()}.ds.usace.army.mil/${office.toLowerCase()}-data/`;
         } else if (cda === "internal-coop") {
-            setBaseUrl = `https://wm-${office.toLowerCase()}coop.mvk.ds.usace.army.mil:8243/${office.toLowerCase()}-data/`;
+            setBaseUrl = `https://wm-${office.toLowerCase()}coop.mvk.ds.usace.army.mil/${office.toLowerCase()}-data/`;
         } else if (cda === "public") {
             setBaseUrl = `https://cwms-data.usace.army.mil/cwms-data/`;
         }
@@ -75,59 +75,51 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Now you have formatted data for both datasets
                     console.log("Formatted Data for formattedData1:", formattedData1);
 
-                    function createForecastOutflowTable(formattedData1) {
-                        // Create the table element
-                        const table = document.createElement("table");
+                    console.log("Calling createTable ...");
+                    createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid1, formattedData1);
 
-                        // Apply the ID "gate-settings" to the table
-                        table.id = "gate-settings";
+                    let cdaSaveBtn;
 
-                        // Create the table header row
-                        const headerRow = document.createElement("tr");
+                    async function isLoggedIn() {
+                        try {
+                            const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", {
+                                method: "GET"
+                            });
 
-                        const dateHeader = document.createElement("th");
-                        dateHeader.textContent = "Date";
-                        headerRow.appendChild(dateHeader);
+                            if (response.status === 401) return false;
 
-                        const stageHeader = document.createElement("th");
-                        stageHeader.textContent = "Stage";
-                        headerRow.appendChild(stageHeader);
+                            console.log('status', response.status);
+                            return true;
 
-                        table.appendChild(headerRow);
-
-                        // Iterate through formattedData1 and populate the table
-                        formattedData1.forEach(entry => {
-                            const row = document.createElement("tr");
-
-                            // Date column
-                            const dateCell = document.createElement("td");
-                            dateCell.textContent = entry.formattedTimestamp;
-                            row.appendChild(dateCell);
-
-                            // Stage column - Make editable with input field
-                            const stageCell = document.createElement("td");
-                            const stageInput = document.createElement("input");
-                            stageInput.type = "number";
-                            stageInput.value = entry[1].toFixed(2); // Set initial value
-                            stageInput.className = "stage-input"; // Optional: add a class for styling if needed
-                            stageCell.appendChild(stageInput);
-                            row.appendChild(stageCell);
-
-                            table.appendChild(row);
-                        });
-
-                        // Append the table to the specific container (id="output6")
-                        const output6Div = document.getElementById("output6");
-                        output6Div.innerHTML = ""; // Clear any existing content
-                        output6Div.appendChild(table);
+                        } catch (error) {
+                            console.error('Error checking login status:', error);
+                            return false;
+                        }
                     }
 
-                    console.log("Calling createForecastOutflowTable ...");
+                    async function loginStateController() {
+                        cdaSaveBtn = document.getElementById("cda-btn"); // Get the button by its ID
 
-                    createForecastOutflowTable(formattedData1);
+                        cdaSaveBtn.disabled = true; // Disable button while checking login state
+
+                        // Update button text based on login status
+                        if (await isLoggedIn()) {
+                            cdaSaveBtn.innerText = "Save";
+                        } else {
+                            cdaSaveBtn.innerText = "Login";
+                        }
+
+                        cdaSaveBtn.disabled = false; // Re-enable button
+                    }
+
+                    loginStateController()
+                    // Setup timers
+                    setInterval(async () => {
+                        loginStateController()
+                    }, 10000) // time is in millis
                 } else {
-                    console.log("Calling dataEntryForecastOutflowTable ...");
-                    dataEntryForecastOutflowTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid1);
+                    console.log("Calling createDataEntryTable ...");
+                    createDataEntryTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid1);
 
                     let cdaSaveBtn;
 
@@ -185,7 +177,129 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             }
 
-            function dataEntryForecastOutflowTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name) {
+            function createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, formattedData1) {
+                const table = document.createElement("table");
+                table.id = "gate-settings";
+
+                const headerRow = document.createElement("tr");
+                const dateHeader = document.createElement("th");
+                dateHeader.textContent = "Date";
+                headerRow.appendChild(dateHeader);
+
+                const stageHeader = document.createElement("th");
+                stageHeader.textContent = "Stage";
+                headerRow.appendChild(stageHeader);
+
+                table.appendChild(headerRow);
+
+                formattedData1.forEach(entry => {
+                    const row = document.createElement("tr");
+
+                    const dateCell = document.createElement("td");
+                    dateCell.textContent = entry.formattedTimestamp;
+                    row.appendChild(dateCell);
+
+                    const stageCell = document.createElement("td");
+                    const stageInput = document.createElement("input");
+                    stageInput.type = "number";
+                    stageInput.value = entry[1].toFixed(0);
+                    stageInput.className = "stage-input";
+                    stageInput.id = `stageInput-${entry.formattedTimestamp}`;  // Add unique ID for lookup
+                    stageCell.appendChild(stageInput);
+                    row.appendChild(stageCell);
+
+                    table.appendChild(row);
+                });
+
+                const output6Div = document.getElementById("output6");
+                output6Div.innerHTML = "";
+                output6Div.appendChild(table);
+
+                const cdaSaveBtn = document.createElement("button");
+                cdaSaveBtn.textContent = "Submit";
+                cdaSaveBtn.id = "cda-btn";
+                cdaSaveBtn.disabled = true;
+                output6Div.appendChild(cdaSaveBtn);
+
+                const statusDiv = document.createElement("div");
+                statusDiv.className = "status";
+                const cdaStatusBtn = document.createElement("button");
+                cdaStatusBtn.textContent = "";
+                cdaStatusBtn.id = "cda-btn";
+                cdaStatusBtn.disabled = false;
+                statusDiv.appendChild(cdaStatusBtn);
+                output6Div.appendChild(statusDiv);
+
+                const dates = [isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7];
+
+                cdaSaveBtn.addEventListener("click", async () => {
+                    const units = "cfs";
+                    const office = "MVS";
+
+                    const payload = {
+                        "date-version-type": "MAX_AGGREGATE",
+                        "name": name,
+                        "office-id": office,
+                        "units": units,
+                        "values": formattedData1.map(entry => {
+                            const stageValue = document.getElementById(`stageInput-${entry.formattedTimestamp}`).value;
+
+                            return [
+                                new Date(entry.formattedTimestamp).getTime(),  // Convert to timestamp
+                                parseFloat(stageValue),  // Use the entered stage value
+                                0  // Placeholder
+                            ];
+                        }),
+                        "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
+                    };
+
+                    console.log("payload:", payload);
+
+                    async function loginCDA() {
+                        if (await isLoggedIn()) return true;
+                        window.location.href = `https://wm.mvs.ds.usace.army.mil:8243/CWMSLogin/login?OriginalLocation=${encodeURIComponent(window.location.href)}`;
+                    }
+
+                    async function isLoggedIn() {
+                        try {
+                            const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", { method: "GET" });
+                            return response.status !== 401;
+                        } catch (error) {
+                            console.error('Error checking login status:', error);
+                            return false;
+                        }
+                    }
+
+                    async function createVersionTS(payload) {
+                        if (!payload) throw new Error("You must specify a payload!");
+                        const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?store-rule=REPLACE%20ALL", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json;version=2" },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                        }
+                    }
+
+                    if (cdaSaveBtn.innerText === "Login") {
+                        const loginResult = await loginCDA();
+                        cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
+                        cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
+                    } else {
+                        try {
+                            await createVersionTS(payload);
+                            cdaStatusBtn.innerText = "Write successful!";
+                        } catch (error) {
+                            cdaStatusBtn.innerText = "Failed to write data!";
+                        }
+                    }
+                });
+            }
+
+            function createDataEntryTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name) {
                 // Create the empty table element
                 const table = document.createElement("table");
 
@@ -384,7 +498,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             try {
                 const response = await fetch(tsidData, {
                     headers: {
-                        "Accept": "application/json;version=2" // Ensuring the correct version is used
+                        "Accept": "application/json;version=2", // Ensuring the correct version is used
+                        "cache-control": "no-cache"
                     }
                 });
 
