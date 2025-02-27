@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 0  // Placeholder
                             ];
                         }),
-                        "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
+                        "version-date": isoDateToday,
                     };
 
                     console.log("payload:", payload);
@@ -284,6 +284,36 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
+                    async function fetchUpdatedData(name, isoDateDay1, isoDateDay5, isoDateToday) {
+                        const response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
+                            headers: {
+                                "Accept": "application/json;version=2", // Ensuring the correct version is used
+                                "cache-control": "no-cache"
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch updated data: ${response.status}`);
+                        }
+
+                        const data = await response.json();
+
+                        // Log the raw data received
+                        console.log('Fetched Data:', data);
+
+                        // Transform the data to match the format expected by createTable (formattedData1)
+                        const formattedData = data.values.map(([timestamp, value]) => ({
+                            formattedTimestamp: new Date(timestamp).toISOString().split('T')[0],  // Reformat date for display
+                            1: value
+                        }));
+
+                        // Log the transformed data
+                        console.log('Formatted Data:', formattedData);
+
+                        return formattedData;
+                    }
+
+
                     if (cdaSaveBtn.innerText === "Login") {
                         const loginResult = await loginCDA();
                         cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
@@ -292,11 +322,25 @@ document.addEventListener('DOMContentLoaded', async function () {
                         try {
                             await createVersionTS(payload);
                             cdaStatusBtn.innerText = "Write successful!";
+
+                            // Log the waiting message before the 2-second wait
+                            console.log("Waiting for 2 seconds before fetching updated data...");
+
+                            // Wait 2 seconds before fetching the updated data
+                            await new Promise(resolve => setTimeout(resolve, 2000));
+
+                            // Fetch updated data and refresh the table
+                            const updatedData = await fetchUpdatedData(name, isoDateDay1, isoDateDay5, isoDateToday);
+                            createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, updatedData);
                         } catch (error) {
                             cdaStatusBtn.innerText = "Failed to write data!";
+                            console.error(error);
                         }
                     }
+
+
                 });
+
             }
 
             function createDataEntryTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name) {
@@ -492,7 +536,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         };
 
         const fetchTimeSeriesData = async (tsid) => {
-            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${beginDateTime.toISOString()}&end=${endDateTime.toISOString()}&office=${office}&version-date=${isoDateToday}`;
+            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${isoDateDay5}&office=${office}&version-date=${isoDateToday}`;
             console.log('tsidData:', tsidData);
 
             try {
