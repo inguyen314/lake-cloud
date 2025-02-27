@@ -348,7 +348,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             console.log("Waiting for 2 seconds before fetching updated data...");
 
                             // Wait 2 seconds before fetching the updated data
-                            await new Promise(resolve => setTimeout(resolve, 2000));
+                            await new Promise(resolve => setTimeout(resolve, 500));
 
                             // Fetch updated data and refresh the table
                             const updatedData = await fetchUpdatedData(name, isoDateDay1, isoDateDay5, isoDateToday);
@@ -615,7 +615,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             console.log("Waiting for 2 seconds before fetching updated data...");
 
                             // Wait 2 seconds before fetching the updated data
-                            await new Promise(resolve => setTimeout(resolve, 2000));
+                            await new Promise(resolve => setTimeout(resolve, 500));
 
                             // Fetch updated data and refresh the table
                             const updatedData = await fetchUpdatedData(name, isoDateDay1, isoDateDay5, isoDateToday);
