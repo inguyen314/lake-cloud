@@ -14,26 +14,56 @@ document.addEventListener('DOMContentLoaded', async function () {
         console.log("setBaseUrl: ", setBaseUrl);
 
         const [month, day, year] = datetime.split('-');
-        const currentDateTime = new Date(year, month - 1, day);
 
-        console.log('currentDateTime:', currentDateTime);
+        // Generate ISO strings for the previous 7 days and today
+        const isoDateMinus8Days = getIsoDateWithOffset(year, month, day, -8);
+        const isoDateMinus7Days = getIsoDateWithOffset(year, month, day, -7);
+        const isoDateMinus6Days = getIsoDateWithOffset(year, month, day, -6);
+        const isoDateMinus5Days = getIsoDateWithOffset(year, month, day, -5);
+        const isoDateMinus4Days = getIsoDateWithOffset(year, month, day, -4);
+        const isoDateMinus3Days = getIsoDateWithOffset(year, month, day, -3);
+        const isoDateMinus2Days = getIsoDateWithOffset(year, month, day, -2);
+        const isoDateMinus1Day = getIsoDateWithOffset(year, month, day, -1);
+        const isoDateToday = getIsoDateWithOffset(year, month, day, 0);
 
-        // Subtract thirty hours from current date and time
-        const currentDateTimeMinus30Hours = subtractHoursFromDate(currentDateTime, 8 * 24);
-        console.log('currentDateTimeMinus30Hours:', currentDateTimeMinus30Hours);
+        // Generate ISO strings for the next 7 days
+        const isoDateDay1 = getIsoDateWithOffset(year, month, day, 1);
+        const isoDateDay2 = getIsoDateWithOffset(year, month, day, 2);
+        const isoDateDay3 = getIsoDateWithOffset(year, month, day, 3);
+        const isoDateDay4 = getIsoDateWithOffset(year, month, day, 4);
+        const isoDateDay5 = getIsoDateWithOffset(year, month, day, 5);
+        const isoDateDay6 = getIsoDateWithOffset(year, month, day, 6);
+        const isoDateDay7 = getIsoDateWithOffset(year, month, day, 7);
+
+        console.log("isoDateMinus8Days:", isoDateMinus8Days);
+        console.log("isoDateMinus7Days:", isoDateMinus7Days);
+        console.log("isoDateMinus6Days:", isoDateMinus6Days);
+        console.log("isoDateMinus5Days:", isoDateMinus5Days);
+        console.log("isoDateMinus4Days:", isoDateMinus4Days);
+        console.log("isoDateMinus3Days:", isoDateMinus3Days);
+        console.log("isoDateMinus2Days:", isoDateMinus2Days);
+        console.log("isoDateMinus1Day:", isoDateMinus1Day);
+        console.log("isoDateToday:", isoDateToday);
+        console.log("isoDateDay1:", isoDateDay1);
+        console.log("isoDateDay2:", isoDateDay2);
+        console.log("isoDateDay3:", isoDateDay3);
+        console.log("isoDateDay4:", isoDateDay4);
+        console.log("isoDateDay5:", isoDateDay5);
+        console.log("isoDateDay6:", isoDateDay6);
+        console.log("isoDateDay7:", isoDateDay7);
 
         const urltsid1 = `${setBaseUrl}timeseries/group/Stage?office=${office}&category-id=${lake}`;
         const urltsid2 = `${setBaseUrl}timeseries/group/Flow?office=${office}&category-id=${lake}`;
 
         const fetchTimeSeriesData = async (tsid) => {
-            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
-            // console.log('tsidData:', tsidData);
+            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus8Days}&end=${isoDateToday}&office=${office}`;
+            console.log('tsidData:', tsidData);
             try {
                 const response = await fetch(tsidData);
                 const data = await response.json();
                 return data;
             } catch (error) {
-                console.error("Error fetching time series data:", error);  
+                console.error("Error fetching time series data:", error);
             }
         };
 
@@ -317,5 +347,20 @@ document.addEventListener('DOMContentLoaded', async function () {
         console.log("****************** Wappapello Lk-St Francis");
         console.log('datetime: ', datetime);
 
+    }
+
+    function getIsoDateWithOffset(year, month, day, offset) {
+        // Create a date object in UTC (midnight UTC)
+        const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0)); // Set the initial time at 6 AM UTC
+
+        // Convert the date to CST (UTC -6)
+        const cstOffset = 6 * 60; // CST is UTC -6 hours, in minutes
+        date.setMinutes(date.getMinutes() + cstOffset); // Adjust to CST
+
+        // Add the offset in days (if positive, it moves forward, if negative, backward)
+        date.setUTCDate(date.getUTCDate() + offset);
+
+        // Return the ISO string
+        return date.toISOString();
     }
 });

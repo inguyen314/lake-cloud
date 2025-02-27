@@ -24,14 +24,14 @@ document.addEventListener('DOMContentLoaded', async function () {
         // console.log('endDateTime:', endDateTime);
 
         // Generate ISO strings for Today and the next 7 days
-        const isoDateToday = getIsoDateWithOffset2(year, month, day, 0);
-        const isoDateDay1 = getIsoDateWithOffset2(year, month, day, 1);
-        const isoDateDay2 = getIsoDateWithOffset2(year, month, day, 2);
-        const isoDateDay3 = getIsoDateWithOffset2(year, month, day, 3);
-        const isoDateDay4 = getIsoDateWithOffset2(year, month, day, 4);
-        const isoDateDay5 = getIsoDateWithOffset2(year, month, day, 5);
-        const isoDateDay6 = getIsoDateWithOffset2(year, month, day, 6);
-        const isoDateDay7 = getIsoDateWithOffset2(year, month, day, 7);
+        const isoDateToday = getIsoDateWithOffset(year, month, day, 0);
+        const isoDateDay1 = getIsoDateWithOffset(year, month, day, 1);
+        const isoDateDay2 = getIsoDateWithOffset(year, month, day, 2);
+        const isoDateDay3 = getIsoDateWithOffset(year, month, day, 3);
+        const isoDateDay4 = getIsoDateWithOffset(year, month, day, 4);
+        const isoDateDay5 = getIsoDateWithOffset(year, month, day, 5);
+        const isoDateDay6 = getIsoDateWithOffset(year, month, day, 6);
+        const isoDateDay7 = getIsoDateWithOffset(year, month, day, 7);
 
         console.log("isoDateToday:", isoDateToday);
         console.log("isoDateDay1:", isoDateDay1);
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 if (timeSeriesData1 && timeSeriesData1.values && timeSeriesData1.values.length > 0) {
                     const formattedData1 = timeSeriesData1.values.map(entry => {
                         const timestamp = entry[0]; // Timestamp is in milliseconds in the array
-                        const formattedTimestamp = formatISODate2ReadableDate2(Number(timestamp)); // Ensure timestamp is a number
+                        const formattedTimestamp = formatISODate2ReadableDate(Number(timestamp)); // Ensure timestamp is a number
 
                         return {
                             ...entry, // Retain other data
@@ -663,14 +663,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     }
 
-
     function getIsoDateWithOffset(year, month, day, offset) {
-        const date = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0)); // Set the initial date at 6 AM UTC
-        date.setUTCDate(date.getUTCDate() + offset); // Add the offset (days)
-        return date.toISOString();
-    }
-
-    function getIsoDateWithOffset2(year, month, day, offset) {
         // Create a date object in UTC (midnight UTC)
         const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0)); // Set the initial time at 6 AM UTC
 
@@ -686,26 +679,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function formatISODate2ReadableDate(timestamp) {
-        if (typeof timestamp !== "number") {
-            console.error("Invalid timestamp:", timestamp);
-            return "Invalid Date";
-        }
-
-        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
-        if (isNaN(date.getTime())) {
-            console.error("Invalid date conversion:", timestamp);
-            return "Invalid Date";
-        }
-
-        const mm = String(date.getMonth() + 1).padStart(2, '0'); // Month
-        const dd = String(date.getDate()).padStart(2, '0'); // Day
-        const yyyy = date.getFullYear(); // Year
-        const hh = String(date.getHours()).padStart(2, '0'); // Hours
-        const min = String(date.getMinutes()).padStart(2, '0'); // Minutes
-        return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
-    }
-
-    function formatISODate2ReadableDate2(timestamp) {
         if (typeof timestamp !== "number") {
             console.error("Invalid timestamp:", timestamp);
             return "Invalid Date";
