@@ -23,13 +23,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         const endDateTime = addHoursFromDate(beginDateTime, 6 * 24);
         console.log('endDateTime:', endDateTime);
 
-        // Function to generate ISO string for a given day offset
-        function getIsoDateWithOffset(year, month, day, offset) {
-            const date = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0)); // Set the initial date at 6 AM UTC
-            date.setUTCDate(date.getUTCDate() + offset); // Add the offset (days)
-            return date.toISOString();
-        }
-
         // Generate ISO strings for Today and the next 7 days
         const isoDateToday = getIsoDateWithOffset(year, month, day, 0);
         const isoDateDay1 = getIsoDateWithOffset(year, month, day, 1);
@@ -49,55 +42,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         console.log("isoDateDay6:", isoDateDay6);
         console.log("isoDateDay7:", isoDateDay7);
 
-
-
         const urltsid1 = `${setBaseUrl}timeseries/group/Forecast-Lake?office=${office}&category-id=${lake}`;
-
-        const fetchTimeSeriesData = async (tsid) => {
-            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${beginDateTime.toISOString()}&end=${endDateTime.toISOString()}&office=${office}&version-date=${isoDateToday}`;
-            console.log('tsidData:', tsidData);
-
-            try {
-                const response = await fetch(tsidData, {
-                    headers: {
-                        "Accept": "application/json;version=2" // Ensuring the correct version is used
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error("Error fetching time series data:", error);
-            }
-        };
-
-        function formatISODate2ReadableDate(timestamp) {
-            if (typeof timestamp !== "number") {
-                console.error("Invalid timestamp:", timestamp);
-                return "Invalid Date";
-            }
-
-            const date = new Date(timestamp); // Ensure timestamp is in milliseconds
-            if (isNaN(date.getTime())) {
-                console.error("Invalid date conversion:", timestamp);
-                return "Invalid Date";
-            }
-
-            const mm = String(date.getMonth() + 1).padStart(2, '0'); // Month
-            const dd = String(date.getDate()).padStart(2, '0'); // Day
-            const yyyy = date.getFullYear(); // Year
-            const hh = String(date.getHours()).padStart(2, '0'); // Hours
-            const min = String(date.getMinutes()).padStart(2, '0'); // Minutes
-            return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
-        }
-
-        function addHoursFromDate(date, hoursToSubtract) {
-            return new Date(date.getTime() + (hoursToSubtract * 60 * 60 * 1000));
-        }
 
         const fetchTsidData = async () => {
             try {
@@ -159,9 +104,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                             dateCell.textContent = entry.formattedTimestamp;
                             row.appendChild(dateCell);
 
-                            // Stage column
+                            // Stage column - Make editable with input field
                             const stageCell = document.createElement("td");
-                            stageCell.textContent = entry[1].toFixed(2); // Access the stage value from entry[1]
+                            const stageInput = document.createElement("input");
+                            stageInput.type = "number";
+                            stageInput.value = entry[1].toFixed(2); // Set initial value
+                            stageInput.className = "stage-input"; // Optional: add a class for styling if needed
+                            stageCell.appendChild(stageInput);
                             row.appendChild(stageCell);
 
                             table.appendChild(row);
@@ -175,12 +124,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     console.log("Calling createForecastOutflowTable ...");
 
-                    // Call the function with formattedData1
                     createForecastOutflowTable(formattedData1);
                 } else {
-                    // If no data, create an empty table
-                    console.log("Calling dataForecastOutflowEntryTable ...");
-                    dataForecastOutflowEntryTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid1);
+                    console.log("Calling dataEntryForecastOutflowTable ...");
+                    dataEntryForecastOutflowTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid1);
 
                     let cdaSaveBtn;
 
@@ -238,7 +185,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             }
 
-            function dataForecastOutflowEntryTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name) {
+            function dataEntryForecastOutflowTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name) {
                 // Create the empty table element
                 const table = document.createElement("table");
 
@@ -385,26 +332,26 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     // "accept": "*/*",
                                     "Content-Type": "application/json;version=2",
                                 },
-                
-                
+
+
                                 body: JSON.stringify(payload)
                             });
-                
+
                             if (!response.ok) {
                                 const errorText = await response.text();
                                 throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
                             }
-                
+
                             // const data = await response.json();
                             // console.log('Success:', data);
                             // return data;
                             return true;
-                
+
                         } catch (error) {
                             console.error('Error writing timeseries:', error);
                             throw error;
                         }
-                
+
                     }
 
                     if (cdaSaveBtn.innerText === "Login") {
@@ -430,10 +377,63 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         };
 
+        const fetchTimeSeriesData = async (tsid) => {
+            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${beginDateTime.toISOString()}&end=${endDateTime.toISOString()}&office=${office}&version-date=${isoDateToday}`;
+            console.log('tsidData:', tsidData);
+
+            try {
+                const response = await fetch(tsidData, {
+                    headers: {
+                        "Accept": "application/json;version=2" // Ensuring the correct version is used
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error fetching time series data:", error);
+            }
+        };
+
         fetchTsidData();
     } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
         console.log("****************** Mark Twain Lk-Salt");
         console.log('datetime: ', datetime);
 
+    }
+
+
+    function getIsoDateWithOffset(year, month, day, offset) {
+        const date = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0)); // Set the initial date at 6 AM UTC
+        date.setUTCDate(date.getUTCDate() + offset); // Add the offset (days)
+        return date.toISOString();
+    }
+
+    function formatISODate2ReadableDate(timestamp) {
+        if (typeof timestamp !== "number") {
+            console.error("Invalid timestamp:", timestamp);
+            return "Invalid Date";
+        }
+
+        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
+        if (isNaN(date.getTime())) {
+            console.error("Invalid date conversion:", timestamp);
+            return "Invalid Date";
+        }
+
+        const mm = String(date.getMonth() + 1).padStart(2, '0'); // Month
+        const dd = String(date.getDate()).padStart(2, '0'); // Day
+        const yyyy = date.getFullYear(); // Year
+        const hh = String(date.getHours()).padStart(2, '0'); // Hours
+        const min = String(date.getMinutes()).padStart(2, '0'); // Minutes
+        return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
+    }
+
+    function addHoursFromDate(date, hoursToSubtract) {
+        return new Date(date.getTime() + (hoursToSubtract * 60 * 60 * 1000));
     }
 });
