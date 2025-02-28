@@ -199,9 +199,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                 dateHeader.textContent = "Date";
                 headerRow.appendChild(dateHeader);
 
-                const stageHeader = document.createElement("th");
-                stageHeader.textContent = "Forecast Outflow (cfs)";
-                headerRow.appendChild(stageHeader);
+                const outflowHeader = document.createElement("th");
+                outflowHeader.textContent = "Forecast Outflow (cfs)";
+                headerRow.appendChild(outflowHeader);
+
+                if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                    const inflowHeader = document.createElement("th");
+                    inflowHeader.textContent = "Forecast Inflow (cfs)";
+                    headerRow.appendChild(inflowHeader);
+                }
 
                 table.appendChild(headerRow);
 
@@ -212,14 +218,27 @@ document.addEventListener('DOMContentLoaded', async function () {
                     dateCell.textContent = entry.formattedTimestampCST ? entry.formattedTimestampCST : entry[0];
                     row.appendChild(dateCell);
 
+                    // Outflow cell (editable)
                     const outflowCell = document.createElement("td");
                     const outflowInput = document.createElement("input");
                     outflowInput.type = "number";
                     outflowInput.value = entry[1].toFixed(0);
-                    outflowInput.className = "stage-input";
-                    outflowInput.id = `outflowInput-${entry[0]}`;  // Add unique ID for lookup
+                    outflowInput.className = "outflow-input";
+                    outflowInput.id = `outflowInput-${entry[0]}`;
                     outflowCell.appendChild(outflowInput);
                     row.appendChild(outflowCell);
+
+                    // Inflow cell (editable)
+                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                        const inflowCell = document.createElement("td");
+                        const inflowInput = document.createElement("input");
+                        inflowInput.type = "number";
+                        inflowInput.value = entry[2].toFixed(0);
+                        inflowInput.className = "inflow-input";
+                        inflowInput.id = `inflowInput-${entry[0]}`;
+                        inflowCell.appendChild(inflowInput);
+                        row.appendChild(inflowCell);
+                    }
 
                     table.appendChild(row);
                 });
@@ -387,9 +406,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 dateHeader.textContent = "Day";
                 headerRow.appendChild(dateHeader);
 
-                const stageHeader = document.createElement("th");
-                stageHeader.textContent = "Forecast Outflow (cfs)";
-                headerRow.appendChild(stageHeader);
+                const outflowHeader = document.createElement("th");
+                outflowHeader.textContent = "Forecast Outflow (cfs)";
+                headerRow.appendChild(outflowHeader);
 
                 if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
                     const inflowHeader = document.createElement("th");
