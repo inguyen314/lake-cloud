@@ -36,26 +36,25 @@ document.addEventListener('DOMContentLoaded', async function () {
         console.log("isoDateDay7 (UTC):", isoDateDay7);
 
         const urltsid = `${setBaseUrl}timeseries/group/Forecast-Lake?office=${office}&category-id=${lake}`;
+        console.log("urltsid:", urltsid);
 
         const fetchTsidData = async () => {
             try {
                 const response = await fetch(urltsid);
 
                 const tsidData = await response.json();
-
                 console.log("tsidData:", tsidData);
 
                 // Extract the timeseries-id from the response
                 const tsid = tsidData['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
-
                 console.log("tsid:", tsid);
 
                 // Fetch time series data using tsid values
-                const timeSeriesData1 = await fetchTimeSeriesData(tsid);
-                console.log("timeSeriesData1:", timeSeriesData1);
+                const timeSeriesData = await fetchTimeSeriesData(tsid);
+                console.log("timeSeriesData:", timeSeriesData);
 
-                if (timeSeriesData1 && timeSeriesData1.values && timeSeriesData1.values.length > 0) {
-                    const formattedData = timeSeriesData1.values.map(entry => {
+                if (timeSeriesData && timeSeriesData.values && timeSeriesData.values.length > 0) {
+                    const formattedData = timeSeriesData.values.map(entry => {
                         const timestamp = entry[0]; // Timestamp is in milliseconds in the array
                         const formattedTimestampCST = formatISODateToUTCString(Number(timestamp)); // Ensure timestamp is a number
 
