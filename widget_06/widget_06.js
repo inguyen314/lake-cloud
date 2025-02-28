@@ -54,21 +54,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log("timeSeriesData:", timeSeriesData);
 
                 if (timeSeriesData && timeSeriesData.values && timeSeriesData.values.length > 0) {
-                    const formattedData = timeSeriesData.values.map(entry => {
-                        const timestamp = entry[0]; // Timestamp is in milliseconds in the array
-                        const formattedTimestampCST = formatISODateToUTCString(Number(timestamp)); // Ensure timestamp is a number
-
-                        return {
-                            ...entry, // Retain other data
-                            formattedTimestampCST // Add formatted timestamp
-                        };
-                    });
-
-                    // Now you have formatted data for both datasets
-                    console.log("Formatted Data for formattedData:", formattedData);
-
                     console.log("Calling createTable ...");
-                    createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, formattedData);
+                    createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, timeSeriesData);
 
                     let cdaSaveBtn;
 
@@ -169,9 +156,22 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             }
 
-            function createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, formattedData) {
-                console.log("formattedData:", formattedData);
-                
+            function createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, timeSeriesData) {
+                console.log("timeSeriesData:", timeSeriesData);
+
+                formattedData = timeSeriesData.values.map(entry => {
+                    const timestamp = entry[0]; // Timestamp is in milliseconds in the array
+                    const formattedTimestampCST = formatISODateToUTCString(Number(timestamp)); // Ensure timestamp is a number
+
+                    return {
+                        ...entry, // Retain other data
+                        formattedTimestampCST // Add formatted timestamp
+                    };
+                });
+
+                // Now you have formatted data for both datasets
+                console.log("Formatted timeSeriesData:", formattedData);
+
                 const table = document.createElement("table");
                 table.id = "gate-settings";
 
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const row = document.createElement("tr");
 
                     const dateCell = document.createElement("td");
-                    dateCell.textContent = entry[0];
+                    dateCell.textContent = entry.formattedTimestampCST ? entry.formattedTimestampCST : entry[0];
                     row.appendChild(dateCell);
 
                     const stageCell = document.createElement("td");
@@ -237,16 +237,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "units": units,
                         "values": formattedData.map(entry => {
                             const stageValue = document.getElementById(`stageInput-${entry[0]}`).value;
+                            console.log("stageValue:", stageValue);
+
+                            const timestampUnix = new Date(entry[0]).getTime();
+                            console.log("timestampUnix:", timestampUnix);
 
                             return [
-                                new Date(entry[0]).getTime(),  // Convert to timestamp
-                                parseFloat(stageValue),  // Use the entered stage value
-                                0  // Placeholder
+                                timestampUnix,
+                                parseFloat(stageValue),
+                                0
                             ];
                         }),
                         "version-date": isoDateToday,
                     };
-
+                    console.log("Preparing payload...");
                     console.log("payload:", payload);
 
                     async function loginCDA() {
@@ -295,17 +299,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         // Log the raw data received
                         console.log('Fetched Data:', data);
 
-                        // Transform the data to match the format expected by createTable (formattedData)
-                        const formattedData = data.values.map(([timestamp, value]) => ({
-                            // formattedTimestampCST: new Date(timestamp).toISOString().split('T')[0],  // Reformat date for display
-                            0: timestamp,  // Reformat date for display
-                            1: value
-                        }));
-
-                        // Log the transformed data
-                        console.log('Formatted Data:', formattedData);
-
-                        return formattedData;
+                        return data;
                     }
 
                     // Function to show the spinner while waiting
@@ -385,20 +379,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
                 console.log("dates (UTC):", dates);
 
-                // // Convert each date from UTC to CST and format it
-                // const options = { timeZone: 'America/Chicago', hour12: false };
+                // Convert each date from UTC to CST and format it
+                const options = { timeZone: 'America/Chicago', hour12: false };
 
-                // const formattedDates = dates.map(date => {
-                //     const d = new Date(date);
-                //     const cstDate = d.toLocaleString('en-US', options);
+                const formattedDates = dates.map(date => {
+                    const d = new Date(date);
+                    const cstDate = d.toLocaleString('en-US', options);
 
-                //     // Extract the date and time parts and format as MM-DD-YYYY HH:mm
-                //     const [month, day, year, hour, minute] = cstDate.match(/(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{1,2}):(\d{2})/).slice(1);
+                    // Extract the date and time parts and format as MM-DD-YYYY HH:mm
+                    const [month, day, year, hour, minute] = cstDate.match(/(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{1,2}):(\d{2})/).slice(1);
 
-                //     return `${month.padStart(2, '0')}-${day.padStart(2, '0')}-${year} ${hour}:${minute}`;
-                // });
+                    return `${month.padStart(2, '0')}-${day.padStart(2, '0')}-${year} ${hour}:${minute}`;
+                });
 
-                // console.log("formattedDates (CST):", formattedDates);
+                console.log("formattedDates (CST):", formattedDates);
 
                 dates.forEach((date, index) => {
                     const row = document.createElement("tr");
@@ -469,10 +463,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                             }
 
                             // Convert ISO date string to timestamp
-                            const timestamp = new Date(date).getTime(); // Correct timestamp conversion
+                            const timestampUnix = new Date(date).getTime(); // Correct timestamp conversion
+                            console.log("timestampUnix:", timestampUnix);
 
                             return [
-                                timestamp,  // Timestamp for the day at 6 AM
+                                timestampUnix,  // Timestamp for the day at 6 AM
                                 parseInt(stageValue), // Stage value (forecast outflow) as number
                                 0 // Placeholder for the third value (set to 0 for now)
                             ];
@@ -481,12 +476,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                     };
 
                     console.log("payload: ", payload);
-
-                    // Format each timestamp in the values array
-                    // payload.values = payload.values.map(entry => {
-                    //     const formattedDate = formatISODate2ReadableDate(entry[0]); // Format the timestamp at index 0
-                    //     return [entry[0], entry[1], entry[2], formattedDate]; // Return formatted date with the other values
-                    // });
 
                     async function loginCDA() {
                         console.log("page");
@@ -563,31 +552,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         // Log the raw data received
                         console.log('Fetched Data:', data);
 
-                        const formattedData = data.values.map(entry => {
-                            const timestamp = entry[0]; // Timestamp is in milliseconds in the array
-                            const formattedTimestampCST = formatISODate2ReadableDate(Number(timestamp)); // Ensure timestamp is a number
-    
-                            return {
-                                ...entry, // Retain other data
-                                formattedTimestampCST // Add formatted timestamp
-                            };
-                        });
-    
-                        // Now you have formatted data for both datasets
-                        console.log("Formatted Data for formattedData:", formattedData);
-
-
-
-                        // // Transform the data to match the format expected by createTable (formattedData)
-                        // const formattedData = data.values.map(([timestamp, value]) => ({
-                        //     formattedTimestampCST: new Date(timestamp).toISOString().split('T')[0],  // Reformat date for display
-                        //     1: value // Mapping the value to column 1
-                        // }));
-                        
-                        // // Log the transformed data
-                        // console.log('Formatted Data:', formattedData);                        
-
-                        return formattedData;
+                        return data;
                     }
 
                     // Function to show the spinner while waiting
@@ -713,15 +678,15 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.error("Invalid timestamp:", timestamp);
             return "Invalid Date";
         }
-    
+
         const date = new Date(timestamp); // Ensure timestamp is in milliseconds
         if (isNaN(date.getTime())) {
             console.error("Invalid date conversion:", timestamp);
             return "Invalid Date";
         }
-    
+
         return date.toISOString().replace(/\.\d{3}Z$/, 'Z'); // Removes milliseconds
-    }    
+    }
 });
 
 
