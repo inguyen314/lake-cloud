@@ -16,13 +16,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         const [month, day, year] = datetime.split('-');
 
-        // const beginDateTime = new Date(year, month - 1, day);
-        // beginDateTime.setHours(0, 0, 0, 0);
-        // console.log('beginDateTime:', beginDateTime);
-
-        // const endDateTime = addHoursFromDate(beginDateTime, 6 * 24);
-        // console.log('endDateTime:', endDateTime);
-
         // Generate ISO strings for Today and the next 7 days
         const isoDateToday = getIsoDateWithOffset(year, month, day, 0);
         const isoDateDay1 = getIsoDateWithOffset(year, month, day, 1);
@@ -33,14 +26,14 @@ document.addEventListener('DOMContentLoaded', async function () {
         const isoDateDay6 = getIsoDateWithOffset(year, month, day, 6);
         const isoDateDay7 = getIsoDateWithOffset(year, month, day, 7);
 
-        console.log("isoDateToday:", isoDateToday);
-        console.log("isoDateDay1:", isoDateDay1);
-        console.log("isoDateDay2:", isoDateDay2);
-        console.log("isoDateDay3:", isoDateDay3);
-        console.log("isoDateDay4:", isoDateDay4);
-        console.log("isoDateDay5:", isoDateDay5);
-        console.log("isoDateDay6:", isoDateDay6);
-        console.log("isoDateDay7:", isoDateDay7);
+        console.log("isoDateToday (UTC):", isoDateToday);
+        console.log("isoDateDay1 (UTC):", isoDateDay1);
+        console.log("isoDateDay2 (UTC):", isoDateDay2);
+        console.log("isoDateDay3 (UTC):", isoDateDay3);
+        console.log("isoDateDay4 (UTC):", isoDateDay4);
+        console.log("isoDateDay5 (UTC):", isoDateDay5);
+        console.log("isoDateDay6 (UTC):", isoDateDay6);
+        console.log("isoDateDay7 (UTC):", isoDateDay7);
 
         const urltsid1 = `${setBaseUrl}timeseries/group/Forecast-Lake?office=${office}&category-id=${lake}`;
 
@@ -178,6 +171,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             function createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, formattedData1) {
+                console.log("formattedData1:", formattedData1);
+                
                 const table = document.createElement("table");
                 table.id = "gate-settings";
 
@@ -196,7 +191,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const row = document.createElement("tr");
 
                     const dateCell = document.createElement("td");
-                    dateCell.textContent = entry.formattedTimestamp;
+                    dateCell.textContent = entry[0];
                     row.appendChild(dateCell);
 
                     const stageCell = document.createElement("td");
@@ -204,7 +199,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     stageInput.type = "number";
                     stageInput.value = entry[1].toFixed(0);
                     stageInput.className = "stage-input";
-                    stageInput.id = `stageInput-${entry.formattedTimestamp}`;  // Add unique ID for lookup
+                    stageInput.id = `stageInput-${entry[0]}`;  // Add unique ID for lookup
                     stageCell.appendChild(stageInput);
                     row.appendChild(stageCell);
 
@@ -242,10 +237,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "office-id": office,
                         "units": units,
                         "values": formattedData1.map(entry => {
-                            const stageValue = document.getElementById(`stageInput-${entry.formattedTimestamp}`).value;
+                            const stageValue = document.getElementById(`stageInput-${entry[0]}`).value;
 
                             return [
-                                new Date(entry.formattedTimestamp).getTime(),  // Convert to timestamp
+                                new Date(entry[0]).getTime(),  // Convert to timestamp
                                 parseFloat(stageValue),  // Use the entered stage value
                                 0  // Placeholder
                             ];
@@ -284,7 +279,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
-                    async function fetchUpdatedData(name, isoDateDay1, isoDateDay5, isoDateToday) {
+                    async function fetchUpdatedData(name, isoDateDay5, isoDateToday) {
                         const response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
                             headers: {
                                 "Accept": "application/json;version=2", // Ensuring the correct version is used
@@ -303,7 +298,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // Transform the data to match the format expected by createTable (formattedData1)
                         const formattedData = data.values.map(([timestamp, value]) => ({
-                            formattedTimestamp: new Date(timestamp).toISOString().split('T')[0],  // Reformat date for display
+                            // formattedTimestamp: new Date(timestamp).toISOString().split('T')[0],  // Reformat date for display
+                            0: timestamp,  // Reformat date for display
                             1: value
                         }));
 
@@ -351,7 +347,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             await new Promise(resolve => setTimeout(resolve, 500));
 
                             // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(name, isoDateDay1, isoDateDay5, isoDateToday);
+                            const updatedData = await fetchUpdatedData(name, isoDateDay5, isoDateToday);
                             createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, updatedData);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
@@ -388,7 +384,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Create the data rows with the given dates and empty "Stage" fields
                 // const dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7];
                 const dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
-                console.log("dates:", dates);
+                console.log("dates (UTC):", dates);
 
                 // Convert each date from UTC to CST and format it
                 const options = { timeZone: 'America/Chicago', hour12: false };
@@ -403,14 +399,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                     return `${month.padStart(2, '0')}-${day.padStart(2, '0')}-${year} ${hour}:${minute}`;
                 });
 
-                console.log("formattedDates:", formattedDates);
+                console.log("formattedDates (CST):", formattedDates);
 
                 dates.forEach((date, index) => {
                     const row = document.createElement("tr");
 
                     // Date cell
                     const dateCell = document.createElement("td");
-                    dateCell.textContent = formattedDates[index];  // Use the corresponding formatted date
+                    dateCell.textContent = dates[index];  // Use the corresponding formatted date
                     row.appendChild(dateCell);
 
                     // Stage cell (editable)
@@ -551,7 +547,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     }
 
-                    async function fetchUpdatedData(name, isoDateDay1, isoDateDay5, isoDateToday) {
+                    async function fetchUpdatedData(name, isoDateDay5, isoDateToday) {
                         const response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
                             headers: {
                                 "Accept": "application/json;version=2", // Ensuring the correct version is used
@@ -568,14 +564,29 @@ document.addEventListener('DOMContentLoaded', async function () {
                         // Log the raw data received
                         console.log('Fetched Data:', data);
 
-                        // Transform the data to match the format expected by createTable (formattedData1)
-                        const formattedData = data.values.map(([timestamp, value]) => ({
-                            formattedTimestamp: new Date(timestamp).toISOString().split('T')[0],  // Reformat date for display
-                            1: value
-                        }));
+                        const formattedData = data.values.map(entry => {
+                            const timestamp = entry[0]; // Timestamp is in milliseconds in the array
+                            const formattedTimestamp = formatISODate2ReadableDate(Number(timestamp)); // Ensure timestamp is a number
+    
+                            return {
+                                ...entry, // Retain other data
+                                formattedTimestamp // Add formatted timestamp
+                            };
+                        });
+    
+                        // Now you have formatted data for both datasets
+                        console.log("Formatted Data for formattedData:", formattedData);
 
-                        // Log the transformed data
-                        console.log('Formatted Data:', formattedData);
+
+
+                        // // Transform the data to match the format expected by createTable (formattedData1)
+                        // const formattedData = data.values.map(([timestamp, value]) => ({
+                        //     formattedTimestamp: new Date(timestamp).toISOString().split('T')[0],  // Reformat date for display
+                        //     1: value // Mapping the value to column 1
+                        // }));
+                        
+                        // // Log the transformed data
+                        // console.log('Formatted Data:', formattedData);                        
 
                         return formattedData;
                     }
@@ -618,7 +629,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             await new Promise(resolve => setTimeout(resolve, 500));
 
                             // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(name, isoDateDay1, isoDateDay5, isoDateToday);
+                            const updatedData = await fetchUpdatedData(name, isoDateDay5, isoDateToday);
                             createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, updatedData);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
@@ -696,10 +707,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         const hh = String(date.getHours()).padStart(2, '0'); // Hours
         const min = String(date.getMinutes()).padStart(2, '0'); // Minutes
         return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
-    }
-
-    function addHoursFromDate(date, hoursToSubtract) {
-        return new Date(date.getTime() + (hoursToSubtract * 60 * 60 * 1000));
     }
 });
 
