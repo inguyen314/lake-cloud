@@ -35,23 +35,23 @@ document.addEventListener('DOMContentLoaded', async function () {
         console.log("isoDateDay6 (UTC):", isoDateDay6);
         console.log("isoDateDay7 (UTC):", isoDateDay7);
 
-        const urltsid1 = `${setBaseUrl}timeseries/group/Forecast-Lake?office=${office}&category-id=${lake}`;
+        const urltsid = `${setBaseUrl}timeseries/group/Forecast-Lake?office=${office}&category-id=${lake}`;
 
         const fetchTsidData = async () => {
             try {
-                const response1 = await fetch(urltsid1);
+                const response = await fetch(urltsid);
 
-                const tsidData1 = await response1.json();
+                const tsidData = await response.json();
 
-                console.log("tsidData1:", tsidData1);
+                console.log("tsidData:", tsidData);
 
                 // Extract the timeseries-id from the response
-                const tsid1 = tsidData1['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
+                const tsid = tsidData['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
 
-                console.log("tsid1:", tsid1);
+                console.log("tsid:", tsid);
 
                 // Fetch time series data using tsid values
-                const timeSeriesData1 = await fetchTimeSeriesData(tsid1);
+                const timeSeriesData1 = await fetchTimeSeriesData(tsid);
                 console.log("timeSeriesData1:", timeSeriesData1);
 
                 if (timeSeriesData1 && timeSeriesData1.values && timeSeriesData1.values.length > 0) {
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     console.log("Formatted Data for formattedData:", formattedData);
 
                     console.log("Calling createTable ...");
-                    createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid1, formattedData);
+                    createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, formattedData);
 
                     let cdaSaveBtn;
 
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }, 10000) // time is in millis
                 } else {
                     console.log("Calling createDataEntryTable ...");
-                    createDataEntryTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid1);
+                    createDataEntryTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid);
 
                     let cdaSaveBtn;
 
