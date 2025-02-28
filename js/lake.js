@@ -13,11 +13,13 @@ document.addEventListener("DOMContentLoaded", function () {
         const titleSpan = document.querySelector('.titleLabel.title');
 
         if (titleSpan) {
-            titleSpan.textContent = `${lake.split("-")[0].trim()}: ${datetime}`;
+            // titleSpan.textContent = `${lake.split("-")[0].trim()}: ${datetime}`;
+            titleSpan.textContent = `${lake.split("-")[0].trim()}`;
         }
 
         // Set the title in the header
-        document.title = `${lake.split("-")[0].trim()}: ${datetime}`;
+        document.title = `${lake}`;
+        // document.title = `${lake.split("-")[0].trim()}: ${datetime}`;
     }
 
     let setBaseUrl = null;
@@ -149,6 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     const link = document.createElement("a");
                     link.href = `https://wm.mvs.ds.usace.army.mil/mvs/lake/index.html?office=MVS&lake=${encodeURIComponent(location["location-id"])}`;
                     link.textContent = location["location-id"].split("-")[0];  // Location name before the dash
+                    link.style.fontWeight = "bold";
                     cell.appendChild(link);
                 }
             });

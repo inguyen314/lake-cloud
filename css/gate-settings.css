@@ -8,7 +8,7 @@
 }
 
 #gate-settings th, #gate-settings td {
-    padding: 5px 5px;
+    padding: 3px 3px;
     text-align: center; /* Center-align both header and data cell text */
     border: 1px solid #ddd;
 }
@@ -16,7 +16,7 @@
 #gate-settings th {
     background-color: darkblue;
     color: white;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
 }
 
