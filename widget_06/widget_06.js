@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 if (timeSeriesData && timeSeriesData.values && timeSeriesData.values.length > 0) {
                     console.log("Calling createTable ...");
 
-                    createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, timeSeriesData);
+                    createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, timeSeriesData);
 
                     let cdaSaveBtn;
 
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             }
 
-            function createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, timeSeriesData) {
+            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, timeSeriesData) {
                 console.log("timeSeriesData:", timeSeriesData);
 
                 formattedData = timeSeriesData.values.map(entry => {
@@ -320,13 +320,24 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
-                    async function fetchUpdatedData(name, isoDateDay5, isoDateToday) {
-                        const response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
-                            headers: {
-                                "Accept": "application/json;version=2", // Ensuring the correct version is used
-                                "cache-control": "no-cache"
-                            }
-                        });
+                    async function fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day) {
+                        let response = null;
+
+                        if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
+                                headers: {
+                                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                                    "cache-control": "no-cache"
+                                }
+                            });
+                        } else {
+                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
+                                headers: {
+                                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                                    "cache-control": "no-cache"
+                                }
+                            });
+                        }
 
                         if (!response.ok) {
                             throw new Error(`Failed to fetch updated data: ${response.status}`);
@@ -378,8 +389,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // await new Promise(resolve => setTimeout(resolve, 500));
 
                             // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(name, isoDateDay5, isoDateToday);
-                            createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, updatedData);
+                            const updatedData = await fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, updatedData);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
@@ -598,12 +609,23 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
 
                     async function fetchUpdatedData(name, isoDateDay5, isoDateToday) {
-                        const response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
-                            headers: {
-                                "Accept": "application/json;version=2", // Ensuring the correct version is used
-                                "cache-control": "no-cache"
-                            }
-                        });
+                        let response = null;
+
+                        if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
+                                headers: {
+                                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                                    "cache-control": "no-cache"
+                                }
+                            });
+                        } else {
+                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
+                                headers: {
+                                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                                    "cache-control": "no-cache"
+                                }
+                            });
+                        }
 
                         if (!response.ok) {
                             throw new Error(`Failed to fetch updated data: ${response.status}`);
@@ -655,8 +677,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // await new Promise(resolve => setTimeout(resolve, 500));
 
                             // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(name, isoDateDay5, isoDateToday);
-                            createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, updatedData);
+                            const updatedData = await fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, updatedData);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
@@ -671,7 +693,12 @@ document.addEventListener('DOMContentLoaded', async function () {
         };
 
         const fetchTimeSeriesData = async (tsid) => {
-            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${isoDateDay5}&office=${office}&version-date=${isoDateToday}`;
+            let tsidData = null;
+            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=${office}&version-date=${isoDateToday}`;
+            } else {
+                tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${isoDateDay5}&office=${office}&version-date=${isoDateToday}`;
+            }
             console.log('tsidData:', tsidData);
 
             try {
