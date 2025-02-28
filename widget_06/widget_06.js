@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', async function () {
-    if (lake === "Rend Lk-Big Muddy" || lake === "Rend Lk" || lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Rend Lk") {
+    if (lake === "Rend Lk-Big Muddy" || lake === "Rend Lk" || lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Rend Lk" || lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
         console.log("****************** Rend Lk-Big Muddy ******************");
         console.log('lake: ', lake);
         console.log('datetime: ', datetime);
@@ -16,8 +16,18 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         const [month, day, year] = datetime.split('-');
 
-        // Generate ISO strings for Today and the next 7 days
+        // Generate ISO strings for the previous 7 days and today
+        const isoDateMinus8Days = getIsoDateWithOffset(year, month, day, -8);
+        const isoDateMinus7Days = getIsoDateWithOffset(year, month, day, -7);
+        const isoDateMinus6Days = getIsoDateWithOffset(year, month, day, -6);
+        const isoDateMinus5Days = getIsoDateWithOffset(year, month, day, -5);
+        const isoDateMinus4Days = getIsoDateWithOffset(year, month, day, -4);
+        const isoDateMinus3Days = getIsoDateWithOffset(year, month, day, -3);
+        const isoDateMinus2Days = getIsoDateWithOffset(year, month, day, -2);
+        const isoDateMinus1Day = getIsoDateWithOffset(year, month, day, -1);
         const isoDateToday = getIsoDateWithOffset(year, month, day, 0);
+
+        // Generate ISO strings for the next 7 days
         const isoDateDay1 = getIsoDateWithOffset(year, month, day, 1);
         const isoDateDay2 = getIsoDateWithOffset(year, month, day, 2);
         const isoDateDay3 = getIsoDateWithOffset(year, month, day, 3);
@@ -26,14 +36,22 @@ document.addEventListener('DOMContentLoaded', async function () {
         const isoDateDay6 = getIsoDateWithOffset(year, month, day, 6);
         const isoDateDay7 = getIsoDateWithOffset(year, month, day, 7);
 
-        console.log("isoDateToday (UTC):", isoDateToday);
-        console.log("isoDateDay1 (UTC):", isoDateDay1);
-        console.log("isoDateDay2 (UTC):", isoDateDay2);
-        console.log("isoDateDay3 (UTC):", isoDateDay3);
-        console.log("isoDateDay4 (UTC):", isoDateDay4);
-        console.log("isoDateDay5 (UTC):", isoDateDay5);
-        console.log("isoDateDay6 (UTC):", isoDateDay6);
-        console.log("isoDateDay7 (UTC):", isoDateDay7);
+        console.log("isoDateMinus8Days:", isoDateMinus8Days);
+        console.log("isoDateMinus7Days:", isoDateMinus7Days);
+        console.log("isoDateMinus6Days:", isoDateMinus6Days);
+        console.log("isoDateMinus5Days:", isoDateMinus5Days);
+        console.log("isoDateMinus4Days:", isoDateMinus4Days);
+        console.log("isoDateMinus3Days:", isoDateMinus3Days);
+        console.log("isoDateMinus2Days:", isoDateMinus2Days);
+        console.log("isoDateMinus1Day:", isoDateMinus1Day);
+        console.log("isoDateToday:", isoDateToday);
+        console.log("isoDateDay1:", isoDateDay1);
+        console.log("isoDateDay2:", isoDateDay2);
+        console.log("isoDateDay3:", isoDateDay3);
+        console.log("isoDateDay4:", isoDateDay4);
+        console.log("isoDateDay5:", isoDateDay5);
+        console.log("isoDateDay6:", isoDateDay6);
+        console.log("isoDateDay7:", isoDateDay7);
 
         const urltsid = `${setBaseUrl}timeseries/group/Forecast-Lake?office=${office}&category-id=${lake}`;
         console.log("urltsid:", urltsid);
@@ -55,6 +73,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 if (timeSeriesData && timeSeriesData.values && timeSeriesData.values.length > 0) {
                     console.log("Calling createTable ...");
+
                     createTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, timeSeriesData);
 
                     let cdaSaveBtn;
@@ -98,7 +117,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }, 10000) // time is in millis
                 } else {
                     console.log("Calling createDataEntryTable ...");
-                    createDataEntryTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid);
+                    createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid);
 
                     let cdaSaveBtn;
 
@@ -181,7 +200,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 headerRow.appendChild(dateHeader);
 
                 const stageHeader = document.createElement("th");
-                stageHeader.textContent = "Stage";
+                stageHeader.textContent = "Forecast Outflow (cfs)";
                 headerRow.appendChild(stageHeader);
 
                 table.appendChild(headerRow);
@@ -193,14 +212,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                     dateCell.textContent = entry.formattedTimestampCST ? entry.formattedTimestampCST : entry[0];
                     row.appendChild(dateCell);
 
-                    const stageCell = document.createElement("td");
-                    const stageInput = document.createElement("input");
-                    stageInput.type = "number";
-                    stageInput.value = entry[1].toFixed(0);
-                    stageInput.className = "stage-input";
-                    stageInput.id = `stageInput-${entry[0]}`;  // Add unique ID for lookup
-                    stageCell.appendChild(stageInput);
-                    row.appendChild(stageCell);
+                    const outflowCell = document.createElement("td");
+                    const outflowInput = document.createElement("input");
+                    outflowInput.type = "number";
+                    outflowInput.value = entry[1].toFixed(0);
+                    outflowInput.className = "stage-input";
+                    outflowInput.id = `outflowInput-${entry[0]}`;  // Add unique ID for lookup
+                    outflowCell.appendChild(outflowInput);
+                    row.appendChild(outflowCell);
 
                     table.appendChild(row);
                 });
@@ -236,7 +255,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "office-id": office,
                         "units": units,
                         "values": formattedData.map(entry => {
-                            const stageValue = document.getElementById(`stageInput-${entry[0]}`).value;
+                            const stageValue = document.getElementById(`outflowInput-${entry[0]}`).value;
                             console.log("stageValue:", stageValue);
 
                             const timestampUnix = new Date(entry[0]).getTime();
@@ -354,7 +373,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             }
 
-            function createDataEntryTable(isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name) {
+            function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name) {
                 // Create the empty table element
                 const table = document.createElement("table");
 
@@ -372,11 +391,24 @@ document.addEventListener('DOMContentLoaded', async function () {
                 stageHeader.textContent = "Forecast Outflow (cfs)";
                 headerRow.appendChild(stageHeader);
 
+                if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                    const inflowHeader = document.createElement("th");
+                    inflowHeader.textContent = "Forecast Inflow (cfs)";
+                    headerRow.appendChild(inflowHeader);
+                }
+
                 table.appendChild(headerRow);
 
-                // Create the data rows with the given dates and empty "Stage" fields
+                // Create the data rows with the given dates and empty "Outflow" fields
                 // const dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7];
-                const dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
+
+                let dates = [];
+                if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                    dates = [isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
+                } else {
+                    dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
+                }
+
                 console.log("dates (UTC):", dates);
 
                 // Convert each date from UTC to CST and format it
@@ -402,14 +434,25 @@ document.addEventListener('DOMContentLoaded', async function () {
                     dateCell.textContent = dates[index];  // Use the corresponding formatted date
                     row.appendChild(dateCell);
 
-                    // Stage cell (editable)
-                    const stageCell = document.createElement("td");
-                    const stageInput = document.createElement("input");
-                    stageInput.type = "text"; // Make the input editable
-                    stageInput.value = ""; // Initially empty
-                    stageInput.id = `stageInput-${date}`; // Assign a unique ID for each input
-                    stageCell.appendChild(stageInput);
-                    row.appendChild(stageCell);
+                    // Outflow cell (editable)
+                    const outflowCell = document.createElement("td");
+                    const outflowInput = document.createElement("input");
+                    outflowInput.type = "text";
+                    outflowInput.value = "";
+                    outflowInput.id = `outflowInput-${date}`;
+                    outflowCell.appendChild(outflowInput);
+                    row.appendChild(outflowCell);
+
+                    // Inflow cell (editable)
+                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                        const inflowCell = document.createElement("td");
+                        const inflowInput = document.createElement("input");
+                        inflowInput.type = "text";
+                        inflowInput.value = "";
+                        inflowInput.id = `inflowInput-${date}`;
+                        inflowCell.appendChild(inflowInput);
+                        row.appendChild(inflowCell);
+                    }
 
                     table.appendChild(row);
                 });
@@ -454,7 +497,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "office-id": office,
                         "units": units,
                         "values": dates.map((date, index) => {
-                            let stageValue = document.getElementById(`stageInput-${date}`).value; // Get value from input field
+                            let stageValue = document.getElementById(`outflowInput-${date}`).value; // Get value from input field
                             console.log("stageValue:", stageValue);
 
                             // If stageValue is empty or null, set it to 909
