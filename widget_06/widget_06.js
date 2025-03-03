@@ -184,7 +184,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 formattedData = timeSeriesDataOutflow.values.map(entry => {
                     const timestamp = entry[0]; // Timestamp is in milliseconds in the array
-                    const formattedTimestampCST = formatISODateToUTCString(Number(timestamp)); // Ensure timestamp is a number
+                    // const formattedTimestampCST = formatISODateToUTCString(Number(timestamp)); // Ensure timestamp is a number
+                    const formattedTimestampCST = formatISODateToCSTString(Number(timestamp)); // Ensure timestamp is a number
 
                     return {
                         ...entry, // Retain other data
@@ -282,8 +283,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 cdaStatusBtn.disabled = false;
                 statusDiv.appendChild(cdaStatusBtn);
                 output6Div.appendChild(statusDiv);
-
-                // const dates = [isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7];
 
                 cdaSaveBtn.addEventListener("click", async () => {
                     const payloadOutflow = {
@@ -483,9 +482,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 headerRow.appendChild(outflowHeader);
 
                 table.appendChild(headerRow);
-
-                // Create the data rows with the given dates and empty "Outflow" fields
-                // const dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7];
 
                 let dates = [];
                 if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
@@ -862,6 +858,37 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         return date.toISOString().replace(/\.\d{3}Z$/, 'Z'); // Removes milliseconds
     }
+
+    function formatISODateToCSTString(timestamp) {
+        if (typeof timestamp !== "number") {
+            console.error("Invalid timestamp:", timestamp);
+            return "Invalid Date";
+        }
+
+        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
+        if (isNaN(date.getTime())) {
+            console.error("Invalid date conversion:", timestamp);
+            return "Invalid Date";
+        }
+
+        // Convert to CST (Central Standard Time)
+        const options = {
+            timeZone: 'America/Chicago',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+
+        const formatter = new Intl.DateTimeFormat('en-US', options);
+        const formattedDate = formatter.format(date);
+
+        return formattedDate.replace(',', ''); // Removes the comma between date and time
+    }
+
 });
 
 
