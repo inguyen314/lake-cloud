@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     if (timeSeriesDataOutflow && timeSeriesDataOutflow.values && timeSeriesDataOutflow.values.length > 0 && timeSeriesDataInflow && timeSeriesDataInflow.values && timeSeriesDataInflow.values.length > 0) {
                         console.log("Calling Mark Twain Lk createTable ...");
 
-                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, timeSeriesDataOutflow);
+                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, timeSeriesDataOutflow, tsidInflow, timeSeriesDataInflow);
 
                         loginStateController()
                         // Setup timers
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }, 10000) // time is in millis
                     } else {
                         console.log("Calling Mark Twain Lk createDataEntryTable ...");
-                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow);
+                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, tsidInflow);
 
                         loginStateController()
                         // Setup timers
@@ -178,8 +178,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             }
 
-            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, timeSeriesDataOutflow) {
+            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, timeSeriesDataOutflow, name2, timeSeriesDataInflow) {
                 console.log("timeSeriesDataOutflow:", timeSeriesDataOutflow);
+                console.log("timeSeriesDataInflow:", timeSeriesDataInflow);
 
                 formattedData = timeSeriesDataOutflow.values.map(entry => {
                     const timestamp = entry[0]; // Timestamp is in milliseconds in the array
@@ -193,6 +194,22 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Now you have formatted data for both datasets
                 console.log("Formatted timeSeriesDataOutflow:", formattedData);
+
+                let formattedDataInflow;
+                if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                    formattedDataInflow = timeSeriesDataInflow.values.map(entry => {
+                        const timestamp = entry[0]; // Timestamp is in milliseconds in the array
+                        const formattedTimestampCST = formatISODateToUTCString(Number(timestamp)); // Ensure timestamp is a number
+
+                        return {
+                            ...entry, // Retain other data
+                            formattedTimestampCST // Add formatted timestamp
+                        };
+                    });
+
+                    // Now you have formatted data for both datasets
+                    console.log("Formatted timeSeriesDataInflow:", formattedDataInflow);
+                }
 
                 const table = document.createElement("table");
                 table.id = "gate-settings";
@@ -214,7 +231,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 table.appendChild(headerRow);
 
-                formattedData.forEach(entry => {
+                // Loop over the data (use formattedData for outflow and formattedDataInflow for inflow if lake matches)
+                formattedData.forEach((entry, index) => {
                     const row = document.createElement("tr");
 
                     const dateCell = document.createElement("td");
@@ -226,7 +244,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const inflowCell = document.createElement("td");
                         const inflowInput = document.createElement("input");
                         inflowInput.type = "number";
-                        inflowInput.value = entry[2].toFixed(0);
+                        inflowInput.value = formattedDataInflow[index] ? formattedDataInflow[index][1].toFixed(0) : 0; // Use inflow data if available
                         inflowInput.className = "inflow-input";
                         inflowInput.id = `inflowInput-${entry[0]}`;
                         inflowCell.appendChild(inflowInput);
@@ -237,7 +255,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const outflowCell = document.createElement("td");
                     const outflowInput = document.createElement("input");
                     outflowInput.type = "number";
-                    outflowInput.value = entry[1].toFixed(0);
+                    outflowInput.value = entry[1].toFixed(0); // Outflow uses formattedData
                     outflowInput.className = "outflow-input";
                     outflowInput.id = `outflowInput-${entry[0]}`;
                     outflowCell.appendChild(outflowInput);
@@ -278,10 +296,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "units": units,
                         "values": formattedData.map(entry => {
                             const outflowValue = document.getElementById(`outflowInput-${entry[0]}`).value;
-                            console.log("outflowValue:", outflowValue);
+                            // console.log("outflowValue:", outflowValue);
 
                             const timestampUnix = new Date(entry[0]).getTime();
-                            console.log("timestampUnix:", timestampUnix);
+                            // console.log("timestampUnix:", timestampUnix);
 
                             return [
                                 timestampUnix,
@@ -293,6 +311,33 @@ document.addEventListener('DOMContentLoaded', async function () {
                     };
                     console.log("Preparing payload...");
                     console.log("payload:", payload);
+
+                    let payloadInflow = null;
+                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                        payloadInflow = {
+                            "date-version-type": "MAX_AGGREGATE",
+                            "name": name2,
+                            "office-id": office,
+                            "units": units,
+                            "values": formattedData.map(entry => {
+                                let inflowValue = document.getElementById(`inflowInput-${entry[0]}`).value; // Get value from input field
+                                // console.log("inflowValue:", inflowValue);
+
+                                // Convert ISO date string to timestamp
+                                const timestampUnix = new Date(entry[0]).getTime();
+                                // console.log("timestampUnix:", timestampUnix);
+
+                                return [
+                                    timestampUnix,  // Timestamp for the day at 6 AM
+                                    parseInt(inflowValue), // Stage value (forecast outflow) as number
+                                    0 // Placeholder for the third value (set to 0 for now)
+                                ];
+                            }),
+                            "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
+                        };
+
+                        console.log("payloadInflow: ", payloadInflow);
+                    }
 
                     async function loginCDA() {
                         if (await isLoggedIn()) return true;
@@ -385,6 +430,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                             await createVersionTS(payload);
                             cdaStatusBtn.innerText = "Write successful!";
 
+                            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                                await createVersionTS(payloadInflow);
+                                cdaStatusBtn.innerText = "Write payloadInflow successful!";
+                            }
+
                             // Log the waiting message before the 2-second wait
                             console.log("Waiting for 2 seconds before fetching updated data...");
 
@@ -393,7 +443,12 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             // Fetch updated data and refresh the table
                             const updatedData = await fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day);
-                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, updatedData);
+
+                            let updatedDataInflow = null;
+                            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                                updatedDataInflow = await fetchUpdatedData(name2, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                            }
+                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, updatedData, name2, updatedDataInflow);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
@@ -406,7 +461,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             }
 
-            function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name) {
+            function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, name2) {
                 // Create the empty table element
                 const table = document.createElement("table");
 
@@ -531,7 +586,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "units": units,
                         "values": dates.map((date, index) => {
                             let outflowValue = document.getElementById(`outflowInput-${date}`).value; // Get value from input field
-                            console.log("outflowValue:", outflowValue);
+                            // console.log("outflowValue:", outflowValue);
 
                             // If outflowValue is empty or null, set it to 909
                             if (!outflowValue) {
@@ -540,7 +595,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             // Convert ISO date string to timestamp
                             const timestampUnix = new Date(date).getTime(); // Correct timestamp conversion
-                            console.log("timestampUnix:", timestampUnix);
+                            // console.log("timestampUnix:", timestampUnix);
 
                             return [
                                 timestampUnix,  // Timestamp for the day at 6 AM
@@ -552,6 +607,38 @@ document.addEventListener('DOMContentLoaded', async function () {
                     };
 
                     console.log("payload: ", payload);
+
+                    let payloadInflow = null;
+                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                        payloadInflow = {
+                            "date-version-type": "MAX_AGGREGATE",
+                            "name": name2,
+                            "office-id": office,
+                            "units": units,
+                            "values": dates.map((date, index) => {
+                                let inflowValue = document.getElementById(`inflowInput-${date}`).value; // Get value from input field
+                                // console.log("inflowValue:", inflowValue);
+
+                                // If inflowValue is empty or null, set it to 909
+                                if (!inflowValue) {
+                                    inflowValue = "909"; // Default value when empty or null
+                                }
+
+                                // Convert ISO date string to timestamp
+                                const timestampUnix = new Date(date).getTime(); // Correct timestamp conversion
+                                // console.log("timestampUnix:", timestampUnix);
+
+                                return [
+                                    timestampUnix,  // Timestamp for the day at 6 AM
+                                    parseInt(inflowValue), // Stage value (forecast outflow) as number
+                                    0 // Placeholder for the third value (set to 0 for now)
+                                ];
+                            }),
+                            "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
+                        };
+
+                        console.log("payloadInflow: ", payloadInflow);
+                    }
 
                     async function loginCDA() {
                         console.log("page");
@@ -673,6 +760,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                             await createVersionTS(payload);
                             cdaStatusBtn.innerText = "Write successful!";
 
+                            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                                await createVersionTS(payloadInflow);
+                                cdaStatusBtn.innerText = "Write payloadInflow successful!";
+                            }
+
                             // Log the waiting message before the 2-second wait
                             console.log("Waiting for 2 seconds before fetching updated data...");
 
@@ -681,7 +773,12 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             // Fetch updated data and refresh the table
                             const updatedData = await fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day);
-                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, updatedData);
+
+                            let updatedDataInflow = null;
+                            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                                updatedDataInflow = await fetchUpdatedData(name2, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                            }
+                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, updatedData, name2, updatedDataInflow);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
