@@ -892,6 +892,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 
+// Run this PL/SQL to delete data only (not tsid) for testing purposes
 // BEGIN
 //     CWMS_20.CWMS_TS.DELETE_TS(
 //         p_cwms_ts_id    => 'Lk Shelbyville-Kaskaskia.Flow-Out.Inst.~1Day.0.lakerep-rev-forecast',
@@ -899,3 +900,22 @@ document.addEventListener('DOMContentLoaded', async function () {
 //         p_db_office_id  => 'MVS'
 //     );
 // END; 
+
+// Run this PL/SQL to delete tsid and data
+// BEGIN  
+//     CWMS_20.CWMS_TS.DELETE_TS(  
+//         p_cwms_ts_id    => 'Mark Twain Lk-Salt.Flow-In.Inst.~1Day.0.lakerep-rev-forecast',  
+//         p_delete_action => CWMS_UTIL.DELETE_TS_CASCADE,  -- Delete time series and all dependencies  
+//         p_db_office_id  => 'MVS'  
+//     );  
+// END; 
+
+// To Create tsid, run write_data_versioned app
+
+// Timeseries used in this Widget
+// Rend Lk-Big Muddy.Flow-Out.Inst.~1Day.0.lakerep-rev-forecast
+// Carlyle Lk-Kaskaskia.Flow-Out.Inst.~1Day.0.lakerep-rev-forecast
+// Lk Shelbyville-Kaskaskia.Flow-Out.Inst.~1Day.0.lakerep-rev-forecast
+// Mark Twain Lk-Salt.Flow-In.Inst.~1Day.0.lakerep-rev-forecast
+// Mark Twain Lk-Salt.Flow-Out.Inst.~1Day.0.lakerep-rev-forecast
+// Wappapello Lk-St Francis.Flow-Out.Inst.~1Day.0.lakerep-rev-forecast
