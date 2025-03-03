@@ -277,15 +277,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "office-id": office,
                         "units": units,
                         "values": formattedData.map(entry => {
-                            const stageValue = document.getElementById(`outflowInput-${entry[0]}`).value;
-                            console.log("stageValue:", stageValue);
+                            const outflowValue = document.getElementById(`outflowInput-${entry[0]}`).value;
+                            console.log("outflowValue:", outflowValue);
 
                             const timestampUnix = new Date(entry[0]).getTime();
                             console.log("timestampUnix:", timestampUnix);
 
                             return [
                                 timestampUnix,
-                                parseFloat(stageValue),
+                                parseFloat(outflowValue),
                                 0
                             ];
                         }),
@@ -530,12 +530,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "office-id": office,
                         "units": units,
                         "values": dates.map((date, index) => {
-                            let stageValue = document.getElementById(`outflowInput-${date}`).value; // Get value from input field
-                            console.log("stageValue:", stageValue);
+                            let outflowValue = document.getElementById(`outflowInput-${date}`).value; // Get value from input field
+                            console.log("outflowValue:", outflowValue);
 
-                            // If stageValue is empty or null, set it to 909
-                            if (!stageValue) {
-                                stageValue = "909"; // Default value when empty or null
+                            // If outflowValue is empty or null, set it to 909
+                            if (!outflowValue) {
+                                outflowValue = "909"; // Default value when empty or null
                             }
 
                             // Convert ISO date string to timestamp
@@ -544,7 +544,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             return [
                                 timestampUnix,  // Timestamp for the day at 6 AM
-                                parseInt(stageValue), // Stage value (forecast outflow) as number
+                                parseInt(outflowValue), // Stage value (forecast outflow) as number
                                 0 // Placeholder for the third value (set to 0 for now)
                             ];
                         }),
