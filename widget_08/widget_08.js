@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("isoDateDay6:", isoDateDay6);
     console.log("isoDateDay7:", isoDateDay7);
 
-    const urltsid1 = `${setBaseUrl}timeseries/group/Stage?office=${office}&category-id=${lake}`;
+    const urlPrecipTsid = `${setBaseUrl}timeseries/group/Stage?office=${office}&category-id=${lake}`;
 
     const fetchTimeSeriesData = async (tsid) => {
         const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateToday}&office=${office}`;
@@ -67,26 +67,26 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     const fetchTsidData = async () => {
         try {
-            const response1 = await fetch(urltsid1);
+            const response1 = await fetch(urlPrecipTsid);
 
-            const tsidData1 = await response1.json();
+            const tsidDataPrecip = await response1.json();
 
             // Extract the timeseries-id from the response
-            const tsid1 = tsidData1['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
+            const tsidPrecip = tsidDataPrecip['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
 
-            console.log("tsid1:", tsid1);
+            console.log("tsidPrecip:", tsidPrecip);
 
             // Fetch time series data using tsid values
-            const timeSeriesData1 = await fetchTimeSeriesData(tsid1);
+            const timeSeriesDataPrecip = await fetchTimeSeriesData(tsidPrecip);
 
             // Call getHourlyDataOnTopOfHour for both time series data
-            const hourlyData1 = getMidnightData(timeSeriesData1, tsid1);
+            const midnightDataPrecip = getMidnightData(timeSeriesDataPrecip, tsidPrecip);
 
-            console.log("hourlyData1:", hourlyData1);
+            console.log("midnightDataPrecip:", midnightDataPrecip);
 
-            const formattedData1 = hourlyData1.map(entry => {
+            const midnightDataPrecipFormatted = midnightDataPrecip.map(entry => {
                 const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
-                // console.log("Original (hourlyData1):", entry.timestamp, "Formatted:", formattedTimestamp);
+                // console.log("Original (midnightDataPrecip):", entry.timestamp, "Formatted:", formattedTimestamp);
                 return {
                     ...entry,
                     formattedTimestamp
@@ -94,53 +94,55 @@ document.addEventListener('DOMContentLoaded', async function () {
             });
 
             // Now you have formatted data for both datasets
-            console.log("Formatted Data for HourlyData1:", formattedData1);
+            console.log("Formatted Data for midnightDataPrecip:", midnightDataPrecipFormatted);
 
             function createTable(formattedData1) {
                 // Create the table element
                 const table = document.createElement("table");
-
+            
                 // Apply the ID "gate-settings" to the table
                 table.id = "gate-settings";
-
+            
                 // Create the table header row
                 const headerRow = document.createElement("tr");
-
+            
                 const dateHeader = document.createElement("th");
                 dateHeader.textContent = "Date";
                 headerRow.appendChild(dateHeader);
-
+            
                 const stageHeader = document.createElement("th");
                 stageHeader.textContent = "Stage";
                 headerRow.appendChild(stageHeader);
-
+            
                 table.appendChild(headerRow);
-
+            
                 // Loop through formattedData1 to create rows
                 formattedData1.forEach(dataPoint => {
                     const row = document.createElement("tr");
-
+            
                     // Date column
                     const dateCell = document.createElement("td");
                     dateCell.textContent = dataPoint.formattedTimestamp;
                     row.appendChild(dateCell);
-
-                    // Stage column
+            
+                    // Stage column - make editable
                     const stageCell = document.createElement("td");
+                    stageCell.contentEditable = "true";  // Make the cell editable
                     stageCell.textContent = dataPoint.value.toFixed(2);
                     row.appendChild(stageCell);
-
+            
                     table.appendChild(row);
                 });
-
+            
                 // Append the table to the specific container (id="output8")
                 const output4Div = document.getElementById("output8");
                 output4Div.innerHTML = ""; // Clear any existing content
                 output4Div.appendChild(table);
             }
+            
 
-            // Call the function with formattedData1 and formattedData2
-            createTable(formattedData1);
+            // Call the function with midnightDataPrecipFormatted and formattedData2
+            createTable(midnightDataPrecipFormatted);
         } catch (error) {
             console.error("Error fetching tsid data:", error);
 
