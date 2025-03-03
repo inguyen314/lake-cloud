@@ -64,103 +64,106 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log("tsidData:", tsidData);
 
                 // Extract the timeseries-id from the response
-                const tsid = tsidData['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
-                console.log("tsid:", tsid);
+                const tsidOutflow = tsidData['assigned-time-series'][0]['timeseries-id'];
+                console.log("tsidOutflow:", tsidOutflow);
 
-                // Fetch time series data using tsid values
-                const timeSeriesData = await fetchTimeSeriesData(tsid);
-                console.log("timeSeriesData:", timeSeriesData);
+                let tsidInflow = null;
+                let timeSeriesDataInflow = null;
+                if (tsidData && tsidData['assigned-time-series'] && tsidData['assigned-time-series'][1]) {
+                    tsidInflow = tsidData['assigned-time-series'][1]['timeseries-id'];
+                    console.log("tsidInflow:", tsidInflow);
 
-                if (timeSeriesData && timeSeriesData.values && timeSeriesData.values.length > 0) {
-                    console.log("Calling createTable ...");
-
-                    createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, timeSeriesData);
-
-                    let cdaSaveBtn;
-
-                    async function isLoggedIn() {
-                        try {
-                            const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", {
-                                method: "GET"
-                            });
-
-                            if (response.status === 401) return false;
-
-                            console.log('status', response.status);
-                            return true;
-
-                        } catch (error) {
-                            console.error('Error checking login status:', error);
-                            return false;
-                        }
-                    }
-
-                    async function loginStateController() {
-                        cdaSaveBtn = document.getElementById("cda-btn"); // Get the button by its ID
-
-                        cdaSaveBtn.disabled = true; // Disable button while checking login state
-
-                        // Update button text based on login status
-                        if (await isLoggedIn()) {
-                            cdaSaveBtn.innerText = "Save";
-                        } else {
-                            cdaSaveBtn.innerText = "Login";
-                        }
-
-                        cdaSaveBtn.disabled = false; // Re-enable button
-                    }
-
-                    loginStateController()
-                    // Setup timers
-                    setInterval(async () => {
-                        loginStateController()
-                    }, 10000) // time is in millis
+                    timeSeriesDataInflow = await fetchTimeSeriesData(tsidInflow);
+                    console.log("timeSeriesDataInflow:", timeSeriesDataInflow);
                 } else {
-                    console.log("Calling createDataEntryTable ...");
-                    createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid);
-
-                    let cdaSaveBtn;
-
-                    async function isLoggedIn() {
-                        try {
-                            const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", {
-                                method: "GET"
-                            });
-
-                            if (response.status === 401) return false;
-
-                            console.log('status', response.status);
-                            return true;
-
-                        } catch (error) {
-                            console.error('Error checking login status:', error);
-                            return false;
-                        }
-                    }
-
-                    async function loginStateController() {
-                        cdaSaveBtn = document.getElementById("cda-btn"); // Get the button by its ID
-
-                        cdaSaveBtn.disabled = true; // Disable button while checking login state
-
-                        // Update button text based on login status
-                        if (await isLoggedIn()) {
-                            cdaSaveBtn.innerText = "Save";
-                        } else {
-                            cdaSaveBtn.innerText = "Login";
-                        }
-
-                        cdaSaveBtn.disabled = false; // Re-enable button
-                    }
-
-                    loginStateController()
-                    // Setup timers
-                    setInterval(async () => {
-                        loginStateController()
-                    }, 10000) // time is in millis
+                    console.log("The required data does not exist.");
                 }
+
+                // Fetch time series data using tsidOutflow values
+                const timeSeriesDataOutflow = await fetchTimeSeriesData(tsidOutflow);
+                console.log("timeSeriesDataOutflow:", timeSeriesDataOutflow);
+
+                let cdaSaveBtn;
+
+                async function isLoggedIn() {
+                    try {
+                        const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", {
+                            method: "GET"
+                        });
+
+                        if (response.status === 401) return false;
+
+                        console.log('status', response.status);
+                        return true;
+
+                    } catch (error) {
+                        console.error('Error checking login status:', error);
+                        return false;
+                    }
+                }
+
+                async function loginStateController() {
+                    cdaSaveBtn = document.getElementById("cda-btn"); // Get the button by its ID
+
+                    cdaSaveBtn.disabled = true; // Disable button while checking login state
+
+                    // Update button text based on login status
+                    if (await isLoggedIn()) {
+                        cdaSaveBtn.innerText = "Save";
+                    } else {
+                        cdaSaveBtn.innerText = "Login";
+                    }
+
+                    cdaSaveBtn.disabled = false; // Re-enable button
+                }
+
+                if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                    if (timeSeriesDataOutflow && timeSeriesDataOutflow.values && timeSeriesDataOutflow.values.length > 0 && timeSeriesDataInflow && timeSeriesDataInflow.values && timeSeriesDataInflow.values.length > 0) {
+                        console.log("Calling Mark Twain Lk createTable ...");
+
+                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, timeSeriesDataOutflow);
+
+                        loginStateController()
+                        // Setup timers
+                        setInterval(async () => {
+                            loginStateController()
+                        }, 10000) // time is in millis
+                    } else {
+                        console.log("Calling Mark Twain Lk createDataEntryTable ...");
+                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow);
+
+                        loginStateController()
+                        // Setup timers
+                        setInterval(async () => {
+                            loginStateController()
+                        }, 10000) // time is in millis
+                    }
+
+                } else {
+                    if (timeSeriesDataOutflow && timeSeriesDataOutflow.values && timeSeriesDataOutflow.values.length > 0) {
+                        console.log("Calling createTable ...");
+
+                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, timeSeriesDataOutflow);
+
+                        loginStateController()
+                        // Setup timers
+                        setInterval(async () => {
+                            loginStateController()
+                        }, 10000) // time is in millis
+                    } else {
+                        console.log("Calling createDataEntryTable ...");
+                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow);
+
+                        loginStateController()
+                        // Setup timers
+                        setInterval(async () => {
+                            loginStateController()
+                        }, 10000) // time is in millis
+                    }
+                }
+
             } catch (error) {
-                console.error("Error fetching tsid data:", error);
+                console.error("Error fetching tsidOutflow data:", error);
 
                 // Show the "Report Issue" button
                 document.getElementById('reportIssueBtn').style.display = "block";
@@ -175,10 +178,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             }
 
-            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, timeSeriesData) {
-                console.log("timeSeriesData:", timeSeriesData);
+            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, timeSeriesDataOutflow) {
+                console.log("timeSeriesDataOutflow:", timeSeriesDataOutflow);
 
-                formattedData = timeSeriesData.values.map(entry => {
+                formattedData = timeSeriesDataOutflow.values.map(entry => {
                     const timestamp = entry[0]; // Timestamp is in milliseconds in the array
                     const formattedTimestampCST = formatISODateToUTCString(Number(timestamp)); // Ensure timestamp is a number
 
@@ -189,7 +192,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 });
 
                 // Now you have formatted data for both datasets
-                console.log("Formatted timeSeriesData:", formattedData);
+                console.log("Formatted timeSeriesDataOutflow:", formattedData);
 
                 const table = document.createElement("table");
                 table.id = "gate-settings";
@@ -692,12 +695,12 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         };
 
-        const fetchTimeSeriesData = async (tsid) => {
+        const fetchTimeSeriesData = async (tsidOutflow) => {
             let tsidData = null;
             if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=${office}&version-date=${isoDateToday}`;
+                tsidData = `${setBaseUrl}timeseries?name=${tsidOutflow}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=${office}&version-date=${isoDateToday}`;
             } else {
-                tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${isoDateDay5}&office=${office}&version-date=${isoDateToday}`;
+                tsidData = `${setBaseUrl}timeseries?name=${tsidOutflow}&begin=${isoDateToday}&end=${isoDateDay5}&office=${office}&version-date=${isoDateToday}`;
             }
             console.log('tsidData:', tsidData);
 
@@ -721,10 +724,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         };
 
         fetchTsidData();
-    } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-        console.log("****************** Mark Twain Lk-Salt");
-        console.log('datetime: ', datetime);
-
     }
 
     function getIsoDateWithOffset(year, month, day, offset) {
