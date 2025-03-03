@@ -52,10 +52,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("isoDateDay7:", isoDateDay7);
 
     const urltsid1 = `${setBaseUrl}timeseries/group/Stage?office=${office}&category-id=${lake}`;
-    const urltsid2 = `${setBaseUrl}timeseries/group/Flow?office=${office}&category-id=${lake}`;
 
     const fetchTimeSeriesData = async (tsid) => {
-        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus8Days}&end=${isoDateToday}&office=${office}`;
+        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateToday}&office=${office}`;
         console.log('tsidData:', tsidData);
         try {
             const response = await fetch(tsidData);
@@ -69,28 +68,21 @@ document.addEventListener('DOMContentLoaded', async function () {
     const fetchTsidData = async () => {
         try {
             const response1 = await fetch(urltsid1);
-            const response2 = await fetch(urltsid2);
 
             const tsidData1 = await response1.json();
-            const tsidData2 = await response2.json();
 
             // Extract the timeseries-id from the response
             const tsid1 = tsidData1['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
-            const tsid2 = tsidData2['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
 
             console.log("tsid1:", tsid1);
-            console.log("tsid2:", tsid2);
 
             // Fetch time series data using tsid values
             const timeSeriesData1 = await fetchTimeSeriesData(tsid1);
-            const timeSeriesData2 = await fetchTimeSeriesData(tsid2);
 
             // Call getHourlyDataOnTopOfHour for both time series data
             const hourlyData1 = getMidnightData(timeSeriesData1, tsid1);
-            const hourlyData2 = getMidnightData(timeSeriesData2, tsid2);
 
             console.log("hourlyData1:", hourlyData1);
-            console.log("hourlyData2:", hourlyData2);
 
             const formattedData1 = hourlyData1.map(entry => {
                 const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
@@ -101,20 +93,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             });
 
-            const formattedData2 = hourlyData2.map(entry => {
-                const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
-                // console.log("Original (hourlyData2):", entry.timestamp, "Formatted:", formattedTimestamp);
-                return {
-                    ...entry,
-                    formattedTimestamp
-                };
-            });
-
             // Now you have formatted data for both datasets
             console.log("Formatted Data for HourlyData1:", formattedData1);
-            console.log("Formatted Data for HourlyData2:", formattedData2);
 
-            function createTable(formattedData1, formattedData2) {
+            function createTable(formattedData1) {
                 // Create the table element
                 const table = document.createElement("table");
 
@@ -132,49 +114,24 @@ document.addEventListener('DOMContentLoaded', async function () {
                 stageHeader.textContent = "Stage";
                 headerRow.appendChild(stageHeader);
 
-                const outflowHeader = document.createElement("th");
-                outflowHeader.textContent = "Outflow";
-                headerRow.appendChild(outflowHeader);
-
                 table.appendChild(headerRow);
 
-                // Combine the data based on matching timestamps
-                let i = 0;
-                let j = 0;
+                // Loop through formattedData1 to create rows
+                formattedData1.forEach(dataPoint => {
+                    const row = document.createElement("tr");
 
-                while (i < formattedData1.length && j < formattedData2.length) {
-                    // Find matching formattedTimestamps
-                    if (formattedData1[i].formattedTimestamp === formattedData2[j].formattedTimestamp) {
-                        const row = document.createElement("tr");
+                    // Date column
+                    const dateCell = document.createElement("td");
+                    dateCell.textContent = dataPoint.formattedTimestamp;
+                    row.appendChild(dateCell);
 
-                        // Date column (from formattedData1)
-                        const dateCell = document.createElement("td");
-                        dateCell.textContent = formattedData1[i].formattedTimestamp; // Display formattedTimestamp as Date
-                        row.appendChild(dateCell);
+                    // Stage column
+                    const stageCell = document.createElement("td");
+                    stageCell.textContent = dataPoint.value.toFixed(2);
+                    row.appendChild(stageCell);
 
-                        // Stage column (from formattedData1)
-                        const stageCell = document.createElement("td");
-                        stageCell.textContent = formattedData1[i].value.toFixed(2); // Assuming stage is from formattedData1
-                        row.appendChild(stageCell);
-
-                        // Outflow column (from formattedData2)
-                        const outflowCell = document.createElement("td");
-                        outflowCell.textContent = formattedData2[j].value.toFixed(0); // Assuming outflow is from formattedData2
-                        row.appendChild(outflowCell);
-
-                        table.appendChild(row);
-
-                        // Move to next entry in both datasets
-                        i++;
-                        j++;
-                    } else if (formattedData1[i].formattedTimestamp < formattedData2[j].formattedTimestamp) {
-                        // If the timestamp in formattedData1 is earlier, just move to the next entry in formattedData1
-                        i++;
-                    } else {
-                        // If the timestamp in formattedData2 is earlier, just move to the next entry in formattedData2
-                        j++;
-                    }
-                }
+                    table.appendChild(row);
+                });
 
                 // Append the table to the specific container (id="output8")
                 const output4Div = document.getElementById("output8");
@@ -182,47 +139,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output4Div.appendChild(table);
             }
 
-            function createTableAvg(formattedData2) {
-                // Extract the last two values
-                const lastValue = formattedData2[formattedData2.length - 1].value;
-                const secondLastValue = formattedData2[formattedData2.length - 2].value;
-
-                // Calculate the average of the last two values
-                const averageValue = (lastValue + secondLastValue) / 2;
-
-                // Create the table structure
-                const table = document.createElement("table");
-
-                // Apply the ID "gate-settings" to the table
-                table.id = "gate-settings";
-
-                // Create the header row
-                const headerRow = table.insertRow();
-                const col1 = headerRow.insertCell();
-                const col2 = headerRow.insertCell();
-
-                col1.textContent = "Average Outflow for Yesterday:";
-                col2.textContent = averageValue.toFixed(0);  // Format the average value to 0 decimal places
-                col2.style.fontWeight = "bold";
-
-                // Set column widths: 2/3 for col1 and 1/3 for col2
-                col1.style.width = "66%";  // 2/3 width
-                col2.style.width = "33%";  // 1/3 width
-
-                // Add a title for the tooltip when hovering over col2
-                col2.title = `The average outflow value for yesterday is: ${lastValue.toFixed(0)}/${secondLastValue.toFixed(0)} =  ${averageValue.toFixed(0)}`;
-
-                // Insert the table into the "output8" div
-                const outputDiv = document.getElementById("output8");
-                outputDiv.appendChild(table);
-            }
-
             // Call the function with formattedData1 and formattedData2
-            createTable(formattedData1, formattedData2);
-
-            // Call the function
-            createTableAvg(formattedData2);
-
+            createTable(formattedData1);
         } catch (error) {
             console.error("Error fetching tsid data:", error);
 
@@ -308,7 +226,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Return the ISO string
         return date.toISOString();
     }
-
 });
 
 
