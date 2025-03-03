@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             }
 
-            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, timeSeriesDataOutflow, name2, timeSeriesDataInflow) {
+            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, timeSeriesDataOutflow, tsidInflow, timeSeriesDataInflow) {
                 console.log("timeSeriesDataOutflow:", timeSeriesDataOutflow);
                 console.log("timeSeriesDataInflow:", timeSeriesDataInflow);
 
@@ -286,14 +286,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // const dates = [isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7];
 
                 cdaSaveBtn.addEventListener("click", async () => {
-                    const units = "cfs";
-                    const office = "MVS";
-
-                    const payload = {
+                    const payloadOutflow = {
                         "date-version-type": "MAX_AGGREGATE",
-                        "name": name,
-                        "office-id": office,
-                        "units": units,
+                        "name": tsidOutflow,
+                        "office-id": "MVS",
+                        "units": "cfs",
                         "values": formattedData.map(entry => {
                             const outflowValue = document.getElementById(`outflowInput-${entry[0]}`).value;
                             // console.log("outflowValue:", outflowValue);
@@ -310,15 +307,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "version-date": isoDateToday,
                     };
                     console.log("Preparing payload...");
-                    console.log("payload:", payload);
+                    console.log("payloadOutflow:", payloadOutflow);
 
                     let payloadInflow = null;
                     if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
                         payloadInflow = {
                             "date-version-type": "MAX_AGGREGATE",
-                            "name": name2,
-                            "office-id": office,
-                            "units": units,
+                            "name": tsidInflow,
+                            "office-id": "MVS",
+                            "units": "cfs",
                             "values": formattedData.map(entry => {
                                 let inflowValue = document.getElementById(`inflowInput-${entry[0]}`).value; // Get value from input field
                                 // console.log("inflowValue:", inflowValue);
@@ -427,7 +424,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     } else {
                         try {
                             showSpinner(); // Show the spinner before creating the version
-                            await createVersionTS(payload);
+                            await createVersionTS(payloadOutflow);
                             cdaStatusBtn.innerText = "Write successful!";
 
                             if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
@@ -442,13 +439,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // await new Promise(resolve => setTimeout(resolve, 500));
 
                             // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                            const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
 
                             let updatedDataInflow = null;
                             if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                                updatedDataInflow = await fetchUpdatedData(name2, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                                updatedDataInflow = await fetchUpdatedData(tsidInflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
                             }
-                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, updatedData, name2, updatedDataInflow);
+                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, updatedData, tsidInflow, updatedDataInflow);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
@@ -461,7 +458,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             }
 
-            function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, name2) {
+            function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, tsidInflow) {
                 // Create the empty table element
                 const table = document.createElement("table");
 
@@ -575,15 +572,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Add event listener to the submit button
                 cdaSaveBtn.addEventListener("click", async () => {
-                    // Prepare the new payload format
-                    const units = "cfs";
-                    const office = "MVS";
-
-                    const payload = {
+                    const payloadOutflow = {
                         "date-version-type": "MAX_AGGREGATE",
-                        "name": name,
-                        "office-id": office,
-                        "units": units,
+                        "name": tsidOutflow,
+                        "office-id": "MVS",
+                        "units": "cfs",
                         "values": dates.map((date, index) => {
                             let outflowValue = document.getElementById(`outflowInput-${date}`).value; // Get value from input field
                             // console.log("outflowValue:", outflowValue);
@@ -606,15 +599,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
                     };
 
-                    console.log("payload: ", payload);
+                    console.log("payloadOutflow: ", payloadOutflow);
 
                     let payloadInflow = null;
                     if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
                         payloadInflow = {
                             "date-version-type": "MAX_AGGREGATE",
-                            "name": name2,
-                            "office-id": office,
-                            "units": units,
+                            "name": tsidInflow,
+                            "office-id": "MVS",
+                            "units": "cfs",
                             "values": dates.map((date, index) => {
                                 let inflowValue = document.getElementById(`inflowInput-${date}`).value; // Get value from input field
                                 // console.log("inflowValue:", inflowValue);
@@ -686,9 +679,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
                             }
 
-                            // const data = await response.json();
-                            // console.log('Success:', data);
-                            // return data;
                             return true;
 
                         } catch (error) {
@@ -757,7 +747,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     } else {
                         try {
                             showSpinner(); // Show the spinner before creating the version
-                            await createVersionTS(payload);
+                            await createVersionTS(payloadOutflow);
                             cdaStatusBtn.innerText = "Write successful!";
 
                             if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
@@ -772,13 +762,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // await new Promise(resolve => setTimeout(resolve, 500));
 
                             // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                            const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
 
                             let updatedDataInflow = null;
                             if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                                updatedDataInflow = await fetchUpdatedData(name2, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                                updatedDataInflow = await fetchUpdatedData(tsidInflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
                             }
-                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, name, updatedData, name2, updatedDataInflow);
+                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, updatedData, tsidInflow, updatedDataInflow);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
