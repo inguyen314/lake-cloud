@@ -229,9 +229,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const precipCell = document.createElement("td");
                     const precipInput = document.createElement("input");
                     precipInput.type = "number";
-                    precipInput.value = "";  // Blank entry box
+                    precipInput.value = 0;  // Blank entry box
                     precipInput.className = "outflow-input";
                     precipInput.id = `precipInput-${isoDateToday}`;
+                    precipInput.style.backgroundColor = "pink";  // Set pink background
                     precipCell.appendChild(precipInput);
                     row.appendChild(precipCell);
 
