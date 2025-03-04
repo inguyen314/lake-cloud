@@ -543,27 +543,19 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output6Div.innerHTML = ""; // Clear any existing content
                 output6Div.appendChild(table);
 
-                // Create and append the submit button below the table
-                cdaSaveBtn = document.createElement("button");
+                const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
-                cdaSaveBtn.id = "cda-btn"; // Use the cda-btn ID for the button
-                cdaSaveBtn.disabled = true; // Initially disable the button
+                cdaSaveBtn.id = "cda-btn";
+                cdaSaveBtn.disabled = true;
                 output6Div.appendChild(cdaSaveBtn);
 
-                // Create a div with class "status"
                 const statusDiv = document.createElement("div");
                 statusDiv.className = "status";
-
-                // Create and append the submit button below the table
                 const cdaStatusBtn = document.createElement("button");
                 cdaStatusBtn.textContent = "";
-                cdaStatusBtn.id = "cda-btn"; // Use the cda-btn ID for the button
-                cdaStatusBtn.disabled = false; // Initially disable the button
-
-                // Append the button to the status div
+                cdaStatusBtn.id = "cda-btn";
+                cdaStatusBtn.disabled = false;
                 statusDiv.appendChild(cdaStatusBtn);
-
-                // Append the status div to output6Div
                 output6Div.appendChild(statusDiv);
 
                 // Add event listener to the submit button
