@@ -5,9 +5,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         let setBaseUrl = null;
         if (cda === "internal") {
-            setBaseUrl = `https://wm.${office.toLowerCase()}.ds.usace.army.mil:8243/${office.toLowerCase()}-data/`;
+            setBaseUrl = `https://wm.${office.toLowerCase()}.ds.usace.army.mil/${office.toLowerCase()}-data/`;
         } else if (cda === "internal-coop") {
-            setBaseUrl = `https://wm-${office.toLowerCase()}coop.mvk.ds.usace.army.mil:8243/${office.toLowerCase()}-data/`;
+            setBaseUrl = `https://wm-${office.toLowerCase()}coop.mvk.ds.usace.army.mil/${office.toLowerCase()}-data/`;
         } else if (cda === "public") {
             setBaseUrl = `https://cwms-data.usace.army.mil/cwms-data/`;
         }
@@ -59,7 +59,12 @@ document.addEventListener('DOMContentLoaded', async function () {
             const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus8Days}&end=${isoDateToday}&office=${office}`;
             console.log('tsidData:', tsidData);
             try {
-                const response = await fetch(tsidData);
+                const response = await fetch(tsidData, {
+                    headers: {
+                        "Accept": "application/json;version=2", // Ensuring the correct version is used
+                        "cache-control": "no-cache"
+                    }
+                });
                 const data = await response.json();
                 return data;
             } catch (error) {

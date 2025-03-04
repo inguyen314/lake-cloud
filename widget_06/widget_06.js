@@ -522,6 +522,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         inflowInput.type = "text";
                         inflowInput.value = "";
                         inflowInput.id = `inflowInput-${date}`;
+                        inflowInput.style.backgroundColor = "pink";  // Set pink background
                         inflowCell.appendChild(inflowInput);
                         row.appendChild(inflowCell);
                     }
@@ -532,6 +533,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     outflowInput.type = "text";
                     outflowInput.value = "";
                     outflowInput.id = `outflowInput-${date}`;
+                    outflowInput.style.backgroundColor = "pink";  // Set pink background
                     outflowCell.appendChild(outflowInput);
                     row.appendChild(outflowCell);
 
