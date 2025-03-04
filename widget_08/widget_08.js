@@ -4,9 +4,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     let setBaseUrl = null;
     if (cda === "internal") {
-        setBaseUrl = `https://wm.${office.toLowerCase()}.ds.usace.army.mil:8243/${office.toLowerCase()}-data/`;
+        setBaseUrl = `https://wm.${office.toLowerCase()}.ds.usace.army.mil/${office.toLowerCase()}-data/`;
     } else if (cda === "internal-coop") {
-        setBaseUrl = `https://wm-${office.toLowerCase()}coop.mvk.ds.usace.army.mil:8243/${office.toLowerCase()}-data/`;
+        setBaseUrl = `https://wm-${office.toLowerCase()}coop.mvk.ds.usace.army.mil/${office.toLowerCase()}-data/`;
     } else if (cda === "public") {
         setBaseUrl = `https://cwms-data.usace.army.mil/cwms-data/`;
     }
@@ -66,10 +66,16 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         console.log("isoDateMinus1DayPlus1Hour: ", isoDateMinus1DayPlus1Hour);
 
-        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1DayPlus1Hour}&end=${isoDateToday}&office=${office}`;
+        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateToday}&office=${office}`;
         console.log('tsidData:', tsidData);
         try {
-            const response = await fetch(tsidData);
+            const response = await fetch(tsidData, {
+                headers: {
+                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                    "cache-control": "no-cache"
+                }
+            });
+
             const data = await response.json();
             return data;
         } catch (error) {
@@ -81,7 +87,12 @@ document.addEventListener('DOMContentLoaded', async function () {
         const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus2Days}&end=${isoDateMinus1Day}&office=${office}`;
         console.log('tsidData:', tsidData);
         try {
-            const response = await fetch(tsidData);
+            const response = await fetch(tsidData, {
+                headers: {
+                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                    "cache-control": "no-cache"
+                }
+            });
             const data = await response.json();
             return data;
         } catch (error) {
@@ -176,19 +187,22 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 console.log("Formatted timeSeriesDataPrecip:", formattedData);
 
-                const formattedDataYesterday = timeSeriesDataPrecipYesterday.values.map(entry => {
-                    const timestamp = entry[0]; // First element is the timestamp
-                    const formattedTimestampCST = formatISODateToCSTString(Number(timestamp));
-
-                    return {
-                        timestamp,
-                        formattedTimestampCST,
-                        value: parseFloat(entry[1]).toFixed(2),  // Format value to 2 decimal places
-                        qualityCode: entry[2]    // Third element is the quality code
-                    };
-                });
-
-                console.log("Formatted timeSeriesDataPrecipYesterday:", formattedDataYesterday);
+                let formattedDataYesterday = null;
+                if (timeSeriesDataPrecipYesterday && timeSeriesDataPrecipYesterday.values) {
+                    formattedDataYesterday = timeSeriesDataPrecipYesterday.values.map(entry => {
+                        const timestamp = entry[0]; // First element is the timestamp
+                        const formattedTimestampCST = formatISODateToCSTString(Number(timestamp));
+                
+                        return {
+                            timestamp,
+                            formattedTimestampCST,
+                            value: parseFloat(entry[1]).toFixed(2),  // Format value to 2 decimal places
+                            qualityCode: entry[2]    // Third element is the quality code
+                        };
+                    });
+                
+                    console.log("Formatted timeSeriesDataPrecipYesterday:", formattedDataYesterday);
+                }                
 
                 const table = document.createElement("table");
                 table.id = "gate-settings";
@@ -328,21 +342,24 @@ document.addEventListener('DOMContentLoaded', async function () {
                     async function fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day) {
                         let response = null;
 
-                        if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
-                                headers: {
-                                    "Accept": "application/json;version=2", // Ensuring the correct version is used
-                                    "cache-control": "no-cache"
-                                }
-                            });
-                        } else {
-                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
-                                headers: {
-                                    "Accept": "application/json;version=2", // Ensuring the correct version is used
-                                    "cache-control": "no-cache"
-                                }
-                            });
-                        }
+                        // Convert to Date object
+                        const date = new Date(isoDateMinus1Day);
+
+                        // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
+                        date.setTime(date.getTime() + (1 * 60 * 60 * 1000));
+
+                        // Convert back to ISO string (preserve UTC format)
+                        const isoDateMinus1DayPlus1Hour = date.toISOString();
+
+                        console.log("isoDateMinus1DayPlus1Hour: ", isoDateMinus1DayPlus1Hour);
+
+                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1DayPlus1Hour}&end=${isoDateToday}&office=MVS`, {
+                            headers: {
+                                "Accept": "application/json;version=2", // Ensuring the correct version is used
+                                "cache-control": "no-cache"
+                            }
+                        });
+
 
                         if (!response.ok) {
                             throw new Error(`Failed to fetch updated data: ${response.status}`);
@@ -383,13 +400,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                         cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
                     } else {
                         try {
-                            // showSpinner(); // Show the spinner before creating the version
-                            // await createVersionTS(payload);
-                            // cdaStatusBtn.innerText = "Write successful!";
+                            showSpinner(); // Show the spinner before creating the version
+                            await createVersionTS(payload);
+                            cdaStatusBtn.innerText = "Write successful!";
 
-                            // // Fetch updated data and refresh the table
-                            // const updatedData = await fetchUpdatedData(tsidPrecip, isoDateDay5, isoDateToday, isoDateMinus1Day);
-                            // createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, updatedData);
+                            // Fetch updated data and refresh the table
+                            const updatedData = await fetchUpdatedData(tsidPrecip, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, updatedData);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
