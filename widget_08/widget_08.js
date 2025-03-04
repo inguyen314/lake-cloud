@@ -55,7 +55,18 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("urlPrecipTsid:", urlPrecipTsid);
 
     const fetchTimeSeriesData = async (tsid) => {
-        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateToday}&office=${office}`;
+        // Convert to Date object
+        const date = new Date(isoDateMinus1Day);
+
+        // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
+        date.setTime(date.getTime() + (1 * 60 * 60 * 1000));
+
+        // Convert back to ISO string (preserve UTC format)
+        const isoDateMinus1DayPlus1Hour = date.toISOString();
+
+        console.log("isoDateMinus1DayPlus1Hour: ", isoDateMinus1DayPlus1Hour);
+
+        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1DayPlus1Hour}&end=${isoDateToday}&office=${office}`;
         console.log('tsidData:', tsidData);
         try {
             const response = await fetch(tsidData);
