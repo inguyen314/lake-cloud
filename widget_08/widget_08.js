@@ -253,26 +253,35 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output6Div.appendChild(statusDiv);
 
                 cdaSaveBtn.addEventListener("click", async () => {
+                    const values = [];
+
+                    if (formattedData.length === 0) {
+                        // No data, only today's input (single row scenario)
+                        const precipInput = document.getElementById(`precipInput-${isoDateToday}`).value;
+
+                        let precipValue = precipInput ? parseFloat(precipInput) : 909; // Default to 909 if empty
+                        const timestampUnix = new Date(isoDateToday).getTime();
+
+                        values.push([timestampUnix, precipValue, 0]);
+                    } else {
+                        // Use existing formattedData entries
+                        formattedData.forEach(entry => {
+                            const precipInput = document.getElementById(`precipInput-${entry.timestamp}`).value;
+
+                            let precipValue = precipInput ? parseFloat(precipInput) : 909; // Default to 909 if empty
+                            const timestampUnix = new Date(entry.timestamp).getTime();
+
+                            values.push([timestampUnix, precipValue, 0]);
+                        });
+                    }
+
                     const payload = {
-                        "date-version-type": "MAX_AGGREGATE",
                         "name": tsidPrecip,
                         "office-id": "MVS",
                         "units": "in",
-                        "values": formattedData.map(entry => {
-                            const outflowValue = document.getElementById(`precipInput-${entry[0]}`).value;
-                            console.log("outflowValue:", outflowValue);
-
-                            const timestampUnix = new Date(entry[0]).getTime();
-                            console.log("timestampUnix:", timestampUnix);
-
-                            return [
-                                timestampUnix,
-                                parseFloat(outflowValue),
-                                0
-                            ];
-                        }),
-                        "version-date": isoDateToday,
+                        "values": values
                     };
+
                     console.log("Preparing payload...");
                     console.log("payload:", payload);
 
