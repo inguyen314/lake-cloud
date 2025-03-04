@@ -85,16 +85,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const formattedData = timeSeriesDataPrecip.values.map(entry => {
                     const timestamp = entry[0]; // First element is the timestamp
                     const formattedTimestampCST = formatISODateToCSTString(Number(timestamp));
-                
+
                     return {
                         timestamp,
                         formattedTimestampCST,
-                        value: entry[1],        // Second element is the value
+                        value: parseFloat(entry[1]).toFixed(2),  // Format value to 2 decimal places
                         qualityCode: entry[2]    // Third element is the quality code
                     };
                 });
-                
-                console.log("Formatted timeSeriesDataPrecip:", formattedData);                
+
+                console.log("Formatted timeSeriesDataPrecip:", formattedData);
 
                 const table = document.createElement("table");
                 table.id = "gate-settings";
@@ -111,9 +111,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 table.appendChild(headerRow);
 
                 // Loop over the data (use formattedData for outflow and formattedDataInflow for inflow if lake matches)
+                // Render table rows
                 formattedData.forEach((entry, index) => {
                     const row = document.createElement("tr");
 
+                    // Date cell
                     const dateCell = document.createElement("td");
                     dateCell.textContent = entry.formattedTimestampCST ? entry.formattedTimestampCST : entry.timestamp;
                     row.appendChild(dateCell);
@@ -122,9 +124,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const outflowCell = document.createElement("td");
                     const outflowInput = document.createElement("input");
                     outflowInput.type = "number";
-                    outflowInput.value = entry.value; // Directly use entry.value instead of entry[1]
+                    outflowInput.value = entry.value;  // Use formatted value
                     outflowInput.className = "outflow-input";
-                    outflowInput.id = `outflowInput-${entry.timestamp}`; // Use entry.timestamp instead of entry[0]
+                    outflowInput.id = `outflowInput-${entry.timestamp}`;
                     outflowCell.appendChild(outflowInput);
                     row.appendChild(outflowCell);
 
