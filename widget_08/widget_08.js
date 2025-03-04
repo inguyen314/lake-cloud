@@ -51,7 +51,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("isoDateDay6:", isoDateDay6);
     console.log("isoDateDay7:", isoDateDay7);
 
-    const urlPrecipTsid = `${setBaseUrl}timeseries/group/Stage?office=${office}&category-id=${lake}`;
+    const urlPrecipTsid = `${setBaseUrl}timeseries/group/Precip-Lake-Test?office=${office}&category-id=${lake}`;
+    console.log("urlPrecipTsid:", urlPrecipTsid);
 
     const fetchTimeSeriesData = async (tsid) => {
         const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateToday}&office=${office}`;
@@ -73,76 +74,230 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             // Extract the timeseries-id from the response
             const tsidPrecip = tsidDataPrecip['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
-
             console.log("tsidPrecip:", tsidPrecip);
 
             // Fetch time series data using tsid values
             const timeSeriesDataPrecip = await fetchTimeSeriesData(tsidPrecip);
 
-            // Call getHourlyDataOnTopOfHour for both time series data
-            const midnightDataPrecip = getMidnightData(timeSeriesDataPrecip, tsidPrecip);
+            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, timeSeriesDataPrecip) {
+                console.log("timeSeriesDataPrecip:", timeSeriesDataPrecip);
 
-            console.log("midnightDataPrecip:", midnightDataPrecip);
+                const formattedData = timeSeriesDataPrecip.values.map(entry => {
+                    const timestamp = entry[0]; // First element is the timestamp
+                    const formattedTimestampCST = formatISODateToCSTString(Number(timestamp));
+                
+                    return {
+                        timestamp,
+                        formattedTimestampCST,
+                        value: entry[1],        // Second element is the value
+                        qualityCode: entry[2]    // Third element is the quality code
+                    };
+                });
+                
+                console.log("Formatted timeSeriesDataPrecip:", formattedData);                
 
-            const midnightDataPrecipFormatted = midnightDataPrecip.map(entry => {
-                const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
-                // console.log("Original (midnightDataPrecip):", entry.timestamp, "Formatted:", formattedTimestamp);
-                return {
-                    ...entry,
-                    formattedTimestamp
-                };
-            });
-
-            // Now you have formatted data for both datasets
-            console.log("Formatted Data for midnightDataPrecip:", midnightDataPrecipFormatted);
-
-            function createTable(formattedData1) {
-                // Create the table element
                 const table = document.createElement("table");
-            
-                // Apply the ID "gate-settings" to the table
                 table.id = "gate-settings";
-            
-                // Create the table header row
+
                 const headerRow = document.createElement("tr");
-            
                 const dateHeader = document.createElement("th");
                 dateHeader.textContent = "Date";
                 headerRow.appendChild(dateHeader);
-            
-                const stageHeader = document.createElement("th");
-                stageHeader.textContent = "Stage";
-                headerRow.appendChild(stageHeader);
-            
+
+                const outflowHeader = document.createElement("th");
+                outflowHeader.textContent = "Forecast Outflow (cfs)";
+                headerRow.appendChild(outflowHeader);
+
                 table.appendChild(headerRow);
-            
-                // Loop through formattedData1 to create rows
-                formattedData1.forEach(dataPoint => {
+
+                // Loop over the data (use formattedData for outflow and formattedDataInflow for inflow if lake matches)
+                formattedData.forEach((entry, index) => {
                     const row = document.createElement("tr");
-            
-                    // Date column
+
                     const dateCell = document.createElement("td");
-                    dateCell.textContent = dataPoint.formattedTimestamp;
+                    dateCell.textContent = entry.formattedTimestampCST ? entry.formattedTimestampCST : entry.timestamp;
                     row.appendChild(dateCell);
-            
-                    // Stage column - make editable
-                    const stageCell = document.createElement("td");
-                    stageCell.contentEditable = "true";  // Make the cell editable
-                    stageCell.textContent = dataPoint.value.toFixed(2);
-                    row.appendChild(stageCell);
-            
+
+                    // Outflow cell (editable)
+                    const outflowCell = document.createElement("td");
+                    const outflowInput = document.createElement("input");
+                    outflowInput.type = "number";
+                    outflowInput.value = entry.value; // Directly use entry.value instead of entry[1]
+                    outflowInput.className = "outflow-input";
+                    outflowInput.id = `outflowInput-${entry.timestamp}`; // Use entry.timestamp instead of entry[0]
+                    outflowCell.appendChild(outflowInput);
+                    row.appendChild(outflowCell);
+
                     table.appendChild(row);
                 });
-            
-                // Append the table to the specific container (id="output8")
-                const output4Div = document.getElementById("output8");
-                output4Div.innerHTML = ""; // Clear any existing content
-                output4Div.appendChild(table);
+
+                const output6Div = document.getElementById("output8");
+                output6Div.innerHTML = "";
+                output6Div.appendChild(table);
+
+                const cdaSaveBtn = document.createElement("button");
+                cdaSaveBtn.textContent = "Submit";
+                cdaSaveBtn.id = "cda-btn";
+                cdaSaveBtn.disabled = true;
+                output6Div.appendChild(cdaSaveBtn);
+
+                const statusDiv = document.createElement("div");
+                statusDiv.className = "status";
+                const cdaStatusBtn = document.createElement("button");
+                cdaStatusBtn.textContent = "";
+                cdaStatusBtn.id = "cda-btn";
+                cdaStatusBtn.disabled = false;
+                statusDiv.appendChild(cdaStatusBtn);
+                output6Div.appendChild(statusDiv);
+
+                // cdaSaveBtn.addEventListener("click", async () => {
+                //     const payloadOutflow = {
+                //         "date-version-type": "MAX_AGGREGATE",
+                //         "name": tsidPrecip,
+                //         "office-id": "MVS",
+                //         "units": "cfs",
+                //         "values": formattedData.map(entry => {
+                //             const outflowValue = document.getElementById(`outflowInput-${entry[0]}`).value;
+                //             // console.log("outflowValue:", outflowValue);
+
+                //             const timestampUnix = new Date(entry[0]).getTime();
+                //             // console.log("timestampUnix:", timestampUnix);
+
+                //             return [
+                //                 timestampUnix,
+                //                 parseFloat(outflowValue),
+                //                 0
+                //             ];
+                //         }),
+                //         "version-date": isoDateToday,
+                //     };
+                //     console.log("Preparing payload...");
+                //     console.log("payloadOutflow:", payloadOutflow);
+
+                //     async function loginCDA() {
+                //         if (await isLoggedIn()) return true;
+                //         window.location.href = `https://wm.mvs.ds.usace.army.mil:8243/CWMSLogin/login?OriginalLocation=${encodeURIComponent(window.location.href)}`;
+                //     }
+
+                //     async function isLoggedIn() {
+                //         try {
+                //             const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", { method: "GET" });
+                //             return response.status !== 401;
+                //         } catch (error) {
+                //             console.error('Error checking login status:', error);
+                //             return false;
+                //         }
+                //     }
+
+                //     async function createVersionTS(payload) {
+                //         if (!payload) throw new Error("You must specify a payload!");
+                //         const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?store-rule=REPLACE%20ALL", {
+                //             method: "POST",
+                //             headers: { "Content-Type": "application/json;version=2" },
+                //             body: JSON.stringify(payload)
+                //         });
+
+                //         if (!response.ok) {
+                //             const errorText = await response.text();
+                //             throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                //         }
+                //     }
+
+                //     async function fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day) {
+                //         let response = null;
+
+                //         if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                //             response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
+                //                 headers: {
+                //                     "Accept": "application/json;version=2", // Ensuring the correct version is used
+                //                     "cache-control": "no-cache"
+                //                 }
+                //             });
+                //         } else {
+                //             response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
+                //                 headers: {
+                //                     "Accept": "application/json;version=2", // Ensuring the correct version is used
+                //                     "cache-control": "no-cache"
+                //                 }
+                //             });
+                //         }
+
+                //         if (!response.ok) {
+                //             throw new Error(`Failed to fetch updated data: ${response.status}`);
+                //         }
+
+                //         const data = await response.json();
+
+                //         // Log the raw data received
+                //         console.log('Fetched Data:', data);
+
+                //         return data;
+                //     }
+
+                //     // Function to show the spinner while waiting
+                //     function showSpinner() {
+                //         const spinner = document.createElement('img');
+                //         spinner.src = 'images/loading4.gif';
+                //         spinner.id = 'loadingSpinner';
+                //         spinner.style.width = '40px';  // Set the width to 40px
+                //         spinner.style.height = '40px'; // Set the height to 40px
+                //         document.body.appendChild(spinner);
+                //     }
+
+                //     // Function to hide the spinner once the operation is complete
+                //     function hideSpinner() {
+                //         const spinner = document.getElementById('loadingSpinner');
+                //         if (spinner) {
+                //             spinner.remove();
+                //         }
+                //     }
+
+                //     if (cdaSaveBtn.innerText === "Login") {
+                //         showSpinner(); // Show the spinner before the login
+                //         const loginResult = await loginCDA();
+                //         hideSpinner(); // Hide the spinner after login is complete
+
+                //         cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
+                //         cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
+                //     } else {
+                //         try {
+                //             // showSpinner(); // Show the spinner before creating the version
+                //             // await createVersionTS(payloadOutflow);
+                //             // cdaStatusBtn.innerText = "Write successful!";
+
+                //             // if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                //             //     await createVersionTS(payloadInflow);
+                //             //     cdaStatusBtn.innerText = "Write payloadInflow successful!";
+                //             // }
+
+                //             // // Log the waiting message before the 2-second wait
+                //             // console.log("Waiting for 2 seconds before fetching updated data...");
+
+                //             // // Wait 2 seconds before fetching the updated data
+                //             // // await new Promise(resolve => setTimeout(resolve, 500));
+
+                //             // // Fetch updated data and refresh the table
+                //             // const updatedData = await fetchUpdatedData(tsidPrecip, isoDateDay5, isoDateToday, isoDateMinus1Day);
+
+                //             // let updatedDataInflow = null;
+                //             // if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                //             //     updatedDataInflow = await fetchUpdatedData(tsidInflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                //             // }
+                //             // createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, updatedData, tsidInflow, updatedDataInflow);
+                //         } catch (error) {
+                //             hideSpinner(); // Hide the spinner if an error occurs
+                //             cdaStatusBtn.innerText = "Failed to write data!";
+                //             console.error(error);
+                //         }
+
+                //         hideSpinner(); // Hide the spinner after the operation completes
+                //     }
+                // });
             }
-            
+
 
             // Call the function with midnightDataPrecipFormatted and formattedData2
-            createTable(midnightDataPrecipFormatted);
+            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, timeSeriesDataPrecip);
         } catch (error) {
             console.error("Error fetching tsid data:", error);
 
@@ -227,6 +382,36 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Return the ISO string
         return date.toISOString();
+    }
+
+    function formatISODateToCSTString(timestamp) {
+        if (typeof timestamp !== "number") {
+            console.error("Invalid timestamp:", timestamp);
+            return "Invalid Date";
+        }
+
+        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
+        if (isNaN(date.getTime())) {
+            console.error("Invalid date conversion:", timestamp);
+            return "Invalid Date";
+        }
+
+        // Convert to CST (Central Standard Time)
+        const options = {
+            timeZone: 'America/Chicago',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+
+        const formatter = new Intl.DateTimeFormat('en-US', options);
+        const formattedDate = formatter.format(date);
+
+        return formattedDate.replace(',', ''); // Removes the comma between date and time
     }
 });
 
