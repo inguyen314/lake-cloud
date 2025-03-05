@@ -51,58 +51,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("isoDateDay6:", isoDateDay6);
     console.log("isoDateDay7:", isoDateDay7);
 
-    const urlPrecipTsid = `${setBaseUrl}timeseries/group/Precip-Lake-Test?office=${office}&category-id=${lake}`;
-    console.log("urlPrecipTsid:", urlPrecipTsid);
-
-    const fetchTimeSeriesData = async (tsid) => {
-        // Convert to Date object
-        const date = new Date(isoDateMinus1Day);
-
-        // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
-        date.setTime(date.getTime() + (1 * 60 * 60 * 1000));
-
-        // Convert back to ISO string (preserve UTC format)
-        const isoDateMinus1DayPlus1Hour = date.toISOString();
-
-        console.log("isoDateMinus1DayPlus1Hour: ", isoDateMinus1DayPlus1Hour);
-
-        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateToday}&office=${office}`;
-        console.log('tsidData:', tsidData);
-        try {
-            const response = await fetch(tsidData, {
-                headers: {
-                    "Accept": "application/json;version=2", // Ensuring the correct version is used
-                    "cache-control": "no-cache"
-                }
-            });
-
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error("Error fetching time series data:", error);
-        }
-    };
-
-    const fetchTimeSeriesDataYesterday = async (tsid) => {
-        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus2Days}&end=${isoDateMinus1Day}&office=${office}`;
-        console.log('tsidData:', tsidData);
-        try {
-            const response = await fetch(tsidData, {
-                headers: {
-                    "Accept": "application/json;version=2", // Ensuring the correct version is used
-                    "cache-control": "no-cache"
-                }
-            });
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error("Error fetching time series data:", error);
-        }
-    };
+    const tsid = `${setBaseUrl}timeseries/group/Precip-Lake-Test?office=${office}&category-id=${lake}`;
+    console.log("tsid:", tsid);
 
     const fetchTsidData = async () => {
         try {
-            const response1 = await fetch(urlPrecipTsid);
+            const response1 = await fetch(tsid);
 
             const tsidDataPrecip = await response1.json();
 
@@ -163,10 +117,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, timeSeriesDataPrecip, timeSeriesDataPrecipYesterday);
 
                 loginStateController()
-                // Setup timers
-                setInterval(async () => {
-                    loginStateController()
-                }, 10000) // time is in millis
+                        // Setup timers
+                        setInterval(async () => {
+                            loginStateController()
+                        }, 10000) // time is in millis
             }
 
             function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, timeSeriesDataPrecip, timeSeriesDataPrecipYesterday) {
@@ -192,7 +146,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     formattedDataYesterday = timeSeriesDataPrecipYesterday.values.map(entry => {
                         const timestamp = entry[0]; // First element is the timestamp
                         const formattedTimestampCST = formatISODateToCSTString(Number(timestamp));
-                
+
                         return {
                             timestamp,
                             formattedTimestampCST,
@@ -200,9 +154,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                             qualityCode: entry[2]    // Third element is the quality code
                         };
                     });
-                
+
                     console.log("Formatted timeSeriesDataPrecipYesterday:", formattedDataYesterday);
-                }                
+                }
 
                 const table = document.createElement("table");
                 table.id = "gate-settings";
@@ -259,15 +213,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                     });
                 }
 
-                const output6Div = document.getElementById("output8");
-                output6Div.innerHTML = "";
-                output6Div.appendChild(table);
+                const output8Div = document.getElementById("output8");
+                output8Div.innerHTML = "";
+                output8Div.appendChild(table);
 
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
                 cdaSaveBtn.id = "cda-btn";
                 cdaSaveBtn.disabled = true;
-                output6Div.appendChild(cdaSaveBtn);
+                output8Div.appendChild(cdaSaveBtn);
 
                 const statusDiv = document.createElement("div");
                 statusDiv.className = "status";
@@ -276,7 +230,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 cdaStatusBtn.id = "cda-btn";
                 cdaStatusBtn.disabled = false;
                 statusDiv.appendChild(cdaStatusBtn);
-                output6Div.appendChild(statusDiv);
+                output8Div.appendChild(statusDiv);
 
                 cdaSaveBtn.addEventListener("click", async () => {
                     const values = [];
@@ -326,7 +280,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
-                    async function createVersionTS(payload) {
+                    async function createTS(payload) {
                         if (!payload) throw new Error("You must specify a payload!");
                         const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?store-rule=REPLACE%20ALL", {
                             method: "POST",
@@ -353,14 +307,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const isoDateMinus1DayPlus1Hour = date.toISOString();
 
                         console.log("isoDateMinus1DayPlus1Hour: ", isoDateMinus1DayPlus1Hour);
+                        console.log("isoDateToday: ", isoDateToday);
 
-                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1DayPlus1Hour}&end=${isoDateToday}&office=MVS`, {
+                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1Day}&end=${isoDateToday}&office=MVS`, {
                             headers: {
                                 "Accept": "application/json;version=2", // Ensuring the correct version is used
                                 "cache-control": "no-cache"
                             }
                         });
-
 
                         if (!response.ok) {
                             throw new Error(`Failed to fetch updated data: ${response.status}`);
@@ -402,7 +356,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     } else {
                         try {
                             showSpinner(); // Show the spinner before creating the version
-                            await createVersionTS(payload);
+                            await createTS(payload);
                             cdaStatusBtn.innerText = "Write successful!";
 
                             // Fetch updated data and refresh the table
@@ -438,59 +392,53 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     };
 
-    fetchTsidData();
+    const fetchTimeSeriesData = async (tsid) => {
+        // Convert to Date object
+        const date = new Date(isoDateMinus1Day);
 
-    function formatISODate2ReadableDate(timestamp) {
-        if (typeof timestamp !== "number") {
-            console.error("Invalid timestamp:", timestamp);
-            return "Invalid Date";
+        // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
+        date.setTime(date.getTime() + (1 * 60 * 60 * 1000));
+
+        // Convert back to ISO string (preserve UTC format)
+        const isoDateMinus1DayPlus1Hour = date.toISOString();
+
+        console.log("isoDateMinus1DayPlus1Hour: ", isoDateMinus1DayPlus1Hour);
+
+        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateToday}&office=${office}`;
+        console.log('tsidData:', tsidData);
+        try {
+            const response = await fetch(tsidData, {
+                headers: {
+                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                    "cache-control": "no-cache"
+                }
+            });
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error fetching time series data:", error);
         }
-
-        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
-        if (isNaN(date.getTime())) {
-            console.error("Invalid date conversion:", timestamp);
-            return "Invalid Date";
-        }
-
-        const mm = String(date.getMonth() + 1).padStart(2, '0'); // Month
-        const dd = String(date.getDate()).padStart(2, '0'); // Day
-        const yyyy = date.getFullYear(); // Year
-        const hh = String(date.getHours()).padStart(2, '0'); // Hours
-        const min = String(date.getMinutes()).padStart(2, '0'); // Minutes
-        return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
-    }
-
-    function getMidnightData(data, tsid) {
-        const midnightData = [];
-
-        data.values.forEach(entry => {
-            const [timestamp, value, qualityCode] = entry;
-
-            // Normalize the timestamp
-            let date;
-            if (typeof timestamp === "string") {
-                date = new Date(timestamp.replace(/-/g, '/')); // Replace hyphens with slashes for iOS
-            } else if (typeof timestamp === "number") {
-                date = new Date(timestamp); // Assume it's a UNIX timestamp
-            } else {
-                console.warn("Unrecognized timestamp format:", timestamp);
-                return; // Skip invalid entries
-            }
-
-            // Validate date
-            if (isNaN(date.getTime())) {
-                console.warn("Invalid date:", timestamp);
-                return; // Skip invalid dates
-            }
-
-            // Check if the time is exactly midnight (00:00:00)
-            if (date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0) {
-                midnightData.push({ timestamp, value, qualityCode, tsid });
-            }
-        });
-
-        return midnightData;
     };
+
+    const fetchTimeSeriesDataYesterday = async (tsid) => {
+        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus2Days}&end=${isoDateMinus1Day}&office=${office}`;
+        console.log('tsidData:', tsidData);
+        try {
+            const response = await fetch(tsidData, {
+                headers: {
+                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                    "cache-control": "no-cache"
+                }
+            });
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error fetching time series data:", error);
+        }
+    };
+
+    fetchTsidData();
 
     function getIsoDateWithOffset(year, month, day, offset) {
         // Create a date object in UTC (midnight UTC)

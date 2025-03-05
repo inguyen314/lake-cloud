@@ -818,26 +818,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         return date.toISOString();
     }
 
-    function formatISODate2ReadableDate(timestamp) {
-        if (typeof timestamp !== "number") {
-            console.error("Invalid timestamp:", timestamp);
-            return "Invalid Date";
-        }
-
-        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
-        if (isNaN(date.getTime())) {
-            console.error("Invalid date conversion:", timestamp);
-            return "Invalid Date";
-        }
-
-        const mm = String(date.getMonth() + 1).padStart(2, '0'); // Month
-        const dd = String(date.getDate()).padStart(2, '0'); // Day
-        const yyyy = date.getFullYear(); // Year
-        const hh = String(date.getHours()).padStart(2, '0'); // Hours
-        const min = String(date.getMinutes()).padStart(2, '0'); // Minutes
-        return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
-    }
-
     function formatISODateToUTCString(timestamp) {
         if (typeof timestamp !== "number") {
             console.error("Invalid timestamp:", timestamp);

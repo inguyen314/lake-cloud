@@ -171,6 +171,10 @@ document.addEventListener('DOMContentLoaded', async function () {
             crestHeader.textContent = "Forecast Crest (ft)";
             headerRow.appendChild(crestHeader);
 
+            const optionHeader = document.createElement("th");
+            optionHeader.textContent = "Option";
+            headerRow.appendChild(optionHeader);
+
             table.appendChild(headerRow);
 
             formattedData.forEach((entry, index) => {
@@ -189,6 +193,18 @@ document.addEventListener('DOMContentLoaded', async function () {
                 crestInput.id = `crestInput-${entry[0]}`;
                 crestCell.appendChild(crestInput);
                 row.appendChild(crestCell);
+
+                table.appendChild(row);
+
+                // Option cell (editable)
+                const optionCell = document.createElement("td");
+                const optionInput = document.createElement("input");
+                optionInput.type = "number";
+                optionInput.value = entry[2].toFixed(0); // Option uses formattedData
+                optionInput.className = "option-input";
+                optionInput.id = `optionInput-${entry[2]}`;
+                optionCell.appendChild(optionInput);
+                row.appendChild(optionCell);
 
                 table.appendChild(row);
             });
@@ -354,6 +370,10 @@ document.addEventListener('DOMContentLoaded', async function () {
             crestHeader.textContent = "Forecast Crest (ft)";
             headerRow.appendChild(crestHeader);
 
+            const optionHeader = document.createElement("th");
+            optionHeader.textContent = "Option";
+            headerRow.appendChild(optionHeader);
+
             table.appendChild(headerRow);
 
             dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
@@ -391,6 +411,18 @@ document.addEventListener('DOMContentLoaded', async function () {
                 crestInput.style.backgroundColor = "pink";  // Set pink background
                 crestCell.appendChild(crestInput);
                 row.appendChild(crestCell);
+
+                table.appendChild(row);
+
+                // Option cell (editable)
+                const optionCell = document.createElement("td");
+                const optionInput = document.createElement("input");
+                optionInput.type = "number";
+                optionInput.value = null; // Option uses formattedData
+                optionInput.className = "option-input";
+                optionInput.id = `optionInput`;
+                optionCell.appendChild(optionInput);
+                row.appendChild(optionCell);
 
                 table.appendChild(row);
             });
@@ -616,41 +648,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         return date.toISOString();
     }
 
-    function formatISODate2ReadableDate(timestamp) {
-        if (typeof timestamp !== "number") {
-            console.error("Invalid timestamp:", timestamp);
-            return "Invalid Date";
-        }
-
-        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
-        if (isNaN(date.getTime())) {
-            console.error("Invalid date conversion:", timestamp);
-            return "Invalid Date";
-        }
-
-        const mm = String(date.getMonth() + 1).padStart(2, '0'); // Month
-        const dd = String(date.getDate()).padStart(2, '0'); // Day
-        const yyyy = date.getFullYear(); // Year
-        const hh = String(date.getHours()).padStart(2, '0'); // Hours
-        const min = String(date.getMinutes()).padStart(2, '0'); // Minutes
-        return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
-    }
-
-    function formatISODateToUTCString(timestamp) {
-        if (typeof timestamp !== "number") {
-            console.error("Invalid timestamp:", timestamp);
-            return "Invalid Date";
-        }
-
-        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
-        if (isNaN(date.getTime())) {
-            console.error("Invalid date conversion:", timestamp);
-            return "Invalid Date";
-        }
-
-        return date.toISOString().replace(/\.\d{3}Z$/, 'Z'); // Removes milliseconds
-    }
-
     function formatISODateToCSTString(timestamp) {
         if (typeof timestamp !== "number") {
             console.error("Invalid timestamp:", timestamp);
@@ -680,7 +677,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         return formattedDate.replace(',', ''); // Removes the comma between date and time
     }
-
 });
 
 
@@ -705,9 +701,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 // To Create tsid, run write_data_versioned app
 
 // Timeseries used in this Widget
-// Rend Lk-Big Muddy.Flow-Out.Inst.~1Day.0.lakerep-rev-forecast
-// Carlyle Lk-Kaskaskia.Flow-Out.Inst.~1Day.0.lakerep-rev-forecast
-// Lk Shelbyville-Kaskaskia.Flow-Out.Inst.~1Day.0.lakerep-rev-forecast
-// Mark Twain Lk-Salt.Flow-In.Inst.~1Day.0.lakerep-rev-forecast
-// Mark Twain Lk-Salt.Flow-Out.Inst.~1Day.0.lakerep-rev-forecast
-// Wappapello Lk-St Francis.Flow-Out.Inst.~1Day.0.lakerep-rev-forecast
+// Carlyle Lk-Kaskaskia.Stage.Inst.~1Day.0.lakerep-rev-crest-forecast	MVS	Carlyle Lk-Kaskaskia	Stage	Inst	~1Day	0	lakerep-rev-crest-forecast	N/A	Aggregate	2025-03-05 06:16	1111-11-17 18:09	2025-03-11 06:00	38.61805	-89.351083
+// Lk Shelbyville-Kaskaskia.Stage.Inst.~1Day.0.lakerep-rev-crest-forecast	MVS	Lk Shelbyville-Kaskaskia	Stage	Inst	~1Day	0	lakerep-rev-crest-forecast	N/A	Aggregate	2025-03-05 06:16	1111-11-17 18:09	2025-03-11 06:00	39.408958	-88.780114
+// Mark Twain Lk-Salt.Stage.Inst.~1Day.0.lakerep-rev-crest-forecast	MVS	Mark Twain Lk-Salt	Stage	Inst	~1Day	0	lakerep-rev-crest-forecast	N/A	Aggregate	2025-03-05 06:16	1111-11-17 18:09	2025-03-11 06:00	39.5248701	-91.6443126
+// Rend Lk-Big Muddy.Stage.Inst.~1Day.0.lakerep-rev-crest-forecast	MVS	Rend Lk-Big Muddy	Stage	Inst	~1Day	0	lakerep-rev-crest-forecast	N/A	Aggregate	2025-03-05 06:16	1111-11-17 18:09	2025-03-11 06:00	38.037619	-88.961594
+// Wappapello Lk-St Francis.Stage.Inst.~1Day.0.lakerep-rev-crest-forecast	MVS	Wappapello Lk-St Francis	Stage	Inst	~1Day	0	lakerep-rev-crest-forecast	N/A	Aggregate	2025-03-05 06:16	1111-11-17 18:09	2025-03-11 06:00	36.9277	-90.284361
