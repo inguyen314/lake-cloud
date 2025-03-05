@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const headerRow = document.createElement("tr");
 
             const dateHeader = document.createElement("th");
-            dateHeader.textContent = "Day";
+            dateHeader.textContent = "Date";
             headerRow.appendChild(dateHeader);
 
             const crestHeader = document.createElement("th");
@@ -400,7 +400,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const headerRow = document.createElement("tr");
 
             const dateHeader = document.createElement("th");
-            dateHeader.textContent = "Day";
+            dateHeader.textContent = "Date";
             headerRow.appendChild(dateHeader);
 
             const crestHeader = document.createElement("th");
@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Create a single data row
             const row = document.createElement("tr");
 
-            // Editable "Day" cell
+            // Editable "Date" cell
             const dateCell = document.createElement("td");
             const dateInput = document.createElement("input");
             dateInput.type = "text";
@@ -470,30 +470,17 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             // Add event listener to the submit button
             cdaSaveBtn.addEventListener("click", async () => {
+                // Parse user inputs
+                const crestValue = parseFloat(crestInput.value) || 909; // Convert to float, default to 909 if empty
+                const optionValue = parseInt(optionInput.value) || 909; // Convert to integer, default to 909
+                const timestampUnix = new Date(dateInput.value).getTime();
+
                 const payload = {
                     "date-version-type": "MAX_AGGREGATE",
                     "name": tsidCrest,
                     "office-id": "MVS",
                     "units": "ft",
-                    "values": dates.map((date, index) => {
-                        let crestValue = document.getElementById(`crestInput-${date}`).value; // Get value from input field
-                        // console.log("crestValue:", crestValue);
-
-                        // If crestValue is empty or null, set it to 909
-                        if (!crestValue) {
-                            crestValue = "909"; // Default value when empty or null
-                        }
-
-                        // Convert ISO date string to timestamp
-                        const timestampUnix = new Date(date).getTime(); // Correct timestamp conversion
-                        // console.log("timestampUnix:", timestampUnix);
-
-                        return [
-                            timestampUnix,  // Timestamp for the day at 6 AM
-                            parseInt(crestValue), // Stage value (forecast crest) as number
-                            0 // Placeholder for the third value (set to 0 for now)
-                        ];
-                    }),
+                    "values": [timestampUnix, crestValue, optionValue], // Three-item array
                     "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
                 };
 
@@ -602,19 +589,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                     cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
                 } else {
                     try {
-                        showSpinner(); // Show the spinner before creating the version
-                        await createVersionTS(payload);
-                        cdaStatusBtn.innerText = "Write successful!";
+                        // showSpinner(); // Show the spinner before creating the version
+                        // await createVersionTS(payload);
+                        // cdaStatusBtn.innerText = "Write successful!";
 
-                        // Log the waiting message before the 2-second wait
-                        console.log("Waiting for 2 seconds before fetching updated data...");
+                        // // Log the waiting message before the 2-second wait
+                        // console.log("Waiting for 2 seconds before fetching updated data...");
 
-                        // Wait 2 seconds before fetching the updated data
-                        // await new Promise(resolve => setTimeout(resolve, 500));
-
-                        // Fetch updated data and refresh the table
-                        const updatedData = await fetchUpdatedData(tsidCrest, isoDateDay5, isoDateToday, isoDateMinus1Day);
-                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidCrest, updatedData);
+                        // // Fetch updated data and refresh the table
+                        // const updatedData = await fetchUpdatedData(tsidCrest, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                        // createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidCrest, updatedData);
                     } catch (error) {
                         hideSpinner(); // Hide the spinner if an error occurs
                         cdaStatusBtn.innerText = "Failed to write data!";
