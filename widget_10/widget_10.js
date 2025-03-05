@@ -162,9 +162,11 @@ document.addEventListener('DOMContentLoaded', async function () {
             const table = document.createElement("table");
             table.id = "gate-settings";
 
+            // Create the table header row
             const headerRow = document.createElement("tr");
+
             const dateHeader = document.createElement("th");
-            dateHeader.textContent = "Date";
+            dateHeader.textContent = "Day";
             headerRow.appendChild(dateHeader);
 
             const crestHeader = document.createElement("th");
@@ -177,37 +179,72 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             table.appendChild(headerRow);
 
-            formattedData.forEach((entry, index) => {
-                const row = document.createElement("tr");
+            // Create a single data row
+            const row = document.createElement("tr");
 
-                const dateCell = document.createElement("td");
-                dateCell.textContent = entry.formattedTimestampCST ? entry.formattedTimestampCST : entry[0];
-                row.appendChild(dateCell);
+            // Editable "Day" cell
+            const dateCell = document.createElement("td");
+            const dateInput = document.createElement("input");
+            dateInput.type = "text";
+            dateInput.value = formattedData[0].formattedTimestampCST;
+            dateInput.id = "dateInput";
+            dateCell.appendChild(dateInput);
+            row.appendChild(dateCell);
 
-                // Crest cell (editable)
-                const crestCell = document.createElement("td");
-                const crestInput = document.createElement("input");
-                crestInput.type = "number";
-                crestInput.value = entry[1].toFixed(0); // Crest uses formattedData
-                crestInput.className = "crest-input";
-                crestInput.id = `crestInput-${entry[0]}`;
-                crestCell.appendChild(crestInput);
-                row.appendChild(crestCell);
+            // Forecast Crest cell (editable)
+            const crestCell = document.createElement("td");
+            const crestInput = document.createElement("input");
+            crestInput.type = "text";
+            crestInput.value = formattedData[0][1].toFixed(2); // Crest uses formattedData
+            crestInput.id = "crestInput";
+            crestInput.style.backgroundColor = "pink";  // Set pink background
+            crestCell.appendChild(crestInput);
+            row.appendChild(crestCell);
 
-                table.appendChild(row);
+            // Option cell (editable)
+            const optionCell = document.createElement("td");
+            const optionInput = document.createElement("input");
+            optionInput.type = "number";
+            optionInput.value = formattedData[0][2].toFixed(0); // Crest uses formattedData
+            optionInput.id = "optionInput";
+            optionInput.style.backgroundColor = "pink";  // Set pink background
+            optionCell.appendChild(optionInput);
+            row.appendChild(optionCell);
 
-                // Option cell (editable)
-                const optionCell = document.createElement("td");
-                const optionInput = document.createElement("input");
-                optionInput.type = "number";
-                optionInput.value = entry[2].toFixed(0); // Option uses formattedData
-                optionInput.className = "option-input";
-                optionInput.id = `optionInput-${entry[2]}`;
-                optionCell.appendChild(optionInput);
-                row.appendChild(optionCell);
+            // Append the single row to the table
+            table.appendChild(row);
 
-                table.appendChild(row);
-            });
+            // formattedData.forEach((entry, index) => {
+            //     const row = document.createElement("tr");
+
+            //     const dateCell = document.createElement("td");
+            //     dateCell.textContent = entry.formattedTimestampCST ? entry.formattedTimestampCST : entry[0];
+            //     row.appendChild(dateCell);
+
+            //     // Crest cell (editable)
+            //     const crestCell = document.createElement("td");
+            //     const crestInput = document.createElement("input");
+            //     crestInput.type = "number";
+            //     crestInput.value = entry[1].toFixed(0); // Crest uses formattedData
+            //     crestInput.className = "crest-input";
+            //     crestInput.id = `crestInput-${entry[0]}`;
+            //     crestCell.appendChild(crestInput);
+            //     row.appendChild(crestCell);
+
+            //     table.appendChild(row);
+
+            //     // Option cell (editable)
+            //     const optionCell = document.createElement("td");
+            //     const optionInput = document.createElement("input");
+            //     optionInput.type = "number";
+            //     optionInput.value = entry[2].toFixed(0); // Option uses formattedData
+            //     optionInput.className = "option-input";
+            //     optionInput.id = `optionInput-${entry[2]}`;
+            //     optionCell.appendChild(optionInput);
+            //     row.appendChild(optionCell);
+
+            //     table.appendChild(row);
+            // });
 
             const output10Div = document.getElementById("output10");
             output10Div.innerHTML = "";
@@ -376,56 +413,40 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             table.appendChild(headerRow);
 
-            dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
-            console.log("dates (UTC):", dates);
+            // Create a single data row
+            const row = document.createElement("tr");
 
-            // Convert each date from UTC to CST and format it
-            const options = { timeZone: 'America/Chicago', hour12: false };
+            // Editable "Day" cell
+            const dateCell = document.createElement("td");
+            const dateInput = document.createElement("input");
+            dateInput.type = "text";
+            dateInput.value = isoDateToday; // Pre-fill with today's date
+            dateInput.id = "dateInput";
+            dateCell.appendChild(dateInput);
+            row.appendChild(dateCell);
 
-            const formattedDates = dates.map(date => {
-                const d = new Date(date);
-                const cstDate = d.toLocaleString('en-US', options);
+            // Forecast Crest cell (editable)
+            const crestCell = document.createElement("td");
+            const crestInput = document.createElement("input");
+            crestInput.type = "text";
+            crestInput.value = "";
+            crestInput.id = "crestInput";
+            crestInput.style.backgroundColor = "pink";  // Set pink background
+            crestCell.appendChild(crestInput);
+            row.appendChild(crestCell);
 
-                // Extract the date and time parts and format as MM-DD-YYYY HH:mm
-                const [month, day, year, hour, minute] = cstDate.match(/(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{1,2}):(\d{2})/).slice(1);
+            // Option cell (editable)
+            const optionCell = document.createElement("td");
+            const optionInput = document.createElement("input");
+            optionInput.type = "number";
+            optionInput.value = ""; // Empty by default
+            optionInput.id = "optionInput";
+            optionInput.style.backgroundColor = "pink";  // Set pink background
+            optionCell.appendChild(optionInput);
+            row.appendChild(optionCell);
 
-                return `${month.padStart(2, '0')}-${day.padStart(2, '0')}-${year} ${hour}:${minute}`;
-            });
-
-            console.log("formattedDates (CST):", formattedDates);
-
-            dates.forEach((date, index) => {
-                const row = document.createElement("tr");
-
-                // Date cell
-                const dateCell = document.createElement("td");
-                dateCell.textContent = dates[index];  // Use the corresponding formatted date
-                row.appendChild(dateCell);
-
-                // Crest cell (editable)
-                const crestCell = document.createElement("td");
-                const crestInput = document.createElement("input");
-                crestInput.type = "text";
-                crestInput.value = "";
-                crestInput.id = `crestInput-${date}`;
-                crestInput.style.backgroundColor = "pink";  // Set pink background
-                crestCell.appendChild(crestInput);
-                row.appendChild(crestCell);
-
-                table.appendChild(row);
-
-                // Option cell (editable)
-                const optionCell = document.createElement("td");
-                const optionInput = document.createElement("input");
-                optionInput.type = "number";
-                optionInput.value = null; // Option uses formattedData
-                optionInput.className = "option-input";
-                optionInput.id = `optionInput`;
-                optionCell.appendChild(optionInput);
-                row.appendChild(optionCell);
-
-                table.appendChild(row);
-            });
+            // Append the single row to the table
+            table.appendChild(row);
 
             // Append the table to the specific container (id="output10")
             const output10Div = document.getElementById("output10");
