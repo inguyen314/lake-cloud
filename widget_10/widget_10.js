@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             async function loginStateController() {
-                cdaSaveBtn = document.getElementById("cda-btn"); // Get the button by its ID
+                cdaSaveBtn = document.getElementById("cda-btn-crest"); // Get the button by its ID
 
                 cdaSaveBtn.disabled = true; // Disable button while checking login state
 
@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             const cdaSaveBtn = document.createElement("button");
             cdaSaveBtn.textContent = "Submit";
-            cdaSaveBtn.id = "cda-btn";
+            cdaSaveBtn.id = "cda-btn-crest";
             cdaSaveBtn.disabled = true;
             output10Div.appendChild(cdaSaveBtn);
 
@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             statusDiv.className = "status";
             const cdaStatusBtn = document.createElement("button");
             cdaStatusBtn.textContent = "";
-            cdaStatusBtn.id = "cda-btn";
+            cdaStatusBtn.id = "cda-btn-crest";
             cdaStatusBtn.disabled = false;
             statusDiv.appendChild(cdaStatusBtn);
             output10Div.appendChild(statusDiv);
@@ -434,7 +434,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             const cdaSaveBtn = document.createElement("button");
             cdaSaveBtn.textContent = "Submit";
-            cdaSaveBtn.id = "cda-btn";
+            cdaSaveBtn.id = "cda-btn-crest";
             cdaSaveBtn.disabled = true;
             output10Div.appendChild(cdaSaveBtn);
 
@@ -442,7 +442,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             statusDiv.className = "status";
             const cdaStatusBtn = document.createElement("button");
             cdaStatusBtn.textContent = "";
-            cdaStatusBtn.id = "cda-btn";
+            cdaStatusBtn.id = "cda-btn-crest";
             cdaStatusBtn.disabled = false;
             statusDiv.appendChild(cdaStatusBtn);
             output10Div.appendChild(statusDiv);
