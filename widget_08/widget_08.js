@@ -104,7 +104,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             if (timeSeriesDataPrecip && timeSeriesDataPrecip.values && timeSeriesDataPrecip.values.length > 0) {
                 console.log("Calling createTable ...");
-
                 createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, timeSeriesDataPrecip, timeSeriesDataPrecipYesterday);
 
                 loginStateController()
@@ -372,9 +371,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
                 });
             }
-
-            // Call the function with midnightDataPrecipFormatted and formattedData2
-            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, timeSeriesDataPrecip, timeSeriesDataPrecipYesterday);
         } catch (error) {
             console.error("Error fetching tsid data:", error);
 
