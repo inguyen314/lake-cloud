@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("isoDateDay6:", isoDateDay6);
     console.log("isoDateDay7:", isoDateDay7);
 
-    const urltsid = `${setBaseUrl}timeseries/group/Forecast-Lake?office=${office}&category-id=${lake}`;
+    const urltsid = `${setBaseUrl}timeseries/group/Crest-Forecast-Lake?office=${office}&category-id=${lake}`;
     console.log("urltsid:", urltsid);
 
     const fetchTsidData = async () => {
@@ -63,11 +63,11 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("tsidData:", tsidData);
 
             // Extract the timeseries-id from the response
-            const tsidCrest = tsidData['assigned-time-series'][0]['timeseries-id'];
-            console.log("tsidCrest:", tsidCrest);
+            const tsid = tsidData['assigned-time-series'][0]['timeseries-id'];
+            console.log("tsid:", tsid);
 
-            // Fetch time series data using tsidCrest values
-            const timeSeriesDataCrest = await fetchTimeSeriesData(tsidCrest);
+            // Fetch time series data using tsid values
+            const timeSeriesDataCrest = await fetchTimeSeriesData(tsid);
             console.log("timeSeriesDataCrest:", timeSeriesDataCrest);
 
             let cdaSaveBtn;
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             if (timeSeriesDataCrest && timeSeriesDataCrest.values && timeSeriesDataCrest.values.length > 0) {
                 console.log("Calling createTable ...");
 
-                createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidCrest, timeSeriesDataCrest);
+                createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, timeSeriesDataCrest);
 
                 loginStateController()
                 // Setup timers
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }, 10000) // time is in millis
             } else {
                 console.log("Calling createDataEntryTable ...");
-                createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidCrest);
+                createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid);
 
                 loginStateController()
                 // Setup timers
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 
         } catch (error) {
-            console.error("Error fetching tsidCrest data:", error);
+            console.error("Error fetching tsid data:", error);
 
             // Show the "Report Issue" button
             document.getElementById('reportIssueBtn').style.display = "block";
@@ -142,13 +142,12 @@ document.addEventListener('DOMContentLoaded', async function () {
             };
         }
 
-        function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidCrest, timeSeriesDataCrest) {
+        function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, timeSeriesDataCrest) {
             console.log("timeSeriesDataCrest:", timeSeriesDataCrest);
 
             formattedData = timeSeriesDataCrest.values.map(entry => {
                 const timestamp = entry[0]; // Timestamp is in milliseconds in the array
-                // const formattedTimestampCST = formatISODateToUTCString(Number(timestamp)); // Ensure timestamp is a number
-                const formattedTimestampCST = formatISODateToCSTString(Number(timestamp)); // Ensure timestamp is a number
+                const formattedTimestampCST = convertUnixTimestampToISO(Number(timestamp)); // Ensure timestamp is a number
 
                 return {
                     ...entry, // Retain other data
@@ -194,10 +193,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Forecast Crest cell (editable)
             const crestCell = document.createElement("td");
             const crestInput = document.createElement("input");
-            crestInput.type = "text";
+            crestInput.type = "number";
             crestInput.value = formattedData[0][1].toFixed(2); // Crest uses formattedData
             crestInput.id = "crestInput";
-            crestInput.style.backgroundColor = "pink";  // Set pink background
             crestCell.appendChild(crestInput);
             row.appendChild(crestCell);
 
@@ -207,44 +205,11 @@ document.addEventListener('DOMContentLoaded', async function () {
             optionInput.type = "number";
             optionInput.value = formattedData[0][2].toFixed(0); // Crest uses formattedData
             optionInput.id = "optionInput";
-            optionInput.style.backgroundColor = "pink";  // Set pink background
             optionCell.appendChild(optionInput);
             row.appendChild(optionCell);
 
             // Append the single row to the table
             table.appendChild(row);
-
-            // formattedData.forEach((entry, index) => {
-            //     const row = document.createElement("tr");
-
-            //     const dateCell = document.createElement("td");
-            //     dateCell.textContent = entry.formattedTimestampCST ? entry.formattedTimestampCST : entry[0];
-            //     row.appendChild(dateCell);
-
-            //     // Crest cell (editable)
-            //     const crestCell = document.createElement("td");
-            //     const crestInput = document.createElement("input");
-            //     crestInput.type = "number";
-            //     crestInput.value = entry[1].toFixed(0); // Crest uses formattedData
-            //     crestInput.className = "crest-input";
-            //     crestInput.id = `crestInput-${entry[0]}`;
-            //     crestCell.appendChild(crestInput);
-            //     row.appendChild(crestCell);
-
-            //     table.appendChild(row);
-
-            //     // Option cell (editable)
-            //     const optionCell = document.createElement("td");
-            //     const optionInput = document.createElement("input");
-            //     optionInput.type = "number";
-            //     optionInput.value = entry[2].toFixed(0); // Option uses formattedData
-            //     optionInput.className = "option-input";
-            //     optionInput.id = `optionInput-${entry[2]}`;
-            //     optionCell.appendChild(optionInput);
-            //     row.appendChild(optionCell);
-
-            //     table.appendChild(row);
-            // });
 
             const output10Div = document.getElementById("output10");
             output10Div.innerHTML = "";
@@ -266,28 +231,25 @@ document.addEventListener('DOMContentLoaded', async function () {
             output10Div.appendChild(statusDiv);
 
             cdaSaveBtn.addEventListener("click", async () => {
+                console.log(parseFloat(crestInput.value) || 909);
+                console.log(parseFloat(optionInput.value) || 0);
+                console.log(dateInput.value);
+
+                // Parse user inputs
+                const crestValue = parseFloat(crestInput.value) || 909; // Convert to float, default to 909 if empty
+                const optionValue = parseInt(optionInput.value) || 0; // Convert to integer, default to 909
+                const timestampUnix = new Date(dateInput.value).getTime();
+
                 const payload = {
                     "date-version-type": "MAX_AGGREGATE",
-                    "name": tsidCrest,
+                    "name": tsid,
                     "office-id": "MVS",
                     "units": "ft",
-                    "values": formattedData.map(entry => {
-                        const crestValue = document.getElementById(`crestInput-${entry[0]}`).value;
-                        // console.log("crestValue:", crestValue);
-
-                        const timestampUnix = new Date(entry[0]).getTime();
-                        // console.log("timestampUnix:", timestampUnix);
-
-                        return [
-                            timestampUnix,
-                            parseFloat(crestValue),
-                            0
-                        ];
-                    }),
-                    "version-date": isoDateToday,
+                    "values": [[timestampUnix, crestValue, optionValue]], // Three-item array
+                    "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
                 };
-                console.log("Preparing payload...");
-                console.log("payload:", payload);
+
+                console.log("payload: ", payload);
 
                 async function loginCDA() {
                     if (await isLoggedIn()) return true;
@@ -318,9 +280,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
                 }
 
-                async function fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day) {
+                async function fetchUpdatedData(tsid, isoDateDay5, isoDateToday, isoDateMinus1Day) {
                     let response = null;
-                    response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
+                    response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
                         headers: {
                             "Accept": "application/json;version=2", // Ensuring the correct version is used
                             "cache-control": "no-cache"
@@ -369,14 +331,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                     try {
                         showSpinner(); // Show the spinner before creating the version
                         await createVersionTS(payload);
+                        console.log("Write successful!");
                         cdaStatusBtn.innerText = "Write successful!";
 
-                        // Log the waiting message before the 2-second wait
-                        console.log("Waiting for 2 seconds before fetching updated data...");
-
                         // Fetch updated data and refresh the table
-                        const updatedData = await fetchUpdatedData(tsidCrest, isoDateDay5, isoDateToday, isoDateMinus1Day);
-                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidCrest, updatedData);
+                        console.log("Calling updatedData!");
+                        const updatedData = await fetchUpdatedData(tsid, isoDateDay5, isoDateToday, isoDateMinus1Day);
+
+                        console.log("Calling createTable!");
+                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, updatedData);
                     } catch (error) {
                         hideSpinner(); // Hide the spinner if an error occurs
                         cdaStatusBtn.innerText = "Failed to write data!";
@@ -389,7 +352,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         }
 
-        function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidCrest) {
+        function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid) {
             // Create the empty table element
             const table = document.createElement("table");
 
@@ -428,8 +391,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Forecast Crest cell (editable)
             const crestCell = document.createElement("td");
             const crestInput = document.createElement("input");
-            crestInput.type = "text";
-            crestInput.value = "";
+            crestInput.type = "number";
+            crestInput.value = null;
             crestInput.id = "crestInput";
             crestInput.style.backgroundColor = "pink";  // Set pink background
             crestCell.appendChild(crestInput);
@@ -439,7 +402,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const optionCell = document.createElement("td");
             const optionInput = document.createElement("input");
             optionInput.type = "number";
-            optionInput.value = ""; // Empty by default
+            optionInput.value = null; // Empty by default
             optionInput.id = "optionInput";
             optionInput.style.backgroundColor = "pink";  // Set pink background
             optionCell.appendChild(optionInput);
@@ -472,15 +435,15 @@ document.addEventListener('DOMContentLoaded', async function () {
             cdaSaveBtn.addEventListener("click", async () => {
                 // Parse user inputs
                 const crestValue = parseFloat(crestInput.value) || 909; // Convert to float, default to 909 if empty
-                const optionValue = parseInt(optionInput.value) || 909; // Convert to integer, default to 909
+                const optionValue = parseInt(optionInput.value) || 0; // Convert to integer, default to 909
                 const timestampUnix = new Date(dateInput.value).getTime();
 
                 const payload = {
                     "date-version-type": "MAX_AGGREGATE",
-                    "name": tsidCrest,
+                    "name": tsid,
                     "office-id": "MVS",
                     "units": "ft",
-                    "values": [timestampUnix, crestValue, optionValue], // Three-item array
+                    "values": [[timestampUnix, crestValue, optionValue]], // Three-item array
                     "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
                 };
 
@@ -540,9 +503,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 }
 
-                async function fetchUpdatedData(name, isoDateDay5, isoDateToday) {
+                async function fetchUpdatedData(tsid, isoDateDay5, isoDateToday, isoDateMinus1Day) {
                     let response = null;
-                    response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
+                    response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
                         headers: {
                             "Accept": "application/json;version=2", // Ensuring the correct version is used
                             "cache-control": "no-cache"
@@ -589,16 +552,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                     cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
                 } else {
                     try {
-                        // showSpinner(); // Show the spinner before creating the version
-                        // await createVersionTS(payload);
-                        // cdaStatusBtn.innerText = "Write successful!";
+                        showSpinner(); // Show the spinner before creating the version
+                        await createVersionTS(payload);
+                        console.log("Write successful!");
+                        cdaStatusBtn.innerText = "Write successful!";
 
-                        // // Log the waiting message before the 2-second wait
-                        // console.log("Waiting for 2 seconds before fetching updated data...");
+                        // Fetch updated data and refresh the table
+                        console.log("Calling updatedData!");
+                        const updatedData = await fetchUpdatedData(tsid, isoDateDay5, isoDateToday, isoDateMinus1Day);
 
-                        // // Fetch updated data and refresh the table
-                        // const updatedData = await fetchUpdatedData(tsidCrest, isoDateDay5, isoDateToday, isoDateMinus1Day);
-                        // createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidCrest, updatedData);
+                        console.log("Calling createTable!");
+                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, updatedData);
                     } catch (error) {
                         hideSpinner(); // Hide the spinner if an error occurs
                         cdaStatusBtn.innerText = "Failed to write data!";
@@ -612,9 +576,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     };
 
-    const fetchTimeSeriesData = async (tsidCrest) => {
+    const fetchTimeSeriesData = async (tsid) => {
         let tsidData = null;
-        tsidData = `${setBaseUrl}timeseries?name=${tsidCrest}&begin=${isoDateToday}&end=${isoDateDay5}&office=${office}&version-date=${isoDateToday}`;
+        tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=${office}&version-date=${isoDateToday}`;
         console.log('tsidData:', tsidData);
 
         try {
@@ -682,8 +646,45 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         return formattedDate.replace(',', ''); // Removes the comma between date and time
     }
+
+    function convertUnixTimestampToISO(timestamp) {
+        if (typeof timestamp !== "number") {
+            console.error("Invalid timestamp:", timestamp);
+            return "Invalid Date";
+        }
+    
+        const date = new Date(timestamp); // Convert milliseconds to Date object
+    
+        if (isNaN(date.getTime())) {
+            console.error("Invalid date conversion:", timestamp);
+            return "Invalid Date";
+        }
+    
+        return date.toISOString(); // Convert to "YYYY-MM-DDTHH:mm:ssZ" format
+    }
 });
 
+// TODO: Need Data Entry Date to determine which crest to use if entered multiple times...
+// [
+//     {
+//         "0": 1741348800000,
+//         "1": 899.9999999999999,
+//         "2": 0,
+//         "formattedTimestampCST": "2025-03-07T12:00:00.000Z"
+//     },
+//     {
+//         "0": 1741435200000,
+//         "1": 899.9999999999999,
+//         "2": 0,
+//         "formattedTimestampCST": "2025-03-08T12:00:00.000Z"
+//     },
+//     {
+//         "0": 1741521600000,
+//         "1": 899.9999999999999,
+//         "2": 1,
+//         "formattedTimestampCST": "2025-03-09T12:00:00.000Z"
+//     }
+// ]
 
 // Run this PL/SQL to delete data only (not tsid) for testing purposes
 // BEGIN
