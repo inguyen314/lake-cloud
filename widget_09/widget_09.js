@@ -63,6 +63,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     const url2 = `${setBaseUrl}levels/${levelId2}?office=MVS&effective-date=${isoDateToday}&unit=ft`;
     console.log("url2:", url2);
 
+    // Setup data to check for Seasonal Rule Curve
+    let offsetMonths = month === 0 ? 11 : month - 1; // One month behind
+    console.log("offsetMonths: ", offsetMonths);
+
+    let offsetMinutes = day * 24 *60;
+    console.log("offsetMinutes: ", offsetMinutes);
+
     const fetchTsidData = async () => {
         try {
             const response1 = await fetch(url);
@@ -132,9 +139,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 dateHeader.textContent = "Date";
                 headerRow.appendChild(dateHeader);
 
-                const outflowHeader = document.createElement("th");
-                outflowHeader.textContent = "Forecast Outflow (cfs)";
-                headerRow.appendChild(outflowHeader);
+                const ruleCurveHeader = document.createElement("th");
+                ruleCurveHeader.textContent = "Rule Curve";
+                headerRow.appendChild(ruleCurveHeader);
 
                 table.appendChild(headerRow);
 
@@ -151,6 +158,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                 ruleCurveInput.value = data2['constant-value'].toFixed(2);  // Blank entry box
                 ruleCurveInput.className = "outflow-input";
                 ruleCurveInput.id = `ruleCurveInput`;
+
+                if (!checkSeasonalValueMatch(data1, data2['constant-value'], offsetMonths, offsetMinutes)) {
+                    console.log(checkSeasonalValueMatch(data1, data2['constant-value'], offsetMonths, offsetMinutes));  // true - all match
+
+                    // Add styles to make text bold and red
+                    ruleCurveInput.style.fontWeight = "bold";
+                    ruleCurveInput.style.color = "red";
+                }
+
                 ruleCurveCell.appendChild(ruleCurveInput);
                 row.appendChild(ruleCurveCell);
 
@@ -332,4 +348,50 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Return the ISO string
         return date.toISOString();
     }
+
+    function checkSeasonalValueMatch(data, value, offsetMonths, offsetMinutes) {
+        const seasonalValues = data["seasonal-values"];
+    
+        console.log(`Checking for value: ${value}, offsetMonths: ${offsetMonths}, offsetMinutes: ${offsetMinutes}`);
+    
+        let bestMatch = null;
+    
+        for (const seasonalValue of seasonalValues) {
+            console.log(`Checking seasonal value:`, seasonalValue);
+    
+            if (seasonalValue["offset-months"] > offsetMonths) {
+                console.log(`Skipping ${JSON.stringify(seasonalValue)} - offset-months too high`);
+                continue; // Skip months greater than target
+            }
+    
+            if (bestMatch === null) {
+                console.log(`First candidate:`, seasonalValue);
+                bestMatch = seasonalValue;
+            } else {
+                const isBetterMonth = seasonalValue["offset-months"] > bestMatch["offset-months"];
+                const isSameMonthBetterMinutes = seasonalValue["offset-months"] === bestMatch["offset-months"] &&
+                                                 seasonalValue["offset-minutes"] <= offsetMinutes &&
+                                                 seasonalValue["offset-minutes"] > bestMatch["offset-minutes"];
+    
+                if (isBetterMonth || isSameMonthBetterMinutes) {
+                    console.log(`Updating best match to:`, seasonalValue);
+                    bestMatch = seasonalValue;
+                }
+            }
+        }
+    
+        if (bestMatch) {
+            console.log(`Best match found:`, bestMatch);
+            if (bestMatch.value === value) {
+                console.log(`Value matches! Returning true.`);
+                return true;
+            } else {
+                console.log(`Value does not match. Expected: ${value}, Found: ${bestMatch.value}`);
+            }
+        } else {
+            console.log(`No suitable match found.`);
+        }
+    
+        return false;
+    }      
 });
