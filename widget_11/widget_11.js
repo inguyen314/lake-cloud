@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 headerRow.appendChild(dateHeader);
 
                 const textValueHeader = document.createElement("th");
-                textValueHeader.textContent = "Note";
+                textValueHeader.textContent = "Text Value";
                 headerRow.appendChild(textValueHeader);
 
                 table.appendChild(headerRow);
@@ -184,6 +184,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         textValueInput.type = "text";
                         textValueInput.value = entry["text-value"] || "No Text"; // Fallback if "text-value" is not available
                         textValueInput.className = "text-value-input"; // Add a class for styling (optional)
+                        textValueInput.id = `textValueInput-${entry["date-time-iso"]}`; // Add ID for easier access
                         textValueCell.appendChild(textValueInput);
                         row.appendChild(textValueCell);
 
@@ -193,7 +194,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // If no data or "regular-text-values" is not an array, display a message
                     const row = document.createElement("tr");
 
-                    // Use "date-time-iso" for the date
+                    // Use "isoDateToday" as a fallback for the date
                     const dateCell = document.createElement("td");
                     dateCell.textContent = isoDateToday; // Fallback if "date-time-iso" is not available
                     row.appendChild(dateCell);
@@ -204,6 +205,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     textValueInput.type = "text";
                     textValueInput.value = "--"; // Fallback if "text-value" is not available
                     textValueInput.className = "text-value-input"; // Add a class for styling (optional)
+                    textValueInput.id = `textValueInput-${isoDateToday}`; // Use today's date as ID
                     textValueCell.appendChild(textValueInput);
                     row.appendChild(textValueCell);
 
@@ -217,7 +219,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
                 cdaSaveBtn.id = "cda-btn-note";
-                cdaSaveBtn.disabled = true;
+                cdaSaveBtn.disabled = false;
                 output11Div.appendChild(cdaSaveBtn);
 
                 const statusDiv = document.createElement("div");
@@ -229,145 +231,173 @@ document.addEventListener('DOMContentLoaded', async function () {
                 statusDiv.appendChild(cdaStatusBtn);
                 output11Div.appendChild(statusDiv);
 
-                // cdaSaveBtn.addEventListener("click", async () => {
-                //     const values = [];
+                cdaSaveBtn.addEventListener("click", async () => {
+                    let textValues = [];
 
-                //     if (formattedData.length === 0) {
-                //         // No data, only today's input (single row scenario)
-                //         const noteInput = document.getElementById(`noteInput-${isoDateToday}`).value;
+                    // If data exists in "regular-text-values", grab values from the inputs
+                    if (Array.isArray(formattedData["regular-text-values"]) && formattedData["regular-text-values"].length > 0) {
+                        // Loop through each entry and get the input values
+                        formattedData["regular-text-values"].forEach((entry) => {
+                            const textValueInput = document.getElementById(`textValueInput-${entry["date-time-iso"]}`);
+                            if (textValueInput) {
+                                textValues.push({
+                                    "date-time-iso": entry["date-time-iso"],
+                                    "text-value": textValueInput.value
+                                });
+                            }
+                        });
+                    } else {
+                        // If no data exists, get the value from the input for today's date
+                        const textValueInput = document.getElementById(`textValueInput-${isoDateToday}`);
+                        if (textValueInput) {
+                            textValues.push({
+                                "date-time-iso": isoDateToday,
+                                "text-value": textValueInput.value
+                            });
+                        }
+                    }
 
-                //         let precipValue = noteInput ? parseFloat(noteInput) : 909; // Default to 909 if empty
-                //         const timestampUnix = new Date(isoDateToday).getTime();
+                    console.log("Updated Text Values:", textValues);
+                    console.log("Value: ", textValues[0]['text-value']);
 
-                //         values.push([timestampUnix, precipValue, 0]);
-                //     } else {
-                //         // Use existing formattedData entries
-                //         formattedData.forEach(entry => {
-                //             const noteInput = document.getElementById(`noteInput-${entry.timestamp}`).value;
 
-                //             let precipValue = noteInput ? parseFloat(noteInput) : 909; // Default to 909 if empty
-                //             const timestampUnix = new Date(entry.timestamp).getTime();
+                    const payload = {
+                        "office-id": "MVS",
+                        "name": tsidNote,
+                        "interval-offset": 0,
+                        "time-zone": "GMT",
+                        "date-version-type": "MAX_AGGREGATE",
+                        "version-date": isoDateToday,
+                        "regular-text-values": [
+                            {
+                                "date-time": isoDateToday,
+                                "data-entry-date": isoDateToday,
+                                "text-value": textValues[0]['date-time-iso'],
+                                "filename": "test.txt",
+                                "media-type": "text/plain",
+                                "quality-code": 0,
+                                "dest-flag": 0,
+                                "value-url": "https://cwms-data.usace.army.mil/cwms-data/timeseries/text/ignored?text-id=someId&office-id=MVS&value=true"
+                            }
+                        ]
+                    }
 
-                //             values.push([timestampUnix, precipValue, 0]);
-                //         });
-                //     }
+                    console.log("Preparing payload...");
+                    console.log("payload:", payload);
 
-                //     const payload = {
-                //         "name": tsidNote,
-                //         "office-id": "MVS",
-                //         "units": "in",
-                //         "values": values
-                //     };
+                    async function loginCDA() {
+                        if (await isLoggedIn()) return true;
+                        window.location.href = `https://wm.mvs.ds.usace.army.mil:8243/CWMSLogin/login?OriginalLocation=${encodeURIComponent(window.location.href)}`;
+                    }
 
-                //     console.log("Preparing payload...");
-                //     console.log("payload:", payload);
+                    async function isLoggedIn() {
+                        try {
+                            const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", { method: "GET" });
+                            return response.status !== 401;
+                        } catch (error) {
+                            console.error('Error checking login status:', error);
+                            return false;
+                        }
+                    }
 
-                //     async function loginCDA() {
-                //         if (await isLoggedIn()) return true;
-                //         window.location.href = `https://wm.mvs.ds.usace.army.mil:8243/CWMSLogin/login?OriginalLocation=${encodeURIComponent(window.location.href)}`;
-                //     }
+                    async function writeTSText(payload) {
+                        // Ensure payload is provided
+                        if (!payload) throw new Error("You must specify a payload!");
 
-                //     async function isLoggedIn() {
-                //         try {
-                //             const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", { method: "GET" });
-                //             return response.status !== 401;
-                //         } catch (error) {
-                //             console.error('Error checking login status:', error);
-                //             return false;
-                //         }
-                //     }
+                        try {
+                            // Send a POST request to write time series data
+                            const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries/text?replace-all=true", {
+                                method: "POST",
+                                headers: {
+                                    // "accept": "*/*",
+                                    "Content-Type": "application/json;version=2",
+                                },
+                                // Convert payload to JSON and include in request body
+                                body: JSON.stringify(payload)
+                            });
 
-                //     async function createTS(payload) {
-                //         if (!payload) throw new Error("You must specify a payload!");
-                //         const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?store-rule=REPLACE%20ALL", {
-                //             method: "POST",
-                //             headers: { "Content-Type": "application/json;version=2" },
-                //             body: JSON.stringify(payload)
-                //         });
+                            // Handle non-OK responses
+                            if (!response.ok) {
+                                const errorText = await response.text();
+                                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                            }
 
-                //         if (!response.ok) {
-                //             const errorText = await response.text();
-                //             throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-                //         }
-                //     }
+                            // Return true to indicate success
+                            return true;
 
-                //     async function fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day) {
-                //         let response = null;
+                        } catch (error) {
+                            // Log any errors that occur during the write operation
+                            console.error('Error writing timeseries:', error);
+                            throw error;
+                        }
 
-                //         // Convert to Date object
-                //         const date = new Date(isoDateMinus1Day);
+                    }
 
-                //         // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
-                //         date.setTime(date.getTime() + (1 * 60 * 60 * 1000));
+                    async function fetchUpdatedData(tsidNote, isoDateDay5, isoDateToday, isoDateMinus1Day) {
+                        let response = null;
 
-                //         // Convert back to ISO string (preserve UTC format)
-                //         const isoDateMinus1DayPlus1Hour = date.toISOString();
+                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries/text?office=MVS&name=${tsidNote}&begin=${isoDateToday}&end=${isoDateToday}`, {
+                            method: "GET",
+                            headers: {
+                                "Content-Type": "application/json;version=2",
+                            }
+                        });
 
-                //         console.log("isoDateMinus1DayPlus1Hour: ", isoDateMinus1DayPlus1Hour);
-                //         console.log("isoDateToday: ", isoDateToday);
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch updated data: ${response.status}`);
+                        }
 
-                //         response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1Day}&end=${isoDateToday}&office=MVS`, {
-                //             headers: {
-                //                 "Accept": "application/json;version=2", // Ensuring the correct version is used
-                //                 "cache-control": "no-cache"
-                //             }
-                //         });
+                        const data = await response.json();
 
-                //         if (!response.ok) {
-                //             throw new Error(`Failed to fetch updated data: ${response.status}`);
-                //         }
+                        // Log the raw data received
+                        console.log('Fetched Data:', data);
 
-                //         const data = await response.json();
+                        return data;
+                    }
 
-                //         // Log the raw data received
-                //         console.log('Fetched Data:', data);
+                    // Function to show the spinner while waiting
+                    function showSpinner() {
+                        const spinner = document.createElement('img');
+                        spinner.src = 'images/loading4.gif';
+                        spinner.id = 'loadingSpinner';
+                        spinner.style.width = '40px';  // Set the width to 40px
+                        spinner.style.height = '40px'; // Set the height to 40px
+                        document.body.appendChild(spinner);
+                    }
 
-                //         return data;
-                //     }
+                    // Function to hide the spinner once the operation is complete
+                    function hideSpinner() {
+                        const spinner = document.getElementById('loadingSpinner');
+                        if (spinner) {
+                            spinner.remove();
+                        }
+                    }
 
-                //     // Function to show the spinner while waiting
-                //     function showSpinner() {
-                //         const spinner = document.createElement('img');
-                //         spinner.src = 'images/loading4.gif';
-                //         spinner.id = 'loadingSpinner';
-                //         spinner.style.width = '40px';  // Set the width to 40px
-                //         spinner.style.height = '40px'; // Set the height to 40px
-                //         document.body.appendChild(spinner);
-                //     }
+                    if (cdaSaveBtn.innerText === "Login") {
+                        showSpinner(); // Show the spinner before the login
+                        const loginResult = await loginCDA();
+                        hideSpinner(); // Hide the spinner after login is complete
 
-                //     // Function to hide the spinner once the operation is complete
-                //     function hideSpinner() {
-                //         const spinner = document.getElementById('loadingSpinner');
-                //         if (spinner) {
-                //             spinner.remove();
-                //         }
-                //     }
+                        cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
+                        cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
+                    } else {
+                        try {
+                            showSpinner(); // Show the spinner before creating the version
+                            await writeTSText(payload);
+                            cdaStatusBtn.innerText = "Write successful!";
 
-                //     if (cdaSaveBtn.innerText === "Login") {
-                //         showSpinner(); // Show the spinner before the login
-                //         const loginResult = await loginCDA();
-                //         hideSpinner(); // Hide the spinner after login is complete
+                            // Fetch updated data and refresh the table
+                            const updatedData = await fetchUpdatedData(tsidNote, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidNote, updatedData);
+                        } catch (error) {
+                            hideSpinner(); // Hide the spinner if an error occurs
+                            cdaStatusBtn.innerText = "Failed to write data!";
+                            console.error(error);
+                        }
 
-                //         cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
-                //         cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
-                //     } else {
-                //         try {
-                //             showSpinner(); // Show the spinner before creating the version
-                //             await createTS(payload);
-                //             cdaStatusBtn.innerText = "Write successful!";
-
-                //             // Fetch updated data and refresh the table
-                //             const updatedData = await fetchUpdatedData(tsidNote, isoDateDay5, isoDateToday, isoDateMinus1Day);
-                //             createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidNote, updatedData);
-                //         } catch (error) {
-                //             hideSpinner(); // Hide the spinner if an error occurs
-                //             cdaStatusBtn.innerText = "Failed to write data!";
-                //             console.error(error);
-                //         }
-
-                //         hideSpinner(); // Hide the spinner after the operation completes
-                //     }
-                // });
+                        hideSpinner(); // Hide the spinner after the operation completes
+                    }
+                });
             }
         } catch (error) {
             console.error("Error fetching tsid data:", error);
