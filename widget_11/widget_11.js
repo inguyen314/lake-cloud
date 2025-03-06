@@ -112,14 +112,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                     loginStateController()
                 }, 10000) // time is in millis
             } else {
-                // console.log("Calling createTable ...");
-                // createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidNote, timeSeriesDataNote);
+                console.log("Calling createTable ...");
+                createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidNote, timeSeriesDataNote);
 
-                // loginStateController()
-                // // Setup timers
-                // setInterval(async () => {
-                //     loginStateController()
-                // }, 10000) // time is in millis
+                loginStateController()
+                // Setup timers
+                setInterval(async () => {
+                    loginStateController()
+                }, 10000) // time is in millis
             }
 
             function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidNote, timeSeriesDataNote) {
@@ -153,7 +153,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const formattedData = timeSeriesDataNote;
                 console.log("formattedData:", formattedData);
 
-
                 const table = document.createElement("table");
                 table.id = "gate-settings";
 
@@ -163,7 +162,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 headerRow.appendChild(dateHeader);
 
                 const textValueHeader = document.createElement("th");
-                textValueHeader.textContent = "Text Value";
+                textValueHeader.textContent = "Note";
                 headerRow.appendChild(textValueHeader);
 
                 table.appendChild(headerRow);
@@ -193,10 +192,21 @@ document.addEventListener('DOMContentLoaded', async function () {
                 } else {
                     // If no data or "regular-text-values" is not an array, display a message
                     const row = document.createElement("tr");
-                    const messageCell = document.createElement("td");
-                    messageCell.colSpan = 2;
-                    messageCell.textContent = "No data available";
-                    row.appendChild(messageCell);
+
+                    // Use "date-time-iso" for the date
+                    const dateCell = document.createElement("td");
+                    dateCell.textContent = isoDateToday; // Fallback if "date-time-iso" is not available
+                    row.appendChild(dateCell);
+
+                    // Make the "text-value" editable
+                    const textValueCell = document.createElement("td");
+                    const textValueInput = document.createElement("input");
+                    textValueInput.type = "text";
+                    textValueInput.value = "--"; // Fallback if "text-value" is not available
+                    textValueInput.className = "text-value-input"; // Add a class for styling (optional)
+                    textValueCell.appendChild(textValueInput);
+                    row.appendChild(textValueCell);
+
                     table.appendChild(row);
                 }
 
@@ -218,8 +228,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 cdaStatusBtn.disabled = false;
                 statusDiv.appendChild(cdaStatusBtn);
                 output11Div.appendChild(statusDiv);
-
-
 
                 // cdaSaveBtn.addEventListener("click", async () => {
                 //     const values = [];
