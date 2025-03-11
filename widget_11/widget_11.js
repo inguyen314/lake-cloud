@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             {
                                 "date-time": isoDateToday,
                                 "data-entry-date": isoDateToday,
-                                "text-value": textValues[0]['date-time-iso'],
+                                "text-value": textValues[0]['text-value'],
                                 "filename": "test.txt",
                                 "media-type": "text/plain",
                                 "quality-code": 0,
@@ -510,8 +510,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 
-// Lk Shelbyville-Kaskaskia.Precip.Total.~1Day.1Day.lakerep-rev-test
-// Carlyle Lk-Kaskaskia.Precip.Total.~1Day.1Day.lakerep-rev-test
-// Mark Twain Lk-Salt.Precip.Total.~1Day.1Day.lakerep-rev-test
-// Wappapello Lk-St Francis.Precip.Total.~1Day.1Day.lakerep-rev-test
-// Rend Lk-Big Muddy.Precip.Total.~1Day.1Day.lakerep-rev-test
+// Lk Shelbyville-Kaskaskia.Stage.Inst.~1Day.0.lakerep-rev-crest-note
+// Carlyle Lk-Kaskaskia.Stage.Inst.~1Day.0.lakerep-rev-crest-note
+// Mark Twain Lk-Salt.Stage.Inst.~1Day.0.lakerep-rev-crest-note
+// Wappapello Lk-St Francis.Stage.Inst.~1Day.0.lakerep-rev-crest-note
+// Rend Lk-Big Muddy.Stage.Inst.~1Day.0.lakerep-rev-crest-note
