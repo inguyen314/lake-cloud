@@ -437,6 +437,40 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const tsidOutflowAverageData = await responseOutflowAverage.json();
                 console.log("tsidOutflowAverageData:", tsidOutflowAverageData);
 
+                let cdaSaveBtn;
+
+                async function isLoggedIn() {
+                    try {
+                        const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", {
+                            method: "GET"
+                        });
+
+                        if (response.status === 401) return false;
+
+                        console.log('status', response.status);
+                        return true;
+
+                    } catch (error) {
+                        console.error('Error checking login status:', error);
+                        return false;
+                    }
+                }
+
+                async function loginStateController() {
+                    cdaSaveBtn = document.getElementById("cda-btn"); // Get the button by its ID
+
+                    cdaSaveBtn.disabled = true; // Disable button while checking login state
+
+                    // Update button text based on login status
+                    if (await isLoggedIn()) {
+                        cdaSaveBtn.innerText = "Save";
+                    } else {
+                        cdaSaveBtn.innerText = "Login";
+                    }
+
+                    cdaSaveBtn.disabled = false; // Re-enable button
+                }
+
                 if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
                     const tsidSluice1 = tsidSluiceData['assigned-time-series'][0]['timeseries-id'];
                     console.log("tsidSluice1:", tsidSluice1);
@@ -477,105 +511,43 @@ document.addEventListener('DOMContentLoaded', async function () {
                     console.log("timeSeriesDataSluiceTotal:", timeSeriesDataSluiceTotal);
 
                     const timeSeriesDataGate1 = await fetchTimeSeriesData(tsidGate1);
-                    console.log("timeSeriesDataGate1:", timeSeriesDataGate1)
+                    console.log("timeSeriesDataGate1:", timeSeriesDataGate1);
 
                     const timeSeriesDataGate2 = await fetchTimeSeriesData(tsidGate2);
-                    console.log("timeSeriesDataGate2:", timeSeriesDataGate2)
+                    console.log("timeSeriesDataGate2:", timeSeriesDataGate2);
 
                     const timeSeriesDataGate3 = await fetchTimeSeriesData(tsidGate3);
-                    console.log("timeSeriesDataGate3:", timeSeriesDataGate3)
+                    console.log("timeSeriesDataGate3:", timeSeriesDataGate3);
 
                     const timeSeriesDataGateTotal = await fetchTimeSeriesData(tsidGateTotal);
-                    console.log("timeSeriesDataGateTotal:", timeSeriesDataGateTotal)
+                    console.log("timeSeriesDataGateTotal:", timeSeriesDataGateTotal);
 
                     const timeSeriesDataOutflowTotal = await fetchTimeSeriesData(tsidGateTotal);
-                    console.log("timeSeriesDataOutflowTotal:", timeSeriesDataOutflowTotal)
+                    console.log("timeSeriesDataOutflowTotal:", timeSeriesDataOutflowTotal);
 
                     const timeSeriesDataOutflowAverage = await fetchTimeSeriesData(tsidGateTotal);
-                    console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage)
-                }
+                    console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage);
 
-                let cdaSaveBtn;
+                    if (timeSeriesDataSluice1 && timeSeriesDataSluice1.values && timeSeriesDataSluice1.values.length > 0) {
+                        console.log("Calling createTable ...");
 
-                async function isLoggedIn() {
-                    try {
-                        const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", {
-                            method: "GET"
-                        });
+                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, timeSeriesDataSluice1, timeSeriesDataSluice2, timeSeriesDataSluiceTotal, timeSeriesDataGate1, timeSeriesDataGate2, timeSeriesDataGate3, timeSeriesDataGateTotal, timeSeriesDataOutflowTotal, timeSeriesDataOutflowAverage);
 
-                        if (response.status === 401) return false;
-
-                        console.log('status', response.status);
-                        return true;
-
-                    } catch (error) {
-                        console.error('Error checking login status:', error);
-                        return false;
-                    }
-                }
-
-                async function loginStateController() {
-                    cdaSaveBtn = document.getElementById("cda-btn"); // Get the button by its ID
-
-                    cdaSaveBtn.disabled = true; // Disable button while checking login state
-
-                    // Update button text based on login status
-                    if (await isLoggedIn()) {
-                        cdaSaveBtn.innerText = "Save";
+                        loginStateController()
+                        setInterval(async () => {
+                            loginStateController()
+                        }, 10000)
                     } else {
-                        cdaSaveBtn.innerText = "Login";
+                        console.log("Calling createDataEntryTable ...");
+
+                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow);
+
+                        loginStateController()
+                        setInterval(async () => {
+                            loginStateController()
+                        }, 10000)
                     }
-
-                    cdaSaveBtn.disabled = false; // Re-enable button
                 }
-
-                // if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                //     if (timeSeriesDataOutflow && timeSeriesDataOutflow.values && timeSeriesDataOutflow.values.length > 0 && timeSeriesDataInflow && timeSeriesDataInflow.values && timeSeriesDataInflow.values.length > 0) {
-                //         console.log("Calling Mark Twain Lk createTable ...");
-
-                //         // createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, timeSeriesDataOutflow, tsidInflow, timeSeriesDataInflow);
-
-                //         // loginStateController()
-                //         // // Setup timers
-                //         // setInterval(async () => {
-                //         //     loginStateController()
-                //         // }, 10000) // time is in millis
-                //     } else {
-                //         console.log("Calling Mark Twain Lk createDataEntryTable ...");
-
-                //         // createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, tsidInflow);
-
-                //         // loginStateController()
-                //         // // Setup timers
-                //         // setInterval(async () => {
-                //         //     loginStateController()
-                //         // }, 10000) // time is in millis
-                //     }
-
-                // } else {
-                //     if (timeSeriesDataOutflow && timeSeriesDataOutflow.values && timeSeriesDataOutflow.values.length > 0) {
-                //         console.log("Calling createTable ...");
-
-                //         // createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, timeSeriesDataOutflow);
-
-                //         // loginStateController()
-                //         // // Setup timers
-                //         // setInterval(async () => {
-                //         //     loginStateController()
-                //         // }, 10000) // time is in millis
-                //     } else {
-                //         console.log("Calling createDataEntryTable ...");
-
-                //         createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow);
-
-                //         // loginStateController()
-                //         // // Setup timers
-                //         // setInterval(async () => {
-                //         //     loginStateController()
-                //         // }, 10000) // time is in millis
-                //     }
-                // }
-
             } catch (error) {
                 console.error("Error fetching tsidOutflow data:", error);
 
