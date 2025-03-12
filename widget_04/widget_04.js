@@ -564,13 +564,23 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             }
 
-            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, timeSeriesDataOutflow, tsidInflow, timeSeriesDataInflow) {
-                console.log("timeSeriesDataOutflow:", timeSeriesDataOutflow);
-                console.log("timeSeriesDataInflow:", timeSeriesDataInflow);
+            function createTable(
+                isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                timeSeriesDataSluice1, timeSeriesDataSluice2, timeSeriesDataSluiceTotal, timeSeriesDataGate1, timeSeriesDataGate2,
+                timeSeriesDataGate3, timeSeriesDataGateTotal, timeSeriesDataOutflowTotal, timeSeriesDataOutflowAverage) {
 
-                formattedData = timeSeriesDataOutflow.values.map(entry => {
+                console.log("timeSeriesDataSluice1:", timeSeriesDataSluice1);
+                console.log("timeSeriesDataSluice2:", timeSeriesDataSluice2);
+                console.log("timeSeriesDataSluiceTotal:", timeSeriesDataSluiceTotal)
+                console.log("timeSeriesDataGate1:", timeSeriesDataGate1)
+                console.log("timeSeriesDataGate2:", timeSeriesDataGate2)
+                console.log("timeSeriesDataGate3:", timeSeriesDataGate3)
+                console.log("timeSeriesDataGateTotal:", timeSeriesDataGateTotal)
+                console.log("timeSeriesDataOutflowTotal:", timeSeriesDataOutflowTotal)
+                console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage);
+
+                let formattedDataSluice1 = timeSeriesDataSluice1.values.map(entry => {
                     const timestamp = entry[0]; // Timestamp is in milliseconds in the array
-                    // const formattedTimestampCST = formatISODateToUTCString(Number(timestamp)); // Ensure timestamp is a number
                     const formattedTimestampCST = formatISODateToCSTString(Number(timestamp)); // Ensure timestamp is a number
 
                     return {
@@ -579,24 +589,103 @@ document.addEventListener('DOMContentLoaded', async function () {
                     };
                 });
 
-                // Now you have formatted data for both datasets
-                console.log("Formatted timeSeriesDataOutflow:", formattedData);
+                console.log("Formatted timeSeriesDataSluice1:", formattedDataSluice1);
 
-                let formattedDataInflow;
-                if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                    formattedDataInflow = timeSeriesDataInflow.values.map(entry => {
-                        const timestamp = entry[0]; // Timestamp is in milliseconds in the array
-                        const formattedTimestampCST = formatISODateToUTCString(Number(timestamp)); // Ensure timestamp is a number
+                let formattedDataSluice2 = timeSeriesDataSluice2.values.map(entry => {
+                    const timestamp = entry[0]; // Timestamp is in milliseconds in the array
+                    const formattedTimestampCST = formatISODateToCSTString(Number(timestamp)); // Ensure timestamp is a number
 
-                        return {
-                            ...entry, // Retain other data
-                            formattedTimestampCST // Add formatted timestamp
-                        };
-                    });
+                    return {
+                        ...entry, // Retain other data
+                        formattedTimestampCST // Add formatted timestamp
+                    };
+                });
 
-                    // Now you have formatted data for both datasets
-                    console.log("Formatted timeSeriesDataInflow:", formattedDataInflow);
-                }
+                console.log("Formatted timeSeriesDataSluice2:", formattedDataSluice2);
+
+                let formattedDataSluiceTotal = timeSeriesDataSluiceTotal.values.map(entry => {
+                    const timestamp = entry[0]; // Timestamp is in milliseconds in the array
+                    const formattedTimestampCST = formatISODateToCSTString(Number(timestamp)); // Ensure timestamp is a number
+
+                    return {
+                        ...entry, // Retain other data
+                        formattedTimestampCST // Add formatted timestamp
+                    };
+                });
+
+                console.log("Formatted timeSeriesDataSluiceTotal:", formattedDataSluiceTotal);
+
+                let formattedDataGate1 = timeSeriesDataGate1.values.map(entry => {
+                    const timestamp = entry[0]; // Timestamp is in milliseconds in the array
+                    const formattedTimestampCST = formatISODateToCSTString(Number(timestamp)); // Ensure timestamp is a number
+
+                    return {
+                        ...entry, // Retain other data
+                        formattedTimestampCST // Add formatted timestamp
+                    };
+                });
+
+                console.log("Formatted timeSeriesDataGate1:", formattedDataGate1);
+
+                let formattedDataGate2 = timeSeriesDataGate2.values.map(entry => {
+                    const timestamp = entry[0]; // Timestamp is in milliseconds in the array
+                    const formattedTimestampCST = formatISODateToCSTString(Number(timestamp)); // Ensure timestamp is a number
+
+                    return {
+                        ...entry, // Retain other data
+                        formattedTimestampCST // Add formatted timestamp
+                    };
+                });
+
+                console.log("Formatted timeSeriesDataGate2:", formattedDataGate2);
+
+                let formattedDataGate3 = timeSeriesDataGate3.values.map(entry => {
+                    const timestamp = entry[0]; // Timestamp is in milliseconds in the array
+                    const formattedTimestampCST = formatISODateToCSTString(Number(timestamp)); // Ensure timestamp is a number
+
+                    return {
+                        ...entry, // Retain other data
+                        formattedTimestampCST // Add formatted timestamp
+                    };
+                });
+
+                console.log("Formatted timeSeriesDataGate3:", formattedDataGate3);
+
+                let formattedDataGateTotal = timeSeriesDataGateTotal.values.map(entry => {
+                    const timestamp = entry[0]; // Timestamp is in milliseconds in the array
+                    const formattedTimestampCST = formatISODateToCSTString(Number(timestamp)); // Ensure timestamp is a number
+
+                    return {
+                        ...entry, // Retain other data
+                        formattedTimestampCST // Add formatted timestamp
+                    };
+                });
+
+                console.log("Formatted timeSeriesDataGateTotal:", formattedDataGateTotal);
+
+                let formattedDataOutflowTotal = timeSeriesDataOutflowTotal.values.map(entry => {
+                    const timestamp = entry[0]; // Timestamp is in milliseconds in the array
+                    const formattedTimestampCST = formatISODateToCSTString(Number(timestamp)); // Ensure timestamp is a number
+
+                    return {
+                        ...entry, // Retain other data
+                        formattedTimestampCST // Add formatted timestamp
+                    };
+                });
+
+                console.log("Formatted timeSeriesDataOutflowTotal:", formattedDataOutflowTotal);
+
+                let formattedDataOutflowAverage = timeSeriesDataOutflowAverage.values.map(entry => {
+                    const timestamp = entry[0]; // Timestamp is in milliseconds in the array
+                    const formattedTimestampCST = formatISODateToCSTString(Number(timestamp)); // Ensure timestamp is a number
+
+                    return {
+                        ...entry, // Retain other data
+                        formattedTimestampCST // Add formatted timestamp
+                    };
+                });
+
+                console.log("Formatted timeSeriesDataOutflowAverage:", formattedDataOutflowAverage);
 
                 const table = document.createElement("table");
                 table.id = "gate-settings";
