@@ -346,11 +346,15 @@ document.addEventListener('DOMContentLoaded', async function () {
         } else if (cda === "internal-coop") {
             setBaseUrl = `https://wm-${office.toLowerCase()}coop.mvk.ds.usace.army.mil/${office.toLowerCase()}-data/`;
         } else if (cda === "public") {
-            setBaseUrl = `https://cwms-data.usace.army.mil/cwms-data/`;
+            // setBaseUrl = `https://cwms-data.usace.army.mil/cwms-data/`;
+            setBaseUrl = `https://cwms-data-test.cwbi.us/cwms-data/`;
         }
         console.log("setBaseUrl: ", setBaseUrl);
 
         const [month, day, year] = datetime.split('-');
+        console.log("month: ", month);
+        console.log("day: ", day);
+        console.log("year: ", year);
 
         // Generate ISO strings for the previous 7 days and today
         const isoDateMinus8Days = getIsoDateWithOffset(year, month, day, -8);
@@ -389,35 +393,107 @@ document.addEventListener('DOMContentLoaded', async function () {
         console.log("isoDateDay6:", isoDateDay6);
         console.log("isoDateDay7:", isoDateDay7);
 
-        const urltsid = `${setBaseUrl}timeseries/group/Forecast-Lake?office=${office}&category-id=${lake}`;
-        console.log("urltsid:", urltsid);
+        const urlTsidSluice = `${setBaseUrl}timeseries/group/Sluice-Lake-Test?office=${office}&category-id=${lake}`;
+        console.log("urlTsidSluice:", urlTsidSluice);
+
+        const urlTsidSluiceTotal = `${setBaseUrl}timeseries/group/Sluice-Total-Lake-Test?office=${office}&category-id=${lake}`;
+        console.log("urlTsidSluiceTotal:", urlTsidSluiceTotal);
+
+        const urlTsidGate = `${setBaseUrl}timeseries/group/Gate-Lake-Test?office=${office}&category-id=${lake}`;
+        console.log("urlTsidGate:", urlTsidGate);
+
+        const urlTsidGateTotal = `${setBaseUrl}timeseries/group/Gate-Total-Lake-Test?office=${office}&category-id=${lake}`;
+        console.log("urlTsidGateTotal:", urlTsidGateTotal);
+
+        const urlTsidOutflowTotal = `${setBaseUrl}timeseries/group/Outflow-Total-Lake-Test?office=${office}&category-id=${lake}`;
+        console.log("urlTsidOutflowTotal:", urlTsidOutflowTotal);
+
+        const urlTsidOutflowAverage = `${setBaseUrl}timeseries/group/Outflow-Average-Lake-Test?office=${office}&category-id=${lake}`;
+        console.log("urlTsidOutflowAverage:", urlTsidOutflowAverage);
 
         const fetchTsidData = async () => {
             try {
-                const response = await fetch(urltsid);
+                const responseSluice = await fetch(urlTsidSluice);
+                const tsidSluiceData = await responseSluice.json();
+                console.log("tsidSluiceData:", tsidSluiceData);
 
-                const tsidData = await response.json();
-                console.log("tsidData:", tsidData);
+                const responseSluiceTotal = await fetch(urlTsidSluiceTotal);
+                const tsidSluiceTotalData = await responseSluiceTotal.json();
+                console.log("tsidSluiceTotalData:", tsidSluiceTotalData);
 
-                // Extract the timeseries-id from the response
-                const tsidOutflow = tsidData['assigned-time-series'][0]['timeseries-id'];
-                console.log("tsidOutflow:", tsidOutflow);
+                const responseGate = await fetch(urlTsidGate);
+                const tsidGateData = await responseGate.json();
+                console.log("tsidGateData:", tsidGateData);
 
-                let tsidInflow = null;
-                let timeSeriesDataInflow = null;
-                if (tsidData && tsidData['assigned-time-series'] && tsidData['assigned-time-series'][1]) {
-                    tsidInflow = tsidData['assigned-time-series'][1]['timeseries-id'];
-                    console.log("tsidInflow:", tsidInflow);
+                const responseGateTotal = await fetch(urlTsidGateTotal);
+                const tsidGateTotalData = await responseGateTotal.json();
+                console.log("tsidGateTotalData:", tsidGateTotalData);
 
-                    timeSeriesDataInflow = await fetchTimeSeriesData(tsidInflow);
-                    console.log("timeSeriesDataInflow:", timeSeriesDataInflow);
-                } else {
-                    console.log("The required data does not exist.");
+                const responseOutflowTotal = await fetch(urlTsidOutflowTotal);
+                const tsidOutflowTotalData = await responseOutflowTotal.json();
+                console.log("tsidOutflowTotalData:", tsidOutflowTotalData);
+
+                const responseOutflowAverage = await fetch(urlTsidOutflowAverage);
+                const tsidOutflowAverageData = await responseOutflowAverage.json();
+                console.log("tsidOutflowAverageData:", tsidOutflowAverageData);
+
+                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                    const tsidSluice1 = tsidSluiceData['assigned-time-series'][0]['timeseries-id'];
+                    console.log("tsidSluice1:", tsidSluice1);
+
+                    const tsidSluice2 = tsidSluiceData['assigned-time-series'][1]['timeseries-id'];
+                    console.log("tsidSluice2:", tsidSluice2);
+
+                    const tsidSluiceTotal = tsidSluiceTotalData['assigned-time-series'][0]['timeseries-id'];
+                    console.log("tsidSluiceTotal:", tsidSluiceTotal);
+
+                    const tsidGate1 = tsidGateData['assigned-time-series'][0]['timeseries-id'];
+                    console.log("tsidGate1:", tsidGate1);
+
+                    const tsidGate2 = tsidGateData['assigned-time-series'][1]['timeseries-id'];
+                    console.log("tsidGate2:", tsidGate2);
+
+                    const tsidGate3 = tsidGateData['assigned-time-series'][1]['timeseries-id'];
+                    console.log("tsidGate3:", tsidGate3);
+
+                    const tsidGateTotal = tsidGateTotalData['assigned-time-series'][0]['timeseries-id'];
+                    console.log("tsidGateTotal:", tsidGateTotal);
+
+                    const tsidOutflowTotal = tsidOutflowTotalData['assigned-time-series'][0]['timeseries-id'];
+                    console.log("tsidOutflowTotal:", tsidOutflowTotal);
+
+                    const tsidOutflowAverage = tsidOutflowAverageData['assigned-time-series'][0]['timeseries-id'];
+                    console.log("tsidOutflowAverage:", tsidOutflowAverage);
+
+
+                    // Fetch time series data
+                    const timeSeriesDataSluice1 = await fetchTimeSeriesData(tsidSluice1);
+                    console.log("timeSeriesDataSluice1:", timeSeriesDataSluice1);
+
+                    const timeSeriesDataSluice2 = await fetchTimeSeriesData(tsidSluice2);
+                    console.log("timeSeriesDataSluice2:", timeSeriesDataSluice2);
+
+                    const timeSeriesDataSluiceTotal = await fetchTimeSeriesData(tsidSluiceTotal);
+                    console.log("timeSeriesDataSluiceTotal:", timeSeriesDataSluiceTotal);
+
+                    const timeSeriesDataGate1 = await fetchTimeSeriesData(tsidGate1);
+                    console.log("timeSeriesDataGate1:", timeSeriesDataGate1)
+
+                    const timeSeriesDataGate2 = await fetchTimeSeriesData(tsidGate2);
+                    console.log("timeSeriesDataGate2:", timeSeriesDataGate2)
+
+                    const timeSeriesDataGate3 = await fetchTimeSeriesData(tsidGate3);
+                    console.log("timeSeriesDataGate3:", timeSeriesDataGate3)
+
+                    const timeSeriesDataGateTotal = await fetchTimeSeriesData(tsidGateTotal);
+                    console.log("timeSeriesDataGateTotal:", timeSeriesDataGateTotal)
+
+                    const timeSeriesDataOutflowTotal = await fetchTimeSeriesData(tsidGateTotal);
+                    console.log("timeSeriesDataOutflowTotal:", timeSeriesDataOutflowTotal)
+
+                    const timeSeriesDataOutflowAverage = await fetchTimeSeriesData(tsidGateTotal);
+                    console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage)
                 }
-
-                // Fetch time series data using tsidOutflow values
-                const timeSeriesDataOutflow = await fetchTimeSeriesData(tsidOutflow);
-                console.log("timeSeriesDataOutflow:", timeSeriesDataOutflow);
 
                 let cdaSaveBtn;
 
@@ -453,50 +529,52 @@ document.addEventListener('DOMContentLoaded', async function () {
                     cdaSaveBtn.disabled = false; // Re-enable button
                 }
 
-                if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                    if (timeSeriesDataOutflow && timeSeriesDataOutflow.values && timeSeriesDataOutflow.values.length > 0 && timeSeriesDataInflow && timeSeriesDataInflow.values && timeSeriesDataInflow.values.length > 0) {
-                        console.log("Calling Mark Twain Lk createTable ...");
+                // if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                //     if (timeSeriesDataOutflow && timeSeriesDataOutflow.values && timeSeriesDataOutflow.values.length > 0 && timeSeriesDataInflow && timeSeriesDataInflow.values && timeSeriesDataInflow.values.length > 0) {
+                //         console.log("Calling Mark Twain Lk createTable ...");
 
-                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, timeSeriesDataOutflow, tsidInflow, timeSeriesDataInflow);
+                //         // createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, timeSeriesDataOutflow, tsidInflow, timeSeriesDataInflow);
 
-                        loginStateController()
-                        // Setup timers
-                        setInterval(async () => {
-                            loginStateController()
-                        }, 10000) // time is in millis
-                    } else {
-                        console.log("Calling Mark Twain Lk createDataEntryTable ...");
-                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, tsidInflow);
+                //         // loginStateController()
+                //         // // Setup timers
+                //         // setInterval(async () => {
+                //         //     loginStateController()
+                //         // }, 10000) // time is in millis
+                //     } else {
+                //         console.log("Calling Mark Twain Lk createDataEntryTable ...");
 
-                        loginStateController()
-                        // Setup timers
-                        setInterval(async () => {
-                            loginStateController()
-                        }, 10000) // time is in millis
-                    }
+                //         // createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, tsidInflow);
 
-                } else {
-                    if (timeSeriesDataOutflow && timeSeriesDataOutflow.values && timeSeriesDataOutflow.values.length > 0) {
-                        console.log("Calling createTable ...");
+                //         // loginStateController()
+                //         // // Setup timers
+                //         // setInterval(async () => {
+                //         //     loginStateController()
+                //         // }, 10000) // time is in millis
+                //     }
 
-                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, timeSeriesDataOutflow);
+                // } else {
+                //     if (timeSeriesDataOutflow && timeSeriesDataOutflow.values && timeSeriesDataOutflow.values.length > 0) {
+                //         console.log("Calling createTable ...");
 
-                        loginStateController()
-                        // Setup timers
-                        setInterval(async () => {
-                            loginStateController()
-                        }, 10000) // time is in millis
-                    } else {
-                        console.log("Calling createDataEntryTable ...");
-                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow);
+                //         // createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, timeSeriesDataOutflow);
 
-                        loginStateController()
-                        // Setup timers
-                        setInterval(async () => {
-                            loginStateController()
-                        }, 10000) // time is in millis
-                    }
-                }
+                //         // loginStateController()
+                //         // // Setup timers
+                //         // setInterval(async () => {
+                //         //     loginStateController()
+                //         // }, 10000) // time is in millis
+                //     } else {
+                //         console.log("Calling createDataEntryTable ...");
+
+                //         createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow);
+
+                //         // loginStateController()
+                //         // // Setup timers
+                //         // setInterval(async () => {
+                //         //     loginStateController()
+                //         // }, 10000) // time is in millis
+                //     }
+                // }
 
             } catch (error) {
                 console.error("Error fetching tsidOutflow data:", error);
@@ -1108,15 +1186,21 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         };
 
-        const fetchTimeSeriesData = async (tsidOutflow) => {
-            let tsidData = null;
-            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                tsidData = `${setBaseUrl}timeseries?name=${tsidOutflow}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=${office}&version-date=${isoDateToday}`;
-            } else {
-                tsidData = `${setBaseUrl}timeseries?name=${tsidOutflow}&begin=${isoDateToday}&end=${isoDateDay5}&office=${office}&version-date=${isoDateToday}`;
-            }
-            console.log('tsidData:', tsidData);
+        const fetchTimeSeriesData = async (tsid) => {
+            // Convert to Date object
+            const date = new Date(isoDateMinus2Days);
 
+            // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
+            date.setTime(date.getTime() + (1 * 60 * 60 * 1000));
+
+            // Convert back to ISO string (preserve UTC format)
+            const isoDateMinus1DayPlus1Hour = date.toISOString();
+
+            console.log("isoDateMinus1DayPlus1Hour: ", isoDateMinus1DayPlus1Hour);
+
+            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1DayPlus1Hour}&end=${isoDateDay1}&office=${office}`;
+            // const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1DayPlus1Hour}&end=${isoDateDay1}&office=${office}`;
+            console.log('tsidData:', tsidData);
             try {
                 const response = await fetch(tsidData, {
                     headers: {
@@ -1124,10 +1208,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "cache-control": "no-cache"
                     }
                 });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
 
                 const data = await response.json();
                 return data;
@@ -1144,7 +1224,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0)); // Set the initial time at 6 AM UTC
 
             // Convert the date to CST (UTC -6)
-            const cstOffset = 6 * 60; // CST is UTC -6 hours, in minutes
+            const cstOffset = 0 * 60; // CST is UTC -6 hours, in minutes
             date.setMinutes(date.getMinutes() + cstOffset); // Adjust to CST
 
             // Add the offset in days (if positive, it moves forward, if negative, backward)
