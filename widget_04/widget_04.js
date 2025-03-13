@@ -1005,7 +1005,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                     return `${month}-${day}-${year} ${hour}:${minute}`;
                 });
 
-
                 console.log("formattedDates (CST):", formattedDates);
 
                 entryDates.forEach((date, index) => {
@@ -1135,6 +1134,36 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const output6Div = document.getElementById("output4");
                 output6Div.innerHTML = ""; // Clear any existing content
                 output6Div.appendChild(table);
+
+                const gateAverageDiv = document.createElement("div");
+                gateAverageDiv.className = "status";
+
+                // Create a tableOutflowAvg
+                const tableOutflowAvg = document.createElement("table");
+                const tableRow = document.createElement("tr");
+                tableOutflowAvg.style.width = "50%";
+                tableOutflowAvg.style.marginTop = "10px";
+                
+
+                // Create the first cell for "Average Outflow (cfs)"
+                const firstCell = document.createElement("td");
+                firstCell.textContent = "Average Outflow (cfs)";
+                tableRow.appendChild(firstCell);
+
+                // Create the second cell with "--"
+                const secondCell = document.createElement("td");
+                secondCell.textContent = "--";
+                tableRow.appendChild(secondCell);
+
+                // Append the row to the tableOutflowAvg
+                tableOutflowAvg.appendChild(tableRow);
+
+                // Append the tableOutflowAvg to the div
+                gateAverageDiv.appendChild(tableOutflowAvg);
+
+                // Append the div to output6Div
+                output6Div.appendChild(gateAverageDiv);
+
 
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
