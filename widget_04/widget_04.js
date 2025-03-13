@@ -1007,14 +1007,19 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 console.log("formattedDates (CST):", formattedDates);
 
+                const selectedHours = {}; 
+
                 entryDates.forEach((date, index) => {
                     const row = document.createElement("tr");
 
-
-
+                    // const selectedHours = {}; // Object to store each hour as hour1, hour2, etc.
                     const timeCell = document.createElement("td");
                     const timeSelect = document.createElement("select");
                     timeSelect.id = `timeSelect-${index}`;
+
+                    // Create a dynamic key for each row (hour1, hour2, hour3, etc.)
+                    const hourKey = `hour${index + 1}`;
+                    selectedHours[hourKey] = index === 0 ? times[0] : "NONE";  // Set default hour value
 
                     if (index !== 0) {
                         // Create "NONE" option as the default for all rows except the first
@@ -1032,17 +1037,26 @@ document.addEventListener('DOMContentLoaded', async function () {
                         timeSelect.appendChild(option);
                     });
 
-                    // Set the default value: "NONE" for other rows, first available time for the first row
-                    timeSelect.value = index === 0 ? times[0] : "NONE";
+                    // Set the default value
+                    timeSelect.value = selectedHours[hourKey];
 
-                    // Add event listener to log the selected value
+                    // Update the corresponding hour when changed
                     timeSelect.addEventListener("change", (event) => {
-                        const selectedTime = event.target.value;
-                        console.log(`Selected time for index ${index}:`, selectedTime);
+                        selectedHours[hourKey] = event.target.value;
+                        console.log(`${hourKey} selected:`, selectedHours[hourKey]);
                     });
+
+                    // Example of accessing the selected hours:
+                    // setTimeout(() => {
+                    //     // Log the value for specific hours
+                    //     console.log(`hour1 selected:`, selectedHours['hour1']);
+                    //     console.log(`hour4 selected:`, selectedHours['hour4']);
+                    // }, 5000);
 
                     timeCell.appendChild(timeSelect);
                     row.appendChild(timeCell);
+
+
 
 
 
@@ -1205,10 +1219,13 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Add event listener to the submit button
                 cdaSaveBtn.addEventListener("click", async () => {
-                    timeSelect.addEventListener("change", (event) => {
-                        const selectedTime = event.target.value;
-                        console.log(`Selected time for index ${index}:`, selectedTime);
-                    });
+
+                    console.log('hour1 selected:', selectedHours['hour1']); 
+                    console.log('hour2 selected:', selectedHours['hour2']);
+                    console.log('hour3 selected:', selectedHours['hour3']);
+                    console.log('hour4 selected:', selectedHours['hour4']);
+                    console.log('hour5 selected:', selectedHours['hour5']);
+                    console.log('hour6 selected:', selectedHours['hour6']);
 
                     const payloadSluice1 = {
                         "date-version-type": "MAX_AGGREGATE",
@@ -1225,7 +1242,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             }
 
                             // Convert ISO date string to timestamp
-                            const timestampUnix = new Date(date).getTime(); // Correct timestamp conversion
+                            const timestampUnix = selectedHours['hour1']; // new Date(date).getTime(); // Correct timestamp conversion
                             // console.log("timestampUnix:", timestampUnix);
 
                             return [
