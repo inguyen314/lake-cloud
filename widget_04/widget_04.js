@@ -932,7 +932,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const headerRow = document.createElement("tr");
 
                 const dateHeader = document.createElement("th");
-                dateHeader.textContent = "Day";
+                dateHeader.textContent = "Time";
                 headerRow.appendChild(dateHeader);
 
                 const sluice1Header = document.createElement("th");
@@ -973,10 +973,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                 dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
 
                 let entryDates = [];
-                entryDates = ["05:00", "05:00", "05:00", "05:00", "05:00", "05:00"];
 
+                // Generate options for dropdown (24-hour format)
+                const times = [];
+                for (let hour = 0; hour < 24; hour++) {
+                    const time = `${hour.toString().padStart(2, '0')}:00`;  // "00:00", "01:00", ..., "23:00"
+                    times.push(time);
+                }
 
-                console.log("dates (UTC):", dates);
+                console.log("times for dropdown:", times);
+
+                entryDates = ["", "", "", "", "", ""]; // Blank entries for dropdown
 
                 const options = {
                     timeZone: 'America/Chicago', // Handle CST/CDT automatically
@@ -1004,20 +1011,21 @@ document.addEventListener('DOMContentLoaded', async function () {
                 entryDates.forEach((date, index) => {
                     const row = document.createElement("tr");
 
-                    // Date cell (editable)
-                    const dateCell = document.createElement("td");
-                    const dateInput = document.createElement("input");
-                    dateInput.type = "text";
-                    dateInput.value = entryDates[index];
-                    dateInput.id = `dateInput-${index}`;
+                    // Time dropdown cell
+                    const timeCell = document.createElement("td");
+                    const timeSelect = document.createElement("select");
+                    timeSelect.id = `timeSelect-${index}`;
 
-                    // Only apply pink background for the first row
-                    if (index === 0) {
-                        dateInput.style.backgroundColor = "pink";
-                    }
+                    // Create options for the dropdown (24 hours)
+                    times.forEach(time => {
+                        const option = document.createElement("option");
+                        option.value = time;
+                        option.textContent = time;
+                        timeSelect.appendChild(option);
+                    });
 
-                    dateCell.appendChild(dateInput);
-                    row.appendChild(dateCell);
+                    timeCell.appendChild(timeSelect);
+                    row.appendChild(timeCell);
 
                     // Sluice1 cell (editable)
                     const sluice1Cell = document.createElement("td");
