@@ -768,15 +768,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "office-id": "MVS",
                         "units": "ft",
                         "values": formattedDataSluice1.map(entry => {
-                            const outflowValue = document.getElementById(`sluice2Input-${entry[0]}`).value;
-                            // console.log("outflowValue:", outflowValue);
+                            const sluice1Value = document.getElementById(`sluice2Input-${entry[0]}`).value;
+                            // console.log("sluice1Value:", sluice1Value);
 
                             const timestampUnix = new Date(entry[0]).getTime();
                             // console.log("timestampUnix:", timestampUnix);
 
                             return [
                                 timestampUnix,
-                                parseFloat(outflowValue),
+                                parseFloat(sluice1Value),
                                 0
                             ];
                         }),
@@ -792,8 +792,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "office-id": "MVS",
                         "units": "ft",
                         "values": formattedDataSluice1.map(entry => {
-                            let inflowValue = document.getElementById(`sluice1Input-${entry[0]}`).value; // Get value from input field
-                            // console.log("inflowValue:", inflowValue);
+                            let sluice2Value = document.getElementById(`sluice1Input-${entry[0]}`).value; // Get value from input field
+                            // console.log("sluice2Value:", sluice2Value);
 
                             // Convert ISO date string to timestamp
                             const timestampUnix = new Date(entry[0]).getTime();
@@ -801,7 +801,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             return [
                                 timestampUnix,  // Timestamp for the day at 6 AM
-                                parseInt(inflowValue), // Stage value (forecast outflow) as number
+                                parseInt(sluice2Value), // Stage value (forecast outflow) as number
                                 0 // Placeholder for the third value (set to 0 for now)
                             ];
                         }),
@@ -1010,10 +1010,19 @@ document.addEventListener('DOMContentLoaded', async function () {
                 entryDates.forEach((date, index) => {
                     const row = document.createElement("tr");
 
-                    // Time dropdown cell
+
+
                     const timeCell = document.createElement("td");
                     const timeSelect = document.createElement("select");
                     timeSelect.id = `timeSelect-${index}`;
+
+                    if (index !== 0) {
+                        // Create "NONE" option as the default for all rows except the first
+                        const noneOption = document.createElement("option");
+                        noneOption.value = "NONE";
+                        noneOption.textContent = "NONE";
+                        timeSelect.appendChild(noneOption);
+                    }
 
                     // Create options for the dropdown (24 hours)
                     times.forEach(time => {
@@ -1023,8 +1032,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                         timeSelect.appendChild(option);
                     });
 
+                    // Set the default value: "NONE" for other rows, first available time for the first row
+                    timeSelect.value = index === 0 ? times[0] : "NONE";
+
+                    // Add event listener to log the selected value
+                    timeSelect.addEventListener("change", (event) => {
+                        const selectedTime = event.target.value;
+                        console.log(`Selected time for index ${index}:`, selectedTime);
+                    });
+
                     timeCell.appendChild(timeSelect);
                     row.appendChild(timeCell);
+
+
+
 
                     // Sluice1 cell (editable)
                     const sluice1Cell = document.createElement("td");
@@ -1039,12 +1060,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     sluice1Cell.appendChild(sluice1Input);
                     row.appendChild(sluice1Cell);
+                    console.log(document.getElementById(`sluice1Input-${date}`));  // Check if element exists
+
 
                     // Sluice2 cell (editable)
                     const sluice2Cell = document.createElement("td");
                     const sluice2Input = document.createElement("input");
-                    sluice2Input.type = "text";
-                    sluice2Input.value = "";
+                    sluice2Input.type = "number";
+                    sluice2Input.value = null;
                     sluice2Input.id = `sluice2Input-${date}`;
 
                     if (index === 0) {
@@ -1057,8 +1080,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Sluice Total cell (editable)
                     const sluiceTotalCell = document.createElement("td");
                     const sluiceTotalInput = document.createElement("input");
-                    sluiceTotalInput.type = "text";
-                    sluiceTotalInput.value = "";
+                    sluiceTotalInput.type = "number";
+                    sluiceTotalInput.value = null;
                     sluiceTotalInput.id = `sluiceTotalInput-${date}`;
 
                     if (index === 0) {
@@ -1071,8 +1094,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Gate 1 (editable)
                     const gate1Cell = document.createElement("td");
                     const gate1Input = document.createElement("input");
-                    gate1Input.type = "text";
-                    gate1Input.value = "";
+                    gate1Input.type = "number";
+                    gate1Input.value = null;
                     gate1Input.id = `gate1Input-${date}`;
                     if (index === 0) {
                         gate1Input.style.backgroundColor = "pink";
@@ -1083,8 +1106,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Gate 2 (editable)
                     const gate2Cell = document.createElement("td");
                     const gate2Input = document.createElement("input");
-                    gate2Input.type = "text";
-                    gate2Input.value = "";
+                    gate2Input.type = "number";
+                    gate2Input.value = null;
                     gate2Input.id = `gate2Input-${date}`;
                     if (index === 0) {
                         gate2Input.style.backgroundColor = "pink";
@@ -1095,8 +1118,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Gate 3 (editable)
                     const gate3Cell = document.createElement("td");
                     const gate3Input = document.createElement("input");
-                    gate3Input.type = "text";
-                    gate3Input.value = "";
+                    gate3Input.type = "number";
+                    gate3Input.value = null;
                     gate3Input.id = `gate3Input-${date}`;
                     if (index === 0) {
                         gate3Input.style.backgroundColor = "pink";
@@ -1107,8 +1130,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Gate Total (calculated)
                     const gateTotalCell = document.createElement("td");
                     const gateTotalInput = document.createElement("input");
-                    gateTotalInput.type = "text";
-                    gateTotalInput.value = "";
+                    gateTotalInput.type = "number";
+                    gateTotalInput.value = null;
                     gateTotalInput.id = `gateTotalInput-${date}`;
                     if (index === 0) {
                         gateTotalInput.style.backgroundColor = "pink";
@@ -1119,8 +1142,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Gate Average (calculated)
                     const gateAverageCell = document.createElement("td");
                     const gateAverageInput = document.createElement("input");
-                    gateAverageInput.type = "text";
-                    gateAverageInput.value = "";
+                    gateAverageInput.type = "number";
+                    gateAverageInput.value = null;
                     gateAverageInput.id = `gateAverageInput-${date}`;
                     gateAverageInput.readOnly = true; // Make it read-only
                     gateAverageInput.style.backgroundColor = "#f0f0f0";
@@ -1143,7 +1166,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const tableRow = document.createElement("tr");
                 tableOutflowAvg.style.width = "50%";
                 tableOutflowAvg.style.marginTop = "10px";
-                
+
 
                 // Create the first cell for "Average Outflow (cfs)"
                 const firstCell = document.createElement("td");
@@ -1182,18 +1205,23 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Add event listener to the submit button
                 cdaSaveBtn.addEventListener("click", async () => {
+                    timeSelect.addEventListener("change", (event) => {
+                        const selectedTime = event.target.value;
+                        console.log(`Selected time for index ${index}:`, selectedTime);
+                    });
+
                     const payloadSluice1 = {
                         "date-version-type": "MAX_AGGREGATE",
                         "name": tsidSluice1,
                         "office-id": "MVS",
                         "units": "ft",
                         "values": dates.map((date, index) => {
-                            let outflowValue = document.getElementById(`sluice2Input-${date}`).value; // Get value from input field
-                            // console.log("outflowValue:", outflowValue);
+                            let sluice1Value = document.getElementById(`sluice1Input-${date}`).value; // Get value from input field
+                            console.log("sluice1Value:", sluice1Value);
 
-                            // If outflowValue is empty or null, set it to 909
-                            if (!outflowValue) {
-                                outflowValue = "909"; // Default value when empty or null
+                            // If sluice1Value is empty or null, set it to 909
+                            if (!sluice1Value) {
+                                sluice1Value = "909"; // Default value when empty or null
                             }
 
                             // Convert ISO date string to timestamp
@@ -1202,7 +1230,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             return [
                                 timestampUnix,  // Timestamp for the day at 6 AM
-                                parseInt(outflowValue), // Stage value (forecast outflow) as number
+                                parseInt(sluice1Value), // Stage value (forecast outflow) as number
                                 0 // Placeholder for the third value (set to 0 for now)
                             ];
                         }),
@@ -1217,12 +1245,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "office-id": "MVS",
                         "units": "ft",
                         "values": dates.map((date, index) => {
-                            let inflowValue = document.getElementById(`sluice1Input-${date}`).value; // Get value from input field
-                            // console.log("inflowValue:", inflowValue);
+                            let sluice2Value = document.getElementById(`sluice2Input-${date}`).value; // Get value from input field
+                            // console.log("sluice2Value:", sluice2Value);
 
-                            // If inflowValue is empty or null, set it to 909
-                            if (!inflowValue) {
-                                inflowValue = "909"; // Default value when empty or null
+                            // If sluice2Value is empty or null, set it to 909
+                            if (!sluice2Value) {
+                                sluice2Value = "909"; // Default value when empty or null
                             }
 
                             // Convert ISO date string to timestamp
@@ -1231,7 +1259,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             return [
                                 timestampUnix,  // Timestamp for the day at 6 AM
-                                parseInt(inflowValue), // Stage value (forecast outflow) as number
+                                parseInt(sluice2Value), // Stage value (forecast outflow) as number
                                 0 // Placeholder for the third value (set to 0 for now)
                             ];
                         }),
