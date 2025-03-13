@@ -16,24 +16,24 @@ document.addEventListener('DOMContentLoaded', async function () {
         const [month, day, year] = datetime.split('-');
 
         // Generate ISO strings for the previous 7 days and today
-        const isoDateMinus8Days = getIsoDateWithOffset(year, month, day, -8);
-        const isoDateMinus7Days = getIsoDateWithOffset(year, month, day, -7);
-        const isoDateMinus6Days = getIsoDateWithOffset(year, month, day, -6);
-        const isoDateMinus5Days = getIsoDateWithOffset(year, month, day, -5);
-        const isoDateMinus4Days = getIsoDateWithOffset(year, month, day, -4);
-        const isoDateMinus3Days = getIsoDateWithOffset(year, month, day, -3);
-        const isoDateMinus2Days = getIsoDateWithOffset(year, month, day, -2);
-        const isoDateMinus1Day = getIsoDateWithOffset(year, month, day, -1);
-        const isoDateToday = getIsoDateWithOffset(year, month, day, 0);
+        const isoDateMinus8Days = getIsoDateWithOffsetDynamic(year, month, day, -8);
+        const isoDateMinus7Days = getIsoDateWithOffsetDynamic(year, month, day, -7);
+        const isoDateMinus6Days = getIsoDateWithOffsetDynamic(year, month, day, -6);
+        const isoDateMinus5Days = getIsoDateWithOffsetDynamic(year, month, day, -5);
+        const isoDateMinus4Days = getIsoDateWithOffsetDynamic(year, month, day, -4);
+        const isoDateMinus3Days = getIsoDateWithOffsetDynamic(year, month, day, -3);
+        const isoDateMinus2Days = getIsoDateWithOffsetDynamic(year, month, day, -2);
+        const isoDateMinus1Day = getIsoDateWithOffsetDynamic(year, month, day, -1);
+        const isoDateToday = getIsoDateWithOffsetDynamic(year, month, day, 0);
 
         // Generate ISO strings for the next 7 days
-        const isoDateDay1 = getIsoDateWithOffset(year, month, day, 1);
-        const isoDateDay2 = getIsoDateWithOffset(year, month, day, 2);
-        const isoDateDay3 = getIsoDateWithOffset(year, month, day, 3);
-        const isoDateDay4 = getIsoDateWithOffset(year, month, day, 4);
-        const isoDateDay5 = getIsoDateWithOffset(year, month, day, 5);
-        const isoDateDay6 = getIsoDateWithOffset(year, month, day, 6);
-        const isoDateDay7 = getIsoDateWithOffset(year, month, day, 7);
+        const isoDateDay1 = getIsoDateWithOffsetDynamic(year, month, day, 1);
+        const isoDateDay2 = getIsoDateWithOffsetDynamic(year, month, day, 2);
+        const isoDateDay3 = getIsoDateWithOffsetDynamic(year, month, day, 3);
+        const isoDateDay4 = getIsoDateWithOffsetDynamic(year, month, day, 4);
+        const isoDateDay5 = getIsoDateWithOffsetDynamic(year, month, day, 5);
+        const isoDateDay6 = getIsoDateWithOffsetDynamic(year, month, day, 6);
+        const isoDateDay7 = getIsoDateWithOffsetDynamic(year, month, day, 7);
 
         console.log("isoDateMinus8Days:", isoDateMinus8Days);
         console.log("isoDateMinus7Days:", isoDateMinus7Days);
@@ -357,24 +357,24 @@ document.addEventListener('DOMContentLoaded', async function () {
         console.log("year: ", year);
 
         // Generate ISO strings for the previous 7 days and today
-        const isoDateMinus8Days = getIsoDateWithOffset(year, month, day, -8);
-        const isoDateMinus7Days = getIsoDateWithOffset(year, month, day, -7);
-        const isoDateMinus6Days = getIsoDateWithOffset(year, month, day, -6);
-        const isoDateMinus5Days = getIsoDateWithOffset(year, month, day, -5);
-        const isoDateMinus4Days = getIsoDateWithOffset(year, month, day, -4);
-        const isoDateMinus3Days = getIsoDateWithOffset(year, month, day, -3);
-        const isoDateMinus2Days = getIsoDateWithOffset(year, month, day, -2);
-        const isoDateMinus1Day = getIsoDateWithOffset(year, month, day, -1);
-        const isoDateToday = getIsoDateWithOffset(year, month, day, 0);
+        const isoDateMinus8Days = getIsoDateWithOffsetDynamic(year, month, day, -8);
+        const isoDateMinus7Days = getIsoDateWithOffsetDynamic(year, month, day, -7);
+        const isoDateMinus6Days = getIsoDateWithOffsetDynamic(year, month, day, -6);
+        const isoDateMinus5Days = getIsoDateWithOffsetDynamic(year, month, day, -5);
+        const isoDateMinus4Days = getIsoDateWithOffsetDynamic(year, month, day, -4);
+        const isoDateMinus3Days = getIsoDateWithOffsetDynamic(year, month, day, -3);
+        const isoDateMinus2Days = getIsoDateWithOffsetDynamic(year, month, day, -2);
+        const isoDateMinus1Day = getIsoDateWithOffsetDynamic(year, month, day, -1);
+        const isoDateToday = getIsoDateWithOffsetDynamic(year, month, day, 0);
 
         // Generate ISO strings for the next 7 days
-        const isoDateDay1 = getIsoDateWithOffset(year, month, day, 1);
-        const isoDateDay2 = getIsoDateWithOffset(year, month, day, 2);
-        const isoDateDay3 = getIsoDateWithOffset(year, month, day, 3);
-        const isoDateDay4 = getIsoDateWithOffset(year, month, day, 4);
-        const isoDateDay5 = getIsoDateWithOffset(year, month, day, 5);
-        const isoDateDay6 = getIsoDateWithOffset(year, month, day, 6);
-        const isoDateDay7 = getIsoDateWithOffset(year, month, day, 7);
+        const isoDateDay1 = getIsoDateWithOffsetDynamic(year, month, day, 1);
+        const isoDateDay2 = getIsoDateWithOffsetDynamic(year, month, day, 2);
+        const isoDateDay3 = getIsoDateWithOffsetDynamic(year, month, day, 3);
+        const isoDateDay4 = getIsoDateWithOffsetDynamic(year, month, day, 4);
+        const isoDateDay5 = getIsoDateWithOffsetDynamic(year, month, day, 5);
+        const isoDateDay6 = getIsoDateWithOffsetDynamic(year, month, day, 6);
+        const isoDateDay7 = getIsoDateWithOffsetDynamic(year, month, day, 7);
 
         console.log("isoDateMinus8Days:", isoDateMinus8Days);
         console.log("isoDateMinus7Days:", isoDateMinus7Days);
@@ -531,9 +531,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                     if (timeSeriesDataSluice1 && timeSeriesDataSluice1.values && timeSeriesDataSluice1.values.length > 0) {
                         console.log("Calling createTable ...");
 
-                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, 
-                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal, 
-                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal, 
+                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
+                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
                             tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage);
 
                         loginStateController()
@@ -543,9 +543,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                     } else {
                         console.log("Calling createDataEntryTable ...");
 
-                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, 
-                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal, 
-                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal, 
+                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
+                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
                             tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage);
 
                         loginStateController()
@@ -570,9 +570,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             }
 
-            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, 
-                tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal, 
-                tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal, 
+            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
+                tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
                 tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage) {
 
                 console.log("timeSeriesDataSluice1:", timeSeriesDataSluice1);
@@ -722,7 +722,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const inflowCell = document.createElement("td");
                     const inflowInput = document.createElement("input");
                     inflowInput.type = "number";
-                    inflowInput.value = formattedDataSluice2[index] ? formattedDataSluice2[index][1].toFixed(0) : 0; 
+                    inflowInput.value = formattedDataSluice2[index] ? formattedDataSluice2[index][1].toFixed(0) : 0;
                     inflowInput.className = "inflow-input";
                     inflowInput.id = `inflowInput-${entry[0]}`;
                     inflowCell.appendChild(inflowInput);
@@ -761,12 +761,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output6Div.appendChild(statusDiv);
 
                 cdaSaveBtn.addEventListener("click", async () => {
-                    console.log("Preparing payloadOutflow...");
-                    const payloadOutflow = {
+                    console.log("Preparing payloadSluice1...");
+                    const payloadSluice1 = {
                         "date-version-type": "MAX_AGGREGATE",
                         "name": tsidOutflow,
                         "office-id": "MVS",
-                        "units": "cfs",
+                        "units": "ft",
                         "values": formattedDataSluice1.map(entry => {
                             const outflowValue = document.getElementById(`outflowInput-${entry[0]}`).value;
                             // console.log("outflowValue:", outflowValue);
@@ -782,15 +782,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }),
                         "version-date": isoDateToday,
                     };
-                    console.log("payloadOutflow:", payloadOutflow);
+                    console.log("payloadSluice1:", payloadSluice1);
 
-                    console.log("Preparing payloadInflow...");
-                    let payloadInflow = null;
-                    payloadInflow = {
+                    console.log("Preparing payloadSluice2...");
+                    let payloadSluice2 = null;
+                    payloadSluice2 = {
                         "date-version-type": "MAX_AGGREGATE",
                         "name": tsidInflow,
                         "office-id": "MVS",
-                        "units": "cfs",
+                        "units": "ft",
                         "values": formattedDataSluice1.map(entry => {
                             let inflowValue = document.getElementById(`inflowInput-${entry[0]}`).value; // Get value from input field
                             // console.log("inflowValue:", inflowValue);
@@ -807,7 +807,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }),
                         "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
                     };
-                    console.log("payloadInflow: ", payloadInflow);
+                    console.log("payloadSluice2: ", payloadSluice2);
 
                     async function loginCDA() {
                         if (await isLoggedIn()) return true;
@@ -897,11 +897,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                     } else {
                         try {
                             // showSpinner(); // Show the spinner before creating the version
-                            // await createVersionTS(payloadOutflow);
+                            // await createVersionTS(payloadSluice1);
                             // cdaStatusBtn.innerText = "Write successful!";
 
-                            // await createVersionTS(payloadInflow);
-                            // cdaStatusBtn.innerText = "Write payloadInflow successful!";
+                            // await createVersionTS(payloadSluice2);
+                            // cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
 
                             // const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
 
@@ -920,56 +920,59 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             }
 
-            function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, 
-                tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal, 
-                tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal, 
+            function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
+                tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
                 tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage) {
-                // Create the empty table element
+
                 const table = document.createElement("table");
 
-                // Apply the ID "gate-settings" to the table
                 table.id = "gate-settings";
 
-                // Create the table header row
                 const headerRow = document.createElement("tr");
 
                 const dateHeader = document.createElement("th");
                 dateHeader.textContent = "Day";
                 headerRow.appendChild(dateHeader);
 
-                if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                    const inflowHeader = document.createElement("th");
-                    inflowHeader.textContent = "Forecast Inflow (cfs)";
-                    headerRow.appendChild(inflowHeader);
-                }
+
+                const inflowHeader = document.createElement("th");
+                inflowHeader.textContent = "Sluice1 (ft)";
+                headerRow.appendChild(inflowHeader);
+
 
                 const outflowHeader = document.createElement("th");
-                outflowHeader.textContent = "Forecast Outflow (cfs)";
+                outflowHeader.textContent = "Sluice2 (ft)";
                 headerRow.appendChild(outflowHeader);
 
                 table.appendChild(headerRow);
 
                 let dates = [];
-                if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                    dates = [isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
-                } else {
-                    dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
-                }
+                dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
+
 
                 console.log("dates (UTC):", dates);
 
-                // Convert each date from UTC to CST and format it
-                const options = { timeZone: 'America/Chicago', hour12: false };
+                const options = {
+                    timeZone: 'America/Chicago', // Handle CST/CDT automatically
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false, // Use 24-hour format
+                };
 
                 const formattedDates = dates.map(date => {
                     const d = new Date(date);
-                    const cstDate = d.toLocaleString('en-US', options);
+                    const cstDate = new Intl.DateTimeFormat('en-US', options).format(d);
 
-                    // Extract the date and time parts and format as MM-DD-YYYY HH:mm
-                    const [month, day, year, hour, minute] = cstDate.match(/(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{1,2}):(\d{2})/).slice(1);
+                    // Extract parts and format as MM-DD-YYYY HH:mm
+                    const [month, day, year, hour, minute] = cstDate.match(/(\d{2})\/(\d{2})\/(\d{4}),? (\d{2}):(\d{2})/).slice(1);
 
-                    return `${month.padStart(2, '0')}-${day.padStart(2, '0')}-${year} ${hour}:${minute}`;
+                    return `${month}-${day}-${year} ${hour}:${minute}`;
                 });
+
 
                 console.log("formattedDates (CST):", formattedDates);
 
@@ -982,16 +985,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                     row.appendChild(dateCell);
 
                     // Inflow cell (editable)
-                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                        const inflowCell = document.createElement("td");
-                        const inflowInput = document.createElement("input");
-                        inflowInput.type = "text";
-                        inflowInput.value = "";
-                        inflowInput.id = `inflowInput-${date}`;
-                        inflowInput.style.backgroundColor = "pink";  // Set pink background
-                        inflowCell.appendChild(inflowInput);
-                        row.appendChild(inflowCell);
-                    }
+
+                    const inflowCell = document.createElement("td");
+                    const inflowInput = document.createElement("input");
+                    inflowInput.type = "text";
+                    inflowInput.value = "";
+                    inflowInput.id = `inflowInput-${date}`;
+                    inflowInput.style.backgroundColor = "pink";  // Set pink background
+                    inflowCell.appendChild(inflowInput);
+                    row.appendChild(inflowCell);
+
 
                     // Outflow cell (editable)
                     const outflowCell = document.createElement("td");
@@ -1028,11 +1031,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Add event listener to the submit button
                 cdaSaveBtn.addEventListener("click", async () => {
-                    const payloadOutflow = {
+                    const payloadSluice1 = {
                         "date-version-type": "MAX_AGGREGATE",
-                        "name": tsidOutflow,
+                        "name": tsidSluice1,
                         "office-id": "MVS",
-                        "units": "cfs",
+                        "units": "ft",
                         "values": dates.map((date, index) => {
                             let outflowValue = document.getElementById(`outflowInput-${date}`).value; // Get value from input field
                             // console.log("outflowValue:", outflowValue);
@@ -1052,42 +1055,39 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 0 // Placeholder for the third value (set to 0 for now)
                             ];
                         }),
-                        "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
                     };
 
-                    console.log("payloadOutflow: ", payloadOutflow);
+                    console.log("payloadSluice1: ", payloadSluice1);
 
-                    let payloadInflow = null;
-                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                        payloadInflow = {
-                            "date-version-type": "MAX_AGGREGATE",
-                            "name": tsidInflow,
-                            "office-id": "MVS",
-                            "units": "cfs",
-                            "values": dates.map((date, index) => {
-                                let inflowValue = document.getElementById(`inflowInput-${date}`).value; // Get value from input field
-                                // console.log("inflowValue:", inflowValue);
+                    let payloadSluice2 = null;
+                    payloadSluice2 = {
+                        "date-version-type": "MAX_AGGREGATE",
+                        "name": tsidSluice1,
+                        "office-id": "MVS",
+                        "units": "ft",
+                        "values": dates.map((date, index) => {
+                            let inflowValue = document.getElementById(`inflowInput-${date}`).value; // Get value from input field
+                            // console.log("inflowValue:", inflowValue);
 
-                                // If inflowValue is empty or null, set it to 909
-                                if (!inflowValue) {
-                                    inflowValue = "909"; // Default value when empty or null
-                                }
+                            // If inflowValue is empty or null, set it to 909
+                            if (!inflowValue) {
+                                inflowValue = "909"; // Default value when empty or null
+                            }
 
-                                // Convert ISO date string to timestamp
-                                const timestampUnix = new Date(date).getTime(); // Correct timestamp conversion
-                                // console.log("timestampUnix:", timestampUnix);
+                            // Convert ISO date string to timestamp
+                            const timestampUnix = new Date(date).getTime(); // Correct timestamp conversion
+                            // console.log("timestampUnix:", timestampUnix);
 
-                                return [
-                                    timestampUnix,  // Timestamp for the day at 6 AM
-                                    parseInt(inflowValue), // Stage value (forecast outflow) as number
-                                    0 // Placeholder for the third value (set to 0 for now)
-                                ];
-                            }),
-                            "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
-                        };
+                            return [
+                                timestampUnix,  // Timestamp for the day at 6 AM
+                                parseInt(inflowValue), // Stage value (forecast outflow) as number
+                                0 // Placeholder for the third value (set to 0 for now)
+                            ];
+                        }),
+                    };
 
-                        console.log("payloadInflow: ", payloadInflow);
-                    }
+                    console.log("payloadSluice2: ", payloadSluice2);
+
 
                     async function loginCDA() {
                         console.log("page");
@@ -1122,7 +1122,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                             const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?store-rule=REPLACE%20ALL", {
                                 method: "POST",
                                 headers: {
-                                    // "accept": "*/*",
                                     "Content-Type": "application/json;version=2",
                                 },
 
@@ -1202,29 +1201,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                         cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
                     } else {
                         try {
-                            showSpinner(); // Show the spinner before creating the version
-                            await createVersionTS(payloadOutflow);
-                            cdaStatusBtn.innerText = "Write successful!";
+                            // showSpinner(); // Show the spinner before creating the version
+                            // await createVersionTS(payloadSluice1);
+                            // cdaStatusBtn.innerText = "Write successful!";
 
-                            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                                await createVersionTS(payloadInflow);
-                                cdaStatusBtn.innerText = "Write payloadInflow successful!";
-                            }
+                            // await createVersionTS(payloadSluice2);
+                            // cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
 
-                            // Log the waiting message before the 2-second wait
-                            console.log("Waiting for 2 seconds before fetching updated data...");
+                            // // Fetch updated data and refresh the table
+                            // const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
 
-                            // Wait 2 seconds before fetching the updated data
-                            // await new Promise(resolve => setTimeout(resolve, 500));
+                            // let updatedDataInflow = null;
+                            // updatedDataInflow = await fetchUpdatedData(tsidInflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
 
-                            // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
-
-                            let updatedDataInflow = null;
-                            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                                updatedDataInflow = await fetchUpdatedData(tsidInflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
-                            }
-                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, updatedData, tsidInflow, updatedDataInflow);
+                            // createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, updatedData, tsidInflow, updatedDataInflow);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
@@ -1271,20 +1261,28 @@ document.addEventListener('DOMContentLoaded', async function () {
         fetchTsidData();
 
 
-        function getIsoDateWithOffset(year, month, day, offset) {
-            // Create a date object in UTC (midnight UTC)
-            const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0)); // Set the initial time at 6 AM UTC
-
-            // Convert the date to CST (UTC -6)
-            const cstOffset = 0 * 60; // CST is UTC -6 hours, in minutes
-            date.setMinutes(date.getMinutes() + cstOffset); // Adjust to CST
-
-            // Add the offset in days (if positive, it moves forward, if negative, backward)
+        function getIsoDateWithOffsetDynamic(year, month, day, offset) {
+            // Create a date object at 6 AM UTC
+            const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0));
+            
+            // Get the timezone offset dynamically based on CST/CDT
+            const localTime = new Date(date.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+            const timeOffset = (date.getTime() - localTime.getTime()) / (60 * 1000); // Offset in minutes
+            
+            // Adjust to 5 AM if not in daylight saving time
+            if (localTime.getHours() !== 6) {
+                date.setUTCHours(5);
+            }
+            
+            // Adjust for the offset in days
             date.setUTCDate(date.getUTCDate() + offset);
-
+            
+            // Adjust for the timezone offset
+            date.setMinutes(date.getMinutes() + timeOffset);
+            
             // Return the ISO string
             return date.toISOString();
-        }
+        }              
 
         function formatISODateToUTCString(timestamp) {
             if (typeof timestamp !== "number") {
@@ -1330,21 +1328,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             return formattedDate.replace(',', ''); // Removes the comma between date and time
         }
-    }
-
-    function getIsoDateWithOffset(year, month, day, offset) {
-        // Create a date object in UTC (midnight UTC)
-        const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0)); // Set the initial time at 6 AM UTC
-
-        // Convert the date to CST (UTC -6)
-        const cstOffset = 6 * 60; // CST is UTC -6 hours, in minutes
-        date.setMinutes(date.getMinutes() + cstOffset); // Adjust to CST
-
-        // Add the offset in days (if positive, it moves forward, if negative, backward)
-        date.setUTCDate(date.getUTCDate() + offset);
-
-        // Return the ISO string
-        return date.toISOString();
     }
 });
 
