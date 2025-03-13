@@ -138,9 +138,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                     stageHeader.textContent = "Stage";
                     headerRow.appendChild(stageHeader);
 
-                    const outflowHeader = document.createElement("th");
-                    outflowHeader.textContent = "Outflow";
-                    headerRow.appendChild(outflowHeader);
+                    const sluice2Header = document.createElement("th");
+                    sluice2Header.textContent = "Outflow";
+                    headerRow.appendChild(sluice2Header);
 
                     table.appendChild(headerRow);
 
@@ -164,9 +164,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                             row.appendChild(stageCell);
 
                             // Outflow column (from formattedData2)
-                            const outflowCell = document.createElement("td");
-                            outflowCell.textContent = formattedData2[j].value.toFixed(0); // Assuming outflow is from formattedData2
-                            row.appendChild(outflowCell);
+                            const sluice2Cell = document.createElement("td");
+                            sluice2Cell.textContent = formattedData2[j].value.toFixed(0); // Assuming outflow is from formattedData2
+                            row.appendChild(sluice2Cell);
 
                             table.appendChild(row);
 
@@ -701,14 +701,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                 dateHeader.textContent = "Date";
                 headerRow.appendChild(dateHeader);
 
-                const inflowHeader = document.createElement("th");
-                inflowHeader.textContent = "Sluice 1 (ft)";
-                headerRow.appendChild(inflowHeader);
+                const sluice1Header = document.createElement("th");
+                sluice1Header.textContent = "Sluice 1 (ft)";
+                headerRow.appendChild(sluice1Header);
 
 
-                const outflowHeader = document.createElement("th");
-                outflowHeader.textContent = "Sluice 2 (ft)";
-                headerRow.appendChild(outflowHeader);
+                const sluice2Header = document.createElement("th");
+                sluice2Header.textContent = "Sluice 2 (ft)";
+                headerRow.appendChild(sluice2Header);
 
                 table.appendChild(headerRow);
 
@@ -719,24 +719,24 @@ document.addEventListener('DOMContentLoaded', async function () {
                     dateCell.textContent = entry.formattedTimestampCST ? entry.formattedTimestampCST : entry[0];
                     row.appendChild(dateCell);
 
-                    const inflowCell = document.createElement("td");
+                    const sluice1Cell = document.createElement("td");
                     const inflowInput = document.createElement("input");
                     inflowInput.type = "number";
                     inflowInput.value = formattedDataSluice2[index] ? formattedDataSluice2[index][1].toFixed(0) : 0;
                     inflowInput.className = "inflow-input";
                     inflowInput.id = `inflowInput-${entry[0]}`;
-                    inflowCell.appendChild(inflowInput);
-                    row.appendChild(inflowCell);
+                    sluice1Cell.appendChild(inflowInput);
+                    row.appendChild(sluice1Cell);
 
                     // Outflow cell (editable)
-                    const outflowCell = document.createElement("td");
+                    const sluice2Cell = document.createElement("td");
                     const outflowInput = document.createElement("input");
                     outflowInput.type = "number";
                     outflowInput.value = entry[1].toFixed(0);
                     outflowInput.className = "outflow-input";
                     outflowInput.id = `outflowInput-${entry[0]}`;
-                    outflowCell.appendChild(outflowInput);
-                    row.appendChild(outflowCell);
+                    sluice2Cell.appendChild(outflowInput);
+                    row.appendChild(sluice2Cell);
 
                     table.appendChild(row);
                 });
@@ -935,15 +935,37 @@ document.addEventListener('DOMContentLoaded', async function () {
                 dateHeader.textContent = "Day";
                 headerRow.appendChild(dateHeader);
 
+                const sluice1Header = document.createElement("th");
+                sluice1Header.textContent = "Sluice 1 (ft)";
+                headerRow.appendChild(sluice1Header);
 
-                const inflowHeader = document.createElement("th");
-                inflowHeader.textContent = "Sluice1 (ft)";
-                headerRow.appendChild(inflowHeader);
+                const sluice2Header = document.createElement("th");
+                sluice2Header.textContent = "Sluice 2 (ft)";
+                headerRow.appendChild(sluice2Header);
 
+                const sluiceTotalHeader = document.createElement("th");
+                sluiceTotalHeader.textContent = "Sluice Total (cfs)";
+                headerRow.appendChild(sluiceTotalHeader);
 
-                const outflowHeader = document.createElement("th");
-                outflowHeader.textContent = "Sluice2 (ft)";
-                headerRow.appendChild(outflowHeader);
+                const gate1Header = document.createElement("th");
+                gate1Header.textContent = "Gate 1 (ft)";
+                headerRow.appendChild(gate1Header);
+
+                const gate2Header = document.createElement("th");
+                gate2Header.textContent = "Gate 2 (ft)";
+                headerRow.appendChild(gate2Header);
+
+                const gate3Header = document.createElement("th");
+                gate3Header.textContent = "Gate 3 (ft)";
+                headerRow.appendChild(gate3Header);
+
+                const gateTotalHeader = document.createElement("th");
+                gateTotalHeader.textContent = "Gate Total (cfs)";
+                headerRow.appendChild(gateTotalHeader);
+
+                const outflowTotalHeader = document.createElement("th");
+                outflowTotalHeader.textContent = "Outflow Total (cfs)";
+                headerRow.appendChild(outflowTotalHeader);
 
                 table.appendChild(headerRow);
 
@@ -951,7 +973,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
 
                 let entryDates = [];
-                entryDates = ["05:00:00.000Z", "05:00:00.000Z", "05:00:00.000Z", "05:00:00.000Z", "05:00:00.000Z", "05:00:00.000Z"];
+                entryDates = ["05:00", "05:00", "05:00", "05:00", "05:00", "05:00"];
 
 
                 console.log("dates (UTC):", dates);
@@ -998,7 +1020,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     row.appendChild(dateCell);
 
                     // Inflow cell (editable)
-                    const inflowCell = document.createElement("td");
+                    const sluice1Cell = document.createElement("td");
                     const inflowInput = document.createElement("input");
                     inflowInput.type = "text";
                     inflowInput.value = "";
@@ -1008,11 +1030,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                         inflowInput.style.backgroundColor = "pink";
                     }
 
-                    inflowCell.appendChild(inflowInput);
-                    row.appendChild(inflowCell);
+                    sluice1Cell.appendChild(inflowInput);
+                    row.appendChild(sluice1Cell);
 
                     // Outflow cell (editable)
-                    const outflowCell = document.createElement("td");
+                    const sluice2Cell = document.createElement("td");
                     const outflowInput = document.createElement("input");
                     outflowInput.type = "text";
                     outflowInput.value = "";
@@ -1022,8 +1044,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         outflowInput.style.backgroundColor = "pink";
                     }
 
-                    outflowCell.appendChild(outflowInput);
-                    row.appendChild(outflowCell);
+                    sluice2Cell.appendChild(outflowInput);
+                    row.appendChild(sluice2Cell);
 
                     table.appendChild(row);
                 });
@@ -1081,7 +1103,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     let payloadSluice2 = null;
                     payloadSluice2 = {
                         "date-version-type": "MAX_AGGREGATE",
-                        "name": tsidSluice1,
+                        "name": tsidSluice2,
                         "office-id": "MVS",
                         "units": "ft",
                         "values": dates.map((date, index) => {
