@@ -531,7 +531,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                     if (timeSeriesDataSluice1 && timeSeriesDataSluice1.values && timeSeriesDataSluice1.values.length > 0) {
                         console.log("Calling createTable ...");
 
-                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, timeSeriesDataSluice1, timeSeriesDataSluice2, timeSeriesDataSluiceTotal, timeSeriesDataGate1, timeSeriesDataGate2, timeSeriesDataGate3, timeSeriesDataGateTotal, timeSeriesDataOutflowTotal, timeSeriesDataOutflowAverage);
+                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, 
+                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal, 
+                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal, 
+                            tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage);
 
                         loginStateController()
                         setInterval(async () => {
@@ -540,7 +543,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                     } else {
                         console.log("Calling createDataEntryTable ...");
 
-                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow);
+                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, 
+                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal, 
+                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal, 
+                            tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage);
 
                         loginStateController()
                         setInterval(async () => {
@@ -564,10 +570,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             }
 
-            function createTable(
-                isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
-                timeSeriesDataSluice1, timeSeriesDataSluice2, timeSeriesDataSluiceTotal, timeSeriesDataGate1, timeSeriesDataGate2,
-                timeSeriesDataGate3, timeSeriesDataGateTotal, timeSeriesDataOutflowTotal, timeSeriesDataOutflowAverage) {
+            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, 
+                tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal, 
+                tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal, 
+                tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage) {
 
                 console.log("timeSeriesDataSluice1:", timeSeriesDataSluice1);
                 console.log("timeSeriesDataSluice2:", timeSeriesDataSluice2);
@@ -695,43 +701,38 @@ document.addEventListener('DOMContentLoaded', async function () {
                 dateHeader.textContent = "Date";
                 headerRow.appendChild(dateHeader);
 
-                if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                    const inflowHeader = document.createElement("th");
-                    inflowHeader.textContent = "Forecast Inflow (cfs)";
-                    headerRow.appendChild(inflowHeader);
-                }
+                const inflowHeader = document.createElement("th");
+                inflowHeader.textContent = "Sluice 1 (ft)";
+                headerRow.appendChild(inflowHeader);
+
 
                 const outflowHeader = document.createElement("th");
-                outflowHeader.textContent = "Forecast Outflow (cfs)";
+                outflowHeader.textContent = "Sluice 2 (ft)";
                 headerRow.appendChild(outflowHeader);
 
                 table.appendChild(headerRow);
 
-                // Loop over the data (use formattedData for outflow and formattedDataInflow for inflow if lake matches)
-                formattedData.forEach((entry, index) => {
+                formattedDataSluice1.forEach((entry, index) => {
                     const row = document.createElement("tr");
 
                     const dateCell = document.createElement("td");
                     dateCell.textContent = entry.formattedTimestampCST ? entry.formattedTimestampCST : entry[0];
                     row.appendChild(dateCell);
 
-                    // Inflow cell (editable)
-                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                        const inflowCell = document.createElement("td");
-                        const inflowInput = document.createElement("input");
-                        inflowInput.type = "number";
-                        inflowInput.value = formattedDataInflow[index] ? formattedDataInflow[index][1].toFixed(0) : 0; // Use inflow data if available
-                        inflowInput.className = "inflow-input";
-                        inflowInput.id = `inflowInput-${entry[0]}`;
-                        inflowCell.appendChild(inflowInput);
-                        row.appendChild(inflowCell);
-                    }
+                    const inflowCell = document.createElement("td");
+                    const inflowInput = document.createElement("input");
+                    inflowInput.type = "number";
+                    inflowInput.value = formattedDataSluice2[index] ? formattedDataSluice2[index][1].toFixed(0) : 0; 
+                    inflowInput.className = "inflow-input";
+                    inflowInput.id = `inflowInput-${entry[0]}`;
+                    inflowCell.appendChild(inflowInput);
+                    row.appendChild(inflowCell);
 
                     // Outflow cell (editable)
                     const outflowCell = document.createElement("td");
                     const outflowInput = document.createElement("input");
                     outflowInput.type = "number";
-                    outflowInput.value = entry[1].toFixed(0); // Outflow uses formattedData
+                    outflowInput.value = entry[1].toFixed(0);
                     outflowInput.className = "outflow-input";
                     outflowInput.id = `outflowInput-${entry[0]}`;
                     outflowCell.appendChild(outflowInput);
@@ -760,12 +761,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output6Div.appendChild(statusDiv);
 
                 cdaSaveBtn.addEventListener("click", async () => {
+                    console.log("Preparing payloadOutflow...");
                     const payloadOutflow = {
                         "date-version-type": "MAX_AGGREGATE",
                         "name": tsidOutflow,
                         "office-id": "MVS",
                         "units": "cfs",
-                        "values": formattedData.map(entry => {
+                        "values": formattedDataSluice1.map(entry => {
                             const outflowValue = document.getElementById(`outflowInput-${entry[0]}`).value;
                             // console.log("outflowValue:", outflowValue);
 
@@ -780,35 +782,32 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }),
                         "version-date": isoDateToday,
                     };
-                    console.log("Preparing payload...");
                     console.log("payloadOutflow:", payloadOutflow);
 
+                    console.log("Preparing payloadInflow...");
                     let payloadInflow = null;
-                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                        payloadInflow = {
-                            "date-version-type": "MAX_AGGREGATE",
-                            "name": tsidInflow,
-                            "office-id": "MVS",
-                            "units": "cfs",
-                            "values": formattedData.map(entry => {
-                                let inflowValue = document.getElementById(`inflowInput-${entry[0]}`).value; // Get value from input field
-                                // console.log("inflowValue:", inflowValue);
+                    payloadInflow = {
+                        "date-version-type": "MAX_AGGREGATE",
+                        "name": tsidInflow,
+                        "office-id": "MVS",
+                        "units": "cfs",
+                        "values": formattedDataSluice1.map(entry => {
+                            let inflowValue = document.getElementById(`inflowInput-${entry[0]}`).value; // Get value from input field
+                            // console.log("inflowValue:", inflowValue);
 
-                                // Convert ISO date string to timestamp
-                                const timestampUnix = new Date(entry[0]).getTime();
-                                // console.log("timestampUnix:", timestampUnix);
+                            // Convert ISO date string to timestamp
+                            const timestampUnix = new Date(entry[0]).getTime();
+                            // console.log("timestampUnix:", timestampUnix);
 
-                                return [
-                                    timestampUnix,  // Timestamp for the day at 6 AM
-                                    parseInt(inflowValue), // Stage value (forecast outflow) as number
-                                    0 // Placeholder for the third value (set to 0 for now)
-                                ];
-                            }),
-                            "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
-                        };
-
-                        console.log("payloadInflow: ", payloadInflow);
-                    }
+                            return [
+                                timestampUnix,  // Timestamp for the day at 6 AM
+                                parseInt(inflowValue), // Stage value (forecast outflow) as number
+                                0 // Placeholder for the third value (set to 0 for now)
+                            ];
+                        }),
+                        "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
+                    };
+                    console.log("payloadInflow: ", payloadInflow);
 
                     async function loginCDA() {
                         if (await isLoggedIn()) return true;
@@ -897,33 +896,22 @@ document.addEventListener('DOMContentLoaded', async function () {
                         cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
                     } else {
                         try {
-                            showSpinner(); // Show the spinner before creating the version
-                            await createVersionTS(payloadOutflow);
-                            cdaStatusBtn.innerText = "Write successful!";
+                            // showSpinner(); // Show the spinner before creating the version
+                            // await createVersionTS(payloadOutflow);
+                            // cdaStatusBtn.innerText = "Write successful!";
 
-                            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                                await createVersionTS(payloadInflow);
-                                cdaStatusBtn.innerText = "Write payloadInflow successful!";
-                            }
+                            // await createVersionTS(payloadInflow);
+                            // cdaStatusBtn.innerText = "Write payloadInflow successful!";
 
-                            // Log the waiting message before the 2-second wait
-                            console.log("Waiting for 2 seconds before fetching updated data...");
+                            // const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
 
-                            // Wait 2 seconds before fetching the updated data
-                            // await new Promise(resolve => setTimeout(resolve, 500));
-
-                            // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
-
-                            let updatedDataInflow = null;
-                            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                                updatedDataInflow = await fetchUpdatedData(tsidInflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
-                            }
-                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, updatedData, tsidInflow, updatedDataInflow);
+                            // let updatedDataInflow = null;
+                            // updatedDataInflow = await fetchUpdatedData(tsidInflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                            // createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, updatedData, tsidInflow, updatedDataInflow);
                         } catch (error) {
-                            hideSpinner(); // Hide the spinner if an error occurs
-                            cdaStatusBtn.innerText = "Failed to write data!";
-                            console.error(error);
+                            // hideSpinner(); // Hide the spinner if an error occurs
+                            // cdaStatusBtn.innerText = "Failed to write data!";
+                            // console.error(error);
                         }
 
                         hideSpinner(); // Hide the spinner after the operation completes
@@ -932,7 +920,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             }
 
-            function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, tsidInflow) {
+            function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, 
+                tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal, 
+                tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal, 
+                tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage) {
                 // Create the empty table element
                 const table = document.createElement("table");
 
