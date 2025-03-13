@@ -720,22 +720,22 @@ document.addEventListener('DOMContentLoaded', async function () {
                     row.appendChild(dateCell);
 
                     const sluice1Cell = document.createElement("td");
-                    const inflowInput = document.createElement("input");
-                    inflowInput.type = "number";
-                    inflowInput.value = formattedDataSluice2[index] ? formattedDataSluice2[index][1].toFixed(0) : 0;
-                    inflowInput.className = "inflow-input";
-                    inflowInput.id = `inflowInput-${entry[0]}`;
-                    sluice1Cell.appendChild(inflowInput);
+                    const sluice1Input = document.createElement("input");
+                    sluice1Input.type = "number";
+                    sluice1Input.value = formattedDataSluice2[index] ? formattedDataSluice2[index][1].toFixed(0) : 0;
+                    sluice1Input.className = "inflow-input";
+                    sluice1Input.id = `sluice1Input-${entry[0]}`;
+                    sluice1Cell.appendChild(sluice1Input);
                     row.appendChild(sluice1Cell);
 
                     // Outflow cell (editable)
                     const sluice2Cell = document.createElement("td");
-                    const outflowInput = document.createElement("input");
-                    outflowInput.type = "number";
-                    outflowInput.value = entry[1].toFixed(0);
-                    outflowInput.className = "outflow-input";
-                    outflowInput.id = `outflowInput-${entry[0]}`;
-                    sluice2Cell.appendChild(outflowInput);
+                    const sluice2Input = document.createElement("input");
+                    sluice2Input.type = "number";
+                    sluice2Input.value = entry[1].toFixed(0);
+                    sluice2Input.className = "outflow-input";
+                    sluice2Input.id = `sluice2Input-${entry[0]}`;
+                    sluice2Cell.appendChild(sluice2Input);
                     row.appendChild(sluice2Cell);
 
                     table.appendChild(row);
@@ -768,7 +768,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "office-id": "MVS",
                         "units": "ft",
                         "values": formattedDataSluice1.map(entry => {
-                            const outflowValue = document.getElementById(`outflowInput-${entry[0]}`).value;
+                            const outflowValue = document.getElementById(`sluice2Input-${entry[0]}`).value;
                             // console.log("outflowValue:", outflowValue);
 
                             const timestampUnix = new Date(entry[0]).getTime();
@@ -792,7 +792,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "office-id": "MVS",
                         "units": "ft",
                         "values": formattedDataSluice1.map(entry => {
-                            let inflowValue = document.getElementById(`inflowInput-${entry[0]}`).value; // Get value from input field
+                            let inflowValue = document.getElementById(`sluice1Input-${entry[0]}`).value; // Get value from input field
                             // console.log("inflowValue:", inflowValue);
 
                             // Convert ISO date string to timestamp
@@ -1019,33 +1019,106 @@ document.addEventListener('DOMContentLoaded', async function () {
                     dateCell.appendChild(dateInput);
                     row.appendChild(dateCell);
 
-                    // Inflow cell (editable)
+                    // Sluice1 cell (editable)
                     const sluice1Cell = document.createElement("td");
-                    const inflowInput = document.createElement("input");
-                    inflowInput.type = "text";
-                    inflowInput.value = "";
-                    inflowInput.id = `inflowInput-${date}`;
+                    const sluice1Input = document.createElement("input");
+                    sluice1Input.type = "text";
+                    sluice1Input.value = "";
+                    sluice1Input.id = `sluice1Input-${date}`;
 
                     if (index === 0) {
-                        inflowInput.style.backgroundColor = "pink";
+                        sluice1Input.style.backgroundColor = "pink";
                     }
 
-                    sluice1Cell.appendChild(inflowInput);
+                    sluice1Cell.appendChild(sluice1Input);
                     row.appendChild(sluice1Cell);
 
-                    // Outflow cell (editable)
+                    // Sluice2 cell (editable)
                     const sluice2Cell = document.createElement("td");
-                    const outflowInput = document.createElement("input");
-                    outflowInput.type = "text";
-                    outflowInput.value = "";
-                    outflowInput.id = `outflowInput-${date}`;
+                    const sluice2Input = document.createElement("input");
+                    sluice2Input.type = "text";
+                    sluice2Input.value = "";
+                    sluice2Input.id = `sluice2Input-${date}`;
 
                     if (index === 0) {
-                        outflowInput.style.backgroundColor = "pink";
+                        sluice2Input.style.backgroundColor = "pink";
                     }
 
-                    sluice2Cell.appendChild(outflowInput);
+                    sluice2Cell.appendChild(sluice2Input);
                     row.appendChild(sluice2Cell);
+
+                    // Sluice Total cell (editable)
+                    const sluiceTotalCell = document.createElement("td");
+                    const sluiceTotalInput = document.createElement("input");
+                    sluiceTotalInput.type = "text";
+                    sluiceTotalInput.value = "";
+                    sluiceTotalInput.id = `sluiceTotalInput-${date}`;
+
+                    if (index === 0) {
+                        sluiceTotalInput.style.backgroundColor = "pink";
+                    }
+
+                    sluiceTotalCell.appendChild(sluiceTotalInput);
+                    row.appendChild(sluiceTotalCell);
+
+                    // Gate 1 (editable)
+                    const gate1Cell = document.createElement("td");
+                    const gate1Input = document.createElement("input");
+                    gate1Input.type = "text";
+                    gate1Input.value = "";
+                    gate1Input.id = `gate1Input-${date}`;
+                    if (index === 0) {
+                        gate1Input.style.backgroundColor = "pink";
+                    }
+                    gate1Cell.appendChild(gate1Input);
+                    row.appendChild(gate1Cell);
+
+                    // Gate 2 (editable)
+                    const gate2Cell = document.createElement("td");
+                    const gate2Input = document.createElement("input");
+                    gate2Input.type = "text";
+                    gate2Input.value = "";
+                    gate2Input.id = `gate2Input-${date}`;
+                    if (index === 0) {
+                        gate2Input.style.backgroundColor = "pink";
+                    }
+                    gate2Cell.appendChild(gate2Input);
+                    row.appendChild(gate2Cell);
+
+                    // Gate 3 (editable)
+                    const gate3Cell = document.createElement("td");
+                    const gate3Input = document.createElement("input");
+                    gate3Input.type = "text";
+                    gate3Input.value = "";
+                    gate3Input.id = `gate3Input-${date}`;
+                    if (index === 0) {
+                        gate3Input.style.backgroundColor = "pink";
+                    }
+                    gate3Cell.appendChild(gate3Input);
+                    row.appendChild(gate3Cell);
+
+                    // Gate Total (calculated)
+                    const gateTotalCell = document.createElement("td");
+                    const gateTotalInput = document.createElement("input");
+                    gateTotalInput.type = "text";
+                    gateTotalInput.value = "";
+                    gateTotalInput.id = `gateTotalInput-${date}`;
+                    if (index === 0) {
+                        gateTotalInput.style.backgroundColor = "pink";
+                    }
+                    gateTotalCell.appendChild(gateTotalInput);
+                    row.appendChild(gateTotalCell);
+
+                    // Gate Average (calculated)
+                    const gateAverageCell = document.createElement("td");
+                    const gateAverageInput = document.createElement("input");
+                    gateAverageInput.type = "text";
+                    gateAverageInput.value = "";
+                    gateAverageInput.id = `gateAverageInput-${date}`;
+                    gateAverageInput.readOnly = true; // Make it read-only
+                    gateAverageInput.style.backgroundColor = "#f0f0f0";
+                    gateAverageCell.appendChild(gateAverageInput);
+                    row.appendChild(gateAverageCell);
 
                     table.appendChild(row);
                 });
@@ -1078,7 +1151,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "office-id": "MVS",
                         "units": "ft",
                         "values": dates.map((date, index) => {
-                            let outflowValue = document.getElementById(`outflowInput-${date}`).value; // Get value from input field
+                            let outflowValue = document.getElementById(`sluice2Input-${date}`).value; // Get value from input field
                             // console.log("outflowValue:", outflowValue);
 
                             // If outflowValue is empty or null, set it to 909
@@ -1107,7 +1180,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "office-id": "MVS",
                         "units": "ft",
                         "values": dates.map((date, index) => {
-                            let inflowValue = document.getElementById(`inflowInput-${date}`).value; // Get value from input field
+                            let inflowValue = document.getElementById(`sluice1Input-${date}`).value; // Get value from input field
                             // console.log("inflowValue:", inflowValue);
 
                             // If inflowValue is empty or null, set it to 909

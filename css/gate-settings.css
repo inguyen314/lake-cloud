@@ -1,23 +1,30 @@
 #gate-settings {
     width: 100%;
+    table-layout: fixed;
+    /* Ensures equal width for each column */
     border-collapse: collapse;
-    margin: 20px 0;
-    font-family: 'Arial', sans-serif;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    table-layout: fixed; /* Ensure all columns have the same width */
+    /* Ensures cells are neatly aligned */
 }
 
-#gate-settings th, #gate-settings td {
-    padding: 3px 3px;
-    text-align: center; /* Center-align both header and data cell text */
+#gate-settings th,
+#gate-settings td {
+    padding: 2px;
+    text-align: center;
     border: 1px solid #ddd;
+    /* Light border for better visibility */
 }
 
 #gate-settings th {
     background-color: darkblue;
-    color: white;
-    font-size: 14px;
+    /* Light gray for headers */
     font-weight: bold;
+}
+
+#gate-settings input {
+    width: 100%;
+    /* Ensures input fields take full width of the cells */
+    box-sizing: border-box;
+    /* Makes sure padding does not affect width */
 }
 
 #gate-settings tr:nth-child(even) {
