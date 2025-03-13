@@ -201,6 +201,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // Apply the ID "gate-settings" to the table
                     table.id = "gate-settings";
+                    table.style.width = "50%";
+                    table.style.marginTop = "10px";
+                    table.style.marginBottom = "10px";
 
                     // Create the header row
                     const headerRow = table.insertRow();
@@ -1058,10 +1061,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                     row.appendChild(timeCell);
 
 
-
-
-
-
                     // Sluice1 cell (editable)
                     const sluice1Cell = document.createElement("td");
                     const sluice1Input = document.createElement("input");
@@ -1527,76 +1526,75 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         };
 
-        fetchTsidData();
+        fetchTsidData();  
+    }
 
-
-        function getIsoDateWithOffsetDynamic(year, month, day, offset) {
-            // Create a date object at 6 AM UTC
-            const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0));
-
-            // Get the timezone offset dynamically based on CST/CDT
-            const localTime = new Date(date.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
-            const timeOffset = (date.getTime() - localTime.getTime()) / (60 * 1000); // Offset in minutes
-
-            // Adjust to 5 AM if not in daylight saving time
-            if (localTime.getHours() !== 6) {
-                date.setUTCHours(5);
-            }
-
-            // Adjust for the offset in days
-            date.setUTCDate(date.getUTCDate() + offset);
-
-            // Adjust for the timezone offset
-            date.setMinutes(date.getMinutes() + timeOffset);
-
-            // Return the ISO string
-            return date.toISOString();
+    function formatISODateToUTCString(timestamp) {
+        if (typeof timestamp !== "number") {
+            console.error("Invalid timestamp:", timestamp);
+            return "Invalid Date";
         }
 
-        function formatISODateToUTCString(timestamp) {
-            if (typeof timestamp !== "number") {
-                console.error("Invalid timestamp:", timestamp);
-                return "Invalid Date";
-            }
-
-            const date = new Date(timestamp); // Ensure timestamp is in milliseconds
-            if (isNaN(date.getTime())) {
-                console.error("Invalid date conversion:", timestamp);
-                return "Invalid Date";
-            }
-
-            return date.toISOString().replace(/\.\d{3}Z$/, 'Z'); // Removes milliseconds
+        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
+        if (isNaN(date.getTime())) {
+            console.error("Invalid date conversion:", timestamp);
+            return "Invalid Date";
         }
 
-        function formatISODateToCSTString(timestamp) {
-            if (typeof timestamp !== "number") {
-                console.error("Invalid timestamp:", timestamp);
-                return "Invalid Date";
-            }
+        return date.toISOString().replace(/\.\d{3}Z$/, 'Z'); // Removes milliseconds
+    }
 
-            const date = new Date(timestamp); // Ensure timestamp is in milliseconds
-            if (isNaN(date.getTime())) {
-                console.error("Invalid date conversion:", timestamp);
-                return "Invalid Date";
-            }
-
-            // Convert to CST (Central Standard Time)
-            const options = {
-                timeZone: 'America/Chicago',
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false,
-            };
-
-            const formatter = new Intl.DateTimeFormat('en-US', options);
-            const formattedDate = formatter.format(date);
-
-            return formattedDate.replace(',', ''); // Removes the comma between date and time
+    function formatISODateToCSTString(timestamp) {
+        if (typeof timestamp !== "number") {
+            console.error("Invalid timestamp:", timestamp);
+            return "Invalid Date";
         }
+
+        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
+        if (isNaN(date.getTime())) {
+            console.error("Invalid date conversion:", timestamp);
+            return "Invalid Date";
+        }
+
+        // Convert to CST (Central Standard Time)
+        const options = {
+            timeZone: 'America/Chicago',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+
+        const formatter = new Intl.DateTimeFormat('en-US', options);
+        const formattedDate = formatter.format(date);
+
+        return formattedDate.replace(',', ''); // Removes the comma between date and time
+    }
+
+    function getIsoDateWithOffsetDynamic(year, month, day, offset) {
+        // Create a date object at 6 AM UTC
+        const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0));
+
+        // Get the timezone offset dynamically based on CST/CDT
+        const localTime = new Date(date.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+        const timeOffset = (date.getTime() - localTime.getTime()) / (60 * 1000); // Offset in minutes
+
+        // Adjust to 5 AM if not in daylight saving time
+        if (localTime.getHours() !== 6) {
+            date.setUTCHours(5);
+        }
+
+        // Adjust for the offset in days
+        date.setUTCDate(date.getUTCDate() + offset);
+
+        // Adjust for the timezone offset
+        date.setMinutes(date.getMinutes() + timeOffset);
+
+        // Return the ISO string
+        return date.toISOString();
     }
 });
 
