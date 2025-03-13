@@ -950,6 +950,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 let dates = [];
                 dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
 
+                let entryDates = [];
+                entryDates = ["05:00:00.000Z", "05:00:00.000Z", "05:00:00.000Z", "05:00:00.000Z", "05:00:00.000Z", "05:00:00.000Z"];
+
 
                 console.log("dates (UTC):", dates);
 
@@ -976,25 +979,37 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 console.log("formattedDates (CST):", formattedDates);
 
-                dates.forEach((date, index) => {
+                entryDates.forEach((date, index) => {
                     const row = document.createElement("tr");
 
-                    // Date cell
+                    // Date cell (editable)
                     const dateCell = document.createElement("td");
-                    dateCell.textContent = dates[index];  // Use the corresponding formatted date
+                    const dateInput = document.createElement("input");
+                    dateInput.type = "text";
+                    dateInput.value = entryDates[index];
+                    dateInput.id = `dateInput-${index}`;
+
+                    // Only apply pink background for the first row
+                    if (index === 0) {
+                        dateInput.style.backgroundColor = "pink";
+                    }
+
+                    dateCell.appendChild(dateInput);
                     row.appendChild(dateCell);
 
                     // Inflow cell (editable)
-
                     const inflowCell = document.createElement("td");
                     const inflowInput = document.createElement("input");
                     inflowInput.type = "text";
                     inflowInput.value = "";
                     inflowInput.id = `inflowInput-${date}`;
-                    inflowInput.style.backgroundColor = "pink";  // Set pink background
+
+                    if (index === 0) {
+                        inflowInput.style.backgroundColor = "pink";
+                    }
+
                     inflowCell.appendChild(inflowInput);
                     row.appendChild(inflowCell);
-
 
                     // Outflow cell (editable)
                     const outflowCell = document.createElement("td");
@@ -1002,7 +1017,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                     outflowInput.type = "text";
                     outflowInput.value = "";
                     outflowInput.id = `outflowInput-${date}`;
-                    outflowInput.style.backgroundColor = "pink";  // Set pink background
+
+                    if (index === 0) {
+                        outflowInput.style.backgroundColor = "pink";
+                    }
+
                     outflowCell.appendChild(outflowInput);
                     row.appendChild(outflowCell);
 
@@ -1264,25 +1283,25 @@ document.addEventListener('DOMContentLoaded', async function () {
         function getIsoDateWithOffsetDynamic(year, month, day, offset) {
             // Create a date object at 6 AM UTC
             const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0));
-            
+
             // Get the timezone offset dynamically based on CST/CDT
             const localTime = new Date(date.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
             const timeOffset = (date.getTime() - localTime.getTime()) / (60 * 1000); // Offset in minutes
-            
+
             // Adjust to 5 AM if not in daylight saving time
             if (localTime.getHours() !== 6) {
                 date.setUTCHours(5);
             }
-            
+
             // Adjust for the offset in days
             date.setUTCDate(date.getUTCDate() + offset);
-            
+
             // Adjust for the timezone offset
             date.setMinutes(date.getMinutes() + timeOffset);
-            
+
             // Return the ISO string
             return date.toISOString();
-        }              
+        }
 
         function formatISODateToUTCString(timestamp) {
             if (typeof timestamp !== "number") {
