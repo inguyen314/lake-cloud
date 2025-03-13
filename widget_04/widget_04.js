@@ -983,7 +983,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 console.log("times for dropdown:", times);
 
-                entryDates = ["", "", "", "", "", ""]; // Blank entries for dropdown
+                // entryDates = ["", "", "", "", "", ""]; // Blank entries for dropdown
+                entryDates = [1, 2, 3, 4, 5, 6]; // Blank entries for dropdown
 
                 const options = {
                     timeZone: 'America/Chicago', // Handle CST/CDT automatically
@@ -1007,7 +1008,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 console.log("formattedDates (CST):", formattedDates);
 
-                const selectedHours = {}; 
+                const selectedHours = {};
 
                 entryDates.forEach((date, index) => {
                     const row = document.createElement("tr");
@@ -1064,9 +1065,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Sluice1 cell (editable)
                     const sluice1Cell = document.createElement("td");
                     const sluice1Input = document.createElement("input");
-                    sluice1Input.type = "text";
-                    sluice1Input.value = "";
-                    sluice1Input.id = `sluice1Input-${date}`;
+                    sluice1Input.type = "number";
+                    sluice1Input.value = null;
+                    sluice1Input.id = `sluice1Input`;
 
                     if (index === 0) {
                         sluice1Input.style.backgroundColor = "pink";
@@ -1074,7 +1075,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     sluice1Cell.appendChild(sluice1Input);
                     row.appendChild(sluice1Cell);
-                    console.log(document.getElementById(`sluice1Input-${date}`));  // Check if element exists
+                    console.log(document.getElementById(`sluice1Input`));  // Check if element exists
 
 
                     // Sluice2 cell (editable)
@@ -1082,7 +1083,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const sluice2Input = document.createElement("input");
                     sluice2Input.type = "number";
                     sluice2Input.value = null;
-                    sluice2Input.id = `sluice2Input-${date}`;
+                    sluice2Input.id = `sluice2Input`;
 
                     if (index === 0) {
                         sluice2Input.style.backgroundColor = "pink";
@@ -1220,66 +1221,138 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Add event listener to the submit button
                 cdaSaveBtn.addEventListener("click", async () => {
 
-                    console.log('hour1 selected:', selectedHours['hour1']); 
-                    console.log('hour2 selected:', selectedHours['hour2']);
-                    console.log('hour3 selected:', selectedHours['hour3']);
-                    console.log('hour4 selected:', selectedHours['hour4']);
-                    console.log('hour5 selected:', selectedHours['hour5']);
-                    console.log('hour6 selected:', selectedHours['hour6']);
+                    // Log selected hours for debugging
+                    Object.keys(selectedHours).forEach(hour => {
+                        console.log(`${hour} selected:`, selectedHours[hour]);
+                    });
 
+                    // Get the sluice1 input element and check if it exists
+                    const sluice1Input = document.getElementById('sluice1Input');
+                    if (!sluice1Input) {
+                        console.error("sluice1Input element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!sluice1Input.value) { 
+                        sluice1Input.value = 909; 
+                    }
+
+                    // Get the sluice2 input element and check if it exists
+                    const sluice2Input = document.getElementById('sluice2Input');
+                    if (!sluice2Input) {
+                        console.error("sluice2Input element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!sluice2Input.value) { 
+                        sluice2Input.value = 909; 
+                    }
+
+                    let time1 = null;
+                    if (selectedHours['hour1'] !== "NONE") {
+                        time1 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour1'] + `:00Z`;
+                    }
+
+                    let time2 = null;
+                    if (selectedHours['hour2'] !== "NONE") {
+                        time2 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour2'] + `:00Z`;
+                    }
+
+                    let time3 = null;
+                    if (selectedHours['hour3'] !== "NONE") {
+                        time3 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour3'] + `:00Z`;
+                    }
+
+                    let time4 = null;
+                    if (selectedHours['hour4'] !== "NONE") {
+                        time4 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour4'] + `:00Z`;
+                    }
+
+                    let time5 = null;
+                    if (selectedHours['hour5'] !== "NONE") {
+                        time5 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour5'] + `:00Z`;
+                    }
+
+                    let time6 = null;
+                    if (selectedHours['hour6'] !== "NONE") {
+                        time6 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour6'] + `:00Z`;
+                    }
+
+                    // Payload for sluice1 values
                     const payloadSluice1 = {
-                        "date-version-type": "MAX_AGGREGATE",
                         "name": tsidSluice1,
                         "office-id": "MVS",
                         "units": "ft",
-                        "values": dates.map((date, index) => {
-                            let sluice1Value = document.getElementById(`sluice1Input-${date}`).value; // Get value from input field
-                            console.log("sluice1Value:", sluice1Value);
-
-                            // If sluice1Value is empty or null, set it to 909
-                            if (!sluice1Value) {
-                                sluice1Value = "909"; // Default value when empty or null
-                            }
-
-                            // Convert ISO date string to timestamp
-                            const timestampUnix = selectedHours['hour1']; // new Date(date).getTime(); // Correct timestamp conversion
-                            // console.log("timestampUnix:", timestampUnix);
-
-                            return [
-                                timestampUnix,  // Timestamp for the day at 6 AM
-                                parseInt(sluice1Value), // Stage value (forecast outflow) as number
-                                0 // Placeholder for the third value (set to 0 for now)
-                            ];
-                        }),
+                        "values": [
+                            [
+                                time1,
+                                sluice1Input.value,
+                                0
+                            ],
+                            [
+                                time2,
+                                sluice1Input.value,
+                                0
+                            ],
+                            [
+                                time3,
+                                sluice1Input.value,
+                                0
+                            ],
+                            [
+                                time4,
+                                sluice1Input.value,
+                                0
+                            ],
+                            [
+                                time5,
+                                sluice1Input.value,
+                                0
+                            ],
+                            [
+                                time6,
+                                sluice1Input.value,
+                                0
+                            ],
+                        ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
                     };
 
                     console.log("payloadSluice1: ", payloadSluice1);
 
-                    let payloadSluice2 = null;
-                    payloadSluice2 = {
-                        "date-version-type": "MAX_AGGREGATE",
+                    const payloadSluice2 = {
                         "name": tsidSluice2,
                         "office-id": "MVS",
                         "units": "ft",
-                        "values": dates.map((date, index) => {
-                            let sluice2Value = document.getElementById(`sluice2Input-${date}`).value; // Get value from input field
-                            // console.log("sluice2Value:", sluice2Value);
-
-                            // If sluice2Value is empty or null, set it to 909
-                            if (!sluice2Value) {
-                                sluice2Value = "909"; // Default value when empty or null
-                            }
-
-                            // Convert ISO date string to timestamp
-                            const timestampUnix = new Date(date).getTime(); // Correct timestamp conversion
-                            // console.log("timestampUnix:", timestampUnix);
-
-                            return [
-                                timestampUnix,  // Timestamp for the day at 6 AM
-                                parseInt(sluice2Value), // Stage value (forecast outflow) as number
-                                0 // Placeholder for the third value (set to 0 for now)
-                            ];
-                        }),
+                        "values": [
+                            [
+                                time1,
+                                sluice2Input.value,
+                                0
+                            ],
+                            [
+                                time2,
+                                sluice2Input.value,
+                                0
+                            ],
+                            [
+                                time3,
+                                sluice2Input.value,
+                                0
+                            ],
+                            [
+                                time4,
+                                sluice2Input.value,
+                                0
+                            ],
+                            [
+                                time5,
+                                sluice2Input.value,
+                                0
+                            ],
+                            [
+                                time6,
+                                sluice2Input.value,
+                                0
+                            ],
+                        ].filter(item => item[0] !== null),
                     };
 
                     console.log("payloadSluice2: ", payloadSluice2);
