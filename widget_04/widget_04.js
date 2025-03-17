@@ -1295,7 +1295,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         gateTotalInput.value = 909; 
                     }
 
-                    // Get the Gate3 input element and check if it exists
+                    // Get the gateOutflowTotal input element and check if it exists
                     const gateOutflowTotalInput = document.getElementById('gateOutflowTotalInput');
                     if (!gateOutflowTotalInput) {
                         console.error("gateOutflowTotalInput element not found!");
@@ -1576,45 +1576,45 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     console.log("payloadGate3: ", payloadGate3);
 
-                    const payloadGateOutflowTotal = {
-                        "name": tsidGateOutflowTotal,
+                    const payloadGateTotal = {
+                        "name": tsidGateTotal,
                         "office-id": "MVS",
                         "units": "ft",
                         "values": [
                             [
                                 time1,
-                                gateOutflowTotalInput.value,
+                                gateTotalInput.value,
                                 0
                             ],
                             [
                                 time2,
-                                gateOutflowTotalInput.value,
+                                gateTotalInput.value,
                                 0
                             ],
                             [
                                 time3,
-                                gateOutflowTotalInput.value,
+                                gateTotalInput.value,
                                 0
                             ],
                             [
                                 time4,
-                                gateOutflowTotalInput.value,
+                                gateTotalInput.value,
                                 0
                             ],
                             [
                                 time5,
-                                gateOutflowTotalInput.value,
+                                gateTotalInput.value,
                                 0
                             ],
                             [
                                 time6,
-                                gateOutflowTotalInput.value,
+                                gateTotalInput.value,
                                 0
                             ],
                         ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
                     };
 
-                    console.log("payloadGateOutflowTotal: ", payloadGateOutflowTotal);
+                    console.log("payloadGateTotal: ", payloadGateTotal);
 
                     async function loginCDA() {
                         console.log("page");
