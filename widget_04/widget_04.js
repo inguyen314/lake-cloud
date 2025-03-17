@@ -1050,13 +1050,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         console.log(`${hourKey} selected:`, selectedHours[hourKey]);
                     });
 
-                    // Example of accessing the selected hours:
-                    // setTimeout(() => {
-                    //     // Log the value for specific hours
-                    //     console.log(`hour1 selected:`, selectedHours['hour1']);
-                    //     console.log(`hour4 selected:`, selectedHours['hour4']);
-                    // }, 5000);
-
                     timeCell.appendChild(timeSelect);
                     row.appendChild(timeCell);
 
@@ -1189,7 +1182,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Create the second cell with "--"
                 const secondCell = document.createElement("td");
-                secondCell.textContent = "--";
+                secondCell.id = `gateOutflowAverageInput`;
+                secondCell.textContent = null;
                 tableRow.appendChild(secondCell);
 
                 // Append the row to the tableOutflowAvg
@@ -1200,7 +1194,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Append the div to output6Div
                 output6Div.appendChild(gateAverageDiv);
-
 
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
@@ -1295,6 +1288,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         gateTotalInput.value = 909; 
                     }
 
+                    // ========================== CALCULATE GATE OUTFLOW TOTAL ==========================
                     // Get the gateOutflowTotal input element and check if it exists
                     const gateOutflowTotalInput = document.getElementById('gateOutflowTotalInput');
                     if (!gateOutflowTotalInput) {
@@ -1303,6 +1297,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
                     if (!gateOutflowTotalInput.value) { 
                         gateOutflowTotalInput.value = 909; 
+                    }
+
+                    // ========================== CALCULATE GATE OUTFLOW AVERAGE ==========================
+                    // Get the gateOutflowAverage input element and check if it exists
+                    const gateOutflowAverageInput = document.getElementById('gateOutflowAverageInput');
+                    if (!gateOutflowAverageInput) {
+                        console.error("gateOutflowAverageInput element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!gateOutflowAverageInput.value) { 
+                        gateOutflowAverageInput.value = 909; 
                     }
 
                     let time1 = null;
