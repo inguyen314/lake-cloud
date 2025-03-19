@@ -918,16 +918,13 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // Create a dynamic key for each row (hour1, hour2, hour3, etc.)
                     const hourKey = `hour${index + 1}`;
-                    selectedHours[hourKey] = index === 0 ? times[0] : "NONE";  // Set default hour value
+                    selectedHours[hourKey] = "NONE";  // Set default hour value
 
-                    if (index !== 0) {
-                        // Create "NONE" option as the default for all rows except the first
-                        const noneOption = document.createElement("option");
-                        noneOption.value = "NONE";
-                        noneOption.textContent = "NONE";
-                        timeSelect.appendChild(noneOption);
-                    }
-
+                    const noneOption = document.createElement("option");
+                    noneOption.value = "NONE";
+                    noneOption.textContent = "NONE";
+                    timeSelect.appendChild(noneOption);
+             
                     // Create options for the dropdown (24 hours)
                     times.forEach(time => {
                         const option = document.createElement("option");
@@ -948,22 +945,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                     timeCell.appendChild(timeSelect);
                     row.appendChild(timeCell);
 
-
                     // Sluice1 cell (editable)
                     const sluice1Cell = document.createElement("td");
                     const sluice1Input = document.createElement("input");
                     sluice1Input.type = "number";
                     sluice1Input.value = null;
                     sluice1Input.id = `sluice1Input`;
-
-                    if (index === 0) {
-                        sluice1Input.style.backgroundColor = "pink";
-                    }
-
+                    sluice1Input.style.backgroundColor = "lightgray";
                     sluice1Cell.appendChild(sluice1Input);
                     row.appendChild(sluice1Cell);
                     console.log(document.getElementById(`sluice1Input`));  // Check if element exists
-
 
                     // Sluice2 cell (editable)
                     const sluice2Cell = document.createElement("td");
@@ -971,11 +962,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     sluice2Input.type = "number";
                     sluice2Input.value = null;
                     sluice2Input.id = `sluice2Input`;
-
-                    if (index === 0) {
-                        sluice2Input.style.backgroundColor = "pink";
-                    }
-
+                    sluice2Input.style.backgroundColor = "lightgray";
                     sluice2Cell.appendChild(sluice2Input);
                     row.appendChild(sluice2Cell);
 
@@ -985,11 +972,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     sluiceTotalInput.type = "number";
                     sluiceTotalInput.value = null;
                     sluiceTotalInput.id = `sluiceTotalInput`;
-
-                    if (index === 0) {
-                        sluiceTotalInput.style.backgroundColor = "pink";
-                    }
-
+                    sluiceTotalInput.style.backgroundColor = "lightgray";
                     sluiceTotalCell.appendChild(sluiceTotalInput);
                     row.appendChild(sluiceTotalCell);
 
@@ -999,9 +982,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     gate1Input.type = "number";
                     gate1Input.value = null;
                     gate1Input.id = `gate1Input`;
-                    if (index === 0) {
-                        gate1Input.style.backgroundColor = "pink";
-                    }
+                    gate1Input.style.backgroundColor = "lightgray";
                     gate1Cell.appendChild(gate1Input);
                     row.appendChild(gate1Cell);
 
@@ -1011,9 +992,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     gate2Input.type = "number";
                     gate2Input.value = null;
                     gate2Input.id = `gate2Input`;
-                    if (index === 0) {
-                        gate2Input.style.backgroundColor = "pink";
-                    }
+                    gate2Input.style.backgroundColor = "lightgray";
                     gate2Cell.appendChild(gate2Input);
                     row.appendChild(gate2Cell);
 
@@ -1023,9 +1002,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     gate3Input.type = "number";
                     gate3Input.value = null;
                     gate3Input.id = `gate3Input`;
-                    if (index === 0) {
-                        gate3Input.style.backgroundColor = "pink";
-                    }
+                    gate3Input.style.backgroundColor = "lightgray";
                     gate3Cell.appendChild(gate3Input);
                     row.appendChild(gate3Cell);
 
@@ -1035,9 +1012,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     gateTotalInput.type = "number";
                     gateTotalInput.value = null;
                     gateTotalInput.id = `gateTotalInput`;
-                    if (index === 0) {
-                        gateTotalInput.style.backgroundColor = "pink";
-                    }
+                    gateTotalInput.style.backgroundColor = "lightgray";
                     gateTotalCell.appendChild(gateTotalInput);
                     row.appendChild(gateTotalCell);
 
