@@ -545,6 +545,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }, 10000)
                     } else {
                         console.log("Calling createDataEntryTable ...");
+                        console.log("No data from previous day found, Creating Data Entry Table ...");
+                        console.log("Recomedation: Please enter data for the previous day.");
 
                         createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
                             tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
@@ -760,7 +762,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const selectedHours = {};
 
                 // Display existing data
-                entryDates.forEach((date, index) => {
+                formattedDataSluice1.forEach((date, index) => {
+                    console.log("index:", index);
+                    console.log("date:", date);
+
                     const row = document.createElement("tr");
 
                     // const selectedHours = {}; // Object to store each hour as hour1, hour2, etc.
@@ -805,7 +810,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const sluice1Cell = document.createElement("td");
                     const sluice1Input = document.createElement("input");
                     sluice1Input.type = "number";
-                    sluice1Input.value = null;
+                    sluice1Input.value = (date[1]).toFixed(1);
                     sluice1Input.id = `sluice1Input`;
 
                     if (index === 0) {
@@ -814,14 +819,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     sluice1Cell.appendChild(sluice1Input);
                     row.appendChild(sluice1Cell);
-                    console.log(document.getElementById(`sluice1Input`));  // Check if element exists
+                    // console.log(document.getElementById(`sluice1Input`));  // Check if element exists
 
 
                     // Sluice2 cell (editable)
                     const sluice2Cell = document.createElement("td");
                     const sluice2Input = document.createElement("input");
                     sluice2Input.type = "number";
-                    sluice2Input.value = null;
+                    sluice2Input.value = formattedDataSluice1[0][1].toFixed(1);
                     sluice2Input.id = `sluice2Input`;
 
                     if (index === 0) {
@@ -835,7 +840,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const sluiceTotalCell = document.createElement("td");
                     const sluiceTotalInput = document.createElement("input");
                     sluiceTotalInput.type = "number";
-                    sluiceTotalInput.value = null;
+                    sluiceTotalInput.value = formattedDataSluiceTotal[0][1].toFixed(0);
                     sluiceTotalInput.id = `sluiceTotalInput`;
 
                     if (index === 0) {
@@ -849,7 +854,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate1Cell = document.createElement("td");
                     const gate1Input = document.createElement("input");
                     gate1Input.type = "number";
-                    gate1Input.value = null;
+                    gate1Input.value = formattedDataGate1[0][1].toFixed(1);
                     gate1Input.id = `gate1Input`;
                     if (index === 0) {
                         gate1Input.style.backgroundColor = "pink";
@@ -861,7 +866,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate2Cell = document.createElement("td");
                     const gate2Input = document.createElement("input");
                     gate2Input.type = "number";
-                    gate2Input.value = null;
+                    gate2Input.value = formattedDataGate2[0][1].toFixed(1);
                     gate2Input.id = `gate2Input`;
                     if (index === 0) {
                         gate2Input.style.backgroundColor = "pink";
@@ -873,7 +878,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate3Cell = document.createElement("td");
                     const gate3Input = document.createElement("input");
                     gate3Input.type = "number";
-                    gate3Input.value = null;
+                    gate3Input.value = formattedDataGate3[0][1].toFixed(1);
                     gate3Input.id = `gate3Input`;
                     if (index === 0) {
                         gate3Input.style.backgroundColor = "pink";
@@ -885,7 +890,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gateTotalCell = document.createElement("td");
                     const gateTotalInput = document.createElement("input");
                     gateTotalInput.type = "number";
-                    gateTotalInput.value = null;
+                    gateTotalInput.value = formattedDataGateTotal[0][1].toFixed(0);
                     gateTotalInput.id = `gateTotalInput`;
                     if (index === 0) {
                         gateTotalInput.style.backgroundColor = "pink";
@@ -897,7 +902,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gateOutflowTotalCell = document.createElement("td");
                     const gateOutflowTotalInput = document.createElement("input");
                     gateOutflowTotalInput.type = "number";
-                    gateOutflowTotalInput.value = null;
+                    gateOutflowTotalInput.value = (formattedDataGateTotal[0][1] + formattedDataSluiceTotal[0][1]).toFixed(0);
                     gateOutflowTotalInput.id = `gateOutflowTotalInput`;
                     gateOutflowTotalInput.readOnly = true; // Make it read-only
                     gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
@@ -924,7 +929,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     noneOption.value = "NONE";
                     noneOption.textContent = "NONE";
                     timeSelect.appendChild(noneOption);
-             
+
                     // Create options for the dropdown (24 hours)
                     times.forEach(time => {
                         const option = document.createElement("option");
@@ -954,7 +959,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     sluice1Input.style.backgroundColor = "lightgray";
                     sluice1Cell.appendChild(sluice1Input);
                     row.appendChild(sluice1Cell);
-                    console.log(document.getElementById(`sluice1Input`));  // Check if element exists
+                    // console.log(document.getElementById(`sluice1Input`));  // Check if element exists
 
                     // Sluice2 cell (editable)
                     const sluice2Cell = document.createElement("td");
@@ -1268,7 +1273,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log("times for dropdown:", times);
 
                 // entryDates = ["", "", "", "", "", ""]; // Blank entries for dropdown
-                entryDates = [1, 2, 3, 4, 5, 6]; // Blank entries for dropdown
+                entryDates = [1]; // Blank entries for dropdown
 
                 const selectedHours = {};
 
