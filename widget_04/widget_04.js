@@ -2024,17 +2024,18 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         const fetchTimeSeriesData = async (tsid) => {
             // Convert to Date object
-            const date = new Date(isoDateMinus1Day);
+            const date = new Date(isoDateToday);
 
             // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
-            date.setTime(date.getTime() + (1 * 60 * 60 * 1000));
+            date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
 
             // Convert back to ISO string (preserve UTC format)
-            const isoDateMinus1DayPlus1Hour = date.toISOString();
+            const isoDateTodayMinus1Hour = date.toISOString();
 
-            console.log("isoDateMinus1DayPlus1Hour: ", isoDateMinus1DayPlus1Hour);
+            console.log("begin (yesterday midnight): ", isoDateMinus1Day);
+            console.log("end (midnight minus 1 hour): ", isoDateTodayMinus1Hour);
 
-            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1DayPlus1Hour}&end=${isoDateDay1}&office=${office}`;
+            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateTodayMinus1Hour}&office=${office}`;
             // const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1DayPlus1Hour}&end=${isoDateDay1}&office=${office}`;
             console.log('tsidData:', tsidData);
             try {
