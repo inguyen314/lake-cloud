@@ -560,29 +560,31 @@ document.addEventListener('DOMContentLoaded', async function () {
                     console.log("timeSeriesYesterdayDataOutflowAverage:", timeSeriesYesterdayDataOutflowAverage);
 
 
-                    if (timeSeriesYesterdayDataSluice1 && timeSeriesYesterdayDataSluice1.values && timeSeriesYesterdayDataSluice1.values.length > 0) {
-                        console.log("Calling createTable ...");
-                        console.log("Data from previous day found, Creating Table Entry ...");
-                        console.log("This is a single save row.");
-
-                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
-                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
-                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
-                            tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage);
-
-                        loginStateController()
-                        setInterval(async () => {
-                            loginStateController()
-                        }, 10000)
-                    } else if (timeSeriesDataSluice1 && timeSeriesDataSluice1.values && timeSeriesDataSluice1.values.length > 0) {
-                        console.log("Calling createTableEdit ...");
-                        console.log("Data for today found, Creating Table ...");
+                    if (timeSeriesDataSluice1 && timeSeriesDataSluice1.values && timeSeriesDataSluice1.values.length > 0) {
+                        console.log("Data for today found, Calling createTable ...");
                         console.log("This is a multiple row save.");
 
                         createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
                             tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
                             tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
-                            tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage);
+                            tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
+                            timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
+                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage);
+
+                        loginStateController()
+                        setInterval(async () => {
+                            loginStateController()
+                        }, 10000)
+                    } else if (timeSeriesYesterdayDataSluice1 && timeSeriesYesterdayDataSluice1.values && timeSeriesYesterdayDataSluice1.values.length > 0) {
+                        console.log("Data from previous day found, Calling createDataEntryTable ...");
+                        console.log("This is a single save row.");
+
+                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
+                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
+                            tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
+                            timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
+                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage);
 
                         loginStateController()
                         setInterval(async () => {
@@ -614,7 +616,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
                 tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
                 tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
-                tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage) {
+                tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
+                timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
+                timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage) {
 
                 console.log("timeSeriesDataSluice1:", timeSeriesDataSluice1);
                 console.log("timeSeriesDataSluice2:", timeSeriesDataSluice2);
@@ -1653,20 +1657,65 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             }
 
-            function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+            function createDataEntryTable(
+                isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
                 tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
                 tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
-                tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage) {
+                tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
+                timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
+                timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage
+            ) {
 
-                console.log("timeSeriesDataSluice1:", timeSeriesDataSluice1);
-                console.log("timeSeriesDataSluice2:", timeSeriesDataSluice2);
-                console.log("timeSeriesDataSluiceTotal:", timeSeriesDataSluiceTotal)
-                console.log("timeSeriesDataGate1:", timeSeriesDataGate1)
-                console.log("timeSeriesDataGate2:", timeSeriesDataGate2)
-                console.log("timeSeriesDataGate3:", timeSeriesDataGate3)
-                console.log("timeSeriesDataGateTotal:", timeSeriesDataGateTotal)
-                console.log("timeSeriesDataOutflowTotal:", timeSeriesDataOutflowTotal)
-                console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage);
+                const formatData = (data) => data.values.map(entry => {
+                    const timestamp = entry[0];
+                    const formattedTimestampCST = formatISODateToCSTString(Number(timestamp));
+                    return {
+                        ...entry,
+                        formattedTimestampCST
+                    };
+                });
+
+                // Today's data
+                let formattedDataSluice1 = formatData(timeSeriesDataSluice1);
+                let formattedDataSluice2 = formatData(timeSeriesDataSluice2);
+                let formattedDataSluiceTotal = formatData(timeSeriesDataSluiceTotal);
+                let formattedDataGate1 = formatData(timeSeriesDataGate1);
+                let formattedDataGate2 = formatData(timeSeriesDataGate2);
+                let formattedDataGate3 = formatData(timeSeriesDataGate3);
+                let formattedDataGateTotal = formatData(timeSeriesDataGateTotal);
+                let formattedDataOutflowTotal = formatData(timeSeriesDataOutflowTotal);
+                let formattedDataOutflowAverage = formatData(timeSeriesDataOutflowAverage);
+
+                console.log("Formatted timeSeriesDataSluice1:", formattedDataSluice1);
+                console.log("Formatted timeSeriesDataSluice2:", formattedDataSluice2);
+                console.log("Formatted timeSeriesDataSluiceTotal:", formattedDataSluiceTotal);
+                console.log("Formatted timeSeriesDataGate1:", formattedDataGate1);
+                console.log("Formatted timeSeriesDataGate2:", formattedDataGate2);
+                console.log("Formatted timeSeriesDataGate3:", formattedDataGate3);
+                console.log("Formatted timeSeriesDataGateTotal:", formattedDataGateTotal);
+                console.log("Formatted timeSeriesDataOutflowTotal:", formattedDataOutflowTotal);
+                console.log("Formatted timeSeriesDataOutflowAverage:", formattedDataOutflowAverage);
+
+                // Yesterday's data
+                let formattedYesterdayDataSluice1 = formatData(timeSeriesYesterdayDataSluice1);
+                let formattedYesterdayDataSluice2 = formatData(timeSeriesYesterdayDataSluice2);
+                let formattedYesterdayDataSluiceTotal = formatData(timeSeriesYesterdayDataSluiceTotal);
+                let formattedYesterdayDataGate1 = formatData(timeSeriesYesterdayDataGate1);
+                let formattedYesterdayDataGate2 = formatData(timeSeriesYesterdayDataGate2);
+                let formattedYesterdayDataGate3 = formatData(timeSeriesYesterdayDataGate3);
+                let formattedYesterdayDataGateTotal = formatData(timeSeriesYesterdayDataGateTotal);
+                let formattedYesterdayDataOutflowTotal = formatData(timeSeriesYesterdayDataOutflowTotal);
+                let formattedYesterdayDataOutflowAverage = formatData(timeSeriesYesterdayDataOutflowAverage);
+
+                console.log("Formatted timeSeriesYesterdayDataSluice1:", formattedYesterdayDataSluice1);
+                console.log("Formatted timeSeriesYesterdayDataSluice2:", formattedYesterdayDataSluice2);
+                console.log("Formatted timeSeriesYesterdayDataSluiceTotal:", formattedYesterdayDataSluiceTotal);
+                console.log("Formatted timeSeriesYesterdayDataGate1:", formattedYesterdayDataGate1);
+                console.log("Formatted timeSeriesYesterdayDataGate2:", formattedYesterdayDataGate2);
+                console.log("Formatted timeSeriesYesterdayDataGate3:", formattedYesterdayDataGate3);
+                console.log("Formatted timeSeriesYesterdayDataGateTotal:", formattedYesterdayDataGateTotal);
+                console.log("Formatted timeSeriesYesterdayDataOutflowTotal:", formattedYesterdayDataOutflowTotal);
+                console.log("Formatted timeSeriesYesterdayDataOutflowAverage:", formattedYesterdayDataOutflowAverage);
 
                 const table = document.createElement("table");
 
@@ -1731,7 +1780,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const selectedHours = {};
 
-                entryDates.forEach((date, index) => {
+                formattedYesterdayDataSluice1.forEach((date, index) => {
                     const row = document.createElement("tr");
 
                     // const selectedHours = {}; // Object to store each hour as hour1, hour2, etc.
@@ -1776,7 +1825,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const sluice1Cell = document.createElement("td");
                     const sluice1Input = document.createElement("input");
                     sluice1Input.type = "number";
-                    sluice1Input.value = null;
+                    sluice1Input.value = (date[1]).toFixed(1);
                     sluice1Input.id = `sluice1Input`;
 
                     if (index === 0) {
@@ -1785,14 +1834,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     sluice1Cell.appendChild(sluice1Input);
                     row.appendChild(sluice1Cell);
-                    console.log(document.getElementById(`sluice1Input`));  // Check if element exists
+                    // console.log(document.getElementById(`sluice1Input`));  // Check if element exists
 
 
                     // Sluice2 cell (editable)
                     const sluice2Cell = document.createElement("td");
                     const sluice2Input = document.createElement("input");
                     sluice2Input.type = "number";
-                    sluice2Input.value = null;
+                    sluice2Input.value = formattedYesterdayDataSluice1[0][1].toFixed(1);
                     sluice2Input.id = `sluice2Input`;
 
                     if (index === 0) {
@@ -1806,7 +1855,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const sluiceTotalCell = document.createElement("td");
                     const sluiceTotalInput = document.createElement("input");
                     sluiceTotalInput.type = "number";
-                    sluiceTotalInput.value = null;
+                    sluiceTotalInput.value = formattedYesterdayDataSluiceTotal[0][1].toFixed(0);
                     sluiceTotalInput.id = `sluiceTotalInput`;
 
                     if (index === 0) {
@@ -1820,7 +1869,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate1Cell = document.createElement("td");
                     const gate1Input = document.createElement("input");
                     gate1Input.type = "number";
-                    gate1Input.value = null;
+                    gate1Input.value = formattedYesterdayDataGate1[0][1].toFixed(1);
                     gate1Input.id = `gate1Input`;
                     if (index === 0) {
                         gate1Input.style.backgroundColor = "pink";
@@ -1832,7 +1881,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate2Cell = document.createElement("td");
                     const gate2Input = document.createElement("input");
                     gate2Input.type = "number";
-                    gate2Input.value = null;
+                    gate2Input.value = formattedYesterdayDataGate2[0][1].toFixed(1);
                     gate2Input.id = `gate2Input`;
                     if (index === 0) {
                         gate2Input.style.backgroundColor = "pink";
@@ -1844,7 +1893,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate3Cell = document.createElement("td");
                     const gate3Input = document.createElement("input");
                     gate3Input.type = "number";
-                    gate3Input.value = null;
+                    gate3Input.value = formattedYesterdayDataGate3[0][1].toFixed(1);
                     gate3Input.id = `gate3Input`;
                     if (index === 0) {
                         gate3Input.style.backgroundColor = "pink";
@@ -1856,7 +1905,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gateTotalCell = document.createElement("td");
                     const gateTotalInput = document.createElement("input");
                     gateTotalInput.type = "number";
-                    gateTotalInput.value = null;
+                    gateTotalInput.value = formattedYesterdayDataGateTotal[0][1].toFixed(0);
                     gateTotalInput.id = `gateTotalInput`;
                     if (index === 0) {
                         gateTotalInput.style.backgroundColor = "pink";
@@ -1868,7 +1917,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gateOutflowTotalCell = document.createElement("td");
                     const gateOutflowTotalInput = document.createElement("input");
                     gateOutflowTotalInput.type = "number";
-                    gateOutflowTotalInput.value = null;
+                    gateOutflowTotalInput.value = (formattedYesterdayDataGateTotal[0][1] + formattedYesterdayDataSluiceTotal[0][1]).toFixed(0);
                     gateOutflowTotalInput.id = `gateOutflowTotalInput`;
                     gateOutflowTotalInput.readOnly = true; // Make it read-only
                     gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
@@ -2482,12 +2531,12 @@ document.addEventListener('DOMContentLoaded', async function () {
             date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
 
             // Convert back to ISO string (preserve UTC format)
-            const isoDateTodayMinus1Hour = date.toISOString();
+            const end = date.toISOString();
 
-            console.log("fetchTimeSeriesData begin (yesterday midnight): ", isoDateMinus1Day);
-            console.log("fetchTimeSeriesData end (midnight minus 1 hour): ", isoDateTodayMinus1Hour);
+            console.log("fetchTimeSeriesData begin: ", isoDateMinus1Day);
+            console.log("fetchTimeSeriesData end: ", end);
 
-            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateTodayMinus1Hour}&office=${office}`;
+            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${end}&office=${office}`;
             // const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1DayPlus1Hour}&end=${isoDateDay1}&office=${office}`;
             console.log('tsidData:', tsidData);
             try {
@@ -2515,8 +2564,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Convert back to ISO string (preserve UTC format)
             const isoDateTodayMinus1Hour = date.toISOString();
 
-            console.log("fetchTimeSeriesYesterdayData begin (yesterday midnight): ", isoDateMinus1Day);
-            console.log("fetchTimeSeriesYesterdayData end (midnight minus 1 hour): ", isoDateTodayMinus1Hour);
+            // console.log("fetchTimeSeriesYesterdayData begin (yesterday midnight): ", isoDateMinus1Day);
+            // console.log("fetchTimeSeriesYesterdayData end (midnight minus 1 hour): ", isoDateTodayMinus1Hour);
 
             const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus2Days}&end=${isoDateMinus1Day}&office=${office}`;
             // const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1DayPlus1Hour}&end=${isoDateDay1}&office=${office}`;
