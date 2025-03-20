@@ -531,8 +531,53 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const timeSeriesDataOutflowAverage = await fetchTimeSeriesData(tsidGateTotal);
                     console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage);
 
-                    if (timeSeriesDataSluice1 && timeSeriesDataSluice1.values && timeSeriesDataSluice1.values.length > 0) {
+                    // Fetch yesterday time series data
+                    const timeSeriesYesterdayDataSluice1 = await fetchTimeSeriesYesterdayData(tsidSluice1);
+                    console.log("timeSeriesYesterdayDataSluice1:", timeSeriesYesterdayDataSluice1);
+
+                    const timeSeriesYesterdayDataSluice2 = await fetchTimeSeriesYesterdayData(tsidSluice2);
+                    console.log("timeSeriesYesterdayDataSluice2:", timeSeriesYesterdayDataSluice2);
+
+                    const timeSeriesYesterdayDataSluiceTotal = await fetchTimeSeriesYesterdayData(tsidSluiceTotal);
+                    console.log("timeSeriesYesterdayDataSluiceTotal:", timeSeriesYesterdayDataSluiceTotal);
+
+                    const timeSeriesYesterdayDataGate1 = await fetchTimeSeriesYesterdayData(tsidGate1);
+                    console.log("timeSeriesYesterdayDataGate1:", timeSeriesYesterdayDataGate1);
+
+                    const timeSeriesYesterdayDataGate2 = await fetchTimeSeriesYesterdayData(tsidGate2);
+                    console.log("timeSeriesYesterdayDataGate2:", timeSeriesYesterdayDataGate2);
+
+                    const timeSeriesYesterdayDataGate3 = await fetchTimeSeriesYesterdayData(tsidGate3);
+                    console.log("timeSeriesYesterdayDataGate3:", timeSeriesYesterdayDataGate3);
+
+                    const timeSeriesYesterdayDataGateTotal = await fetchTimeSeriesYesterdayData(tsidGateTotal);
+                    console.log("timeSeriesYesterdayDataGateTotal:", timeSeriesYesterdayDataGateTotal);
+
+                    const timeSeriesYesterdayDataOutflowTotal = await fetchTimeSeriesYesterdayData(tsidGateTotal);
+                    console.log("timeSeriesYesterdayDataOutflowTotal:", timeSeriesYesterdayDataOutflowTotal);
+
+                    const timeSeriesYesterdayDataOutflowAverage = await fetchTimeSeriesYesterdayData(tsidGateTotal);
+                    console.log("timeSeriesYesterdayDataOutflowAverage:", timeSeriesYesterdayDataOutflowAverage);
+
+
+                    if (timeSeriesYesterdayDataSluice1 && timeSeriesYesterdayDataSluice1.values && timeSeriesYesterdayDataSluice1.values.length > 0) {
                         console.log("Calling createTable ...");
+                        console.log("Data from previous day found, Creating Table Entry ...");
+                        console.log("This is a single save row.");
+
+                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
+                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
+                            tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage);
+
+                        loginStateController()
+                        setInterval(async () => {
+                            loginStateController()
+                        }, 10000)
+                    } else if (timeSeriesDataSluice1 && timeSeriesDataSluice1.values && timeSeriesDataSluice1.values.length > 0) {
+                        console.log("Calling createTableEdit ...");
+                        console.log("Data for today found, Creating Table ...");
+                        console.log("This is a multiple row save.");
 
                         createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
                             tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
@@ -545,18 +590,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }, 10000)
                     } else {
                         console.log("Calling createDataEntryTable ...");
-                        console.log("No data from previous day found, Creating Data Entry Table ...");
+                        console.log("No data from today or previous day found, Creating Data Entry Table ...");
                         console.log("Recomedation: Please enter data for the previous day.");
-
-                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
-                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
-                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
-                            tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage);
-
-                        loginStateController()
-                        setInterval(async () => {
-                            loginStateController()
-                        }, 10000)
+                        alert("No data from today or previous day found, Please enter data for the previous day.");
                     }
                 }
             } catch (error) {
@@ -2448,10 +2484,41 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Convert back to ISO string (preserve UTC format)
             const isoDateTodayMinus1Hour = date.toISOString();
 
-            console.log("begin (yesterday midnight): ", isoDateMinus1Day);
-            console.log("end (midnight minus 1 hour): ", isoDateTodayMinus1Hour);
+            console.log("fetchTimeSeriesData begin (yesterday midnight): ", isoDateMinus1Day);
+            console.log("fetchTimeSeriesData end (midnight minus 1 hour): ", isoDateTodayMinus1Hour);
 
             const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateTodayMinus1Hour}&office=${office}`;
+            // const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1DayPlus1Hour}&end=${isoDateDay1}&office=${office}`;
+            console.log('tsidData:', tsidData);
+            try {
+                const response = await fetch(tsidData, {
+                    headers: {
+                        "Accept": "application/json;version=2", // Ensuring the correct version is used
+                        "cache-control": "no-cache"
+                    }
+                });
+
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error fetching time series data:", error);
+            }
+        };
+
+        const fetchTimeSeriesYesterdayData = async (tsid) => {
+            // Convert to Date object
+            const date = new Date(isoDateToday);
+
+            // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
+            date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
+
+            // Convert back to ISO string (preserve UTC format)
+            const isoDateTodayMinus1Hour = date.toISOString();
+
+            console.log("fetchTimeSeriesYesterdayData begin (yesterday midnight): ", isoDateMinus1Day);
+            console.log("fetchTimeSeriesYesterdayData end (midnight minus 1 hour): ", isoDateTodayMinus1Hour);
+
+            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus2Days}&end=${isoDateMinus1Day}&office=${office}`;
             // const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1DayPlus1Hour}&end=${isoDateDay1}&office=${office}`;
             console.log('tsidData:', tsidData);
             try {
