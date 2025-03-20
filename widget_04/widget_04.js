@@ -733,42 +733,31 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Display existing data
                 formattedDataSluice1.forEach((date, index) => {
                     console.log("index:", index);
-                    console.log("date:", date);
+                    console.log("formattedTimestampCST:", date.formattedTimestampCST);
 
                     const row = document.createElement("tr");
 
-                    // const selectedHours = {}; // Object to store each hour as hour1, hour2, etc.
                     const timeCell = document.createElement("td");
                     const timeSelect = document.createElement("select");
-                    timeSelect.id = `timeSelect`;
+                    timeSelect.id = `timeSelect${index}`;
 
-                    // Create a dynamic key for each row (hour1, hour2, hour3, etc.)
-                    const hourKey = `hour${index + 1}`;
-                    selectedHours[hourKey] = index === 0 ? times[0] : "NONE";  // Set default hour value
-
-                    if (index !== 0) {
-                        // Create "NONE" option as the default for all rows except the first
-                        const noneOption = document.createElement("option");
-                        noneOption.value = "NONE";
-                        noneOption.textContent = "NONE";
-                        timeSelect.appendChild(noneOption);
-                    }
+                    // Extract only the time part (HH:mm) from formattedTimestampCST
+                    const formattedTime = date.formattedTimestampCST.split(" ")[1].slice(0, 5);
 
                     // Create options for the dropdown (24 hours)
                     times.forEach(time => {
                         const option = document.createElement("option");
                         option.value = time;
                         option.textContent = time;
+                        if (time === formattedTime) {
+                            option.selected = true; // Match the extracted time
+                        }
                         timeSelect.appendChild(option);
                     });
 
-                    // Set the default value
-                    timeSelect.value = selectedHours[hourKey];
-
-                    // Update the corresponding hour when changed
+                    // Update the selected time when changed
                     timeSelect.addEventListener("change", (event) => {
-                        selectedHours[hourKey] = event.target.value;
-                        console.log(`${hourKey} selected:`, selectedHours[hourKey]);
+                        console.log(`Row ${index + 1} selected time:`, event.target.value);
                     });
 
                     timeCell.appendChild(timeSelect);
@@ -1514,21 +1503,21 @@ document.addEventListener('DOMContentLoaded', async function () {
                         cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
                     } else {
                         try {
-                            // showSpinner(); // Show the spinner before creating the version
-                            // await createTS(payloadSluice1);
-                            // cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
-                            // await createTS(payloadSluice2);
-                            // cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
-                            // await createTS(payloadSluiceTotal);
-                            // cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
-                            // await createTS(payloadGate1);
-                            // cdaStatusBtn.innerText = "Write payloadGate1 successful!";
-                            // await createTS(payloadGate2);
-                            // cdaStatusBtn.innerText = "Write payloadGate2 successful!";
-                            // await createTS(payloadGate3);
-                            // cdaStatusBtn.innerText = "Write payloadGate3 successful!";
-                            // await createTS(payloadGateTotal);
-                            // cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
+                            showSpinner(); // Show the spinner before creating the version
+                            await createTS(payloadSluice1);
+                            cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
+                            await createTS(payloadSluice2);
+                            cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
+                            await createTS(payloadSluiceTotal);
+                            cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
+                            await createTS(payloadGate1);
+                            cdaStatusBtn.innerText = "Write payloadGate1 successful!";
+                            await createTS(payloadGate2);
+                            cdaStatusBtn.innerText = "Write payloadGate2 successful!";
+                            await createTS(payloadGate3);
+                            cdaStatusBtn.innerText = "Write payloadGate3 successful!";
+                            await createTS(payloadGateTotal);
+                            cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
 
 
                             // const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
@@ -2416,7 +2405,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         const fetchTimeSeriesData = async (tsid) => {
             // Convert to Date object
-            const date = new Date(isoDateToday);
+            const date = new Date(isoDateDay1);
 
             // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
             date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
