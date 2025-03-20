@@ -740,7 +740,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // const selectedHours = {}; // Object to store each hour as hour1, hour2, etc.
                     const timeCell = document.createElement("td");
                     const timeSelect = document.createElement("select");
-                    timeSelect.id = `timeSelect-${index}`;
+                    timeSelect.id = `timeSelect`;
 
                     // Create a dynamic key for each row (hour1, hour2, hour3, etc.)
                     const hourKey = `hour${index + 1}`;
@@ -861,7 +861,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // const selectedHours = {}; // Object to store each hour as hour1, hour2, etc.
                     const timeCell = document.createElement("td");
                     const timeSelect = document.createElement("select");
-                    timeSelect.id = `timeSelect-${index}`;
+                    timeSelect.id = `timeSelect`;
 
                     // Create a dynamic key for each row (hour1, hour2, hour3, etc.)
                     const hourKey = `hour${index + 1}`;
@@ -897,7 +897,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const sluice1Input = document.createElement("input");
                     sluice1Input.type = "number";
                     sluice1Input.value = null;
-                    sluice1Input.id = `sluice1AdditionalInput-${index}`;
+                    sluice1Input.id = `sluice1AdditionalInput`;
                     sluice1Input.style.backgroundColor = "lightgray";
                     sluice1Cell.appendChild(sluice1Input);
                     row.appendChild(sluice1Cell);
@@ -908,7 +908,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const sluice2Input = document.createElement("input");
                     sluice2Input.type = "number";
                     sluice2Input.value = null;
-                    sluice2Input.id = `sluice2AdditionalInput-${index}`;
+                    sluice2Input.id = `sluice2AdditionalInput`;
                     sluice2Input.style.backgroundColor = "lightgray";
                     sluice2Cell.appendChild(sluice2Input);
                     row.appendChild(sluice2Cell);
@@ -918,7 +918,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const sluiceTotalInput = document.createElement("input");
                     sluiceTotalInput.type = "number";
                     sluiceTotalInput.value = null;
-                    sluiceTotalInput.id = `sluiceTotalAdditionalInput-${index}`;
+                    sluiceTotalInput.id = `sluiceTotalAdditionalInput`;
                     sluiceTotalInput.style.backgroundColor = "lightgray";
                     sluiceTotalCell.appendChild(sluiceTotalInput);
                     row.appendChild(sluiceTotalCell);
@@ -928,7 +928,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate1Input = document.createElement("input");
                     gate1Input.type = "number";
                     gate1Input.value = null;
-                    gate1Input.id = `gate1AdditionalInput-${index}`;
+                    gate1Input.id = `gate1AdditionalInput`;
                     gate1Input.style.backgroundColor = "lightgray";
                     gate1Cell.appendChild(gate1Input);
                     row.appendChild(gate1Cell);
@@ -938,7 +938,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate2Input = document.createElement("input");
                     gate2Input.type = "number";
                     gate2Input.value = null;
-                    gate2Input.id = `gate2AdditionalInput-${index}`;
+                    gate2Input.id = `gate2AdditionalInput`;
                     gate2Input.style.backgroundColor = "lightgray";
                     gate2Cell.appendChild(gate2Input);
                     row.appendChild(gate2Cell);
@@ -948,7 +948,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate3Input = document.createElement("input");
                     gate3Input.type = "number";
                     gate3Input.value = null;
-                    gate3Input.id = `gate3AdditionalInput-${index}`;
+                    gate3Input.id = `gate3AdditionalInput`;
                     gate3Input.style.backgroundColor = "lightgray";
                     gate3Cell.appendChild(gate3Input);
                     row.appendChild(gate3Cell);
@@ -958,7 +958,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gateTotalInput = document.createElement("input");
                     gateTotalInput.type = "number";
                     gateTotalInput.value = null;
-                    gateTotalInput.id = `gateTotalAdditionalInput-${index}`;
+                    gateTotalInput.id = `gateTotalAdditionalInput`;
                     gateTotalInput.style.backgroundColor = "lightgray";
                     gateTotalCell.appendChild(gateTotalInput);
                     row.appendChild(gateTotalCell);
@@ -968,7 +968,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gateOutflowTotalInput = document.createElement("input");
                     gateOutflowTotalInput.type = "number";
                     gateOutflowTotalInput.value = null;
-                    gateOutflowTotalInput.id = `gateOutflowTotalAdditionalInput-${index}`;
+                    gateOutflowTotalInput.id = `gateOutflowTotalAdditionalInput`;
                     gateOutflowTotalInput.readOnly = true; // Make it read-only
                     gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
                     gateOutflowTotalCell.appendChild(gateOutflowTotalInput);
@@ -1028,424 +1028,413 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output6Div.appendChild(statusDiv);
 
                 cdaSaveBtn.addEventListener("click", async () => {
-                    entryDates.forEach((date, index) => {
-                        // Log selected hours for debugging
-                        Object.keys(selectedHours).forEach(hour => {
-                            console.log(`${hour} selected:`, selectedHours[hour]);
-                        });
-
-                        // Get the sluice1 input element and check if it exists
-                        const inputId = `sluice1AdditionalInput-${index}`;
-                        const sluice1Input = document.getElementById(inputId);
-
-                        console.log(`Looking for input: ${inputId}`);
-                        console.log(`Found:`, sluice1Input); // This will tell us if it exists or not
-
-                        if (!sluice1Input) {
-                            console.error(`🚨 sluice1Input element not found for index ${index}!`);
-                            return; // Continue to the next index if input is missing
-                        }
-
-                        // Set default value if empty
-                        if (!sluice1Input.value) {
-                            sluice1Input.value = 909;  // Updated default value to 100
-                        }
-
-                        console.log(`✅ sluice1 value at index ${index}:`, sluice1Input.value);
-
-                        // Get the sluice2 input element and check if it exists
-                        const sluice2Input = document.getElementById(`sluice2AdditionalInput-${index}`);
-                        if (!sluice2Input) {
-                            console.error("sluice2Input element not found!");
-                            return; // Exit if input is missing
-                        }
-                        if (!sluice2Input.value) {
-                            sluice2Input.value = 909;
-                        }
-
-                        // Get the sluiceTotal input element and check if it exists
-                        const sluiceTotalInput = document.getElementById(`sluiceTotalAdditionalInput-${index}`);
-                        if (!sluiceTotalInput) {
-                            console.error("sluiceTotalInput element not found!");
-                            return; // Exit if input is missing
-                        }
-                        if (!sluiceTotalInput.value) {
-                            sluiceTotalInput.value = 909;
-                        }
-
-                        // Get the Gate1 input element and check if it exists
-                        const gate1Input = document.getElementById(`gate1AdditionalInput-${index}`);
-                        if (!gate1Input) {
-                            console.error("gate1Input element not found!");
-                            return; // Exit if input is missing
-                        }
-                        if (!gate1Input.value) {
-                            gate1Input.value = 909;
-                        }
-
-                        // Get the Gate2 input element and check if it exists
-                        const gate2Input = document.getElementById(`gate2AdditionalInput-${index}`);
-                        if (!gate2Input) {
-                            console.error("gate2Input element not found!");
-                            return; // Exit if input is missing
-                        }
-                        if (!gate2Input.value) {
-                            gate2Input.value = 909;
-                        }
-
-                        // Get the Gate3 input element and check if it exists
-                        const gate3Input = document.getElementById(`gate3AdditionalInput-${index}`);
-                        if (!gate3Input) {
-                            console.error("gate3Input element not found!");
-                            return; // Exit if input is missing
-                        }
-                        if (!gate3Input.value) {
-                            gate3Input.value = 909;
-                        }
-
-                        // Get the GateTotal input element and check if it exists
-                        const gateTotalInput = document.getElementById(`gateTotalAdditionalInput-${index}`);
-                        if (!gateTotalInput) {
-                            console.error("gateTotalInput element not found!");
-                            return; // Exit if input is missing
-                        }
-                        if (!gateTotalInput.value) {
-                            gateTotalInput.value = 909;
-                        }
-
-                        // ========================== CALCULATE GATE OUTFLOW TOTAL ==========================
-                        // Get the gateOutflowTotal input element and check if it exists
-                        const gateOutflowTotalInput = document.getElementById('gateOutflowTotalInput');
-                        if (!gateOutflowTotalInput) {
-                            console.error("gateOutflowTotalInput element not found!");
-                            return; // Exit if input is missing
-                        }
-                        if (!gateOutflowTotalInput.value) {
-                            gateOutflowTotalInput.value = 909;
-                        }
-
-                        // ========================== CALCULATE GATE OUTFLOW AVERAGE ==========================
-                        // Get the gateOutflowAverage input element and check if it exists
-                        const gateOutflowAverageInput = document.getElementById('gateOutflowAverageInput');
-                        if (!gateOutflowAverageInput) {
-                            console.error("gateOutflowAverageInput element not found!");
-                            return; // Exit if input is missing
-                        }
-                        if (!gateOutflowAverageInput.value) {
-                            gateOutflowAverageInput.value = 909;
-                        }
-
-                        let time1 = null;
-                        if (selectedHours['hour1'] !== "NONE") {
-                            time1 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour1'] + `:00Z`;
-                        }
-
-                        let time2 = null;
-                        if (selectedHours['hour2'] !== "NONE") {
-                            time2 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour2'] + `:00Z`;
-                        }
-
-                        let time3 = null;
-                        if (selectedHours['hour3'] !== "NONE") {
-                            time3 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour3'] + `:00Z`;
-                        }
-
-                        let time4 = null;
-                        if (selectedHours['hour4'] !== "NONE") {
-                            time4 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour4'] + `:00Z`;
-                        }
-
-                        let time5 = null;
-                        if (selectedHours['hour5'] !== "NONE") {
-                            time5 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour5'] + `:00Z`;
-                        }
-
-                        let time6 = null;
-                        if (selectedHours['hour6'] !== "NONE") {
-                            time6 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour6'] + `:00Z`;
-                        }
-
-                        // Payload for sluice1 values
-                        const payloadSluice1 = {
-                            "name": tsidSluice1,
-                            "office-id": "MVS",
-                            "units": "ft",
-                            "values": [
-                                [
-                                    time1,
-                                    sluice1Input.value,
-                                    0
-                                ],
-                                [
-                                    time2,
-                                    sluice1Input.value,
-                                    0
-                                ],
-                                [
-                                    time3,
-                                    sluice1Input.value,
-                                    0
-                                ],
-                                [
-                                    time4,
-                                    sluice1Input.value,
-                                    0
-                                ],
-                                [
-                                    time5,
-                                    sluice1Input.value,
-                                    0
-                                ],
-                                [
-                                    time6,
-                                    sluice1Input.value,
-                                    0
-                                ],
-                            ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
-                        };
-
-                        console.log("payloadSluice1: ", payloadSluice1);
-
-                        const payloadSluice2 = {
-                            "name": tsidSluice2,
-                            "office-id": "MVS",
-                            "units": "ft",
-                            "values": [
-                                [
-                                    time1,
-                                    sluice2Input.value,
-                                    0
-                                ],
-                                [
-                                    time2,
-                                    sluice2Input.value,
-                                    0
-                                ],
-                                [
-                                    time3,
-                                    sluice2Input.value,
-                                    0
-                                ],
-                                [
-                                    time4,
-                                    sluice2Input.value,
-                                    0
-                                ],
-                                [
-                                    time5,
-                                    sluice2Input.value,
-                                    0
-                                ],
-                                [
-                                    time6,
-                                    sluice2Input.value,
-                                    0
-                                ],
-                            ].filter(item => item[0] !== null),
-                        };
-
-                        console.log("payloadSluice2: ", payloadSluice2);
-
-                        const payloadSluiceTotal = {
-                            "name": tsidSluiceTotal,
-                            "office-id": "MVS",
-                            "units": "cfs",
-                            "values": [
-                                [
-                                    time1,
-                                    sluiceTotalInput.value,
-                                    0
-                                ],
-                                [
-                                    time2,
-                                    sluiceTotalInput.value,
-                                    0
-                                ],
-                                [
-                                    time3,
-                                    sluiceTotalInput.value,
-                                    0
-                                ],
-                                [
-                                    time4,
-                                    sluiceTotalInput.value,
-                                    0
-                                ],
-                                [
-                                    time5,
-                                    sluiceTotalInput.value,
-                                    0
-                                ],
-                                [
-                                    time6,
-                                    sluiceTotalInput.value,
-                                    0
-                                ],
-                            ].filter(item => item[0] !== null),
-                        };
-
-                        console.log("payloadSluiceTotal: ", payloadSluiceTotal);
-
-                        const payloadGate1 = {
-                            "name": tsidGate1,
-                            "office-id": "MVS",
-                            "units": "ft",
-                            "values": [
-                                [
-                                    time1,
-                                    gate1Input.value,
-                                    0
-                                ],
-                                [
-                                    time2,
-                                    gate1Input.value,
-                                    0
-                                ],
-                                [
-                                    time3,
-                                    gate1Input.value,
-                                    0
-                                ],
-                                [
-                                    time4,
-                                    gate1Input.value,
-                                    0
-                                ],
-                                [
-                                    time5,
-                                    gate1Input.value,
-                                    0
-                                ],
-                                [
-                                    time6,
-                                    gate1Input.value,
-                                    0
-                                ],
-                            ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
-                        };
-
-                        console.log("payloadGate1: ", payloadGate1);
-
-                        const payloadGate2 = {
-                            "name": tsidGate2,
-                            "office-id": "MVS",
-                            "units": "ft",
-                            "values": [
-                                [
-                                    time1,
-                                    gate2Input.value,
-                                    0
-                                ],
-                                [
-                                    time2,
-                                    gate2Input.value,
-                                    0
-                                ],
-                                [
-                                    time3,
-                                    gate2Input.value,
-                                    0
-                                ],
-                                [
-                                    time4,
-                                    gate2Input.value,
-                                    0
-                                ],
-                                [
-                                    time5,
-                                    gate2Input.value,
-                                    0
-                                ],
-                                [
-                                    time6,
-                                    gate2Input.value,
-                                    0
-                                ],
-                            ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
-                        };
-
-                        console.log("payloadGate2: ", payloadGate2);
-
-                        const payloadGate3 = {
-                            "name": tsidGate3,
-                            "office-id": "MVS",
-                            "units": "ft",
-                            "values": [
-                                [
-                                    time1,
-                                    gate3Input.value,
-                                    0
-                                ],
-                                [
-                                    time2,
-                                    gate3Input.value,
-                                    0
-                                ],
-                                [
-                                    time3,
-                                    gate3Input.value,
-                                    0
-                                ],
-                                [
-                                    time4,
-                                    gate3Input.value,
-                                    0
-                                ],
-                                [
-                                    time5,
-                                    gate3Input.value,
-                                    0
-                                ],
-                                [
-                                    time6,
-                                    gate3Input.value,
-                                    0
-                                ],
-                            ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
-                        };
-
-                        console.log("payloadGate3: ", payloadGate3);
-
-                        const payloadGateTotal = {
-                            "name": tsidGateTotal,
-                            "office-id": "MVS",
-                            "units": "cfs",
-                            "values": [
-                                [
-                                    time1,
-                                    gateTotalInput.value,
-                                    0
-                                ],
-                                [
-                                    time2,
-                                    gateTotalInput.value,
-                                    0
-                                ],
-                                [
-                                    time3,
-                                    gateTotalInput.value,
-                                    0
-                                ],
-                                [
-                                    time4,
-                                    gateTotalInput.value,
-                                    0
-                                ],
-                                [
-                                    time5,
-                                    gateTotalInput.value,
-                                    0
-                                ],
-                                [
-                                    time6,
-                                    gateTotalInput.value,
-                                    0
-                                ],
-                            ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
-                        };
-
-                        console.log("payloadGateTotal: ", payloadGateTotal);
+                    // Log selected hours for debugging
+                    Object.keys(selectedHours).forEach(hour => {
+                        console.log(`${hour} selected:`, selectedHours[hour]);
                     });
+
+                    // Get the sluice1 input element and check if it exists
+                    const sluice1Input = document.getElementById(`sluice1AdditionalInput`);
+                    if (!sluice1Input) {
+                        console.error("sluice1Input element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!sluice1Input.value) {
+                        sluice1Input.value = 909;
+                    }
+
+                    // Get the sluice2 input element and check if it exists
+                    const sluice2Input = document.getElementById(`sluice2AdditionalInput`);
+                    if (!sluice2Input) {
+                        console.error("sluice2Input element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!sluice2Input.value) {
+                        sluice2Input.value = 909;
+                    }
+
+                    // Get the sluiceTotal input element and check if it exists
+                    const sluiceTotalInput = document.getElementById(`sluiceTotalAdditionalInput`);
+                    if (!sluiceTotalInput) {
+                        console.error("sluiceTotalInput element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!sluiceTotalInput.value) {
+                        sluiceTotalInput.value = 909;
+                    }
+
+                    // Get the Gate1 input element and check if it exists
+                    const gate1Input = document.getElementById(`gate1AdditionalInput`);
+                    if (!gate1Input) {
+                        console.error("gate1Input element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!gate1Input.value) {
+                        gate1Input.value = 909;
+                    }
+
+                    // Get the Gate2 input element and check if it exists
+                    const gate2Input = document.getElementById(`gate2AdditionalInput`);
+                    if (!gate2Input) {
+                        console.error("gate2Input element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!gate2Input.value) {
+                        gate2Input.value = 909;
+                    }
+
+                    // Get the Gate3 input element and check if it exists
+                    const gate3Input = document.getElementById(`gate3AdditionalInput`);
+                    if (!gate3Input) {
+                        console.error("gate3Input element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!gate3Input.value) {
+                        gate3Input.value = 909;
+                    }
+
+                    // Get the GateTotal input element and check if it exists
+                    const gateTotalInput = document.getElementById(`gateTotalAdditionalInput`);
+                    if (!gateTotalInput) {
+                        console.error("gateTotalInput element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!gateTotalInput.value) {
+                        gateTotalInput.value = 909;
+                    }
+
+                    // ========================== CALCULATE GATE OUTFLOW TOTAL ==========================
+                    // Get the gateOutflowTotal input element and check if it exists
+                    const gateOutflowTotalInput = document.getElementById('gateOutflowTotalInput');
+                    if (!gateOutflowTotalInput) {
+                        console.error("gateOutflowTotalInput element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!gateOutflowTotalInput.value) {
+                        gateOutflowTotalInput.value = 909;
+                    }
+
+                    // ========================== CALCULATE GATE OUTFLOW AVERAGE ==========================
+                    // Get the gateOutflowAverage input element and check if it exists
+                    const gateOutflowAverageInput = document.getElementById('gateOutflowAverageInput');
+                    if (!gateOutflowAverageInput) {
+                        console.error("gateOutflowAverageInput element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!gateOutflowAverageInput.value) {
+                        gateOutflowAverageInput.value = 909;
+                    }
+
+                    let time1 = null;
+                    if (selectedHours['hour1'] !== "NONE") {
+                        time1 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour1'] + `:00Z`;
+                    }
+
+                    let time2 = null;
+                    if (selectedHours['hour2'] !== "NONE") {
+                        time2 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour2'] + `:00Z`;
+                    }
+
+                    let time3 = null;
+                    if (selectedHours['hour3'] !== "NONE") {
+                        time3 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour3'] + `:00Z`;
+                    }
+
+                    let time4 = null;
+                    if (selectedHours['hour4'] !== "NONE") {
+                        time4 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour4'] + `:00Z`;
+                    }
+
+                    let time5 = null;
+                    if (selectedHours['hour5'] !== "NONE") {
+                        time5 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour5'] + `:00Z`;
+                    }
+
+                    let time6 = null;
+                    if (selectedHours['hour6'] !== "NONE") {
+                        time6 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour6'] + `:00Z`;
+                    }
+
+                    // Payload for sluice1 values
+                    const payloadSluice1 = {
+                        "name": tsidSluice1,
+                        "office-id": "MVS",
+                        "units": "ft",
+                        "values": [
+                            [
+                                time1,
+                                sluice1Input.value,
+                                0
+                            ],
+                            [
+                                time2,
+                                sluice1Input.value,
+                                0
+                            ],
+                            [
+                                time3,
+                                sluice1Input.value,
+                                0
+                            ],
+                            [
+                                time4,
+                                sluice1Input.value,
+                                0
+                            ],
+                            [
+                                time5,
+                                sluice1Input.value,
+                                0
+                            ],
+                            [
+                                time6,
+                                sluice1Input.value,
+                                0
+                            ],
+                        ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                    };
+
+                    console.log("payloadSluice1: ", payloadSluice1);
+
+                    const payloadSluice2 = {
+                        "name": tsidSluice2,
+                        "office-id": "MVS",
+                        "units": "ft",
+                        "values": [
+                            [
+                                time1,
+                                sluice2Input.value,
+                                0
+                            ],
+                            [
+                                time2,
+                                sluice2Input.value,
+                                0
+                            ],
+                            [
+                                time3,
+                                sluice2Input.value,
+                                0
+                            ],
+                            [
+                                time4,
+                                sluice2Input.value,
+                                0
+                            ],
+                            [
+                                time5,
+                                sluice2Input.value,
+                                0
+                            ],
+                            [
+                                time6,
+                                sluice2Input.value,
+                                0
+                            ],
+                        ].filter(item => item[0] !== null),
+                    };
+
+                    console.log("payloadSluice2: ", payloadSluice2);
+
+                    const payloadSluiceTotal = {
+                        "name": tsidSluiceTotal,
+                        "office-id": "MVS",
+                        "units": "cfs",
+                        "values": [
+                            [
+                                time1,
+                                sluiceTotalInput.value,
+                                0
+                            ],
+                            [
+                                time2,
+                                sluiceTotalInput.value,
+                                0
+                            ],
+                            [
+                                time3,
+                                sluiceTotalInput.value,
+                                0
+                            ],
+                            [
+                                time4,
+                                sluiceTotalInput.value,
+                                0
+                            ],
+                            [
+                                time5,
+                                sluiceTotalInput.value,
+                                0
+                            ],
+                            [
+                                time6,
+                                sluiceTotalInput.value,
+                                0
+                            ],
+                        ].filter(item => item[0] !== null),
+                    };
+
+                    console.log("payloadSluiceTotal: ", payloadSluiceTotal);
+
+                    const payloadGate1 = {
+                        "name": tsidGate1,
+                        "office-id": "MVS",
+                        "units": "ft",
+                        "values": [
+                            [
+                                time1,
+                                gate1Input.value,
+                                0
+                            ],
+                            [
+                                time2,
+                                gate1Input.value,
+                                0
+                            ],
+                            [
+                                time3,
+                                gate1Input.value,
+                                0
+                            ],
+                            [
+                                time4,
+                                gate1Input.value,
+                                0
+                            ],
+                            [
+                                time5,
+                                gate1Input.value,
+                                0
+                            ],
+                            [
+                                time6,
+                                gate1Input.value,
+                                0
+                            ],
+                        ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                    };
+
+                    console.log("payloadGate1: ", payloadGate1);
+
+                    const payloadGate2 = {
+                        "name": tsidGate2,
+                        "office-id": "MVS",
+                        "units": "ft",
+                        "values": [
+                            [
+                                time1,
+                                gate2Input.value,
+                                0
+                            ],
+                            [
+                                time2,
+                                gate2Input.value,
+                                0
+                            ],
+                            [
+                                time3,
+                                gate2Input.value,
+                                0
+                            ],
+                            [
+                                time4,
+                                gate2Input.value,
+                                0
+                            ],
+                            [
+                                time5,
+                                gate2Input.value,
+                                0
+                            ],
+                            [
+                                time6,
+                                gate2Input.value,
+                                0
+                            ],
+                        ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                    };
+
+                    console.log("payloadGate2: ", payloadGate2);
+
+                    const payloadGate3 = {
+                        "name": tsidGate3,
+                        "office-id": "MVS",
+                        "units": "ft",
+                        "values": [
+                            [
+                                time1,
+                                gate3Input.value,
+                                0
+                            ],
+                            [
+                                time2,
+                                gate3Input.value,
+                                0
+                            ],
+                            [
+                                time3,
+                                gate3Input.value,
+                                0
+                            ],
+                            [
+                                time4,
+                                gate3Input.value,
+                                0
+                            ],
+                            [
+                                time5,
+                                gate3Input.value,
+                                0
+                            ],
+                            [
+                                time6,
+                                gate3Input.value,
+                                0
+                            ],
+                        ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                    };
+
+                    console.log("payloadGate3: ", payloadGate3);
+
+                    const payloadGateTotal = {
+                        "name": tsidGateTotal,
+                        "office-id": "MVS",
+                        "units": "cfs",
+                        "values": [
+                            [
+                                time1,
+                                gateTotalInput.value,
+                                0
+                            ],
+                            [
+                                time2,
+                                gateTotalInput.value,
+                                0
+                            ],
+                            [
+                                time3,
+                                gateTotalInput.value,
+                                0
+                            ],
+                            [
+                                time4,
+                                gateTotalInput.value,
+                                0
+                            ],
+                            [
+                                time5,
+                                gateTotalInput.value,
+                                0
+                            ],
+                            [
+                                time6,
+                                gateTotalInput.value,
+                                0
+                            ],
+                        ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                    };
+
+                    console.log("payloadGateTotal: ", payloadGateTotal);
 
                     async function loginCDA() {
                         if (await isLoggedIn()) return true;
