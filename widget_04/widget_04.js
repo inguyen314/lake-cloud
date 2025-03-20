@@ -490,7 +490,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const tsidGate2 = tsidGateData['assigned-time-series'][1]['timeseries-id'];
                     console.log("tsidGate2:", tsidGate2);
 
-                    const tsidGate3 = tsidGateData['assigned-time-series'][1]['timeseries-id'];
+                    const tsidGate3 = tsidGateData['assigned-time-series'][2]['timeseries-id'];
                     console.log("tsidGate3:", tsidGate3);
 
                     const tsidGateTotal = tsidGateTotalData['assigned-time-series'][0]['timeseries-id'];
@@ -1088,395 +1088,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 cdaSaveBtn.addEventListener("click", async () => {
                     console.log("Preparing payload...");
 
-                    async function loginCDA() {
-                        if (await isLoggedIn()) return true;
-                        window.location.href = `https://wm.mvs.ds.usace.army.mil:8243/CWMSLogin/login?OriginalLocation=${encodeURIComponent(window.location.href)}`;
-                    }
-
-                    async function isLoggedIn() {
-                        try {
-                            const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", { method: "GET" });
-                            return response.status !== 401;
-                        } catch (error) {
-                            console.error('Error checking login status:', error);
-                            return false;
-                        }
-                    }
-
-                    async function createTS(payload) {
-                        if (!payload) throw new Error("You must specify a payload!");
-                        const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?store-rule=REPLACE%20ALL", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json;version=2" },
-                            body: JSON.stringify(payload)
-                        });
-
-                        if (!response.ok) {
-                            const errorText = await response.text();
-                            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-                        }
-                    }
-
-                    async function fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day) {
-                        let response = null;
-
-                        if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
-                                headers: {
-                                    "Accept": "application/json;version=2", // Ensuring the correct version is used
-                                    "cache-control": "no-cache"
-                                }
-                            });
-                        } else {
-                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
-                                headers: {
-                                    "Accept": "application/json;version=2", // Ensuring the correct version is used
-                                    "cache-control": "no-cache"
-                                }
-                            });
-                        }
-
-                        if (!response.ok) {
-                            throw new Error(`Failed to fetch updated data: ${response.status}`);
-                        }
-
-                        const data = await response.json();
-
-                        // Log the raw data received
-                        console.log('Fetched Data:', data);
-
-                        return data;
-                    }
-
-                    // Function to show the spinner while waiting
-                    function showSpinner() {
-                        const spinner = document.createElement('img');
-                        spinner.src = 'images/loading4.gif';
-                        spinner.id = 'loadingSpinner';
-                        spinner.style.width = '40px';  // Set the width to 40px
-                        spinner.style.height = '40px'; // Set the height to 40px
-                        document.body.appendChild(spinner);
-                    }
-
-                    // Function to hide the spinner once the operation is complete
-                    function hideSpinner() {
-                        const spinner = document.getElementById('loadingSpinner');
-                        if (spinner) {
-                            spinner.remove();
-                        }
-                    }
-
-                    if (cdaSaveBtn.innerText === "Login") {
-                        showSpinner(); // Show the spinner before the login
-                        const loginResult = await loginCDA();
-                        hideSpinner(); // Hide the spinner after login is complete
-
-                        cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
-                        cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
-                    } else {
-                        try {
-                            // showSpinner(); // Show the spinner before creating the version
-                            // await createTS(payloadSluice1);
-                            // cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
-                            // await createTS(payloadSluice2);
-                            // cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
-                            // await createTS(payloadSluiceTotal);
-                            // cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
-                            // await createTS(payloadGate1);
-                            // cdaStatusBtn.innerText = "Write payloadGate1 successful!";
-                            // await createTS(payloadGate2);
-                            // cdaStatusBtn.innerText = "Write payloadGate2 successful!";
-                            // await createTS(payloadGate3);
-                            // cdaStatusBtn.innerText = "Write payloadGate3 successful!";
-                            // await createTS(payloadGateTotal);
-                            // cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
-
-
-                            // const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
-
-                            // let updatedDataInflow = null;
-                            // updatedDataInflow = await fetchUpdatedData(tsidInflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
-                            // createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, updatedData, tsidInflow, updatedDataInflow);
-                        } catch (error) {
-                            // hideSpinner(); // Hide the spinner if an error occurs
-                            // cdaStatusBtn.innerText = "Failed to write data!";
-                            // console.error(error);
-                        }
-
-                        hideSpinner(); // Hide the spinner after the operation completes
-                    }
-                });
-
-            }
-
-            function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
-                tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
-                tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
-                tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage) {
-
-                const table = document.createElement("table");
-
-                table.id = "gate-settings";
-
-                const headerRow = document.createElement("tr");
-
-                const dateHeader = document.createElement("th");
-                dateHeader.textContent = "Time";
-                headerRow.appendChild(dateHeader);
-
-                const sluice1Header = document.createElement("th");
-                sluice1Header.textContent = "Sluice 1 (ft)";
-                headerRow.appendChild(sluice1Header);
-
-                const sluice2Header = document.createElement("th");
-                sluice2Header.textContent = "Sluice 2 (ft)";
-                headerRow.appendChild(sluice2Header);
-
-                const sluiceTotalHeader = document.createElement("th");
-                sluiceTotalHeader.textContent = "Sluice Total (cfs)";
-                headerRow.appendChild(sluiceTotalHeader);
-
-                const gate1Header = document.createElement("th");
-                gate1Header.textContent = "Gate 1 (ft)";
-                headerRow.appendChild(gate1Header);
-
-                const gate2Header = document.createElement("th");
-                gate2Header.textContent = "Gate 2 (ft)";
-                headerRow.appendChild(gate2Header);
-
-                const gate3Header = document.createElement("th");
-                gate3Header.textContent = "Gate 3 (ft)";
-                headerRow.appendChild(gate3Header);
-
-                const gateTotalHeader = document.createElement("th");
-                gateTotalHeader.textContent = "Gate Total (cfs)";
-                headerRow.appendChild(gateTotalHeader);
-
-                const outflowTotalHeader = document.createElement("th");
-                outflowTotalHeader.textContent = "Outflow Total (cfs)";
-                headerRow.appendChild(outflowTotalHeader);
-
-                table.appendChild(headerRow);
-
-                let dates = [];
-                dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
-
-                let entryDates = [];
-
-                // Generate options for dropdown (24-hour format)
-                const times = [];
-                for (let hour = 0; hour < 24; hour++) {
-                    const time = `${hour.toString().padStart(2, '0')}:00`;  // "00:00", "01:00", ..., "23:00"
-                    times.push(time);
-                }
-
-                console.log("times for dropdown:", times);
-
-                // entryDates = ["", "", "", "", "", ""]; // Blank entries for dropdown
-                entryDates = [1]; // Blank entries for dropdown
-
-                const selectedHours = {};
-
-                entryDates.forEach((date, index) => {
-                    const row = document.createElement("tr");
-
-                    // const selectedHours = {}; // Object to store each hour as hour1, hour2, etc.
-                    const timeCell = document.createElement("td");
-                    const timeSelect = document.createElement("select");
-                    timeSelect.id = `timeSelect-${index}`;
-
-                    // Create a dynamic key for each row (hour1, hour2, hour3, etc.)
-                    const hourKey = `hour${index + 1}`;
-                    selectedHours[hourKey] = index === 0 ? times[0] : "NONE";  // Set default hour value
-
-                    if (index !== 0) {
-                        // Create "NONE" option as the default for all rows except the first
-                        const noneOption = document.createElement("option");
-                        noneOption.value = "NONE";
-                        noneOption.textContent = "NONE";
-                        timeSelect.appendChild(noneOption);
-                    }
-
-                    // Create options for the dropdown (24 hours)
-                    times.forEach(time => {
-                        const option = document.createElement("option");
-                        option.value = time;
-                        option.textContent = time;
-                        timeSelect.appendChild(option);
-                    });
-
-                    // Set the default value
-                    timeSelect.value = selectedHours[hourKey];
-
-                    // Update the corresponding hour when changed
-                    timeSelect.addEventListener("change", (event) => {
-                        selectedHours[hourKey] = event.target.value;
-                        console.log(`${hourKey} selected:`, selectedHours[hourKey]);
-                    });
-
-                    timeCell.appendChild(timeSelect);
-                    row.appendChild(timeCell);
-
-
-                    // Sluice1 cell (editable)
-                    const sluice1Cell = document.createElement("td");
-                    const sluice1Input = document.createElement("input");
-                    sluice1Input.type = "number";
-                    sluice1Input.value = null;
-                    sluice1Input.id = `sluice1Input`;
-
-                    if (index === 0) {
-                        sluice1Input.style.backgroundColor = "pink";
-                    }
-
-                    sluice1Cell.appendChild(sluice1Input);
-                    row.appendChild(sluice1Cell);
-                    console.log(document.getElementById(`sluice1Input`));  // Check if element exists
-
-
-                    // Sluice2 cell (editable)
-                    const sluice2Cell = document.createElement("td");
-                    const sluice2Input = document.createElement("input");
-                    sluice2Input.type = "number";
-                    sluice2Input.value = null;
-                    sluice2Input.id = `sluice2Input`;
-
-                    if (index === 0) {
-                        sluice2Input.style.backgroundColor = "pink";
-                    }
-
-                    sluice2Cell.appendChild(sluice2Input);
-                    row.appendChild(sluice2Cell);
-
-                    // Sluice Total cell (editable)
-                    const sluiceTotalCell = document.createElement("td");
-                    const sluiceTotalInput = document.createElement("input");
-                    sluiceTotalInput.type = "number";
-                    sluiceTotalInput.value = null;
-                    sluiceTotalInput.id = `sluiceTotalInput`;
-
-                    if (index === 0) {
-                        sluiceTotalInput.style.backgroundColor = "pink";
-                    }
-
-                    sluiceTotalCell.appendChild(sluiceTotalInput);
-                    row.appendChild(sluiceTotalCell);
-
-                    // Gate 1 (editable)
-                    const gate1Cell = document.createElement("td");
-                    const gate1Input = document.createElement("input");
-                    gate1Input.type = "number";
-                    gate1Input.value = null;
-                    gate1Input.id = `gate1Input`;
-                    if (index === 0) {
-                        gate1Input.style.backgroundColor = "pink";
-                    }
-                    gate1Cell.appendChild(gate1Input);
-                    row.appendChild(gate1Cell);
-
-                    // Gate 2 (editable)
-                    const gate2Cell = document.createElement("td");
-                    const gate2Input = document.createElement("input");
-                    gate2Input.type = "number";
-                    gate2Input.value = null;
-                    gate2Input.id = `gate2Input`;
-                    if (index === 0) {
-                        gate2Input.style.backgroundColor = "pink";
-                    }
-                    gate2Cell.appendChild(gate2Input);
-                    row.appendChild(gate2Cell);
-
-                    // Gate 3 (editable)
-                    const gate3Cell = document.createElement("td");
-                    const gate3Input = document.createElement("input");
-                    gate3Input.type = "number";
-                    gate3Input.value = null;
-                    gate3Input.id = `gate3Input`;
-                    if (index === 0) {
-                        gate3Input.style.backgroundColor = "pink";
-                    }
-                    gate3Cell.appendChild(gate3Input);
-                    row.appendChild(gate3Cell);
-
-                    // Gate Total (calculated)
-                    const gateTotalCell = document.createElement("td");
-                    const gateTotalInput = document.createElement("input");
-                    gateTotalInput.type = "number";
-                    gateTotalInput.value = null;
-                    gateTotalInput.id = `gateTotalInput`;
-                    if (index === 0) {
-                        gateTotalInput.style.backgroundColor = "pink";
-                    }
-                    gateTotalCell.appendChild(gateTotalInput);
-                    row.appendChild(gateTotalCell);
-
-                    // Gate Outflow (calculated)
-                    const gateOutflowTotalCell = document.createElement("td");
-                    const gateOutflowTotalInput = document.createElement("input");
-                    gateOutflowTotalInput.type = "number";
-                    gateOutflowTotalInput.value = null;
-                    gateOutflowTotalInput.id = `gateOutflowTotalInput`;
-                    gateOutflowTotalInput.readOnly = true; // Make it read-only
-                    gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
-                    gateOutflowTotalCell.appendChild(gateOutflowTotalInput);
-                    row.appendChild(gateOutflowTotalCell);
-
-                    table.appendChild(row);
-                });
-
-                // Append the table to the specific container (id="output4")
-                const output6Div = document.getElementById("output4");
-                output6Div.innerHTML = ""; // Clear any existing content
-                output6Div.appendChild(table);
-
-                const gateAverageDiv = document.createElement("div");
-                gateAverageDiv.className = "status";
-
-                // Create a tableOutflowAvg
-                const tableOutflowAvg = document.createElement("table");
-                const tableRow = document.createElement("tr");
-                tableOutflowAvg.style.width = "50%";
-                tableOutflowAvg.style.marginTop = "10px";
-
-
-                // Create the first cell for "Average Outflow (cfs)"
-                const firstCell = document.createElement("td");
-                firstCell.textContent = "Average Outflow (cfs)";
-                tableRow.appendChild(firstCell);
-
-                // Create the second cell with "--"
-                const secondCell = document.createElement("td");
-                secondCell.id = `gateOutflowAverageInput`;
-                secondCell.textContent = null;
-                tableRow.appendChild(secondCell);
-
-                // Append the row to the tableOutflowAvg
-                tableOutflowAvg.appendChild(tableRow);
-
-                // Append the tableOutflowAvg to the div
-                gateAverageDiv.appendChild(tableOutflowAvg);
-
-                // Append the div to output6Div
-                output6Div.appendChild(gateAverageDiv);
-
-                const cdaSaveBtn = document.createElement("button");
-                cdaSaveBtn.textContent = "Submit";
-                cdaSaveBtn.id = "cda-btn";
-                cdaSaveBtn.disabled = true;
-                output6Div.appendChild(cdaSaveBtn);
-
-                const statusDiv = document.createElement("div");
-                statusDiv.className = "status";
-                const cdaStatusBtn = document.createElement("button");
-                cdaStatusBtn.textContent = "";
-                cdaStatusBtn.id = "cda-btn";
-                cdaStatusBtn.disabled = false;
-                statusDiv.appendChild(cdaStatusBtn);
-                output6Div.appendChild(statusDiv);
-
-                // Add event listener to the submit button
-                cdaSaveBtn.addEventListener("click", async () => {
-
                     // Log selected hours for debugging
                     Object.keys(selectedHours).forEach(hour => {
                         console.log(`${hour} selected:`, selectedHours[hour]);
@@ -1886,25 +1497,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                     console.log("payloadGateTotal: ", payloadGateTotal);
 
                     async function loginCDA() {
-                        console.log("page");
                         if (await isLoggedIn()) return true;
-                        console.log('is false');
-
-                        // Redirect to login page
                         window.location.href = `https://wm.mvs.ds.usace.army.mil:8243/CWMSLogin/login?OriginalLocation=${encodeURIComponent(window.location.href)}`;
                     }
 
                     async function isLoggedIn() {
                         try {
-                            const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", {
-                                method: "GET"
-                            });
-
-                            if (response.status === 401) return false;
-
-                            console.log('status', response.status);
-                            return true;
-
+                            const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", { method: "GET" });
+                            return response.status !== 401;
                         } catch (error) {
                             console.error('Error checking login status:', error);
                             return false;
@@ -1925,7 +1525,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
-                    async function fetchUpdatedData(name, isoDateDay5, isoDateToday) {
+                    async function fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day) {
                         let response = null;
 
                         if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
@@ -1983,6 +1583,827 @@ document.addEventListener('DOMContentLoaded', async function () {
                         cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
                     } else {
                         try {
+                            // showSpinner(); // Show the spinner before creating the version
+                            // await createTS(payloadSluice1);
+                            // cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
+                            // await createTS(payloadSluice2);
+                            // cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
+                            // await createTS(payloadSluiceTotal);
+                            // cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
+                            // await createTS(payloadGate1);
+                            // cdaStatusBtn.innerText = "Write payloadGate1 successful!";
+                            // await createTS(payloadGate2);
+                            // cdaStatusBtn.innerText = "Write payloadGate2 successful!";
+                            // await createTS(payloadGate3);
+                            // cdaStatusBtn.innerText = "Write payloadGate3 successful!";
+                            // await createTS(payloadGateTotal);
+                            // cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
+
+
+                            // const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
+
+                            // let updatedDataInflow = null;
+                            // updatedDataInflow = await fetchUpdatedData(tsidInflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                            // createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, updatedData, tsidInflow, updatedDataInflow);
+                        } catch (error) {
+                            // hideSpinner(); // Hide the spinner if an error occurs
+                            // cdaStatusBtn.innerText = "Failed to write data!";
+                            // console.error(error);
+                        }
+
+                        hideSpinner(); // Hide the spinner after the operation completes
+                    }
+                });
+
+            }
+
+            function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
+                tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
+                tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage) {
+
+                console.log("timeSeriesDataSluice1:", timeSeriesDataSluice1);
+                console.log("timeSeriesDataSluice2:", timeSeriesDataSluice2);
+                console.log("timeSeriesDataSluiceTotal:", timeSeriesDataSluiceTotal)
+                console.log("timeSeriesDataGate1:", timeSeriesDataGate1)
+                console.log("timeSeriesDataGate2:", timeSeriesDataGate2)
+                console.log("timeSeriesDataGate3:", timeSeriesDataGate3)
+                console.log("timeSeriesDataGateTotal:", timeSeriesDataGateTotal)
+                console.log("timeSeriesDataOutflowTotal:", timeSeriesDataOutflowTotal)
+                console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage);
+
+                const table = document.createElement("table");
+
+                table.id = "gate-settings";
+
+                const headerRow = document.createElement("tr");
+
+                const dateHeader = document.createElement("th");
+                dateHeader.textContent = "Time";
+                headerRow.appendChild(dateHeader);
+
+                const sluice1Header = document.createElement("th");
+                sluice1Header.textContent = "Sluice 1 (ft)";
+                headerRow.appendChild(sluice1Header);
+
+                const sluice2Header = document.createElement("th");
+                sluice2Header.textContent = "Sluice 2 (ft)";
+                headerRow.appendChild(sluice2Header);
+
+                const sluiceTotalHeader = document.createElement("th");
+                sluiceTotalHeader.textContent = "Sluice Total (cfs)";
+                headerRow.appendChild(sluiceTotalHeader);
+
+                const gate1Header = document.createElement("th");
+                gate1Header.textContent = "Gate 1 (ft)";
+                headerRow.appendChild(gate1Header);
+
+                const gate2Header = document.createElement("th");
+                gate2Header.textContent = "Gate 2 (ft)";
+                headerRow.appendChild(gate2Header);
+
+                const gate3Header = document.createElement("th");
+                gate3Header.textContent = "Gate 3 (ft)";
+                headerRow.appendChild(gate3Header);
+
+                const gateTotalHeader = document.createElement("th");
+                gateTotalHeader.textContent = "Gate Total (cfs)";
+                headerRow.appendChild(gateTotalHeader);
+
+                const outflowTotalHeader = document.createElement("th");
+                outflowTotalHeader.textContent = "Outflow Total (cfs)";
+                headerRow.appendChild(outflowTotalHeader);
+
+                table.appendChild(headerRow);
+
+                let dates = [];
+                dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
+
+                let entryDates = [];
+
+                // Generate options for dropdown (24-hour format)
+                const times = [];
+                for (let hour = 0; hour < 24; hour++) {
+                    const time = `${hour.toString().padStart(2, '0')}:00`;  // "00:00", "01:00", ..., "23:00"
+                    times.push(time);
+                }
+
+                console.log("times for dropdown:", times);
+
+                // entryDates = ["", "", "", "", "", ""]; // Blank entries for dropdown
+                entryDates = [1]; // Blank entries for dropdown
+
+                const selectedHours = {};
+
+                entryDates.forEach((date, index) => {
+                    const row = document.createElement("tr");
+
+                    // const selectedHours = {}; // Object to store each hour as hour1, hour2, etc.
+                    const timeCell = document.createElement("td");
+                    const timeSelect = document.createElement("select");
+                    timeSelect.id = `timeSelect-${index}`;
+
+                    // Create a dynamic key for each row (hour1, hour2, hour3, etc.)
+                    const hourKey = `hour${index + 1}`;
+                    selectedHours[hourKey] = index === 0 ? times[0] : "NONE";  // Set default hour value
+
+                    if (index !== 0) {
+                        // Create "NONE" option as the default for all rows except the first
+                        const noneOption = document.createElement("option");
+                        noneOption.value = "NONE";
+                        noneOption.textContent = "NONE";
+                        timeSelect.appendChild(noneOption);
+                    }
+
+                    // Create options for the dropdown (24 hours)
+                    times.forEach(time => {
+                        const option = document.createElement("option");
+                        option.value = time;
+                        option.textContent = time;
+                        timeSelect.appendChild(option);
+                    });
+
+                    // Set the default value
+                    timeSelect.value = selectedHours[hourKey];
+
+                    // Update the corresponding hour when changed
+                    timeSelect.addEventListener("change", (event) => {
+                        selectedHours[hourKey] = event.target.value;
+                        console.log(`${hourKey} selected:`, selectedHours[hourKey]);
+                    });
+
+                    timeCell.appendChild(timeSelect);
+                    row.appendChild(timeCell);
+
+
+                    // Sluice1 cell (editable)
+                    const sluice1Cell = document.createElement("td");
+                    const sluice1Input = document.createElement("input");
+                    sluice1Input.type = "number";
+                    sluice1Input.value = null;
+                    sluice1Input.id = `sluice1Input`;
+
+                    if (index === 0) {
+                        sluice1Input.style.backgroundColor = "pink";
+                    }
+
+                    sluice1Cell.appendChild(sluice1Input);
+                    row.appendChild(sluice1Cell);
+                    console.log(document.getElementById(`sluice1Input`));  // Check if element exists
+
+
+                    // Sluice2 cell (editable)
+                    const sluice2Cell = document.createElement("td");
+                    const sluice2Input = document.createElement("input");
+                    sluice2Input.type = "number";
+                    sluice2Input.value = null;
+                    sluice2Input.id = `sluice2Input`;
+
+                    if (index === 0) {
+                        sluice2Input.style.backgroundColor = "pink";
+                    }
+
+                    sluice2Cell.appendChild(sluice2Input);
+                    row.appendChild(sluice2Cell);
+
+                    // Sluice Total cell (editable)
+                    const sluiceTotalCell = document.createElement("td");
+                    const sluiceTotalInput = document.createElement("input");
+                    sluiceTotalInput.type = "number";
+                    sluiceTotalInput.value = null;
+                    sluiceTotalInput.id = `sluiceTotalInput`;
+
+                    if (index === 0) {
+                        sluiceTotalInput.style.backgroundColor = "pink";
+                    }
+
+                    sluiceTotalCell.appendChild(sluiceTotalInput);
+                    row.appendChild(sluiceTotalCell);
+
+                    // Gate 1 (editable)
+                    const gate1Cell = document.createElement("td");
+                    const gate1Input = document.createElement("input");
+                    gate1Input.type = "number";
+                    gate1Input.value = null;
+                    gate1Input.id = `gate1Input`;
+                    if (index === 0) {
+                        gate1Input.style.backgroundColor = "pink";
+                    }
+                    gate1Cell.appendChild(gate1Input);
+                    row.appendChild(gate1Cell);
+
+                    // Gate 2 (editable)
+                    const gate2Cell = document.createElement("td");
+                    const gate2Input = document.createElement("input");
+                    gate2Input.type = "number";
+                    gate2Input.value = null;
+                    gate2Input.id = `gate2Input`;
+                    if (index === 0) {
+                        gate2Input.style.backgroundColor = "pink";
+                    }
+                    gate2Cell.appendChild(gate2Input);
+                    row.appendChild(gate2Cell);
+
+                    // Gate 3 (editable)
+                    const gate3Cell = document.createElement("td");
+                    const gate3Input = document.createElement("input");
+                    gate3Input.type = "number";
+                    gate3Input.value = null;
+                    gate3Input.id = `gate3Input`;
+                    if (index === 0) {
+                        gate3Input.style.backgroundColor = "pink";
+                    }
+                    gate3Cell.appendChild(gate3Input);
+                    row.appendChild(gate3Cell);
+
+                    // Gate Total (calculated)
+                    const gateTotalCell = document.createElement("td");
+                    const gateTotalInput = document.createElement("input");
+                    gateTotalInput.type = "number";
+                    gateTotalInput.value = null;
+                    gateTotalInput.id = `gateTotalInput`;
+                    if (index === 0) {
+                        gateTotalInput.style.backgroundColor = "pink";
+                    }
+                    gateTotalCell.appendChild(gateTotalInput);
+                    row.appendChild(gateTotalCell);
+
+                    // Gate Outflow (calculated)
+                    const gateOutflowTotalCell = document.createElement("td");
+                    const gateOutflowTotalInput = document.createElement("input");
+                    gateOutflowTotalInput.type = "number";
+                    gateOutflowTotalInput.value = null;
+                    gateOutflowTotalInput.id = `gateOutflowTotalInput`;
+                    gateOutflowTotalInput.readOnly = true; // Make it read-only
+                    gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
+                    gateOutflowTotalCell.appendChild(gateOutflowTotalInput);
+                    row.appendChild(gateOutflowTotalCell);
+
+                    table.appendChild(row);
+                });
+
+                // Append the table to the specific container (id="output4")
+                const output6Div = document.getElementById("output4");
+                output6Div.innerHTML = ""; // Clear any existing content
+                output6Div.appendChild(table);
+
+                const gateAverageDiv = document.createElement("div");
+                gateAverageDiv.className = "status";
+
+                // Create a tableOutflowAvg
+                const tableOutflowAvg = document.createElement("table");
+                const tableRow = document.createElement("tr");
+                tableOutflowAvg.style.width = "50%";
+                tableOutflowAvg.style.marginTop = "10px";
+
+
+                // Create the first cell for "Average Outflow (cfs)"
+                const firstCell = document.createElement("td");
+                firstCell.textContent = "Average Outflow (cfs)";
+                tableRow.appendChild(firstCell);
+
+                // Create the second cell with "--"
+                const secondCell = document.createElement("td");
+                secondCell.id = `gateOutflowAverageInput`;
+                secondCell.textContent = null;
+                tableRow.appendChild(secondCell);
+
+                // Append the row to the tableOutflowAvg
+                tableOutflowAvg.appendChild(tableRow);
+
+                // Append the tableOutflowAvg to the div
+                gateAverageDiv.appendChild(tableOutflowAvg);
+
+                // Append the div to output6Div
+                output6Div.appendChild(gateAverageDiv);
+
+                const cdaSaveBtn = document.createElement("button");
+                cdaSaveBtn.textContent = "Submit";
+                cdaSaveBtn.id = "cda-btn";
+                cdaSaveBtn.disabled = true;
+                output6Div.appendChild(cdaSaveBtn);
+
+                const statusDiv = document.createElement("div");
+                statusDiv.className = "status";
+                const cdaStatusBtn = document.createElement("button");
+                cdaStatusBtn.textContent = "";
+                cdaStatusBtn.id = "cda-btn";
+                cdaStatusBtn.disabled = false;
+                statusDiv.appendChild(cdaStatusBtn);
+                output6Div.appendChild(statusDiv);
+
+                // Add event listener to the submit button
+                cdaSaveBtn.addEventListener("click", async () => {
+
+                    // Log selected hours for debugging
+                    Object.keys(selectedHours).forEach(hour => {
+                        console.log(`${hour} selected:`, selectedHours[hour]);
+                    });
+
+                    // Get the sluice1 input element and check if it exists
+                    const sluice1Input = document.getElementById(`sluice1Input`);
+                    if (!sluice1Input) {
+                        console.error("sluice1Input element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!sluice1Input.value) {
+                        sluice1Input.value = 909;
+                    }
+
+                    // Get the sluice2 input element and check if it exists
+                    const sluice2Input = document.getElementById('sluice2Input');
+                    if (!sluice2Input) {
+                        console.error("sluice2Input element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!sluice2Input.value) {
+                        sluice2Input.value = 909;
+                    }
+
+                    // Get the sluiceTotal input element and check if it exists
+                    const sluiceTotalInput = document.getElementById('sluiceTotalInput');
+                    if (!sluiceTotalInput) {
+                        console.error("sluiceTotalInput element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!sluiceTotalInput.value) {
+                        sluiceTotalInput.value = 909;
+                    }
+
+                    // Get the Gate1 input element and check if it exists
+                    const gate1Input = document.getElementById('gate1Input');
+                    if (!gate1Input) {
+                        console.error("gate1Input element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!gate1Input.value) {
+                        gate1Input.value = 909;
+                    }
+
+                    // Get the Gate2 input element and check if it exists
+                    const gate2Input = document.getElementById('gate2Input');
+                    if (!gate2Input) {
+                        console.error("gate2Input element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!gate2Input.value) {
+                        gate2Input.value = 909;
+                    }
+
+                    // Get the Gate3 input element and check if it exists
+                    const gate3Input = document.getElementById('gate3Input');
+                    if (!gate3Input) {
+                        console.error("gate3Input element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!gate3Input.value) {
+                        gate3Input.value = 909;
+                    }
+
+                    // Get the GateTotal input element and check if it exists
+                    const gateTotalInput = document.getElementById('gateTotalInput');
+                    if (!gateTotalInput) {
+                        console.error("gateTotalInput element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!gateTotalInput.value) {
+                        gateTotalInput.value = 909;
+                    }
+
+                    // ========================== CALCULATE GATE OUTFLOW TOTAL ==========================
+                    // Get the gateOutflowTotal input element and check if it exists
+                    const gateOutflowTotalInput = document.getElementById('gateOutflowTotalInput');
+                    if (!gateOutflowTotalInput) {
+                        console.error("gateOutflowTotalInput element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!gateOutflowTotalInput.value) {
+                        gateOutflowTotalInput.value = 909;
+                    }
+
+                    // ========================== CALCULATE GATE OUTFLOW AVERAGE ==========================
+                    // Get the gateOutflowAverage input element and check if it exists
+                    const gateOutflowAverageInput = document.getElementById('gateOutflowAverageInput');
+                    if (!gateOutflowAverageInput) {
+                        console.error("gateOutflowAverageInput element not found!");
+                        return; // Exit if input is missing
+                    }
+                    if (!gateOutflowAverageInput.value) {
+                        gateOutflowAverageInput.value = 909;
+                    }
+
+                    let time1 = null;
+                    if (selectedHours['hour1'] !== "NONE") {
+                        time1 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour1'] + `:00Z`;
+                    }
+
+                    let time2 = null;
+                    if (selectedHours['hour2'] !== "NONE") {
+                        time2 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour2'] + `:00Z`;
+                    }
+
+                    let time3 = null;
+                    if (selectedHours['hour3'] !== "NONE") {
+                        time3 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour3'] + `:00Z`;
+                    }
+
+                    let time4 = null;
+                    if (selectedHours['hour4'] !== "NONE") {
+                        time4 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour4'] + `:00Z`;
+                    }
+
+                    let time5 = null;
+                    if (selectedHours['hour5'] !== "NONE") {
+                        time5 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour5'] + `:00Z`;
+                    }
+
+                    let time6 = null;
+                    if (selectedHours['hour6'] !== "NONE") {
+                        time6 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour6'] + `:00Z`;
+                    }
+
+                    // Payload for sluice1 values
+                    const payloadSluice1 = {
+                        "name": tsidSluice1,
+                        "office-id": "MVS",
+                        "units": "ft",
+                        "values": [
+                            [
+                                time1,
+                                sluice1Input.value,
+                                0
+                            ],
+                            // [
+                            //     time2,
+                            //     sluice1Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time3,
+                            //     sluice1Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time4,
+                            //     sluice1Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time5,
+                            //     sluice1Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time6,
+                            //     sluice1Input.value,
+                            //     0
+                            // ],
+                        ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                    };
+
+                    console.log("payloadSluice1: ", payloadSluice1);
+
+                    const payloadSluice2 = {
+                        "name": tsidSluice2,
+                        "office-id": "MVS",
+                        "units": "ft",
+                        "values": [
+                            [
+                                time1,
+                                sluice2Input.value,
+                                0
+                            ],
+                            // [
+                            //     time2,
+                            //     sluice2Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time3,
+                            //     sluice2Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time4,
+                            //     sluice2Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time5,
+                            //     sluice2Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time6,
+                            //     sluice2Input.value,
+                            //     0
+                            // ],
+                        ].filter(item => item[0] !== null),
+                    };
+
+                    console.log("payloadSluice2: ", payloadSluice2);
+
+                    const payloadSluiceTotal = {
+                        "name": tsidSluiceTotal,
+                        "office-id": "MVS",
+                        "units": "cfs",
+                        "values": [
+                            [
+                                time1,
+                                sluiceTotalInput.value,
+                                0
+                            ],
+                            // [
+                            //     time2,
+                            //     sluiceTotalInput.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time3,
+                            //     sluiceTotalInput.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time4,
+                            //     sluiceTotalInput.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time5,
+                            //     sluiceTotalInput.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time6,
+                            //     sluiceTotalInput.value,
+                            //     0
+                            // ],
+                        ].filter(item => item[0] !== null),
+                    };
+
+                    console.log("payloadSluiceTotal: ", payloadSluiceTotal);
+
+                    const payloadGate1 = {
+                        "name": tsidGate1,
+                        "office-id": "MVS",
+                        "units": "ft",
+                        "values": [
+                            [
+                                time1,
+                                gate1Input.value,
+                                0
+                            ],
+                            // [
+                            //     time2,
+                            //     gate1Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time3,
+                            //     gate1Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time4,
+                            //     gate1Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time5,
+                            //     gate1Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time6,
+                            //     gate1Input.value,
+                            //     0
+                            // ],
+                        ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                    };
+
+                    console.log("payloadGate1: ", payloadGate1);
+
+                    const payloadGate2 = {
+                        "name": tsidGate2,
+                        "office-id": "MVS",
+                        "units": "ft",
+                        "values": [
+                            [
+                                time1,
+                                gate2Input.value,
+                                0
+                            ],
+                            // [
+                            //     time2,
+                            //     gate2Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time3,
+                            //     gate2Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time4,
+                            //     gate2Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time5,
+                            //     gate2Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time6,
+                            //     gate2Input.value,
+                            //     0
+                            // ],
+                        ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                    };
+
+                    console.log("payloadGate2: ", payloadGate2);
+
+                    const payloadGate3 = {
+                        "name": tsidGate3,
+                        "office-id": "MVS",
+                        "units": "ft",
+                        "values": [
+                            [
+                                time1,
+                                gate3Input.value,
+                                0
+                            ],
+                            // [
+                            //     time2,
+                            //     gate3Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time3,
+                            //     gate3Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time4,
+                            //     gate3Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time5,
+                            //     gate3Input.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time6,
+                            //     gate3Input.value,
+                            //     0
+                            // ],
+                        ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                    };
+
+                    console.log("payloadGate3: ", payloadGate3);
+
+                    const payloadGateTotal = {
+                        "name": tsidGateTotal,
+                        "office-id": "MVS",
+                        "units": "cfs",
+                        "values": [
+                            [
+                                time1,
+                                gateTotalInput.value,
+                                0
+                            ],
+                            // [
+                            //     time2,
+                            //     gateTotalInput.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time3,
+                            //     gateTotalInput.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time4,
+                            //     gateTotalInput.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time5,
+                            //     gateTotalInput.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time6,
+                            //     gateTotalInput.value,
+                            //     0
+                            // ],
+                        ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                    };
+
+                    console.log("payloadGateTotal: ", payloadGateTotal);
+
+                    async function loginCDA() {
+                        console.log("page");
+                        if (await isLoggedIn()) return true;
+                        console.log('is false');
+
+                        // Redirect to login page
+                        window.location.href = `https://wm.mvs.ds.usace.army.mil:8243/CWMSLogin/login?OriginalLocation=${encodeURIComponent(window.location.href)}`;
+                    }
+
+                    async function isLoggedIn() {
+                        try {
+                            const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", {
+                                method: "GET"
+                            });
+
+                            if (response.status === 401) return false;
+
+                            console.log('status', response.status);
+                            return true;
+
+                        } catch (error) {
+                            console.error('Error checking login status:', error);
+                            return false;
+                        }
+                    }
+
+                    async function createTS(payload) {
+                        if (!payload) throw new Error("You must specify a payload!");
+                        const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?store-rule=REPLACE%20ALL", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json;version=2" },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                        }
+                    }
+
+                    async function fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day) {
+                        // Convert to Date object
+                        const date = new Date(isoDateToday);
+
+                        // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
+                        date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
+
+                        // Convert back to ISO string (preserve UTC format)
+                        const isoDateTodayMinus1Hour = date.toISOString();
+
+                        console.log("begin (yesterday midnight): ", isoDateMinus1Day);
+                        console.log("end (midnight minus 1 hour): ", isoDateTodayMinus1Hour);
+
+                        let response = null;
+
+                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateTodayMinus1Hour}&office=${office}`, {
+                            headers: {
+                                "Accept": "application/json;version=2", // Ensuring the correct version is used
+                                "cache-control": "no-cache"
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch updated data: ${response.status}`);
+                        }
+
+                        const data = await response.json();
+
+                        // Log the raw data received
+                        console.log('Fetched Data:', data);
+
+                        return data;
+                    }
+
+                    // Function to show the spinner while waiting
+                    function showSpinner() {
+                        const spinner = document.createElement('img');
+                        spinner.src = 'images/loading4.gif';
+                        spinner.id = 'loadingSpinner';
+                        spinner.style.width = '40px';  // Set the width to 40px
+                        spinner.style.height = '40px'; // Set the height to 40px
+                        document.body.appendChild(spinner);
+                    }
+
+                    // Function to hide the spinner once the operation is complete
+                    function hideSpinner() {
+                        const spinner = document.getElementById('loadingSpinner');
+                        if (spinner) {
+                            spinner.remove();
+                        }
+                    }
+
+                    if (cdaSaveBtn.innerText === "Login") {
+                        showSpinner(); // Show the spinner before the login
+                        const loginResult = await loginCDA();
+                        hideSpinner(); // Hide the spinner after login is complete
+
+                        cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
+                        cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
+                    } else {
+                        try {
                             showSpinner(); // Show the spinner before creating the version
                             await createTS(payloadSluice1);
                             cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
@@ -1999,14 +2420,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                             await createTS(payloadGateTotal);
                             cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
 
-                            // await createVersionTS(payloadSluice2);
-                            // cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
 
                             // // Fetch updated data and refresh the table
                             // const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
-
-                            // let updatedDataInflow = null;
-                            // updatedDataInflow = await fetchUpdatedData(tsidInflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
 
                             // createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, updatedData, tsidInflow, updatedDataInflow);
                         } catch (error) {
@@ -2129,12 +2545,12 @@ document.addEventListener('DOMContentLoaded', async function () {
 // Lk Shelbyville-Kaskaskia.Opening.Inst.~30Minutes.0.lakerep-rev-G2-test (Gate-Lake-Test)
 // Lk Shelbyville-Kaskaskia.Opening.Inst.~30Minutes.0.lakerep-rev-G3-test (Gate-Lake-Test)
 // Lk Shelbyville-Kaskaskia.Opening.Inst.~30Minutes.0.lakerep-rev-G4-test (NOT USED)
-// Lk Shelbyville-Kaskaskia.Flow-Sluice.Inst.~30Minutes.0.lakerep-rev-test (Gate-Total-Lake-Test)
+// Lk Shelbyville-Kaskaskia.Flow-Taint.Inst.~30Minutes.0.lakerep-rev-test (Gate-Total-Lake-Test)
 
 // Lk Shelbyville-Kaskaskia.Opening.Inst.~30Minutes.0.lakerep-rev-S1-test (Sluice-Lake-Test)
 // Lk Shelbyville-Kaskaskia.Opening.Inst.~30Minutes.0.lakerep-rev-S2-test (Sluice-Lake-Test)
 // Lk Shelbyville-Kaskaskia.Opening.Inst.~30Minutes.0.lakerep-rev-S3-test (NOT USED)
-// Lk Shelbyville-Kaskaskia.Flow-Taint.Inst.~30Minutes.0.lakerep-rev-test (Sluice-Total-Lake-Test)
+// Lk Shelbyville-Kaskaskia.Flow-Sluice.Inst.~30Minutes.0.lakerep-rev-test (Sluice-Total-Lake-Test)
 
 // Lk Shelbyville-Kaskaskia.Flow.Inst.~30Minutes.0.lakerep-rev-test (Outflow-Total-Lake-Test)
 
