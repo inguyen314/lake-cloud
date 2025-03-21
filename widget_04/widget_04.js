@@ -763,24 +763,21 @@ document.addEventListener('DOMContentLoaded', async function () {
                     timeCell.appendChild(timeSelect);
                     row.appendChild(timeCell);
 
-
                     // Sluice1 cell (editable)
                     const sluice1Cell = document.createElement("td");
                     const sluice1Input = document.createElement("input");
                     sluice1Input.type = "number";
                     sluice1Input.value = (date[1]).toFixed(1);
-                    sluice1Input.id = `sluice1Input`;
+                    sluice1Input.id = `sluice1Input-${date}`;
                     sluice1Cell.appendChild(sluice1Input);
                     row.appendChild(sluice1Cell);
-                    // console.log(document.getElementById(`sluice1Input`));  // Check if element exists
-
 
                     // Sluice2 cell (editable)
                     const sluice2Cell = document.createElement("td");
                     const sluice2Input = document.createElement("input");
                     sluice2Input.type = "number";
-                    sluice2Input.value = formattedDataSluice1[0][1].toFixed(1);
-                    sluice2Input.id = `sluice2Input`;
+                    sluice2Input.value = formattedDataSluice2[index] ? formattedDataSluice2[index][1].toFixed(1) : -999;
+                    sluice2Input.id = `sluice2Input-${date}`;
                     sluice2Cell.appendChild(sluice2Input);
                     row.appendChild(sluice2Cell);
 
@@ -788,8 +785,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const sluiceTotalCell = document.createElement("td");
                     const sluiceTotalInput = document.createElement("input");
                     sluiceTotalInput.type = "number";
-                    sluiceTotalInput.value = formattedDataSluiceTotal[0][1].toFixed(0);
-                    sluiceTotalInput.id = `sluiceTotalInput`;
+                    sluiceTotalInput.value = formattedDataSluiceTotal[index] ? formattedDataSluiceTotal[index][1].toFixed(0) : -999;
+                    sluiceTotalInput.id = `sluiceTotalInput-${date}`;
                     sluiceTotalCell.appendChild(sluiceTotalInput);
                     row.appendChild(sluiceTotalCell);
 
@@ -797,8 +794,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate1Cell = document.createElement("td");
                     const gate1Input = document.createElement("input");
                     gate1Input.type = "number";
-                    gate1Input.value = formattedDataGate1[0][1].toFixed(1);
-                    gate1Input.id = `gate1Input`;
+                    gate1Input.value = formattedDataGate1[index] ? formattedDataGate1[index][1].toFixed(1) : -999;
+                    gate1Input.id = `gate1Input-${date}`;
                     gate1Cell.appendChild(gate1Input);
                     row.appendChild(gate1Cell);
 
@@ -806,8 +803,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate2Cell = document.createElement("td");
                     const gate2Input = document.createElement("input");
                     gate2Input.type = "number";
-                    gate2Input.value = formattedDataGate2[0][1].toFixed(1);
-                    gate2Input.id = `gate2Input`;
+                    gate2Input.value = formattedDataGate2[index] ? formattedDataGate2[index][1].toFixed(1) : -999;
+                    gate2Input.id = `gate2Input-${date}`;
                     gate2Cell.appendChild(gate2Input);
                     row.appendChild(gate2Cell);
 
@@ -815,8 +812,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate3Cell = document.createElement("td");
                     const gate3Input = document.createElement("input");
                     gate3Input.type = "number";
-                    gate3Input.value = formattedDataGate3[0][1].toFixed(1);
-                    gate3Input.id = `gate3Input`;
+                    gate3Input.value = formattedDataGate3[index] ? formattedDataGate3[index][1].toFixed(1) : -999;
+                    gate3Input.id = `gate3Input-${date}`;
                     gate3Cell.appendChild(gate3Input);
                     row.appendChild(gate3Cell);
 
@@ -824,8 +821,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gateTotalCell = document.createElement("td");
                     const gateTotalInput = document.createElement("input");
                     gateTotalInput.type = "number";
-                    gateTotalInput.value = formattedDataGateTotal[0][1].toFixed(0);
-                    gateTotalInput.id = `gateTotalInput`;
+                    gateTotalInput.value = formattedDataGateTotal[index][1].toFixed(0);
+                    gateTotalInput.id = `gateTotalInput-${date}`;
                     gateTotalCell.appendChild(gateTotalInput);
                     row.appendChild(gateTotalCell);
 
@@ -833,7 +830,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gateOutflowTotalCell = document.createElement("td");
                     const gateOutflowTotalInput = document.createElement("input");
                     gateOutflowTotalInput.type = "number";
-                    gateOutflowTotalInput.value = (formattedDataGateTotal[0][1] + formattedDataSluiceTotal[0][1]).toFixed(0);
+                    gateOutflowTotalInput.value = (formattedDataGateTotal[index][1] + formattedDataSluiceTotal[index][1]).toFixed(0);
                     gateOutflowTotalInput.id = `gateOutflowTotalInput`;
                     gateOutflowTotalInput.readOnly = true; // Make it read-only
                     gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
