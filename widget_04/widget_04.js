@@ -726,6 +726,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 console.log("times for dropdown:", times);
 
+                // entryDates = [1]; // Blank entries for dropdown
                 entryDates = [1, 2, 3, 4, 5, 6]; // Blank entries for dropdown
 
                 const selectedHours = {};
@@ -768,25 +769,27 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const sluice1Input = document.createElement("input");
                     sluice1Input.type = "number";
                     sluice1Input.value = (date[1]).toFixed(1);
-                    sluice1Input.id = `sluice1Input-${date}`;
+                    sluice1Input.id = `sluice1Input-${index}`;
                     sluice1Cell.appendChild(sluice1Input);
                     row.appendChild(sluice1Cell);
+                    // console.log("sluice1Input: ", `sluice1Input-${index}`)
 
                     // Sluice2 cell (editable)
                     const sluice2Cell = document.createElement("td");
                     const sluice2Input = document.createElement("input");
                     sluice2Input.type = "number";
                     sluice2Input.value = formattedDataSluice2[index] ? formattedDataSluice2[index][1].toFixed(1) : -999;
-                    sluice2Input.id = `sluice2Input-${date}`;
+                    sluice2Input.id = `sluice2Input-${index}`;
                     sluice2Cell.appendChild(sluice2Input);
                     row.appendChild(sluice2Cell);
+                    // console.log("sluice2Input: ", `sluice2Input-${index}`)
 
                     // Sluice Total cell (editable)
                     const sluiceTotalCell = document.createElement("td");
                     const sluiceTotalInput = document.createElement("input");
                     sluiceTotalInput.type = "number";
                     sluiceTotalInput.value = formattedDataSluiceTotal[index] ? formattedDataSluiceTotal[index][1].toFixed(0) : -999;
-                    sluiceTotalInput.id = `sluiceTotalInput-${date}`;
+                    sluiceTotalInput.id = `sluiceTotalInput-${index}`;
                     sluiceTotalCell.appendChild(sluiceTotalInput);
                     row.appendChild(sluiceTotalCell);
 
@@ -795,7 +798,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate1Input = document.createElement("input");
                     gate1Input.type = "number";
                     gate1Input.value = formattedDataGate1[index] ? formattedDataGate1[index][1].toFixed(1) : -999;
-                    gate1Input.id = `gate1Input-${date}`;
+                    gate1Input.id = `gate1Input-${index}`;
                     gate1Cell.appendChild(gate1Input);
                     row.appendChild(gate1Cell);
 
@@ -804,7 +807,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate2Input = document.createElement("input");
                     gate2Input.type = "number";
                     gate2Input.value = formattedDataGate2[index] ? formattedDataGate2[index][1].toFixed(1) : -999;
-                    gate2Input.id = `gate2Input-${date}`;
+                    gate2Input.id = `gate2Input-${index}`;
                     gate2Cell.appendChild(gate2Input);
                     row.appendChild(gate2Cell);
 
@@ -813,7 +816,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate3Input = document.createElement("input");
                     gate3Input.type = "number";
                     gate3Input.value = formattedDataGate3[index] ? formattedDataGate3[index][1].toFixed(1) : -999;
-                    gate3Input.id = `gate3Input-${date}`;
+                    gate3Input.id = `gate3Input-${index}`;
                     gate3Cell.appendChild(gate3Input);
                     row.appendChild(gate3Cell);
 
@@ -822,7 +825,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gateTotalInput = document.createElement("input");
                     gateTotalInput.type = "number";
                     gateTotalInput.value = formattedDataGateTotal[index][1].toFixed(0);
-                    gateTotalInput.id = `gateTotalInput-${date}`;
+                    gateTotalInput.id = `gateTotalInput-${index}`;
                     gateTotalCell.appendChild(gateTotalInput);
                     row.appendChild(gateTotalCell);
 
@@ -831,7 +834,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gateOutflowTotalInput = document.createElement("input");
                     gateOutflowTotalInput.type = "number";
                     gateOutflowTotalInput.value = (formattedDataGateTotal[index][1] + formattedDataSluiceTotal[index][1]).toFixed(0);
-                    gateOutflowTotalInput.id = `gateOutflowTotalInput`;
+                    gateOutflowTotalInput.id = `gateOutflowTotalInput-${index}`;
                     gateOutflowTotalInput.readOnly = true; // Make it read-only
                     gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
                     gateOutflowTotalCell.appendChild(gateOutflowTotalInput);
@@ -1014,7 +1017,103 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output6Div.appendChild(statusDiv);
 
                 cdaSaveBtn.addEventListener("click", async () => {
-                    // Log selected hours for debugging
+                    // Existing Data Entry
+                    console.log("getAllSelectedTimes: ", getAllSelectedTimes());
+                    console.log("getAllSluice1Values: ", getAllSluice1Values());
+                    console.log("getAllSluice2Values: ", getAllSluice2Values());
+                    console.log("getAllSluiceTotalValues: ", getAllSluiceTotalValues());
+                    console.log("getAllGate1Values: ", getAllGate1Values());
+                    console.log("getAllGate2Values: ", getAllGate2Values());
+                    console.log("getAllGate3Values: ", getAllGate3Values());
+                    console.log("getAllGateTotalValues: ", getAllGateTotalValues());
+
+                    const selectedTimes = getAllSelectedTimes(); // Retrieve times
+                    const dataCategories = {
+                        sluice1: getAllSluice1Values(),
+                        sluice2: getAllSluice2Values(),
+                        sluiceTotal: getAllSluiceTotalValues(),
+                        gate1: getAllGate1Values(),
+                        gate2: getAllGate2Values(),
+                        gate3: getAllGate3Values(),
+                        gateTotal: getAllGateTotalValues(),
+                    };
+
+                    if (Array.isArray(selectedTimes) && Object.values(dataCategories).every(Array.isArray)) {
+                        const payloads = {};
+
+                        Object.entries(dataCategories).forEach(([key, values]) => {
+                            const updatedValues = selectedTimes.map((time, index) => [
+                                time,
+                                values[index] ?? 0, // Default to 0 if undefined
+                                0
+                            ]);
+
+                            payloads[key] = {
+                                "name": `tsid${key.charAt(0).toUpperCase() + key.slice(1)}`, // Dynamic TSID
+                                "office-id": "MVS",
+                                "units": "ft",
+                                "values": updatedValues.filter(item => item[0] !== null),
+                            };
+                        });
+
+                        console.log("Payloads: ", payloads);
+                    } else {
+                        console.error("One or more arrays are not valid", selectedTimes, dataCategories);
+                    }
+
+                    // Function to get all selected times
+                    function getAllSelectedTimes() {
+                        let selectedTimes = [];
+                        formattedDataSluice1.forEach((_, index) => {
+                            const selectedTime = document.getElementById(`timeSelect${index}`).value;
+                            selectedTimes.push(selectedTime);
+                        });
+                        return selectedTimes;
+                    }
+
+                    function getAllSluice1Values() {
+                        return formattedDataSluice1.map((_, index) =>
+                            parseFloat(document.getElementById(`sluice1Input-${index}`).value)
+                        );
+                    }
+
+                    function getAllSluice2Values() {
+                        return formattedDataSluice2.map((_, index) =>
+                            parseFloat(document.getElementById(`sluice2Input-${index}`).value)
+                        );
+                    }
+
+                    function getAllSluiceTotalValues() {
+                        return formattedDataSluiceTotal.map((_, index) =>
+                            parseFloat(document.getElementById(`sluiceTotalInput-${index}`).value)
+                        );
+                    }
+
+                    function getAllGate1Values() {
+                        return formattedDataGate1.map((_, index) =>
+                            parseFloat(document.getElementById(`gate1Input-${index}`).value)
+                        );
+                    }
+
+                    function getAllGate2Values() {
+                        return formattedDataGate2.map((_, index) =>
+                            parseFloat(document.getElementById(`gate2Input-${index}`).value)
+                        );
+                    }
+
+                    function getAllGate3Values() {
+                        return formattedDataGate3.map((_, index) =>
+                            parseFloat(document.getElementById(`gate3Input-${index}`).value)
+                        );
+                    }
+
+                    function getAllGateTotalValues() {
+                        return formattedDataGateTotal.map((_, index) =>
+                            parseFloat(document.getElementById(`gateTotalInput-${index}`).value)
+                        );
+                    }
+
+                    // New data entry
                     Object.keys(selectedHours).forEach(hour => {
                         console.log(`${hour} selected:`, selectedHours[hour]);
                     });
@@ -1091,7 +1190,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // ========================== CALCULATE GATE OUTFLOW TOTAL ==========================
                     // Get the gateOutflowTotal input element and check if it exists
-                    const gateOutflowTotalInput = document.getElementById('gateOutflowTotalInput');
+                    const gateOutflowTotalInput = document.getElementById('gateOutflowTotalAdditionalInput');
                     if (!gateOutflowTotalInput) {
                         console.error("gateOutflowTotalInput element not found!");
                         return; // Exit if input is missing
@@ -1102,7 +1201,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // ========================== CALCULATE GATE OUTFLOW AVERAGE ==========================
                     // Get the gateOutflowAverage input element and check if it exists
-                    const gateOutflowAverageInput = document.getElementById('gateOutflowAverageInput');
+                    const gateOutflowAverageInput = document.getElementById(`gateOutflowAverageInput`);
                     if (!gateOutflowAverageInput) {
                         console.error("gateOutflowAverageInput element not found!");
                         return; // Exit if input is missing
@@ -1491,6 +1590,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
+                    const hasValidHour = Object.keys(selectedHours).some(hour => selectedHours[hour] !== "NONE");
+                    console.log("hasValidHour:", hasValidHour);
+
                     if (cdaSaveBtn.innerText === "Login") {
                         showSpinner(); // Show the spinner before the login
                         const loginResult = await loginCDA();
@@ -1518,22 +1620,25 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
 
                             // // New Gate Settings
-                            showSpinner(); // Show the spinner before creating the version
-                            await createTS(payloadSluice1Additional);
-                            cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
-                            await createTS(payloadSluice2Additional);
-                            cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
-                            await createTS(payloadSluiceTotalAdditional);
-                            cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
-                            await createTS(payloadGate1Additional);
-                            cdaStatusBtn.innerText = "Write payloadGate1 successful!";
-                            await createTS(payloadGate2Additional);
-                            cdaStatusBtn.innerText = "Write payloadGate2 successful!";
-                            await createTS(payloadGate3Additional);
-                            cdaStatusBtn.innerText = "Write payloadGate3 successful!";
-                            await createTS(payloadGateTotalAdditional);
-                            cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
-
+                            // if (hasValidHour) {
+                            //     showSpinner(); // Show the spinner before creating the version
+                            //     await createTS(payloadSluice1Additional);
+                            //     cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
+                            //     await createTS(payloadSluice2Additional);
+                            //     cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
+                            //     await createTS(payloadSluiceTotalAdditional);
+                            //     cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
+                            //     await createTS(payloadGate1Additional);
+                            //     cdaStatusBtn.innerText = "Write payloadGate1 successful!";
+                            //     await createTS(payloadGate2Additional);
+                            //     cdaStatusBtn.innerText = "Write payloadGate2 successful!";
+                            //     await createTS(payloadGate3Additional);
+                            //     cdaStatusBtn.innerText = "Write payloadGate3 successful!";
+                            //     await createTS(payloadGateTotalAdditional);
+                            //     cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
+                            // } else {
+                            //     alert("Please select a time for the new data entry!");
+                            // }
 
                             // const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
 
