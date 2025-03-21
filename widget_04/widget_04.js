@@ -1430,6 +1430,18 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         console.log("payloadGateTotalAdditional: ", payloadGateTotalAdditional);
                     } else {
+                        // Function to convert time to ISO format
+                        function convertToISO(time) {
+                            // Create a new Date object with isoDateToday and the selected time
+                            const date = new Date(isoDateToday.slice(0, 10) + "T" + time + ":00Z");
+                            
+                            // Add 5 hours
+                            date.setHours(date.getHours() + 5); // Convert time to UTC time
+                        
+                            // Return the new ISO string
+                            return date.toISOString();
+                        }
+
                         // Existing Data Entry
                         console.log("getAllSelectedTimes: ", getAllSelectedTimes());
                         console.log("getAllSluice1Values: ", getAllSluice1Values());
@@ -1456,7 +1468,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             Object.entries(dataCategories).forEach(([key, values]) => {
                                 const updatedValues = selectedTimes.map((time, index) => [
-                                    time,
+                                    convertToISO(time), // Convert time to ISO format // time,
                                     values[index] ?? 0, // Default to 0 if undefined
                                     0
                                 ]);
