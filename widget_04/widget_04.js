@@ -733,8 +733,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Display existing data
                 formattedDataSluice1.forEach((date, index) => {
-                    console.log("index:", index);
-                    console.log("formattedTimestampCST:", date.formattedTimestampCST);
+                    // console.log("index:", index);
+                    // console.log("formattedTimestampCST:", date.formattedTimestampCST);
 
                     const row = document.createElement("tr");
 
@@ -1020,6 +1020,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     let hasValidHour = null;
                     hasValidHour = Object.keys(selectedHours).some(hour => selectedHours[hour] !== "NONE");
                     console.log("hasValidHour:", hasValidHour);
+
+                    let payloads = null;
 
                     // New data entry
                     if (hasValidHour) {
@@ -1434,10 +1436,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                         function convertToISO(time) {
                             // Create a new Date object with isoDateToday and the selected time
                             const date = new Date(isoDateToday.slice(0, 10) + "T" + time + ":00Z");
-                            
+
                             // Add 5 hours
                             date.setHours(date.getHours() + 5); // Convert time to UTC time
-                        
+
                             // Return the new ISO string
                             return date.toISOString();
                         }
@@ -1453,6 +1455,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                         console.log("getAllGateTotalValues: ", getAllGateTotalValues());
 
                         const selectedTimes = getAllSelectedTimes(); // Retrieve times
+                        const tsidCategories = {
+                            sluice1: tsidSluice1,
+                            sluice2: tsidSluice2,
+                            sluiceTotal: tsidSluiceTotal,
+                            gate1: tsidGate1,
+                            gate2: tsidGate2,
+                            gate3: tsidGate3,
+                            gateTotal: tsidGateTotal,
+                        };
+
                         const dataCategories = {
                             sluice1: getAllSluice1Values(),
                             sluice2: getAllSluice2Values(),
@@ -1463,8 +1475,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                             gateTotal: getAllGateTotalValues(),
                         };
 
+                        payloads = {};
                         if (Array.isArray(selectedTimes) && Object.values(dataCategories).every(Array.isArray)) {
-                            const payloads = {};
 
                             Object.entries(dataCategories).forEach(([key, values]) => {
                                 const updatedValues = selectedTimes.map((time, index) => [
@@ -1473,10 +1485,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     0
                                 ]);
 
+                                // Determine the units based on the key
+                                const units = key === "sluiceTotal" || key === "gateTotal" ? "cfs" : "ft";
+
                                 payloads[key] = {
-                                    "name": `tsid${key.charAt(0).toUpperCase() + key.slice(1)}`, // Dynamic TSID
+                                    "name": tsidCategories[key],
                                     "office-id": "MVS",
-                                    "units": "ft",
+                                    "units": units,
                                     "values": updatedValues.filter(item => item[0] !== null),
                                 };
                             });
@@ -1617,43 +1632,58 @@ document.addEventListener('DOMContentLoaded', async function () {
                         cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
                     } else {
                         try {
-                            // // Existing Gate Settings
-                            // showSpinner(); // Show the spinner before creating the version
-                            // await createTS(payloadSluice1);
-                            // cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
-                            // await createTS(payloadSluice2);
-                            // cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
-                            // await createTS(payloadSluiceTotal);
-                            // cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
-                            // await createTS(payloadGate1);
-                            // cdaStatusBtn.innerText = "Write payloadGate1 successful!";
-                            // await createTS(payloadGate2);
-                            // cdaStatusBtn.innerText = "Write payloadGate2 successful!";
-                            // await createTS(payloadGate3);
-                            // cdaStatusBtn.innerText = "Write payloadGate3 successful!";
-                            // await createTS(payloadGateTotal);
-                            // cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
+                            console.log("Payloads: ", payloads);
 
-                            // // New Gate Settings
-                            // if (hasValidHour) {
-                            //     showSpinner(); // Show the spinner before creating the version
-                            //     await createTS(payloadSluice1Additional);
-                            //     cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
-                            //     await createTS(payloadSluice2Additional);
-                            //     cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
-                            //     await createTS(payloadSluiceTotalAdditional);
-                            //     cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
-                            //     await createTS(payloadGate1Additional);
-                            //     cdaStatusBtn.innerText = "Write payloadGate1 successful!";
-                            //     await createTS(payloadGate2Additional);
-                            //     cdaStatusBtn.innerText = "Write payloadGate2 successful!";
-                            //     await createTS(payloadGate3Additional);
-                            //     cdaStatusBtn.innerText = "Write payloadGate3 successful!";
-                            //     await createTS(payloadGateTotalAdditional);
-                            //     cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
-                            // } else {
-                            //     alert("Please select a time for the new data entry!");
-                            // }
+                            // Function to send the payload to createTS
+                            function sendPayloadToCreateTS(payload) {
+                                // Check if payload is an object
+                                if (typeof payload === 'object' && payload !== null) {
+                                    // Create a function to send each individual data object with a delay
+                                    async function sendWithDelay() {
+                                        for (const [key, value] of Object.entries(payload)) {
+                                            console.log("Sending value for key: ", key, value);
+
+                                            // Add timeout with delay
+                                            await new Promise(resolve => {
+                                                setTimeout(() => {
+                                                    createTS(value);  // Send each individual data object (like "sluice1", "sluice2", etc.)
+
+                                                    // Update the status text after sending
+                                                    cdaStatusBtn.innerText = `Write payload${key.charAt(0).toUpperCase() + key.slice(1)} successful!`;
+
+                                                    resolve();  // Resolve after the timeout to proceed to the next item
+                                                }, 1000); // 1000ms delay (1 second)
+                                            });
+                                        }
+                                    }
+
+                                    sendWithDelay();  // Call the function to start the process
+                                } else {
+                                    console.error("Invalid payload format!");
+                                }
+                            }
+
+                            if (payloads) {
+                                sendPayloadToCreateTS(payloads);
+                            } else if (hasValidHour) {
+                                showSpinner(); // Show the spinner before creating the version
+                                await createTS(payloadSluice1Additional);
+                                cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
+                                await createTS(payloadSluice2Additional);
+                                cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
+                                await createTS(payloadSluiceTotalAdditional);
+                                cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
+                                await createTS(payloadGate1Additional);
+                                cdaStatusBtn.innerText = "Write payloadGate1 successful!";
+                                await createTS(payloadGate2Additional);
+                                cdaStatusBtn.innerText = "Write payloadGate2 successful!";
+                                await createTS(payloadGate3Additional);
+                                cdaStatusBtn.innerText = "Write payloadGate3 successful!";
+                                await createTS(payloadGateTotalAdditional);
+                                cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
+                            } else {
+                                alert("No valid hour selected!");
+                            }
 
                             // const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
 
