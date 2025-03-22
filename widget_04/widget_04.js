@@ -460,7 +460,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
 
                 async function loginStateController() {
-                    cdaSaveBtn = document.getElementById("cda-btn"); // Get the button by its ID
+                    cdaSaveBtn = document.getElementById("cda-btn-gate"); // Get the button by its ID
 
                     cdaSaveBtn.disabled = true; // Disable button while checking login state
 
@@ -1003,7 +1003,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
-                cdaSaveBtn.id = "cda-btn";
+                cdaSaveBtn.id = "cda-btn-gate";
                 cdaSaveBtn.disabled = true;
                 output6Div.appendChild(cdaSaveBtn);
 
@@ -1011,7 +1011,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 statusDiv.className = "status";
                 const cdaStatusBtn = document.createElement("button");
                 cdaStatusBtn.textContent = "";
-                cdaStatusBtn.id = "cda-btn";
+                cdaStatusBtn.id = "cda-btn-gate";
                 cdaStatusBtn.disabled = false;
                 statusDiv.appendChild(cdaStatusBtn);
                 output6Div.appendChild(statusDiv);
@@ -2009,7 +2009,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
-                cdaSaveBtn.id = "cda-btn";
+                cdaSaveBtn.id = "cda-btn-gate";
                 cdaSaveBtn.disabled = true;
                 output6Div.appendChild(cdaSaveBtn);
 
@@ -2017,7 +2017,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 statusDiv.className = "status";
                 const cdaStatusBtn = document.createElement("button");
                 cdaStatusBtn.textContent = "";
-                cdaStatusBtn.id = "cda-btn";
+                cdaStatusBtn.id = "cda-btn-gate";
                 cdaStatusBtn.disabled = false;
                 statusDiv.appendChild(cdaStatusBtn);
                 output6Div.appendChild(statusDiv);
@@ -2581,7 +2581,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("fetchTimeSeriesData begin: ", isoDateMinus1Day);
             console.log("fetchTimeSeriesData end: ", end);
 
-            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${end}&office=${office}`;
+            // isoDateToday
+
+            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${end}&office=${office}`;
             // const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1DayPlus1Hour}&end=${isoDateDay1}&office=${office}`;
             console.log('tsidData:', tsidData);
             try {
