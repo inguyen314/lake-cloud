@@ -890,7 +890,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                     sluice1Input.style.backgroundColor = "lightgray";
                     sluice1Cell.appendChild(sluice1Input);
                     row.appendChild(sluice1Cell);
-                    // console.log(document.getElementById(`sluice1Input`));  // Check if element exists
 
                     // Sluice2 cell (editable)
                     const sluice2Cell = document.createElement("td");
@@ -980,7 +979,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 tableOutflowAvg.style.width = "50%";
                 tableOutflowAvg.style.marginTop = "10px";
 
-
                 // Create the first cell for "Average Outflow (cfs)"
                 const firstCell = document.createElement("td");
                 firstCell.textContent = "Average Outflow (cfs)";
@@ -1017,12 +1015,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output6Div.appendChild(statusDiv);
 
                 let hasValidNewEntryHour = null;
+                let payloads = null;
 
                 cdaSaveBtn.addEventListener("click", async () => {
                     hasValidNewEntryHour = Object.keys(selectedHours).some(hour => selectedHours[hour] !== "NONE");
                     console.log("hasValidNewEntryHour:", hasValidNewEntryHour);
-
-                    let payloads = null;
 
                     let payloadSluice1Additional = null;
                     let payloadSluice2Additional = null;
@@ -1679,6 +1676,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 cdaStatusBtn.innerText = "Write payloadGate3 successful!";
                                 await createTS(payloadGateTotalAdditional);
                                 cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
+                                cdaStatusBtn.innerText = "Write successful!";
                             } else {
                                 alert("No valid hour selected!");
                             }
@@ -1853,6 +1851,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // Set the default value
                     timeSelect.value = selectedHours[hourKey];
+
+                    // Make it non-editable
+                    timeSelect.disabled = true
 
                     // Update the corresponding hour when changed
                     timeSelect.addEventListener("change", (event) => {
@@ -2633,10 +2634,10 @@ document.addEventListener('DOMContentLoaded', async function () {
         function convertToISO(time) {
             // Create a new Date object with isoDateToday and the selected time
             const date = new Date(isoDateToday.slice(0, 10) + "T" + time + ":00Z");
-    
+
             // Add 5 hours
             date.setHours(date.getHours() + 5); // Convert time to UTC time
-    
+
             // Return the new ISO string
             return date.toISOString();
         }
