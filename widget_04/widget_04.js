@@ -1663,7 +1663,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 }
                             }
 
-                            if (payloads) {
+                            if (payloads !== null) {
                                 sendPayloadToCreateTS(payloads);
                             } else if (hasValidHour) {
                                 showSpinner(); // Show the spinner before creating the version
@@ -1825,7 +1825,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const selectedHours = {};
 
-                formattedYesterdayDataSluice1.forEach((date, index) => {
+                entryDates.forEach((date, index) => {
                     const row = document.createElement("tr");
 
                     // const selectedHours = {}; // Object to store each hour as hour1, hour2, etc.
@@ -1870,7 +1870,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const sluice1Cell = document.createElement("td");
                     const sluice1Input = document.createElement("input");
                     sluice1Input.type = "number";
-                    sluice1Input.value = (date[1]).toFixed(1);
+                    sluice1Input.value = formattedYesterdayDataSluice1.at(-1)[1].toFixed(1);
                     sluice1Input.id = `sluice1Input`;
 
                     if (index === 0) {
@@ -1886,7 +1886,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const sluice2Cell = document.createElement("td");
                     const sluice2Input = document.createElement("input");
                     sluice2Input.type = "number";
-                    sluice2Input.value = formattedYesterdayDataSluice1[0][1].toFixed(1);
+                    sluice2Input.value = formattedYesterdayDataSluice2.at(-1)[1].toFixed(1);
                     sluice2Input.id = `sluice2Input`;
 
                     if (index === 0) {
@@ -2614,7 +2614,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             // console.log("fetchTimeSeriesYesterdayData begin (yesterday midnight): ", isoDateMinus1Day);
             // console.log("fetchTimeSeriesYesterdayData end (midnight minus 1 hour): ", isoDateTodayMinus1Hour);
 
-            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus2Days}&end=${isoDateMinus1Day}&office=${office}`;
+            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateToday}&office=${office}`;
             // const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1DayPlus1Hour}&end=${isoDateDay1}&office=${office}`;
             console.log('tsidData:', tsidData);
             try {
