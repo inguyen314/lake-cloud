@@ -1432,18 +1432,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         console.log("payloadGateTotalAdditional: ", payloadGateTotalAdditional);
                     } else {
-                        // Function to convert time to ISO format
-                        function convertToISO(time) {
-                            // Create a new Date object with isoDateToday and the selected time
-                            const date = new Date(isoDateToday.slice(0, 10) + "T" + time + ":00Z");
-
-                            // Add 5 hours
-                            date.setHours(date.getHours() + 5); // Convert time to UTC time
-
-                            // Return the new ISO string
-                            return date.toISOString();
-                        }
-
                         // Existing Data Entry
                         console.log("getAllSelectedTimes: ", getAllSelectedTimes());
                         console.log("getAllSluice1Values: ", getAllSluice1Values());
@@ -1900,7 +1888,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const sluiceTotalCell = document.createElement("td");
                     const sluiceTotalInput = document.createElement("input");
                     sluiceTotalInput.type = "number";
-                    sluiceTotalInput.value = formattedYesterdayDataSluiceTotal[0][1].toFixed(0);
+                    sluiceTotalInput.value = formattedYesterdayDataSluiceTotal.at(-1)[1].toFixed(0);
                     sluiceTotalInput.id = `sluiceTotalInput`;
 
                     if (index === 0) {
@@ -1914,7 +1902,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate1Cell = document.createElement("td");
                     const gate1Input = document.createElement("input");
                     gate1Input.type = "number";
-                    gate1Input.value = formattedYesterdayDataGate1[0][1].toFixed(1);
+                    gate1Input.value = formattedYesterdayDataGate1.at(-1)[1].toFixed(1);
                     gate1Input.id = `gate1Input`;
                     if (index === 0) {
                         gate1Input.style.backgroundColor = "pink";
@@ -1926,7 +1914,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate2Cell = document.createElement("td");
                     const gate2Input = document.createElement("input");
                     gate2Input.type = "number";
-                    gate2Input.value = formattedYesterdayDataGate2[0][1].toFixed(1);
+                    gate2Input.value = formattedYesterdayDataGate2.at(-1)[1].toFixed(1);
                     gate2Input.id = `gate2Input`;
                     if (index === 0) {
                         gate2Input.style.backgroundColor = "pink";
@@ -1938,7 +1926,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate3Cell = document.createElement("td");
                     const gate3Input = document.createElement("input");
                     gate3Input.type = "number";
-                    gate3Input.value = formattedYesterdayDataGate3[0][1].toFixed(1);
+                    gate3Input.value = formattedYesterdayDataGate3.at(-1)[1].toFixed(1);
                     gate3Input.id = `gate3Input`;
                     if (index === 0) {
                         gate3Input.style.backgroundColor = "pink";
@@ -1950,7 +1938,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gateTotalCell = document.createElement("td");
                     const gateTotalInput = document.createElement("input");
                     gateTotalInput.type = "number";
-                    gateTotalInput.value = formattedYesterdayDataGateTotal[0][1].toFixed(0);
+                    gateTotalInput.value = formattedYesterdayDataGateTotal.at(-1)[1].toFixed(0);
                     gateTotalInput.id = `gateTotalInput`;
                     if (index === 0) {
                         gateTotalInput.style.backgroundColor = "pink";
@@ -1962,7 +1950,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gateOutflowTotalCell = document.createElement("td");
                     const gateOutflowTotalInput = document.createElement("input");
                     gateOutflowTotalInput.type = "number";
-                    gateOutflowTotalInput.value = (formattedYesterdayDataGateTotal[0][1] + formattedYesterdayDataSluiceTotal[0][1]).toFixed(0);
+                    gateOutflowTotalInput.value = (formattedYesterdayDataGateTotal.at(-1)[1] + formattedYesterdayDataSluiceTotal.at(-1)[1]).toFixed(0);
                     gateOutflowTotalInput.id = `gateOutflowTotalInput`;
                     gateOutflowTotalInput.readOnly = true; // Make it read-only
                     gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
@@ -2159,7 +2147,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "units": "ft",
                         "values": [
                             [
-                                time1,
+                                convertToISO(selectedHours['hour1']),
                                 sluice1Input.value,
                                 0
                             ],
@@ -2199,7 +2187,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "units": "ft",
                         "values": [
                             [
-                                time1,
+                                convertToISO(selectedHours['hour1']),
                                 sluice2Input.value,
                                 0
                             ],
@@ -2239,7 +2227,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "units": "cfs",
                         "values": [
                             [
-                                time1,
+                                convertToISO(selectedHours['hour1']),
                                 sluiceTotalInput.value,
                                 0
                             ],
@@ -2279,7 +2267,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "units": "ft",
                         "values": [
                             [
-                                time1,
+                                convertToISO(selectedHours['hour1']),
                                 gate1Input.value,
                                 0
                             ],
@@ -2319,7 +2307,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "units": "ft",
                         "values": [
                             [
-                                time1,
+                                convertToISO(selectedHours['hour1']),
                                 gate2Input.value,
                                 0
                             ],
@@ -2359,7 +2347,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "units": "ft",
                         "values": [
                             [
-                                time1,
+                                convertToISO(selectedHours['hour1']),
                                 gate3Input.value,
                                 0
                             ],
@@ -2399,7 +2387,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "units": "cfs",
                         "values": [
                             [
-                                time1,
+                                convertToISO(selectedHours['hour1']),
                                 gateTotalInput.value,
                                 0
                             ],
@@ -2631,6 +2619,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.error("Error fetching time series data:", error);
             }
         };
+
+        function convertToISO(time) {
+            // Create a new Date object with isoDateToday and the selected time
+            const date = new Date(isoDateToday.slice(0, 10) + "T" + time + ":00Z");
+    
+            // Add 5 hours
+            date.setHours(date.getHours() + 5); // Convert time to UTC time
+    
+            // Return the new ISO string
+            return date.toISOString();
+        }
 
         fetchTsidData();
     }
