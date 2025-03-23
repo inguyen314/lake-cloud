@@ -1016,15 +1016,24 @@ document.addEventListener('DOMContentLoaded', async function () {
                 statusDiv.appendChild(cdaStatusBtn);
                 output6Div.appendChild(statusDiv);
 
+                let hasValidNewEntryHour = null;
+
                 cdaSaveBtn.addEventListener("click", async () => {
-                    let hasValidHour = null;
-                    hasValidHour = Object.keys(selectedHours).some(hour => selectedHours[hour] !== "NONE");
-                    console.log("hasValidHour:", hasValidHour);
+                    hasValidNewEntryHour = Object.keys(selectedHours).some(hour => selectedHours[hour] !== "NONE");
+                    console.log("hasValidNewEntryHour:", hasValidNewEntryHour);
 
                     let payloads = null;
 
+                    let payloadSluice1Additional = null;
+                    let payloadSluice2Additional = null;
+                    let payloadSluiceTotalAdditional = null;
+                    let payloadGate1Additional = null;
+                    let payloadGate2Additional = null;
+                    let payloadGate3Additional = null;
+                    let payloadGateTotalAdditional = null;
+
                     // New data entry
-                    if (hasValidHour) {
+                    if (hasValidNewEntryHour === true) {
                         Object.keys(selectedHours).forEach(hour => {
                             console.log(`${hour} selected:`, selectedHours[hour]);
                         });
@@ -1152,7 +1161,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
 
                         // Payload for sluice1 values
-                        const payloadSluice1Additional = {
+                        payloadSluice1Additional = {
                             "name": tsidSluice1,
                             "office-id": "MVS",
                             "units": "ft",
@@ -1192,7 +1201,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         console.log("payloadSluice1Additional: ", payloadSluice1Additional);
 
-                        const payloadSluice2Additional = {
+                        payloadSluice2Additional = {
                             "name": tsidSluice2,
                             "office-id": "MVS",
                             "units": "ft",
@@ -1232,7 +1241,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         console.log("payloadSluice2Additional: ", payloadSluice2Additional);
 
-                        const payloadSluiceTotalAdditional = {
+                        payloadSluiceTotalAdditional = {
                             "name": tsidSluiceTotal,
                             "office-id": "MVS",
                             "units": "cfs",
@@ -1272,7 +1281,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         console.log("payloadSluiceTotalAdditional: ", payloadSluiceTotalAdditional);
 
-                        const payloadGate1Additional = {
+                        payloadGate1Additional = {
                             "name": tsidGate1,
                             "office-id": "MVS",
                             "units": "ft",
@@ -1312,7 +1321,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         console.log("payloadGate1Additional: ", payloadGate1Additional);
 
-                        const payloadGate2Additional = {
+                        payloadGate2Additional = {
                             "name": tsidGate2,
                             "office-id": "MVS",
                             "units": "ft",
@@ -1352,7 +1361,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         console.log("payloadGate2Additional: ", payloadGate2Additional);
 
-                        const payloadGate3Additional = {
+                        payloadGate3Additional = {
                             "name": tsidGate3,
                             "office-id": "MVS",
                             "units": "ft",
@@ -1392,7 +1401,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         console.log("payloadGate3Additional: ", payloadGate3Additional);
 
-                        const payloadGateTotalAdditional = {
+                        payloadGateTotalAdditional = {
                             "name": tsidGateTotal,
                             "office-id": "MVS",
                             "units": "cfs",
@@ -1621,6 +1630,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     } else {
                         try {
                             console.log("Payloads: ", payloads);
+                            console.log("hasValidNewEntryHour:", hasValidNewEntryHour);
 
                             // Function to send the payload to createTS
                             function sendPayloadToCreateTS(payload) {
@@ -1653,7 +1663,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             if (payloads !== null) {
                                 sendPayloadToCreateTS(payloads);
-                            } else if (hasValidHour) {
+                            } else if (hasValidNewEntryHour === true) {
                                 showSpinner(); // Show the spinner before creating the version
                                 await createTS(payloadSluice1Additional);
                                 cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
