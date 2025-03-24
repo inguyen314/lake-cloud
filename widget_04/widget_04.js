@@ -525,10 +525,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const timeSeriesDataGateTotal = await fetchTimeSeriesData(tsidGateTotal);
                     console.log("timeSeriesDataGateTotal:", timeSeriesDataGateTotal);
 
-                    const timeSeriesDataOutflowTotal = await fetchTimeSeriesData(tsidGateTotal);
+                    const timeSeriesDataOutflowTotal = await fetchTimeSeriesData(tsidOutflowTotal);
                     console.log("timeSeriesDataOutflowTotal:", timeSeriesDataOutflowTotal);
 
-                    const timeSeriesDataOutflowAverage = await fetchTimeSeriesData(tsidGateTotal);
+                    const timeSeriesDataOutflowAverage = await fetchTimeSeriesData(tsidOutflowAverage);
                     console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage);
 
                     // Fetch yesterday time series data
@@ -553,10 +553,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const timeSeriesYesterdayDataGateTotal = await fetchTimeSeriesYesterdayData(tsidGateTotal);
                     console.log("timeSeriesYesterdayDataGateTotal:", timeSeriesYesterdayDataGateTotal);
 
-                    const timeSeriesYesterdayDataOutflowTotal = await fetchTimeSeriesYesterdayData(tsidGateTotal);
+                    const timeSeriesYesterdayDataOutflowTotal = await fetchTimeSeriesYesterdayData(tsidOutflowTotal);
                     console.log("timeSeriesYesterdayDataOutflowTotal:", timeSeriesYesterdayDataOutflowTotal);
 
-                    const timeSeriesYesterdayDataOutflowAverage = await fetchTimeSeriesYesterdayData(tsidGateTotal);
+                    const timeSeriesYesterdayDataOutflowAverage = await fetchTimeSeriesYesterdayData(tsidOutflowAverage);
                     console.log("timeSeriesYesterdayDataOutflowAverage:", timeSeriesYesterdayDataOutflowAverage);
 
 
@@ -1028,6 +1028,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     let payloadGate2Additional = null;
                     let payloadGate3Additional = null;
                     let payloadGateTotalAdditional = null;
+                    let payloadOutflowTotalAdditional = null;
 
                     // New data entry
                     if (hasValidNewEntryHour === true) {
@@ -1112,9 +1113,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                             console.error("gateOutflowTotalInput element not found!");
                             return; // Exit if input is missing
                         }
-                        if (!gateOutflowTotalInput.value) {
-                            gateOutflowTotalInput.value = 909;
-                        }
+                        const gateTotal = gateTotalAdditionalInput ? Number(gateTotalAdditionalInput.value) || 0 : 0;
+                        const sluiceTotal = sluiceTotalAdditionalInput ? Number(sluiceTotalAdditionalInput.value) || 0 : 0;
+                        const calculatedValue = gateTotal + sluiceTotal;
+
+                        gateOutflowTotalInput.value = calculatedValue > 0 ? calculatedValue : 909;
 
                         // ========================== CALCULATE GATE OUTFLOW AVERAGE ==========================
                         // Get the gateOutflowAverage input element and check if it exists
@@ -1447,6 +1450,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         console.log("getAllGate2Values: ", getAllGate2Values());
                         console.log("getAllGate3Values: ", getAllGate3Values());
                         console.log("getAllGateTotalValues: ", getAllGateTotalValues());
+                        console.log("getAllOutflowTotalValues: ", getAllOutflowTotalValues());
 
                         const selectedTimes = getAllSelectedTimes(); // Retrieve times
                         const tsidCategories = {
@@ -1457,6 +1461,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             gate2: tsidGate2,
                             gate3: tsidGate3,
                             gateTotal: tsidGateTotal,
+                            outflowTotal: tsidOutflowTotal,
                         };
 
                         const dataCategories = {
@@ -1467,6 +1472,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             gate2: getAllGate2Values(),
                             gate3: getAllGate3Values(),
                             gateTotal: getAllGateTotalValues(),
+                            outflowTotal: getAllOutflowTotalValues(),
                         };
 
                         payloads = {};
@@ -1480,7 +1486,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 ]);
 
                                 // Determine the units based on the key
-                                const units = key === "sluiceTotal" || key === "gateTotal" ? "cfs" : "ft";
+                                const units = key === "sluiceTotal" || key === "gateTotal" || key === "outflowTotal" ? "cfs" : "ft";
 
                                 payloads[key] = {
                                     "name": tsidCategories[key],
@@ -1544,6 +1550,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                         function getAllGateTotalValues() {
                             return formattedDataGateTotal.map((_, index) =>
                                 parseFloat(document.getElementById(`gateTotalInput-${index}`).value)
+                            );
+                        }
+
+                        function getAllOutflowTotalValues() {
+                            return formattedDataGateTotal.map((_, index) =>
+                                parseFloat(document.getElementById(`gateOutflowTotalInput-${index}`).value)
                             );
                         }
                     }
@@ -2570,17 +2582,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 fetchUpdatedData(tsidOutflowTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
                                 fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
                             ]);
-                            
+
                             createTable(
                                 isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
                                 tsidSluice1, updatedDataSluice1, tsidSluice2, updatedDataSluice2, tsidSluiceTotal, updatedDataSluiceTotal,
                                 tsidGate1, updatedDataGate1, tsidGate2, updatedDataGate2, tsidGate3, updatedDataGate3, tsidGateTotal, updatedDataGateTotal,
                                 tsidOutflowTotal, updatedDataOutflowTotal, tsidOutflowAverage, updatedDataOutflowAverage,
-                                timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, 
-                                timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2, timeSeriesYesterdayDataGate3, 
+                                timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal,
+                                timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2, timeSeriesYesterdayDataGate3,
                                 timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage
                             );
-                            
+
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
@@ -2604,8 +2616,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Convert back to ISO string (preserve UTC format)
             const end = date.toISOString();
 
-            console.log("fetchTimeSeriesData begin: ", isoDateMinus1Day);
-            console.log("fetchTimeSeriesData end: ", end);
+            // console.log("begin: ", isoDateMinus1Day);
+            // console.log("end: ", end);
 
             // isoDateToday
 
