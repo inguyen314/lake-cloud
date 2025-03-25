@@ -986,7 +986,45 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Create the second cell with "--"
                 const secondCell = document.createElement("td");
                 secondCell.id = `gateOutflowAverageInput`;
-                secondCell.textContent = null;
+
+                // Calculate the average outflow
+                const totalHours = 24;
+                let weightedSum = 0;
+                let lastHour = 0;
+                let averageOutflow = null;
+
+                // Check if the array is empty
+                if (formattedDataOutflowTotal.length === 0) {
+                    console.error("Error: formattedDataOutflowTotal is empty.");
+                } else {
+                    // Extract the first entry's hour
+                    lastHour = parseInt(formattedDataOutflowTotal[0].formattedTimestampCST?.split(" ")[1]?.split(":")[0] || 0);
+
+                    // Handle case with only one object
+                    if (formattedDataOutflowTotal.length === 1) {
+                        weightedSum = (formattedDataOutflowTotal[0][1] ?? 0) * (totalHours - lastHour);
+                    } else {
+                        formattedDataOutflowTotal.forEach((entry, index) => {
+                            const currentHour = parseInt(entry.formattedTimestampCST?.split(" ")[1]?.split(":")[0] || 0);
+                            const value = entry[1] ?? 0; // Ensure value exists
+
+                            if (index > 0) {
+                                const duration = currentHour - lastHour;
+                                weightedSum += (formattedDataOutflowTotal[index - 1][1] ?? 0) * duration;
+                            }
+                            lastHour = currentHour;
+                        });
+
+                        // Add the last duration from the last timestamp to 24
+                        const lastDuration = totalHours - lastHour;
+                        weightedSum += (formattedDataOutflowTotal[formattedDataOutflowTotal.length - 1][1] ?? 0) * lastDuration;
+                    }
+
+                    // Compute the weighted average
+                    averageOutflow = weightedSum / totalHours;
+                    console.log("averageOutflow: ", averageOutflow);
+                }
+                secondCell.textContent = averageOutflow ? averageOutflow.toFixed(0) : 909;
                 tableRow.appendChild(secondCell);
 
                 // Append the row to the tableOutflowAvg
@@ -1692,7 +1730,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 cdaStatusBtn.innerText = "Write payloadGate3 successful!";
                                 await createTS(payloadGateTotalAdditional);
                                 cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
-                                cdaStatusBtn.innerText = "Write successful!";
+                                cdaStatusBtn.innerText = "Refreshing in 10 seconds...";
                             } else {
                                 alert("No valid hour selected!");
                             }
@@ -1731,6 +1769,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2, timeSeriesYesterdayDataGate3,
                                 timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage
                             );
+
+                            // location.reload();
                         } catch (error) {
                             // hideSpinner(); // Hide the spinner if an error occurs
                             // cdaStatusBtn.innerText = "Failed to write data!";
@@ -2477,6 +2517,46 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     console.log("payloadGateTotal: ", payloadGateTotal);
 
+                    const payloadOutflowTotal = {
+                        "name": tsidOutflowTotal,
+                        "office-id": "MVS",
+                        "units": "cfs",
+                        "values": [
+                            [
+                                convertToISO(selectedHours['hour1']),
+                                gateOutflowTotalInput.value,
+                                0
+                            ],
+                            // [
+                            //     time2,
+                            //     gateTotalInput.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time3,
+                            //     gateTotalInput.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time4,
+                            //     gateTotalInput.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time5,
+                            //     gateTotalInput.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time6,
+                            //     gateTotalInput.value,
+                            //     0
+                            // ],
+                        ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                    };
+
+                    console.log("payloadOutflowTotal: ", payloadOutflowTotal);
+
                     async function loginCDA() {
                         console.log("page");
                         if (await isLoggedIn()) return true;
@@ -2586,6 +2666,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                             cdaStatusBtn.innerText = "Write payloadGate3 successful!";
                             await createTS(payloadGateTotal);
                             cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
+                            await createTS(payloadOutflowTotal);
+                            cdaStatusBtn.innerText = "Write payloadOutflowTotal successful!";
 
 
                             // // Fetch updated data and refresh the table
