@@ -502,7 +502,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const tsidOutflowAverage = tsidOutflowAverageData['assigned-time-series'][0]['timeseries-id'];
                     console.log("tsidOutflowAverage:", tsidOutflowAverage);
 
-
                     // Fetch time series data
                     const timeSeriesDataSluice1 = await fetchTimeSeriesData(tsidSluice1);
                     console.log("timeSeriesDataSluice1:", timeSeriesDataSluice1);
@@ -1589,26 +1588,31 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
-                    async function fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day) {
-                        let response = null;
+                    async function fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1) {
+                        // Convert to Date object
+                        const date = new Date(isoDateDay1);
 
-                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay5}&office=MVS`, {
-                            headers: {
-                                "Accept": "application/json;version=2", // Ensuring the correct version is used
-                                "cache-control": "no-cache"
-                            }
-                        });
+                        // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
+                        date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
 
-                        if (!response.ok) {
-                            throw new Error(`Failed to fetch updated data: ${response.status}`);
+                        // Convert back to ISO string (preserve UTC format)
+                        const end = date.toISOString();
+
+                        const tsidData = `${setBaseUrl}timeseries?name=${name}&begin=${isoDateToday}&end=${end}&office=${office}`;
+                        // console.log('tsidData:', tsidData);
+                        try {
+                            const response = await fetch(tsidData, {
+                                headers: {
+                                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                                    "cache-control": "no-cache"
+                                }
+                            });
+
+                            const data = await response.json();
+                            return data;
+                        } catch (error) {
+                            console.error("Error fetching time series data:", error);
                         }
-
-                        const data = await response.json();
-
-                        // Log the raw data received
-                        console.log('Fetched Data:', data);
-
-                        return data;
                     }
 
                     // Function to show the spinner while waiting
@@ -1693,11 +1697,40 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 alert("No valid hour selected!");
                             }
 
-                            // const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                            // Ensure data is saved before creating the table
+                            await new Promise(resolve => setTimeout(resolve, 10000)); // Small delay for safety
 
-                            // let updatedDataInflow = null;
-                            // updatedDataInflow = await fetchUpdatedData(tsidInflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
-                            // createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, updatedData, tsidInflow, updatedDataInflow);
+                            const [
+                                updatedDataSluice1,
+                                updatedDataSluice2,
+                                updatedDataSluiceTotal,
+                                updatedDataGate1,
+                                updatedDataGate2,
+                                updatedDataGate3,
+                                updatedDataGateTotal,
+                                updatedDataOutflowTotal,
+                                updatedDataOutflowAverage
+                            ] = await Promise.all([
+                                fetchUpdatedData(tsidSluice1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                fetchUpdatedData(tsidSluice2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                fetchUpdatedData(tsidSluiceTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                fetchUpdatedData(tsidGate1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                fetchUpdatedData(tsidGate2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                fetchUpdatedData(tsidOutflowTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
+                            ]);
+
+                            createTable(
+                                isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                                tsidSluice1, updatedDataSluice1, tsidSluice2, updatedDataSluice2, tsidSluiceTotal, updatedDataSluiceTotal,
+                                tsidGate1, updatedDataGate1, tsidGate2, updatedDataGate2, tsidGate3, updatedDataGate3, tsidGateTotal, updatedDataGateTotal,
+                                tsidOutflowTotal, updatedDataOutflowTotal, tsidOutflowAverage, updatedDataOutflowAverage,
+                                timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal,
+                                timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2, timeSeriesYesterdayDataGate3,
+                                timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage
+                            );
                         } catch (error) {
                             // hideSpinner(); // Hide the spinner if an error occurs
                             // cdaStatusBtn.innerText = "Failed to write data!";
@@ -2493,11 +2526,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // Convert back to ISO string (preserve UTC format)
                         const end = date.toISOString();
-
-                        console.log("fetchTimeSeriesData begin: ", isoDateMinus1Day);
-                        console.log("fetchTimeSeriesData end: ", end);
-
-                        // isoDateToday
 
                         const tsidData = `${setBaseUrl}timeseries?name=${name}&begin=${isoDateToday}&end=${end}&office=${office}`;
                         // console.log('tsidData:', tsidData);
