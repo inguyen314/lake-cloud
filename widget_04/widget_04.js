@@ -2214,8 +2214,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Create the second cell with "--"
                 const secondCell = document.createElement("td");
+                secondCell.type = "number";
                 secondCell.id = `gateOutflowAverageInput`;
-                secondCell.textContent = null;
+                secondCell.textContent = formattedYesterdayDataOutflowAverage.at(-1)[1].toFixed(0);
                 tableRow.appendChild(secondCell);
 
                 // Append the row to the tableOutflowAvg
@@ -2323,6 +2324,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // ========================== CALCULATE GATE OUTFLOW TOTAL ==========================
                     // Get the gateOutflowTotal input element and check if it exists
                     const gateOutflowTotalInput = document.getElementById('gateOutflowTotalInput');
+                    console.log("gateOutflowTotalInput: ", gateOutflowTotalInput);
                     if (!gateOutflowTotalInput) {
                         console.error("gateOutflowTotalInput element not found!");
                         return; // Exit if input is missing
@@ -2338,8 +2340,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         console.error("gateOutflowAverageInput element not found!");
                         return; // Exit if input is missing
                     }
-                    if (!gateOutflowAverageInput.value) {
-                        gateOutflowAverageInput.value = 909;
+                    if (!gateOutflowAverageInput.textContent.trim()) {
+                        gateOutflowAverageInput.textContent = "909";
                     }
 
                     let time1 = null;
@@ -2410,7 +2412,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // ],
                         ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
                     };
-
                     console.log("payloadSluice1: ", payloadSluice1);
 
                     const payloadSluice2 = {
@@ -2450,7 +2451,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // ],
                         ].filter(item => item[0] !== null),
                     };
-
                     console.log("payloadSluice2: ", payloadSluice2);
 
                     const payloadSluiceTotal = {
@@ -2490,7 +2490,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // ],
                         ].filter(item => item[0] !== null),
                     };
-
                     console.log("payloadSluiceTotal: ", payloadSluiceTotal);
 
                     const payloadGate1 = {
@@ -2530,7 +2529,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // ],
                         ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
                     };
-
                     console.log("payloadGate1: ", payloadGate1);
 
                     const payloadGate2 = {
@@ -2570,7 +2568,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // ],
                         ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
                     };
-
                     console.log("payloadGate2: ", payloadGate2);
 
                     const payloadGate3 = {
@@ -2610,7 +2607,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // ],
                         ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
                     };
-
                     console.log("payloadGate3: ", payloadGate3);
 
                     const payloadGateTotal = {
@@ -2650,7 +2646,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // ],
                         ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
                     };
-
                     console.log("payloadGateTotal: ", payloadGateTotal);
 
                     const payloadOutflowTotal = {
@@ -2690,8 +2685,46 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // ],
                         ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
                     };
-
                     console.log("payloadOutflowTotal: ", payloadOutflowTotal);
+
+                    const payloadOutflowAverage = {
+                        "name": tsidOutflowAverage,
+                        "office-id": "MVS",
+                        "units": "cfs",
+                        "values": [
+                            [
+                                convertToISO(selectedHours['hour1']),
+                                gateOutflowAverageInput.textContent.trim(),
+                                0
+                            ],
+                            // [
+                            //     time2,
+                            //     gateTotalInput.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time3,
+                            //     gateTotalInput.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time4,
+                            //     gateTotalInput.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time5,
+                            //     gateTotalInput.value,
+                            //     0
+                            // ],
+                            // [
+                            //     time6,
+                            //     gateTotalInput.value,
+                            //     0
+                            // ],
+                        ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                    };
+                    console.log("payloadOutflowAverage: ", payloadOutflowAverage);
 
                     async function loginCDA() {
                         console.log("page");
@@ -2804,7 +2837,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                             cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
                             await createTS(payloadOutflowTotal);
                             cdaStatusBtn.innerText = "Write payloadOutflowTotal successful!";
-
+                            await createTS(payloadOutflowAverage);
+                            cdaStatusBtn.innerText = "Write payloadOutflowAverage successful!";
 
                             // // Fetch updated data and refresh the table
                             const [
@@ -2838,7 +2872,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2, timeSeriesYesterdayDataGate3,
                                 timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage
                             );
-
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
