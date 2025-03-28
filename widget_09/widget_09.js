@@ -156,6 +156,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const ruleCurveInput = document.createElement("input");
                 ruleCurveInput.type = "number";
                 ruleCurveInput.value = data2['constant-value'].toFixed(2);  // Blank entry box
+                ruleCurveInput.step = "0.01";  // Ensure the step increment is 0.01
                 ruleCurveInput.className = "outflow-input";
                 ruleCurveInput.id = `ruleCurveInput`;
 

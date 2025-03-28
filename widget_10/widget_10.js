@@ -198,6 +198,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const crestInput = document.createElement("input");
             crestInput.type = "number";
             crestInput.value = formattedData.at(-1)[1].toFixed(2); // Crest uses formattedData
+            crestInput.step = "0.01";  // Ensure the step increment is 0.01
             crestInput.id = "crestInput";
             crestCell.appendChild(crestInput);
             row.appendChild(crestCell);
@@ -396,6 +397,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const crestInput = document.createElement("input");
             crestInput.type = "number";
             crestInput.value = null;
+            crestInput.step = "0.01";  // Ensure the step increment is 0.01
             crestInput.id = "crestInput";
             crestInput.style.backgroundColor = "pink";  // Set pink background
             crestCell.appendChild(crestInput);

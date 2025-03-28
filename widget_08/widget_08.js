@@ -169,7 +169,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 table.appendChild(headerRow);
 
                 if (formattedData.length === 0) {
-                    // No data, create a single row using isoDateToday and a blank outflow cell
                     const row = document.createElement("tr");
 
                     const dateCell = document.createElement("td");
@@ -179,7 +178,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const precipCell = document.createElement("td");
                     const precipInput = document.createElement("input");
                     precipInput.type = "number";
-                    precipInput.value = 0.00;  // Blank entry box, default to 0.00
+                    precipInput.value = 0.00;
+                    precipInput.step = "0.01";  // Ensure the step increment is 0.01
                     precipInput.className = "outflow-input";
                     precipInput.id = `precipInput-${isoDateToday}`;
                     precipInput.style.backgroundColor = "pink";  // Set pink background
@@ -199,9 +199,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const precipCell = document.createElement("td");
                         const precipInput = document.createElement("input");
                         precipInput.type = "number";
-                        precipInput.value = entry[1]; 
+                        precipInput.value = parseFloat(entry[1]).toFixed(2); // Format to 2 decimal places
+                        precipInput.step = "0.01";  // Ensure the step increment is 0.01
                         precipInput.className = "outflow-input";
-                        precipInput.id = `precipInput-${entry.timestamp}`;
+                        precipInput.id = `precipInput-${isoDateToday}`;
                         precipCell.appendChild(precipInput);
                         row.appendChild(precipCell);
 
@@ -234,18 +235,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                     if (formattedData.length === 0) {
                         // No data, only today's input (single row scenario)
                         const precipInput = document.getElementById(`precipInput-${isoDateToday}`).value;
-
-                        let precipValue = precipInput ? parseFloat(precipInput) : 909; // Default to 909 if empty
+                        let precipValue = precipInput ? parseFloat(parseFloat(precipInput).toFixed(2)) : 909; // Default to 909 if empty
                         const timestampUnix = new Date(isoDateToday).getTime();
 
                         values.push([timestampUnix, precipValue, 0]);
                     } else {
                         // Use existing formattedData entries
                         formattedData.forEach(entry => {
-                            const precipInput = document.getElementById(`precipInput-${entry.timestamp}`).value;
-
-                            let precipValue = precipInput ? parseFloat(precipInput) : 909; // Default to 909 if empty
-                            const timestampUnix = new Date(entry.timestamp).getTime();
+                            const precipInput = document.getElementById(`precipInput-${isoDateToday}`).value;
+                            let precipValue = precipInput ? parseFloat(parseFloat(precipInput).toFixed(2)) : 909; // Default to 909 if empty
+                            const timestampUnix = new Date(isoDateToday).getTime();
 
                             values.push([timestampUnix, precipValue, 0]);
                         });
@@ -290,22 +289,18 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
-                    async function fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day) {
-                        let response = null;
-
+                    async function fetchUpdatedData(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip) {
                         // Convert to Date object
-                        const date = new Date(isoDateMinus1Day);
+                        const date = new Date(isoDateDay1);
 
                         // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
-                        date.setTime(date.getTime() + (1 * 60 * 60 * 1000));
+                        date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
 
                         // Convert back to ISO string (preserve UTC format)
-                        const isoDateMinus1DayPlus1Hour = date.toISOString();
+                        const isoDateDay1Minus1Hour = date.toISOString();
 
-                        console.log("isoDateMinus1DayPlus1Hour: ", isoDateMinus1DayPlus1Hour);
-                        console.log("isoDateToday: ", isoDateToday);
-
-                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1Day}&end=${isoDateToday}&office=MVS`, {
+                        let response = null;
+                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsidPrecip}&begin=${isoDateToday}&end=${isoDateDay1Minus1Hour}&office=MVS`, {
                             headers: {
                                 "Accept": "application/json;version=2", // Ensuring the correct version is used
                                 "cache-control": "no-cache"
@@ -356,7 +351,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             cdaStatusBtn.innerText = "Write successful!";
 
                             // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(tsidPrecip, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                            const updatedData = await fetchUpdatedData(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip);
                             createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, updatedData);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
@@ -386,7 +381,16 @@ document.addEventListener('DOMContentLoaded', async function () {
     };
 
     const fetchTimeSeriesData = async (tsid) => {
-        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${isoDateDay1}&office=${office}`;
+        // Convert to Date object
+        const date = new Date(isoDateDay1);
+
+        // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
+        date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
+
+        // Convert back to ISO string (preserve UTC format)
+        const isoDateDay1Minus1Hour = date.toISOString();
+
+        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${isoDateDay1Minus1Hour}&office=${office}`;
         console.log('tsidData:', tsidData);
         try {
             const response = await fetch(tsidData, {
