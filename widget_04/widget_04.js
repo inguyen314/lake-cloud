@@ -1626,8 +1626,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 const selectedTime = document.getElementById(`timeSelect${index}`).value;
                                 selectedTimes.push(selectedTime);
                             });
+                        
+                            console.log("Selected Times:", selectedTimes); // Log the selected times
                             return selectedTimes;
-                        }
+                        }                        
 
                         function getAllSluice1Values() {
                             return formattedDataSluice1.map((_, index) =>
@@ -1729,8 +1731,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
 
                     async function deleteTS(payload) {
+                        const begin = payload.values[0][0];
+                        const end = new Date(begin);
+                        end.setHours(end.getHours() + 23);
+                        const tsid = payload.name;
+
                         if (!payload) throw new Error("You must specify a payload!");
-                        const response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries/${tsid}?office=${office}&begin=${begin}&end=${end}`, {
+                        const response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries/${tsid}?office=MVS&begin=${begin}&end=${end.toISOString()}&start-time-inclusive=true&end-time-inclusive=true&override-protection=true`, {
                             method: "DELETE",
                             headers: { "Content-Type": "application/json;version=2" },
                             body: JSON.stringify(payload)
@@ -1894,38 +1901,67 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 }
                             }
 
-                            if (hasValidNewEntryHour === true) {
-                                console.log("Creating new entries...");
+                            // Function to send the payload to deleteTS
+                            function sendPayloadToDeleteTS(payload) {
+                                // Check if payload is an object
+                                if (typeof payload === 'object' && payload !== null) {
+                                    // Create a function to send each individual data object with a delay
+                                    async function sendWithDelay() {
+                                        for (const [key, value] of Object.entries(payload)) {
+                                            console.log("Sending value for key: ", key, value);
 
-                                showSpinner(); // Show the spinner before creating the version
-                                await createTS(payloadSluice1Additional);
-                                cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
-                                await createTS(payloadSluice2Additional);
-                                cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
-                                await createTS(payloadSluiceTotalAdditional);
-                                cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
-                                await createTS(payloadGate1Additional);
-                                cdaStatusBtn.innerText = "Write payloadGate1 successful!";
-                                await createTS(payloadGate2Additional);
-                                cdaStatusBtn.innerText = "Write payloadGate2 successful!";
-                                await createTS(payloadGate3Additional);
-                                cdaStatusBtn.innerText = "Write payloadGate3 successful!";
-                                await createTS(payloadGateTotalAdditional);
-                                cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
-                                await createTS(payloadOutflowTotalAdditional);
-                                cdaStatusBtn.innerText = "Write payloadOutflowTotalAdditional successful!";
-                                await createTS(payloadOutflowAverageAdditional);
-                                cdaStatusBtn.innerText = "Write payloadOutflowAverageAdditional successful!";
+                                            // Add timeout with delay
+                                            await new Promise(resolve => {
+                                                setTimeout(() => {
+                                                    deleteTS(value);  // Send each individual data object (like "sluice1", "sluice2", etc.)
+
+                                                    // Update the status text after sending
+                                                    cdaStatusBtn.innerText = `Write payload${key.charAt(0).toUpperCase() + key.slice(1)} successful!`;
+
+                                                    resolve();  // Resolve after the timeout to proceed to the next item
+                                                }, 250); // 1000ms delay (1 second)
+                                            });
+                                        }
+                                    }
+
+                                    sendWithDelay();  // Call the function to start the process
+                                } else {
+                                    console.error("Invalid payload format!");
+                                }
+                            }
+
+                            if (hasValidNewEntryHour === true) {
+                                // console.log("Creating new entries...");
+                                // showSpinner(); // Show the spinner before creating the version
+                                // await createTS(payloadSluice1Additional);
+                                // cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
+                                // await createTS(payloadSluice2Additional);
+                                // cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
+                                // await createTS(payloadSluiceTotalAdditional);
+                                // cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
+                                // await createTS(payloadGate1Additional);
+                                // cdaStatusBtn.innerText = "Write payloadGate1 successful!";
+                                // await createTS(payloadGate2Additional);
+                                // cdaStatusBtn.innerText = "Write payloadGate2 successful!";
+                                // await createTS(payloadGate3Additional);
+                                // cdaStatusBtn.innerText = "Write payloadGate3 successful!";
+                                // await createTS(payloadGateTotalAdditional);
+                                // cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
+                                // await createTS(payloadOutflowTotalAdditional);
+                                // cdaStatusBtn.innerText = "Write payloadOutflowTotalAdditional successful!";
+                                // await createTS(payloadOutflowAverageAdditional);
+                                // cdaStatusBtn.innerText = "Write payloadOutflowAverageAdditional successful!";
                             } else if (payloads && Object.keys(payloads).length > 0 && payloadAverageOutflow) {
                                 console.log("Editing existing entries...");
 
                                 console.log("Deleting today's entries...");
-                                // await deleteTS(payloadAverageOutflow);
+                                sendPayloadToDeleteTS(payloads);
+
+                                await new Promise(resolve => setTimeout(resolve, 4000)); // Small delay for safety
 
                                 console.log("Creating today's entries...");
                                 await createTS(payloadAverageOutflow);
                                 cdaStatusBtn.innerText = "Write payloadAverageOutflow successful!";
-
                                 sendPayloadToCreateTS(payloads);
                             }
 
