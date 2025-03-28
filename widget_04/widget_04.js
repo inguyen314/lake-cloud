@@ -396,6 +396,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         console.log("isoDateDay6:", isoDateDay6);
         console.log("isoDateDay7:", isoDateDay7);
 
+        let dstOffsetHours = getDSTOffsetInHours();
+        console.log(`dstOffsetHours: ${dstOffsetHours} hours`);
+
         const urlTsidSluice = `${setBaseUrl}timeseries/group/Sluice-Lake-Test?office=${office}&category-id=${lake}`;
         console.log("urlTsidSluice:", urlTsidSluice);
 
@@ -1132,10 +1135,27 @@ document.addEventListener('DOMContentLoaded', async function () {
                             gateOutflowAverageInput.value = 909;
                         }
 
+                        console.log("selectedHours['hour1']: ", selectedHours['hour1']);
+                        console.log(typeof (selectedHours['hour1']));
+
                         let time1 = null;
                         if (selectedHours['hour1'] !== "NONE") {
-                            time1 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour1'] + `:00Z`;
+                            // Extract hours and minutes
+                            let [hour, minute] = selectedHours['hour1'].split(':').map(Number);
+
+                            // Create a Date object (using an arbitrary date)
+                            let date = new Date();
+                            date.setUTCHours(hour + dstOffsetHours, minute, 0, 0); // Add offset
+
+                            // Format back to "HH:mm"
+                            let adjustedHour = String(date.getUTCHours()).padStart(2, '0');
+                            let adjustedMinute = String(date.getUTCMinutes()).padStart(2, '0');
+                            let adjustedTime = `${adjustedHour}:${adjustedMinute}`;
+
+                            // Construct the final time string
+                            time1 = `${isoDateToday.slice(0, 10)}T${adjustedTime}:00Z`;
                         }
+                        console.log("Adjusted time1:", time1);
 
                         let time2 = null;
                         if (selectedHours['hour2'] !== "NONE") {
@@ -1775,7 +1795,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             // Step 1: Ensure payloads is not null or undefined
                             if (!payloads || !payloads.outflowTotal || !Array.isArray(payloads.outflowTotal.values)) {
-                                console.error("Error: payloads or payloads.outflowTotal.values is null or invalid.");
+                                console.log("No payloads or payloads.outflowTotal.values is null or invalid. This mean were adding new entries.");
                                 payloadAverageOutflow = {
                                     "name": tsidOutflowAverage,
                                     "office-id": "MVS",
@@ -1937,8 +1957,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2, timeSeriesYesterdayDataGate3,
                                 timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage
                             );
-
-                            // location.reload();
                         } catch (error) {
                             // hideSpinner(); // Hide the spinner if an error occurs
                             // cdaStatusBtn.innerText = "Failed to write data!";
@@ -3061,6 +3079,19 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Return the ISO string
         return date.toISOString();
+    }
+
+    function getDSTOffsetInHours() {
+        // Get the current date
+        const now = new Date();
+
+        // Get the current time zone offset in minutes (with DST, if applicable)
+        const currentOffset = now.getTimezoneOffset();
+
+        // Convert the offset from minutes to hours
+        const dstOffsetHours = currentOffset / 60;
+
+        return dstOffsetHours; // Returns the offset in hours (e.g., -5 or -6)
     }
 });
 
