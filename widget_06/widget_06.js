@@ -194,17 +194,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                         formattedTimestampCST: convertUnixTimestamp(timestamp, true),    // CST/CDT adjusted time
                     };
                 });
-                console.log("Formatted timeSeriesDataPrecip:", formattedData);
+                console.log("Formatted timeSeriesDataOutflow:", formattedData);
 
                 let formattedDataInflow;
                 if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
                     formattedDataInflow = timeSeriesDataInflow.values.map(entry => {
                         const timestamp = entry[0]; // Timestamp is in milliseconds in the array
-                        const formattedTimestampCST = formatISODateToUTCString(Number(timestamp)); // Ensure timestamp is a number
 
                         return {
                             ...entry, // Retain other data
-                            formattedTimestampCST // Add formatted timestamp
+                            formattedTimestampUTC: convertUnixTimestamp(timestamp, false),  // UTC time
+                            formattedTimestampCST: convertUnixTimestamp(timestamp, true),    // CST/CDT adjusted time
                         };
                     });
 
@@ -777,7 +777,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const fetchTimeSeriesData = async (tsidOutflow) => {
             let tsidData = null;
             if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                tsidData = `${setBaseUrl}timeseries?name=${tsidOutflow}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=${office}&version-date=${isoDateToday}`;
+                tsidData = `${setBaseUrl}timeseries?name=${tsidOutflow}&begin=${isoDateMinus1Day}&end=${isoDateDay6}&office=${office}&version-date=${isoDateToday}`;
             } else {
                 tsidData = `${setBaseUrl}timeseries?name=${tsidOutflow}&begin=${isoDateToday}&end=${isoDateDay6}&office=${office}&version-date=${isoDateToday}`;
             }
