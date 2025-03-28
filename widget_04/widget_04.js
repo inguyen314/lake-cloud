@@ -747,6 +747,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Extract only the time part (HH:mm) from formattedTimestampCST
                     const formattedTime = date.formattedTimestampCST.split(" ")[1].slice(0, 5);
 
+                    // Add "NONE" as the first option
+                    const noneOption = document.createElement("option");
+                    noneOption.value = -909;
+                    noneOption.textContent = "NONE";
+                    timeSelect.appendChild(noneOption);
+
                     // Create options for the dropdown (24 hours)
                     times.forEach(time => {
                         const option = document.createElement("option");
