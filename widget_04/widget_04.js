@@ -1688,6 +1688,34 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
+                    async function patchTS(payload) {
+                        if (!payload) throw new Error("You must specify a payload!");
+                        const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries/tsid_goes_here?store-rule=DELETE%20INSERT", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json;version=2" },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                        }
+                    }
+
+                    async function deleteTS(payload) {
+                        if (!payload) throw new Error("You must specify a payload!");
+                        const response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries/${tsid}?office=${office}&begin=${begin}&end=${end}`, {
+                            method: "DELETE",
+                            headers: { "Content-Type": "application/json;version=2" },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                        }
+                    }
+
                     async function fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1) {
                         // Convert to Date object
                         const date = new Date(isoDateDay1);
@@ -1829,7 +1857,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                                     cdaStatusBtn.innerText = `Write payload${key.charAt(0).toUpperCase() + key.slice(1)} successful!`;
 
                                                     resolve();  // Resolve after the timeout to proceed to the next item
-                                                }, 1000); // 1000ms delay (1 second)
+                                                }, 250); // 1000ms delay (1 second)
                                             });
                                         }
                                     }
@@ -1865,6 +1893,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                             } else if (payloads && Object.keys(payloads).length > 0 && payloadAverageOutflow) {
                                 console.log("Editing existing entries...");
 
+                                console.log("Deleting today's entries...");
+                                // await deleteTS(payloadAverageOutflow);
+
+                                console.log("Creating today's entries...");
                                 await createTS(payloadAverageOutflow);
                                 cdaStatusBtn.innerText = "Write payloadAverageOutflow successful!";
 
@@ -1872,7 +1904,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             }
 
                             // Ensure data is saved before creating the table
-                            await new Promise(resolve => setTimeout(resolve, 10000)); // Small delay for safety
+                            await new Promise(resolve => setTimeout(resolve, 4000)); // Small delay for safety
 
                             const [
                                 updatedDataSluice1,

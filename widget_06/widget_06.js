@@ -17,24 +17,24 @@ document.addEventListener('DOMContentLoaded', async function () {
         const [month, day, year] = datetime.split('-');
 
         // Generate ISO strings for the previous 7 days and today
-        const isoDateMinus8Days = getIsoDateWithOffset(year, month, day, -8);
-        const isoDateMinus7Days = getIsoDateWithOffset(year, month, day, -7);
-        const isoDateMinus6Days = getIsoDateWithOffset(year, month, day, -6);
-        const isoDateMinus5Days = getIsoDateWithOffset(year, month, day, -5);
-        const isoDateMinus4Days = getIsoDateWithOffset(year, month, day, -4);
-        const isoDateMinus3Days = getIsoDateWithOffset(year, month, day, -3);
-        const isoDateMinus2Days = getIsoDateWithOffset(year, month, day, -2);
-        const isoDateMinus1Day = getIsoDateWithOffset(year, month, day, -1);
-        const isoDateToday = getIsoDateWithOffset(year, month, day, 0);
+        const isoDateMinus8Days = getIsoDateWithOffsetDynamic(year, month, day, -8);
+        const isoDateMinus7Days = getIsoDateWithOffsetDynamic(year, month, day, -7);
+        const isoDateMinus6Days = getIsoDateWithOffsetDynamic(year, month, day, -6);
+        const isoDateMinus5Days = getIsoDateWithOffsetDynamic(year, month, day, -5);
+        const isoDateMinus4Days = getIsoDateWithOffsetDynamic(year, month, day, -4);
+        const isoDateMinus3Days = getIsoDateWithOffsetDynamic(year, month, day, -3);
+        const isoDateMinus2Days = getIsoDateWithOffsetDynamic(year, month, day, -2);
+        const isoDateMinus1Day = getIsoDateWithOffsetDynamic(year, month, day, -1);
+        const isoDateToday = getIsoDateWithOffsetDynamic(year, month, day, 0);
 
         // Generate ISO strings for the next 7 days
-        const isoDateDay1 = getIsoDateWithOffset(year, month, day, 1);
-        const isoDateDay2 = getIsoDateWithOffset(year, month, day, 2);
-        const isoDateDay3 = getIsoDateWithOffset(year, month, day, 3);
-        const isoDateDay4 = getIsoDateWithOffset(year, month, day, 4);
-        const isoDateDay5 = getIsoDateWithOffset(year, month, day, 5);
-        const isoDateDay6 = getIsoDateWithOffset(year, month, day, 6);
-        const isoDateDay7 = getIsoDateWithOffset(year, month, day, 7);
+        const isoDateDay1 = getIsoDateWithOffsetDynamic(year, month, day, 1);
+        const isoDateDay2 = getIsoDateWithOffsetDynamic(year, month, day, 2);
+        const isoDateDay3 = getIsoDateWithOffsetDynamic(year, month, day, 3);
+        const isoDateDay4 = getIsoDateWithOffsetDynamic(year, month, day, 4);
+        const isoDateDay5 = getIsoDateWithOffsetDynamic(year, month, day, 5);
+        const isoDateDay6 = getIsoDateWithOffsetDynamic(year, month, day, 6);
+        const isoDateDay7 = getIsoDateWithOffsetDynamic(year, month, day, 7);
 
         console.log("isoDateMinus8Days:", isoDateMinus8Days);
         console.log("isoDateMinus7Days:", isoDateMinus7Days);
@@ -52,6 +52,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         console.log("isoDateDay5:", isoDateDay5);
         console.log("isoDateDay6:", isoDateDay6);
         console.log("isoDateDay7:", isoDateDay7);
+
+        let dstOffsetHours = getDSTOffsetInHours();
+        console.log(`dstOffsetHours: ${dstOffsetHours} hours`);
 
         const urltsid = `${setBaseUrl}timeseries/group/Forecast-Lake?office=${office}&category-id=${lake}`;
         console.log("urltsid:", urltsid);
@@ -182,19 +185,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log("timeSeriesDataOutflow:", timeSeriesDataOutflow);
                 console.log("timeSeriesDataInflow:", timeSeriesDataInflow);
 
-                formattedData = timeSeriesDataOutflow.values.map(entry => {
-                    const timestamp = entry[0]; // Timestamp is in milliseconds in the array
-                    // const formattedTimestampCST = formatISODateToUTCString(Number(timestamp)); // Ensure timestamp is a number
-                    const formattedTimestampCST = formatISODateToCSTString(Number(timestamp)); // Ensure timestamp is a number
+                const formattedData = timeSeriesDataOutflow.values.map(entry => {
+                    const timestamp = Number(entry[0]); // Ensure timestamp is a number
 
                     return {
                         ...entry, // Retain other data
-                        formattedTimestampCST // Add formatted timestamp
+                        formattedTimestampUTC: convertUnixTimestamp(timestamp, false),  // UTC time
+                        formattedTimestampCST: convertUnixTimestamp(timestamp, true),    // CST/CDT adjusted time
                     };
                 });
-
-                // Now you have formatted data for both datasets
-                console.log("Formatted timeSeriesDataOutflow:", formattedData);
+                console.log("Formatted timeSeriesDataPrecip:", formattedData);
 
                 let formattedDataInflow;
                 if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
@@ -295,7 +295,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // console.log("outflowValue:", outflowValue);
 
                             const timestampUnix = new Date(entry[0]).getTime();
-                            // console.log("timestampUnix:", timestampUnix);
+                            console.log("timestampUnix:", timestampUnix);
 
                             return [
                                 timestampUnix,
@@ -322,6 +322,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 // Convert ISO date string to timestamp
                                 const timestampUnix = new Date(entry[0]).getTime();
                                 // console.log("timestampUnix:", timestampUnix);
+
+                                // Convert 6am in milliseconds and add it
+                                const adjustedTimestampUnix = timestampUnix + 6 * 60 * 60 * 1000;
+                                console.log("adjustedTimestampUnix:", adjustedTimestampUnix);
 
                                 return [
                                     timestampUnix,  // Timestamp for the day at 6 AM
@@ -364,18 +368,18 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
-                    async function fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day) {
+                    async function fetchUpdatedData(name, isoDateDay6, isoDateToday, isoDateMinus1Day) {
                         let response = null;
 
                         if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
+                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1Day}&end=${isoDateDay6}&office=MVS&version-date=${isoDateToday}`, {
                                 headers: {
                                     "Accept": "application/json;version=2", // Ensuring the correct version is used
                                     "cache-control": "no-cache"
                                 }
                             });
                         } else {
-                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
+                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay6}&office=MVS&version-date=${isoDateToday}`, {
                                 headers: {
                                     "Accept": "application/json;version=2", // Ensuring the correct version is used
                                     "cache-control": "no-cache"
@@ -431,14 +435,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 cdaStatusBtn.innerText = "Write payloadInflow successful!";
                             }
 
-                            // Log the waiting message before the 2-second wait
-                            console.log("Waiting for 2 seconds before fetching updated data...");
-
-                            // Wait 2 seconds before fetching the updated data
-                            // await new Promise(resolve => setTimeout(resolve, 500));
-
                             // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                            const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay6, isoDateToday, isoDateMinus1Day);
 
                             let updatedDataInflow = null;
                             if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
@@ -576,12 +574,18 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 outflowValue = "909"; // Default value when empty or null
                             }
 
+                            console.log("date:", date); // this is UTC
+
                             // Convert ISO date string to timestamp
                             const timestampUnix = new Date(date).getTime(); // Correct timestamp conversion
                             // console.log("timestampUnix:", timestampUnix);
 
+                            // Convert 6am in milliseconds and add it, this is CST/CDT
+                            const adjustedTimestampUnix = timestampUnix + 6 * 60 * 60 * 1000;
+                            // console.log("adjustedTimestampUnix:", adjustedTimestampUnix);
+
                             return [
-                                timestampUnix,  // Timestamp for the day at 6 AM
+                                adjustedTimestampUnix,  // Timestamp for the day at 6 AM
                                 parseInt(outflowValue), // Stage value (forecast outflow) as number
                                 0 // Placeholder for the third value (set to 0 for now)
                             ];
@@ -611,8 +615,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 const timestampUnix = new Date(date).getTime(); // Correct timestamp conversion
                                 // console.log("timestampUnix:", timestampUnix);
 
+                                // Convert 6am in milliseconds and add it, this is CST/CDT
+                                const adjustedTimestampUnix = timestampUnix + 6 * 60 * 60 * 1000;
+                                // console.log("adjustedTimestampUnix:", adjustedTimestampUnix);
+
                                 return [
-                                    timestampUnix,  // Timestamp for the day at 6 AM
+                                    adjustedTimestampUnix,  // Timestamp for the day at 6 AM
                                     parseInt(inflowValue), // Stage value (forecast outflow) as number
                                     0 // Placeholder for the third value (set to 0 for now)
                                 ];
@@ -678,18 +686,18 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     }
 
-                    async function fetchUpdatedData(name, isoDateDay5, isoDateToday) {
+                    async function fetchUpdatedData(name, isoDateDay6, isoDateToday) {
                         let response = null;
 
                         if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
+                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1Day}&end=${isoDateDay6}&office=MVS&version-date=${isoDateToday}`, {
                                 headers: {
                                     "Accept": "application/json;version=2", // Ensuring the correct version is used
                                     "cache-control": "no-cache"
                                 }
                             });
                         } else {
-                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
+                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay6}&office=MVS&version-date=${isoDateToday}`, {
                                 headers: {
                                     "Accept": "application/json;version=2", // Ensuring the correct version is used
                                     "cache-control": "no-cache"
@@ -745,14 +753,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 cdaStatusBtn.innerText = "Write payloadInflow successful!";
                             }
 
-                            // Log the waiting message before the 2-second wait
-                            console.log("Waiting for 2 seconds before fetching updated data...");
-
-                            // Wait 2 seconds before fetching the updated data
-                            // await new Promise(resolve => setTimeout(resolve, 500));
-
                             // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                            const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay6, isoDateToday, isoDateMinus1Day);
 
                             let updatedDataInflow = null;
                             if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
@@ -777,7 +779,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
                 tsidData = `${setBaseUrl}timeseries?name=${tsidOutflow}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=${office}&version-date=${isoDateToday}`;
             } else {
-                tsidData = `${setBaseUrl}timeseries?name=${tsidOutflow}&begin=${isoDateToday}&end=${isoDateDay5}&office=${office}&version-date=${isoDateToday}`;
+                tsidData = `${setBaseUrl}timeseries?name=${tsidOutflow}&begin=${isoDateToday}&end=${isoDateDay6}&office=${office}&version-date=${isoDateToday}`;
             }
             console.log('tsidData:', tsidData);
 
@@ -863,6 +865,68 @@ document.addEventListener('DOMContentLoaded', async function () {
         return formattedDate.replace(',', ''); // Removes the comma between date and time
     }
 
+    function getIsoDateWithOffsetDynamic(year, month, day, offset) {
+        // Create a date object at 6 AM UTC
+        const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0));
+
+        // Get the timezone offset dynamically based on CST/CDT
+        const localTime = new Date(date.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+        const timeOffset = (date.getTime() - localTime.getTime()) / (60 * 1000); // Offset in minutes
+
+        // Adjust to 5 AM if not in daylight saving time
+        if (localTime.getHours() !== 6) {
+            date.setUTCHours(5);
+        }
+
+        // Adjust for the offset in days
+        date.setUTCDate(date.getUTCDate() + offset);
+
+        // Adjust for the timezone offset
+        date.setMinutes(date.getMinutes() + timeOffset);
+
+        // Add 6 hours or make it 6 AM if needed
+        // date.setUTCHours(6);  // Ensure it's 6 AM UTC
+
+        // Return the ISO string
+        return date.toISOString();
+    }
+
+    function getDSTOffsetInHours() {
+        // Get the current date
+        const now = new Date();
+
+        // Get the current time zone offset in minutes (with DST, if applicable)
+        const currentOffset = now.getTimezoneOffset();
+
+        // Convert the offset from minutes to hours
+        const dstOffsetHours = currentOffset / 60;
+
+        return dstOffsetHours; // Returns the offset in hours (e.g., -5 or -6)
+    }
+
+    function convertUnixTimestamp(timestamp, toCST = false) {
+        if (typeof timestamp !== "number") {
+            console.error("Invalid timestamp:", timestamp);
+            return "Invalid Date";
+        }
+
+        const dateUTC = new Date(timestamp); // Convert milliseconds to Date object
+        if (isNaN(dateUTC.getTime())) {
+            console.error("Invalid date conversion:", timestamp);
+            return "Invalid Date";
+        }
+
+        if (!toCST) {
+            return dateUTC.toISOString(); // Return UTC time
+        }
+
+        // Convert to CST/CDT (America/Chicago) while adjusting for daylight saving time
+        const options = { timeZone: "America/Chicago", hour12: false };
+        const cstDateString = dateUTC.toLocaleString("en-US", options);
+        const cstDate = new Date(cstDateString + " UTC"); // Convert back to Date
+
+        return cstDate.toISOString();
+    }
 });
 
 
@@ -873,16 +937,16 @@ document.addEventListener('DOMContentLoaded', async function () {
 //         p_delete_action => CWMS_UTIL.DELETE_TS_DATA,  -- Only delete the data, keeping metadata
 //         p_db_office_id  => 'MVS'
 //     );
-// END; 
+// END;
 
 // Run this PL/SQL to delete tsid and data
-// BEGIN  
-//     CWMS_20.CWMS_TS.DELETE_TS(  
-//         p_cwms_ts_id    => 'Mark Twain Lk-Salt.Flow-In.Inst.~1Day.0.lakerep-rev-forecast',  
-//         p_delete_action => CWMS_UTIL.DELETE_TS_CASCADE,  -- Delete time series and all dependencies  
-//         p_db_office_id  => 'MVS'  
-//     );  
-// END; 
+// BEGIN
+//     CWMS_20.CWMS_TS.DELETE_TS(
+//         p_cwms_ts_id    => 'Mark Twain Lk-Salt.Flow-In.Inst.~1Day.0.lakerep-rev-forecast',
+//         p_delete_action => CWMS_UTIL.DELETE_TS_CASCADE,  -- Delete time series and all dependencies
+//         p_db_office_id  => 'MVS'
+//     );
+// END;
 
 // To Create tsid, run write_data_versioned app
 

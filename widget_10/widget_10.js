@@ -16,24 +16,24 @@ document.addEventListener('DOMContentLoaded', async function () {
     const [month, day, year] = datetime.split('-');
 
     // Generate ISO strings for the previous 7 days and today
-    const isoDateMinus8Days = getIsoDateWithOffset(year, month, day, -8);
-    const isoDateMinus7Days = getIsoDateWithOffset(year, month, day, -7);
-    const isoDateMinus6Days = getIsoDateWithOffset(year, month, day, -6);
-    const isoDateMinus5Days = getIsoDateWithOffset(year, month, day, -5);
-    const isoDateMinus4Days = getIsoDateWithOffset(year, month, day, -4);
-    const isoDateMinus3Days = getIsoDateWithOffset(year, month, day, -3);
-    const isoDateMinus2Days = getIsoDateWithOffset(year, month, day, -2);
-    const isoDateMinus1Day = getIsoDateWithOffset(year, month, day, -1);
-    const isoDateToday = getIsoDateWithOffset(year, month, day, 0);
+    const isoDateMinus8Days = getIsoDateWithOffsetDynamic(year, month, day, -8);
+    const isoDateMinus7Days = getIsoDateWithOffsetDynamic(year, month, day, -7);
+    const isoDateMinus6Days = getIsoDateWithOffsetDynamic(year, month, day, -6);
+    const isoDateMinus5Days = getIsoDateWithOffsetDynamic(year, month, day, -5);
+    const isoDateMinus4Days = getIsoDateWithOffsetDynamic(year, month, day, -4);
+    const isoDateMinus3Days = getIsoDateWithOffsetDynamic(year, month, day, -3);
+    const isoDateMinus2Days = getIsoDateWithOffsetDynamic(year, month, day, -2);
+    const isoDateMinus1Day = getIsoDateWithOffsetDynamic(year, month, day, -1);
+    const isoDateToday = getIsoDateWithOffsetDynamic(year, month, day, 0);
 
     // Generate ISO strings for the next 7 days
-    const isoDateDay1 = getIsoDateWithOffset(year, month, day, 1);
-    const isoDateDay2 = getIsoDateWithOffset(year, month, day, 2);
-    const isoDateDay3 = getIsoDateWithOffset(year, month, day, 3);
-    const isoDateDay4 = getIsoDateWithOffset(year, month, day, 4);
-    const isoDateDay5 = getIsoDateWithOffset(year, month, day, 5);
-    const isoDateDay6 = getIsoDateWithOffset(year, month, day, 6);
-    const isoDateDay7 = getIsoDateWithOffset(year, month, day, 7);
+    const isoDateDay1 = getIsoDateWithOffsetDynamic(year, month, day, 1);
+    const isoDateDay2 = getIsoDateWithOffsetDynamic(year, month, day, 2);
+    const isoDateDay3 = getIsoDateWithOffsetDynamic(year, month, day, 3);
+    const isoDateDay4 = getIsoDateWithOffsetDynamic(year, month, day, 4);
+    const isoDateDay5 = getIsoDateWithOffsetDynamic(year, month, day, 5);
+    const isoDateDay6 = getIsoDateWithOffsetDynamic(year, month, day, 6);
+    const isoDateDay7 = getIsoDateWithOffsetDynamic(year, month, day, 7);
 
     console.log("isoDateMinus8Days:", isoDateMinus8Days);
     console.log("isoDateMinus7Days:", isoDateMinus7Days);
@@ -51,6 +51,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("isoDateDay5:", isoDateDay5);
     console.log("isoDateDay6:", isoDateDay6);
     console.log("isoDateDay7:", isoDateDay7);
+
+    let dstOffsetHours = getDSTOffsetInHours();
+    console.log(`dstOffsetHours: ${dstOffsetHours} hours`);
 
     const urltsid = `${setBaseUrl}timeseries/group/Crest-Forecast-Lake?office=${office}&category-id=${lake}`;
     console.log("urltsid:", urltsid);
@@ -145,13 +148,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, timeSeriesDataCrest) {
             console.log("timeSeriesDataCrest:", timeSeriesDataCrest);
 
-            formattedData = timeSeriesDataCrest.values.map(entry => {
-                const timestamp = entry[0]; // Timestamp is in milliseconds in the array
-                const formattedTimestampCST = convertUnixTimestampToISO(Number(timestamp)); // Ensure timestamp is a number
-
+            const formattedData = timeSeriesDataCrest.values.map(entry => {
+                const timestamp = Number(entry[0]); // Ensure timestamp is a number
+            
                 return {
                     ...entry, // Retain other data
-                    formattedTimestampCST // Add formatted timestamp
+                    formattedTimestampUTC: convertUnixTimestamp(timestamp, false),  // UTC time
+                    formattedTimestampCST: convertUnixTimestamp(timestamp, true)    // CST/CDT adjusted time
                 };
             });
 
@@ -185,7 +188,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const dateCell = document.createElement("td");
             const dateInput = document.createElement("input");
             dateInput.type = "text";
-            dateInput.value = formattedData[0].formattedTimestampCST;
+            dateInput.value = formattedData.at(-1).formattedTimestampCST;
             dateInput.id = "dateInput";
             dateCell.appendChild(dateInput);
             row.appendChild(dateCell);
@@ -194,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const crestCell = document.createElement("td");
             const crestInput = document.createElement("input");
             crestInput.type = "number";
-            crestInput.value = formattedData[0][1].toFixed(2); // Crest uses formattedData
+            crestInput.value = formattedData.at(-1)[1].toFixed(2); // Crest uses formattedData
             crestInput.id = "crestInput";
             crestCell.appendChild(crestInput);
             row.appendChild(crestCell);
@@ -203,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const optionCell = document.createElement("td");
             const optionInput = document.createElement("input");
             optionInput.type = "number";
-            optionInput.value = formattedData[0][2].toFixed(0); // Crest uses formattedData
+            optionInput.value = formattedData.at(-1)[2].toFixed(0); // Crest uses formattedData
             optionInput.id = "optionInput";
             optionCell.appendChild(optionInput);
             row.appendChild(optionCell);
@@ -231,14 +234,14 @@ document.addEventListener('DOMContentLoaded', async function () {
             output10Div.appendChild(statusDiv);
 
             cdaSaveBtn.addEventListener("click", async () => {
-                console.log(parseFloat(crestInput.value) || 909);
-                console.log(parseFloat(optionInput.value) || 0);
-                console.log(dateInput.value);
+                console.log("Crest Input: ", parseFloat(crestInput.value) || 909);
+                console.log("Option/QualityCode Input: ",parseFloat(optionInput.value) || 0);
+                console.log("DateTime Input (Not Used): ", dateInput.value);
 
                 // Parse user inputs
                 const crestValue = parseFloat(crestInput.value) || 909; // Convert to float, default to 909 if empty
                 const optionValue = parseInt(optionInput.value) || 0; // Convert to integer, default to 909
-                const timestampUnix = new Date(dateInput.value).getTime();
+                const timestampUnix = new Date(formattedData.at(-1).formattedTimestampUTC).getTime();
 
                 const payload = {
                     "date-version-type": "MAX_AGGREGATE",
@@ -383,7 +386,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const dateCell = document.createElement("td");
             const dateInput = document.createElement("input");
             dateInput.type = "text";
-            dateInput.value = isoDateToday; // Pre-fill with today's date
+            dateInput.value =  new Date(new Date(isoDateToday).getTime() - dstOffsetHours * 60 * 60 * 1000).toISOString(); // Convert to CST time for display on the lake sheets
             dateInput.id = "dateInput";
             dateCell.appendChild(dateInput);
             row.appendChild(dateCell);
@@ -434,9 +437,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Add event listener to the submit button
             cdaSaveBtn.addEventListener("click", async () => {
                 // Parse user inputs
-                const crestValue = parseFloat(crestInput.value) || 909; // Convert to float, default to 909 if empty
-                const optionValue = parseInt(optionInput.value) || 0; // Convert to integer, default to 909
-                const timestampUnix = new Date(dateInput.value).getTime();
+                const crestValue = parseFloat(crestInput.value) || 909;
+                const optionValue = parseInt(optionInput.value) || 0;
+                const timestampUnix = new Date(dateInput.value).getTime() + dstOffsetHours * 60 * 60 * 1000; // Convert back to UTC time for saving to the database
 
                 const payload = {
                     "date-version-type": "MAX_AGGREGATE",
@@ -647,24 +650,69 @@ document.addEventListener('DOMContentLoaded', async function () {
         return formattedDate.replace(',', ''); // Removes the comma between date and time
     }
 
-    function convertUnixTimestampToISO(timestamp) {
+    function convertUnixTimestamp(timestamp, toCST = false) {
         if (typeof timestamp !== "number") {
             console.error("Invalid timestamp:", timestamp);
             return "Invalid Date";
         }
     
-        const date = new Date(timestamp); // Convert milliseconds to Date object
-    
-        if (isNaN(date.getTime())) {
+        const dateUTC = new Date(timestamp); // Convert milliseconds to Date object
+        if (isNaN(dateUTC.getTime())) {
             console.error("Invalid date conversion:", timestamp);
             return "Invalid Date";
         }
     
-        return date.toISOString(); // Convert to "YYYY-MM-DDTHH:mm:ssZ" format
+        if (!toCST) {
+            return dateUTC.toISOString(); // Return UTC time
+        }
+    
+        // Convert to CST/CDT (America/Chicago) while adjusting for daylight saving time
+        const options = { timeZone: "America/Chicago", hour12: false };
+        const cstDateString = dateUTC.toLocaleString("en-US", options);
+        const cstDate = new Date(cstDateString + " UTC"); // Convert back to Date
+    
+        return cstDate.toISOString();
+    }
+
+    function getIsoDateWithOffsetDynamic(year, month, day, offset) {
+        // Create a date object at 6 AM UTC
+        const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0));
+
+        // Get the timezone offset dynamically based on CST/CDT
+        const localTime = new Date(date.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+        const timeOffset = (date.getTime() - localTime.getTime()) / (60 * 1000); // Offset in minutes
+
+        // Adjust to 5 AM if not in daylight saving time
+        if (localTime.getHours() !== 6) {
+            date.setUTCHours(5);
+        }
+
+        // Adjust for the offset in days
+        date.setUTCDate(date.getUTCDate() + offset);
+
+        // Adjust for the timezone offset
+        date.setMinutes(date.getMinutes() + timeOffset);
+
+        // Return the ISO string
+        return date.toISOString();
+    }
+
+    function getDSTOffsetInHours() {
+        // Get the current date
+        const now = new Date();
+
+        // Get the current time zone offset in minutes (with DST, if applicable)
+        const currentOffset = now.getTimezoneOffset();
+
+        // Convert the offset from minutes to hours
+        const dstOffsetHours = currentOffset / 60;
+
+        return dstOffsetHours; // Returns the offset in hours (e.g., -5 or -6)
     }
 });
 
-// TODO: Need Data Entry Date to determine which crest to use if entered multiple times...
+// TODO: Need Data Entry Date to determine which crest to use if entered multiple times..., Night now, it uses the last one entered
+
 // [
 //     {
 //         "0": 1741348800000,

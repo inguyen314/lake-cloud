@@ -15,24 +15,24 @@ document.addEventListener('DOMContentLoaded', async function () {
     const [month, day, year] = datetime.split('-');
 
     // Generate ISO strings for the previous 7 days and today
-    const isoDateMinus8Days = getIsoDateWithOffset(year, month, day, -8);
-    const isoDateMinus7Days = getIsoDateWithOffset(year, month, day, -7);
-    const isoDateMinus6Days = getIsoDateWithOffset(year, month, day, -6);
-    const isoDateMinus5Days = getIsoDateWithOffset(year, month, day, -5);
-    const isoDateMinus4Days = getIsoDateWithOffset(year, month, day, -4);
-    const isoDateMinus3Days = getIsoDateWithOffset(year, month, day, -3);
-    const isoDateMinus2Days = getIsoDateWithOffset(year, month, day, -2);
-    const isoDateMinus1Day = getIsoDateWithOffset(year, month, day, -1);
-    const isoDateToday = getIsoDateWithOffset(year, month, day, 0);
+    const isoDateMinus8Days = getIsoDateWithOffsetDynamic(year, month, day, -8);
+    const isoDateMinus7Days = getIsoDateWithOffsetDynamic(year, month, day, -7);
+    const isoDateMinus6Days = getIsoDateWithOffsetDynamic(year, month, day, -6);
+    const isoDateMinus5Days = getIsoDateWithOffsetDynamic(year, month, day, -5);
+    const isoDateMinus4Days = getIsoDateWithOffsetDynamic(year, month, day, -4);
+    const isoDateMinus3Days = getIsoDateWithOffsetDynamic(year, month, day, -3);
+    const isoDateMinus2Days = getIsoDateWithOffsetDynamic(year, month, day, -2);
+    const isoDateMinus1Day = getIsoDateWithOffsetDynamic(year, month, day, -1);
+    const isoDateToday = getIsoDateWithOffsetDynamic(year, month, day, 0);
 
     // Generate ISO strings for the next 7 days
-    const isoDateDay1 = getIsoDateWithOffset(year, month, day, 1);
-    const isoDateDay2 = getIsoDateWithOffset(year, month, day, 2);
-    const isoDateDay3 = getIsoDateWithOffset(year, month, day, 3);
-    const isoDateDay4 = getIsoDateWithOffset(year, month, day, 4);
-    const isoDateDay5 = getIsoDateWithOffset(year, month, day, 5);
-    const isoDateDay6 = getIsoDateWithOffset(year, month, day, 6);
-    const isoDateDay7 = getIsoDateWithOffset(year, month, day, 7);
+    const isoDateDay1 = getIsoDateWithOffsetDynamic(year, month, day, 1);
+    const isoDateDay2 = getIsoDateWithOffsetDynamic(year, month, day, 2);
+    const isoDateDay3 = getIsoDateWithOffsetDynamic(year, month, day, 3);
+    const isoDateDay4 = getIsoDateWithOffsetDynamic(year, month, day, 4);
+    const isoDateDay5 = getIsoDateWithOffsetDynamic(year, month, day, 5);
+    const isoDateDay6 = getIsoDateWithOffsetDynamic(year, month, day, 6);
+    const isoDateDay7 = getIsoDateWithOffsetDynamic(year, month, day, 7);
 
     console.log("isoDateMinus8Days:", isoDateMinus8Days);
     console.log("isoDateMinus7Days:", isoDateMinus7Days);
@@ -50,6 +50,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("isoDateDay5:", isoDateDay5);
     console.log("isoDateDay6:", isoDateDay6);
     console.log("isoDateDay7:", isoDateDay7);
+
+    let dstOffsetHours = getDSTOffsetInHours();
+    console.log(`dstOffsetHours: ${dstOffsetHours} hours`);
 
     const tsid = `${setBaseUrl}timeseries/group/Precip-Lake-Test?office=${office}&category-id=${lake}`;
     console.log("tsid:", tsid);
@@ -116,44 +119,38 @@ document.addEventListener('DOMContentLoaded', async function () {
                 createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, timeSeriesDataPrecip, timeSeriesDataPrecipYesterday);
 
                 loginStateController()
-                        // Setup timers
-                        setInterval(async () => {
-                            loginStateController()
-                        }, 10000) // time is in millis
+                // Setup timers
+                setInterval(async () => {
+                    loginStateController()
+                }, 10000) // time is in millis
             }
 
             function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, timeSeriesDataPrecip, timeSeriesDataPrecipYesterday) {
                 console.log("timeSeriesDataPrecip:", timeSeriesDataPrecip);
-                console.log("timeSeriesDataPrecipYesterday:", timeSeriesDataPrecipYesterday)
+                console.log("timeSeriesDataPrecipYesterday:", timeSeriesDataPrecipYesterday);
 
                 const formattedData = timeSeriesDataPrecip.values.map(entry => {
-                    const timestamp = entry[0]; // First element is the timestamp
-                    const formattedTimestampCST = formatISODateToCSTString(Number(timestamp));
+                    const timestamp = Number(entry[0]); // Ensure timestamp is a number
 
                     return {
-                        timestamp,
-                        formattedTimestampCST,
-                        value: parseFloat(entry[1]).toFixed(2),  // Format value to 2 decimal places
-                        qualityCode: entry[2]    // Third element is the quality code
+                        ...entry, // Retain other data
+                        formattedTimestampUTC: convertUnixTimestamp(timestamp, false),  // UTC time
+                        formattedTimestampCST: convertUnixTimestamp(timestamp, true),    // CST/CDT adjusted time
                     };
                 });
-
                 console.log("Formatted timeSeriesDataPrecip:", formattedData);
 
                 let formattedDataYesterday = null;
                 if (timeSeriesDataPrecipYesterday && timeSeriesDataPrecipYesterday.values) {
                     formattedDataYesterday = timeSeriesDataPrecipYesterday.values.map(entry => {
                         const timestamp = entry[0]; // First element is the timestamp
-                        const formattedTimestampCST = formatISODateToCSTString(Number(timestamp));
 
                         return {
-                            timestamp,
-                            formattedTimestampCST,
-                            value: parseFloat(entry[1]).toFixed(2),  // Format value to 2 decimal places
-                            qualityCode: entry[2]    // Third element is the quality code
+                            ...entry, // Retain other data
+                            formattedTimestampUTC: convertUnixTimestamp(timestamp, false),  // UTC time
+                            formattedTimestampCST: convertUnixTimestamp(timestamp, true),    // CST/CDT adjusted time
                         };
                     });
-
                     console.log("Formatted timeSeriesDataPrecipYesterday:", formattedDataYesterday);
                 }
 
@@ -176,13 +173,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const row = document.createElement("tr");
 
                     const dateCell = document.createElement("td");
-                    dateCell.textContent = isoDateToday;
+                    dateCell.textContent = new Date(new Date(isoDateToday).getTime() - dstOffsetHours * 60 * 60 * 1000).toISOString(); // Convert to CST time
                     row.appendChild(dateCell);
 
                     const precipCell = document.createElement("td");
                     const precipInput = document.createElement("input");
                     precipInput.type = "number";
-                    precipInput.value = 0.00;  // Blank entry box
+                    precipInput.value = 0.00;  // Blank entry box, default to 0.00
                     precipInput.className = "outflow-input";
                     precipInput.id = `precipInput-${isoDateToday}`;
                     precipInput.style.backgroundColor = "pink";  // Set pink background
@@ -202,7 +199,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const precipCell = document.createElement("td");
                         const precipInput = document.createElement("input");
                         precipInput.type = "number";
-                        precipInput.value = entry.value;  // Use formatted value
+                        precipInput.value = entry[1]; 
                         precipInput.className = "outflow-input";
                         precipInput.id = `precipInput-${entry.timestamp}`;
                         precipCell.appendChild(precipInput);
@@ -389,18 +386,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     };
 
     const fetchTimeSeriesData = async (tsid) => {
-        // Convert to Date object
-        const date = new Date(isoDateMinus1Day);
-
-        // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
-        date.setTime(date.getTime() + (1 * 60 * 60 * 1000));
-
-        // Convert back to ISO string (preserve UTC format)
-        const isoDateMinus1DayPlus1Hour = date.toISOString();
-
-        console.log("isoDateMinus1DayPlus1Hour: ", isoDateMinus1DayPlus1Hour);
-
-        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateToday}&office=${office}`;
+        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${isoDateDay1}&office=${office}`;
         console.log('tsidData:', tsidData);
         try {
             const response = await fetch(tsidData, {
@@ -479,6 +465,66 @@ document.addEventListener('DOMContentLoaded', async function () {
         const formattedDate = formatter.format(date);
 
         return formattedDate.replace(',', ''); // Removes the comma between date and time
+    }
+
+    function getIsoDateWithOffsetDynamic(year, month, day, offset) {
+        // Create a date object at 6 AM UTC
+        const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0));
+
+        // Get the timezone offset dynamically based on CST/CDT
+        const localTime = new Date(date.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+        const timeOffset = (date.getTime() - localTime.getTime()) / (60 * 1000); // Offset in minutes
+
+        // Adjust to 5 AM if not in daylight saving time
+        if (localTime.getHours() !== 6) {
+            date.setUTCHours(5);
+        }
+
+        // Adjust for the offset in days
+        date.setUTCDate(date.getUTCDate() + offset);
+
+        // Adjust for the timezone offset
+        date.setMinutes(date.getMinutes() + timeOffset);
+
+        // Return the ISO string
+        return date.toISOString();
+    }
+
+    function convertUnixTimestamp(timestamp, toCST = false) {
+        if (typeof timestamp !== "number") {
+            console.error("Invalid timestamp:", timestamp);
+            return "Invalid Date";
+        }
+
+        const dateUTC = new Date(timestamp); // Convert milliseconds to Date object
+        if (isNaN(dateUTC.getTime())) {
+            console.error("Invalid date conversion:", timestamp);
+            return "Invalid Date";
+        }
+
+        if (!toCST) {
+            return dateUTC.toISOString(); // Return UTC time
+        }
+
+        // Convert to CST/CDT (America/Chicago) while adjusting for daylight saving time
+        const options = { timeZone: "America/Chicago", hour12: false };
+        const cstDateString = dateUTC.toLocaleString("en-US", options);
+        const cstDate = new Date(cstDateString + " UTC"); // Convert back to Date
+
+        return cstDate.toISOString();
+    }
+
+    function getDSTOffsetInHours() {
+        // Get the current date
+        const now = new Date();
+
+        // Get the current time zone offset in minutes (with DST, if applicable)
+        const currentOffset = now.getTimezoneOffset();
+
+        // Convert the offset from minutes to hours
+        const dstOffsetHours = currentOffset / 60;
+
+        return dstOffsetHours; // Returns the offset in hours (e.g., -5 or -6)
     }
 });
 
