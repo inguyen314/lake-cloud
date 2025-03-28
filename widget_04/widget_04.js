@@ -1716,20 +1716,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
-                    async function patchTS(payload) {
-                        if (!payload) throw new Error("You must specify a payload!");
-                        const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries/tsid_goes_here?store-rule=DELETE%20INSERT", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json;version=2" },
-                            body: JSON.stringify(payload)
-                        });
-
-                        if (!response.ok) {
-                            const errorText = await response.text();
-                            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-                        }
-                    }
-
                     async function deleteTS(payload) {
                         const begin = payload.values[0][0];
                         const end = new Date(begin);
@@ -1916,7 +1902,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                                     deleteTS(value);  // Send each individual data object (like "sluice1", "sluice2", etc.)
 
                                                     // Update the status text after sending
-                                                    cdaStatusBtn.innerText = `Write payload${key.charAt(0).toUpperCase() + key.slice(1)} successful!`;
+                                                    cdaStatusBtn.innerText = `Delete payload${key.charAt(0).toUpperCase() + key.slice(1)} successful!`;
 
                                                     resolve();  // Resolve after the timeout to proceed to the next item
                                                 }, 250); // 1000ms delay (1 second)
