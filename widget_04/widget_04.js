@@ -749,7 +749,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // Add "NONE" as the first option
                     const noneOption = document.createElement("option");
-                    noneOption.value = -909;
+                    noneOption.value = "23:59";
                     noneOption.textContent = "NONE";
                     timeSelect.appendChild(noneOption);
 
@@ -766,8 +766,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // Update the selected time when changed
                     timeSelect.addEventListener("change", (event) => {
-                        console.log(`Row ${index + 1} selected time:`, event.target.value);
-                    });
+                        console.log(`Row ${index + 1} selected time:`, event.target.value, "Type:", typeof event.target.value);
+                    });                    
 
                     timeCell.appendChild(timeSelect);
                     row.appendChild(timeCell);
@@ -1792,7 +1792,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                             console.log("Payloads: ", payloads);
                             console.log("hasValidNewEntryHour:", hasValidNewEntryHour);
 
-                            // Step 1: Ensure payloads is not null or undefined
+                            payloads = filterPayloads(payloads);
+                            console.log("Payloads: ", payloads);
+
+                            // Prepare payloadAverageOutflow
                             if (!payloads || !payloads.outflowTotal || !Array.isArray(payloads.outflowTotal.values)) {
                                 console.log("No payloads or payloads.outflowTotal.values is null or invalid. This mean were adding new entries.");
                                 payloadAverageOutflow = {
@@ -1917,26 +1920,26 @@ document.addEventListener('DOMContentLoaded', async function () {
                             }
 
                             if (hasValidNewEntryHour === true) {
-                                // console.log("Creating new entries...");
-                                // showSpinner(); // Show the spinner before creating the version
-                                // await createTS(payloadSluice1Additional);
-                                // cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
-                                // await createTS(payloadSluice2Additional);
-                                // cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
-                                // await createTS(payloadSluiceTotalAdditional);
-                                // cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
-                                // await createTS(payloadGate1Additional);
-                                // cdaStatusBtn.innerText = "Write payloadGate1 successful!";
-                                // await createTS(payloadGate2Additional);
-                                // cdaStatusBtn.innerText = "Write payloadGate2 successful!";
-                                // await createTS(payloadGate3Additional);
-                                // cdaStatusBtn.innerText = "Write payloadGate3 successful!";
-                                // await createTS(payloadGateTotalAdditional);
-                                // cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
-                                // await createTS(payloadOutflowTotalAdditional);
-                                // cdaStatusBtn.innerText = "Write payloadOutflowTotalAdditional successful!";
-                                // await createTS(payloadOutflowAverageAdditional);
-                                // cdaStatusBtn.innerText = "Write payloadOutflowAverageAdditional successful!";
+                                console.log("Creating new entries...");
+                                showSpinner(); // Show the spinner before creating the version
+                                await createTS(payloadSluice1Additional);
+                                cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
+                                await createTS(payloadSluice2Additional);
+                                cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
+                                await createTS(payloadSluiceTotalAdditional);
+                                cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
+                                await createTS(payloadGate1Additional);
+                                cdaStatusBtn.innerText = "Write payloadGate1 successful!";
+                                await createTS(payloadGate2Additional);
+                                cdaStatusBtn.innerText = "Write payloadGate2 successful!";
+                                await createTS(payloadGate3Additional);
+                                cdaStatusBtn.innerText = "Write payloadGate3 successful!";
+                                await createTS(payloadGateTotalAdditional);
+                                cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
+                                await createTS(payloadOutflowTotalAdditional);
+                                cdaStatusBtn.innerText = "Write payloadOutflowTotalAdditional successful!";
+                                await createTS(payloadOutflowAverageAdditional);
+                                cdaStatusBtn.innerText = "Write payloadOutflowAverageAdditional successful!";
                             } else if (payloads && Object.keys(payloads).length > 0 && payloadAverageOutflow) {
                                 console.log("Editing existing entries...");
 
@@ -3120,6 +3123,25 @@ document.addEventListener('DOMContentLoaded', async function () {
         const dstOffsetHours = currentOffset / 60;
 
         return dstOffsetHours; // Returns the offset in hours (e.g., -5 or -6)
+    }
+
+    function filterPayloads(payloads) {
+        let filteredPayloads = {};
+        
+        for (const key in payloads) {
+            if (payloads.hasOwnProperty(key)) {
+                let filteredValues = payloads[key].values.filter(entry => !entry[0].includes("T04:59:00.000Z"));
+                
+                if (filteredValues.length > 0) {
+                    filteredPayloads[key] = {
+                        ...payloads[key],
+                        values: filteredValues
+                    };
+                }
+            }
+        }
+        
+        return filteredPayloads;
     }
 });
 
