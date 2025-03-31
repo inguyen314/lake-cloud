@@ -37,8 +37,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let setLocationCategory = "Lakes";
 
-    const basinCategoryApiUrl = `${setBaseUrl}location/group?office=${office}&include-assigned=false&location-category-like=${setLocationCategory}`;
-    // const basinCategoryApiUrl = `${setBaseUrl}location/group?office=${office}&location-category-like=${setLocationCategory}&category-office-id=${office}&location-office-id=${office}`;
+    // const basinCategoryApiUrl = `${setBaseUrl}location/group?office=${office}&include-assigned=false&location-category-like=${setLocationCategory}`;
+    const basinCategoryApiUrl = setBaseUrl + `location/group?office=${office}&group-office-id=${office}&category-office-id=${office}&category-id=${setLocationCategory}`;
     console.log("basinCategoryApiUrl: ", basinCategoryApiUrl);
 
     let apiPromises = [];

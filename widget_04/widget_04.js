@@ -235,17 +235,17 @@ document.addEventListener('DOMContentLoaded', async function () {
             } catch (error) {
                 console.error("Error fetching tsid data:", error);
 
-                // Show the "Report Issue" button
-                document.getElementById('reportIssueBtn').style.display = "block";
+                // // Show the "Report Issue" button
+                // document.getElementById('reportIssueBtn').style.display = "block";
 
-                // Ensure sendEmail is globally accessible
-                window.sendEmail = function () {
-                    const subject = encodeURIComponent("Cloud Database Down");
-                    const body = encodeURIComponent("Hello,\n\nIt appears that the cloud database is down. Please investigate the issue." + setBaseUrl);
-                    const email = "DLL-CEMVS-WM-SysAdmins@usace.army.mil"; // Replace with actual support email
+                // // Ensure sendEmail is globally accessible
+                // window.sendEmail = function () {
+                //     const subject = encodeURIComponent("Cloud Database Down");
+                //     const body = encodeURIComponent("Hello,\n\nIt appears that the cloud database is down. Please investigate the issue." + setBaseUrl);
+                //     const email = "DLL-CEMVS-WM-SysAdmins@usace.army.mil"; // Replace with actual support email
 
-                    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-                };
+                //     window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+                // };
             }
         };
 
@@ -764,10 +764,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                         timeSelect.appendChild(option);
                     });
 
+                    // Disable selection for the first row
+                    if (index === 0) {
+                        timeSelect.disabled = true;
+                    }
+
                     // Update the selected time when changed
                     timeSelect.addEventListener("change", (event) => {
                         console.log(`Row ${index + 1} selected time:`, event.target.value, "Type:", typeof event.target.value);
-                    });                    
+                    });
 
                     timeCell.appendChild(timeSelect);
                     row.appendChild(timeCell);
@@ -1626,10 +1631,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 const selectedTime = document.getElementById(`timeSelect${index}`).value;
                                 selectedTimes.push(selectedTime);
                             });
-                        
+
                             console.log("Selected Times:", selectedTimes); // Log the selected times
                             return selectedTimes;
-                        }                        
+                        }
 
                         function getAllSluice1Values() {
                             return formattedDataSluice1.map((_, index) =>
@@ -3127,11 +3132,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     function filterPayloads(payloads) {
         let filteredPayloads = {};
-        
+
         for (const key in payloads) {
             if (payloads.hasOwnProperty(key)) {
                 let filteredValues = payloads[key].values.filter(entry => !entry[0].includes("T04:59:00.000Z"));
-                
+
                 if (filteredValues.length > 0) {
                     filteredPayloads[key] = {
                         ...payloads[key],
@@ -3140,7 +3145,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
             }
         }
-        
+
         return filteredPayloads;
     }
 });
