@@ -244,13 +244,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const optionValue = parseInt(optionInput.value) || 0; // Convert to integer, default to 909
                 const timestampUnix = new Date(formattedData.at(-1).formattedTimestampUTC).getTime();
 
+                console.log("timestampUnix: ", timestampUnix);
+
                 const payload = {
                     "date-version-type": "MAX_AGGREGATE",
                     "name": tsid,
                     "office-id": "MVS",
                     "units": "ft",
                     "values": [[timestampUnix, crestValue, optionValue]], // Three-item array
-                    "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
+                    "version-date": convertTo6AMCST(isoDateToday), // Ensure this is the correct ISO formatted date
                 };
 
                 console.log("payload: ", payload);
@@ -286,7 +288,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 async function fetchUpdatedData(tsid, isoDateDay5, isoDateToday, isoDateMinus1Day) {
                     let response = null;
-                    response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
+                    response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=MVS&version-date=${convertTo6AMCST(isoDateToday)}`, {
                         headers: {
                             "Accept": "application/json;version=2", // Ensuring the correct version is used
                             "cache-control": "no-cache"
@@ -387,7 +389,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const dateCell = document.createElement("td");
             const dateInput = document.createElement("input");
             dateInput.type = "text";
-            dateInput.value =  isoDateToday // new Date(new Date(isoDateToday).getTime() + (dstOffsetHours) * 60 * 60 * 1000).toISOString(); // Convert to CST time for display on the lake sheets
+            dateInput.value =  convertTo6AMCST(isoDateToday); // Set the default value to 6 AM CST
             dateInput.id = "dateInput";
             dateCell.appendChild(dateInput);
             row.appendChild(dateCell);
@@ -449,7 +451,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     "office-id": "MVS",
                     "units": "ft",
                     "values": [[timestampUnix, crestValue, optionValue]], // Three-item array
-                    "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
+                    "version-date": convertTo6AMCST(isoDateToday), // Ensure this is the correct ISO formatted date
                 };
 
                 console.log("payload: ", payload);
@@ -510,7 +512,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 async function fetchUpdatedData(tsid, isoDateDay5, isoDateToday, isoDateMinus1Day) {
                     let response = null;
-                    response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=MVS&version-date=${isoDateToday}`, {
+                    response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=MVS&version-date=${convertTo6AMCST(isoDateToday)}`, {
                         headers: {
                             "Accept": "application/json;version=2", // Ensuring the correct version is used
                             "cache-control": "no-cache"
@@ -583,7 +585,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     const fetchTimeSeriesData = async (tsid) => {
         let tsidData = null;
-        tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay7}&office=${office}&version-date=${isoDateToday}`;
+        tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay7}&office=${office}&version-date=${convertTo6AMCST(isoDateToday)}`;
         console.log('tsidData:', tsidData);
 
         try {
@@ -710,6 +712,20 @@ document.addEventListener('DOMContentLoaded', async function () {
         const dstOffsetHours = currentOffset / 60;
 
         return dstOffsetHours; // Returns the offset in hours (e.g., -5 or -6)
+    }
+
+    function convertTo6AMCST(isoDateToday) {
+        // Parse the UTC date
+        let utcDate = new Date(isoDateToday);
+    
+        // Convert to CST (America/Chicago)
+        let cstDate = new Date(utcDate.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+    
+        // Set the time to 6 AM CST
+        cstDate.setHours(6, 0, 0, 0);
+    
+        // Convert back to ISO format
+        return new Date(cstDate.getTime() - (cstDate.getTimezoneOffset() * 60000)).toISOString();
     }
 });
 
