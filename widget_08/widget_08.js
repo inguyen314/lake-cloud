@@ -168,27 +168,27 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 table.appendChild(headerRow);
 
+                // Dont have existing data, so create a new row with today's date and default value
                 if (formattedData.length === 0) {
                     const row = document.createElement("tr");
 
                     const dateCell = document.createElement("td");
-                    dateCell.textContent = new Date(new Date(isoDateToday).getTime() - dstOffsetHours * 60 * 60 * 1000).toISOString(); // Convert to CST time
+                    dateCell.textContent = convertTo6AMCST(isoDateToday);
                     row.appendChild(dateCell);
 
                     const precipCell = document.createElement("td");
                     const precipInput = document.createElement("input");
                     precipInput.type = "number";
                     precipInput.value = 0.00;
-                    precipInput.step = "0.01";  // Ensure the step increment is 0.01
+                    precipInput.step = "0.01";
                     precipInput.className = "outflow-input";
                     precipInput.id = `precipInput-${isoDateToday}`;
-                    precipInput.style.backgroundColor = "pink";  // Set pink background
+                    precipInput.style.backgroundColor = "pink";
                     precipCell.appendChild(precipInput);
                     row.appendChild(precipCell);
 
                     table.appendChild(row);
                 } else {
-                    // Render rows from formattedData
                     formattedData.forEach((entry) => {
                         const row = document.createElement("tr");
 
@@ -199,8 +199,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const precipCell = document.createElement("td");
                         const precipInput = document.createElement("input");
                         precipInput.type = "number";
-                        precipInput.value = parseFloat(entry[1]).toFixed(2); // Format to 2 decimal places
-                        precipInput.step = "0.01";  // Ensure the step increment is 0.01
+                        precipInput.value = parseFloat(entry[1]).toFixed(2);
+                        precipInput.step = "0.01";
                         precipInput.className = "outflow-input";
                         precipInput.id = `precipInput-${isoDateToday}`;
                         precipCell.appendChild(precipInput);
@@ -235,16 +235,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                     if (formattedData.length === 0) {
                         // No data, only today's input (single row scenario)
                         const precipInput = document.getElementById(`precipInput-${isoDateToday}`).value;
-                        let precipValue = precipInput ? parseFloat(parseFloat(precipInput).toFixed(2)) : 909; // Default to 909 if empty
-                        const timestampUnix = new Date(isoDateToday).getTime();
+                        let precipValue = precipInput ? parseFloat(parseFloat(precipInput).toFixed(2)) : 909;
+                        const timestampUnix = new Date(new Date(isoDateToday).getTime() + 6 * 3600000).toISOString(); // Adjust to 6 AM CST
 
                         values.push([timestampUnix, precipValue, 0]);
                     } else {
                         // Use existing formattedData entries
                         formattedData.forEach(entry => {
                             const precipInput = document.getElementById(`precipInput-${isoDateToday}`).value;
-                            let precipValue = precipInput ? parseFloat(parseFloat(precipInput).toFixed(2)) : 909; // Default to 909 if empty
-                            const timestampUnix = new Date(isoDateToday).getTime();
+                            let precipValue = precipInput ? parseFloat(parseFloat(precipInput).toFixed(2)) : 909;
+                            const timestampUnix = new Date(new Date(isoDateToday).getTime() + 6 * 3600000).toISOString(); // Adjust to 6 AM CST
 
                             values.push([timestampUnix, precipValue, 0]);
                         });
@@ -529,6 +529,20 @@ document.addEventListener('DOMContentLoaded', async function () {
         const dstOffsetHours = currentOffset / 60;
 
         return dstOffsetHours; // Returns the offset in hours (e.g., -5 or -6)
+    }
+
+    function convertTo6AMCST(isoDateToday) {
+        // Parse the UTC date
+        let utcDate = new Date(isoDateToday);
+    
+        // Convert to CST (America/Chicago)
+        let cstDate = new Date(utcDate.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+    
+        // Set the time to 6 AM CST
+        cstDate.setHours(6, 0, 0, 0);
+    
+        // Convert back to ISO format
+        return new Date(cstDate.getTime() - (cstDate.getTimezoneOffset() * 60000)).toISOString();
     }
 });
 

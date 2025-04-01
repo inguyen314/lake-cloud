@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // Use "isoDateToday" as a fallback for the date
                     const dateCell = document.createElement("td");
-                    dateCell.textContent = new Date(new Date(isoDateToday).getTime() - dstOffsetHours * 60 * 60 * 1000).toISOString(); // Convert to CST time
+                    dateCell.textContent = new Date(new Date(isoDateToday).getTime() - (6 - dstOffsetHours) * 60 * 60 * 1000).toISOString(); // Convert to CST time
                     row.appendChild(dateCell);
 
                     // Make the "text-value" editable
