@@ -340,6 +340,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
 
     } else {
+        const loadingIndicator = document.getElementById('loading_json');
+        loadingIndicator.style.display = 'block';
+
         console.log('lake: ', lake);
         console.log('datetime: ', datetime);
 
@@ -573,6 +576,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                             timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
                             timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage);
 
+                        loadingIndicator.style.display = 'none';
+
                         loginStateController()
                         setInterval(async () => {
                             loginStateController()
@@ -587,6 +592,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                             tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
                             timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
                             timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage);
+
+                        loadingIndicator.style.display = 'none';
 
                         loginStateController()
                         setInterval(async () => {
