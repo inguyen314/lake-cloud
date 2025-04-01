@@ -583,7 +583,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     const fetchTimeSeriesData = async (tsid) => {
         let tsidData = null;
-        tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=${office}&version-date=${isoDateToday}`;
+        tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay7}&office=${office}&version-date=${isoDateToday}`;
         console.log('tsidData:', tsidData);
 
         try {
