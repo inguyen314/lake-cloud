@@ -387,7 +387,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const dateCell = document.createElement("td");
             const dateInput = document.createElement("input");
             dateInput.type = "text";
-            dateInput.value =  new Date(new Date(isoDateToday).getTime() - dstOffsetHours * 60 * 60 * 1000).toISOString(); // Convert to CST time for display on the lake sheets
+            dateInput.value =  isoDateToday // new Date(new Date(isoDateToday).getTime() + (dstOffsetHours) * 60 * 60 * 1000).toISOString(); // Convert to CST time for display on the lake sheets
             dateInput.id = "dateInput";
             dateCell.appendChild(dateInput);
             row.appendChild(dateCell);

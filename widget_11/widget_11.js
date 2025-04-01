@@ -15,24 +15,24 @@ document.addEventListener('DOMContentLoaded', async function () {
     const [month, day, year] = datetime.split('-');
 
     // Generate ISO strings for the previous 7 days and today
-    const isoDateMinus8Days = getIsoDateWithOffset(year, month, day, -8);
-    const isoDateMinus7Days = getIsoDateWithOffset(year, month, day, -7);
-    const isoDateMinus6Days = getIsoDateWithOffset(year, month, day, -6);
-    const isoDateMinus5Days = getIsoDateWithOffset(year, month, day, -5);
-    const isoDateMinus4Days = getIsoDateWithOffset(year, month, day, -4);
-    const isoDateMinus3Days = getIsoDateWithOffset(year, month, day, -3);
-    const isoDateMinus2Days = getIsoDateWithOffset(year, month, day, -2);
-    const isoDateMinus1Day = getIsoDateWithOffset(year, month, day, -1);
-    const isoDateToday = getIsoDateWithOffset(year, month, day, 0);
+    const isoDateMinus8Days = getIsoDateWithOffsetDynamic(year, month, day, -8);
+    const isoDateMinus7Days = getIsoDateWithOffsetDynamic(year, month, day, -7);
+    const isoDateMinus6Days = getIsoDateWithOffsetDynamic(year, month, day, -6);
+    const isoDateMinus5Days = getIsoDateWithOffsetDynamic(year, month, day, -5);
+    const isoDateMinus4Days = getIsoDateWithOffsetDynamic(year, month, day, -4);
+    const isoDateMinus3Days = getIsoDateWithOffsetDynamic(year, month, day, -3);
+    const isoDateMinus2Days = getIsoDateWithOffsetDynamic(year, month, day, -2);
+    const isoDateMinus1Day = getIsoDateWithOffsetDynamic(year, month, day, -1);
+    const isoDateToday = getIsoDateWithOffsetDynamic(year, month, day, 0);
 
     // Generate ISO strings for the next 7 days
-    const isoDateDay1 = getIsoDateWithOffset(year, month, day, 1);
-    const isoDateDay2 = getIsoDateWithOffset(year, month, day, 2);
-    const isoDateDay3 = getIsoDateWithOffset(year, month, day, 3);
-    const isoDateDay4 = getIsoDateWithOffset(year, month, day, 4);
-    const isoDateDay5 = getIsoDateWithOffset(year, month, day, 5);
-    const isoDateDay6 = getIsoDateWithOffset(year, month, day, 6);
-    const isoDateDay7 = getIsoDateWithOffset(year, month, day, 7);
+    const isoDateDay1 = getIsoDateWithOffsetDynamic(year, month, day, 1);
+    const isoDateDay2 = getIsoDateWithOffsetDynamic(year, month, day, 2);
+    const isoDateDay3 = getIsoDateWithOffsetDynamic(year, month, day, 3);
+    const isoDateDay4 = getIsoDateWithOffsetDynamic(year, month, day, 4);
+    const isoDateDay5 = getIsoDateWithOffsetDynamic(year, month, day, 5);
+    const isoDateDay6 = getIsoDateWithOffsetDynamic(year, month, day, 6);
+    const isoDateDay7 = getIsoDateWithOffsetDynamic(year, month, day, 7);
 
     console.log("isoDateMinus8Days:", isoDateMinus8Days);
     console.log("isoDateMinus7Days:", isoDateMinus7Days);
@@ -50,6 +50,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("isoDateDay5:", isoDateDay5);
     console.log("isoDateDay6:", isoDateDay6);
     console.log("isoDateDay7:", isoDateDay7);
+
+    let dstOffsetHours = getDSTOffsetInHours();
+    console.log(`dstOffsetHours: ${dstOffsetHours} hours`);
 
     const tsid = `${setBaseUrl}timeseries/group/Note-Lake?office=${office}&category-id=${lake}`;
     console.log("tsid:", tsid);
@@ -102,25 +105,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                 cdaSaveBtn.disabled = false; // Re-enable button
             }
 
-            if (timeSeriesDataNote && timeSeriesDataNote['regular-text-values'] && timeSeriesDataNote['regular-text-values'].length > 0) {
-                console.log("Calling createTable ...");
-                createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidNote, timeSeriesDataNote);
+            console.log("Calling createTable ...");
+            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidNote, timeSeriesDataNote);
 
+            loginStateController()
+            // Setup timers
+            setInterval(async () => {
                 loginStateController()
-                // Setup timers
-                setInterval(async () => {
-                    loginStateController()
-                }, 10000) // time is in millis
-            } else {
-                console.log("Calling createTable ...");
-                createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidNote, timeSeriesDataNote);
+            }, 10000) // time is in millis
 
-                loginStateController()
-                // Setup timers
-                setInterval(async () => {
-                    loginStateController()
-                }, 10000) // time is in millis
-            }
 
             function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidNote, timeSeriesDataNote) {
                 console.log("timeSeriesDataNote:", timeSeriesDataNote);
@@ -130,6 +123,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Check if "date-time" exists and is a valid Unix timestamp (number)
                     if (item["date-time"] && typeof item["date-time"] === "number") {
                         item["date-time-iso"] = convertUnixTimestampToISO(item["date-time"]);
+                    } else {
+                        console.error("Invalid timestamp for date-time:", item["date-time"]);
+                    }
+
+                    if (item["date-time"] && typeof item["date-time"] === "number") {
+                        item["date-time-iso-cst"] = convertUnixTimestampToISO_CST(item["date-time"], dstOffsetHours);
                     } else {
                         console.error("Invalid timestamp for date-time:", item["date-time"]);
                     }
@@ -175,7 +174,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // Use "date-time-iso" for the date
                         const dateCell = document.createElement("td");
-                        dateCell.textContent = entry["date-time-iso"] || "No Date"; // Fallback if "date-time-iso" is not available
+                        dateCell.textContent = entry["date-time-iso-cst"] || "No Date"; // Fallback if "date-time-iso" is not available
                         row.appendChild(dateCell);
 
                         // Make the "text-value" editable
@@ -196,7 +195,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // Use "isoDateToday" as a fallback for the date
                     const dateCell = document.createElement("td");
-                    dateCell.textContent = isoDateToday; // Fallback if "date-time-iso" is not available
+                    dateCell.textContent = new Date(new Date(isoDateToday).getTime() - dstOffsetHours * 60 * 60 * 1000).toISOString(); // Convert to CST time
                     row.appendChild(dateCell);
 
                     // Make the "text-value" editable
@@ -204,6 +203,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const textValueInput = document.createElement("input");
                     textValueInput.type = "text";
                     textValueInput.value = "--"; // Fallback if "text-value" is not available
+                    textValueInput.style.backgroundColor = "pink";  // Set pink background
                     textValueInput.className = "text-value-input"; // Add a class for styling (optional)
                     textValueInput.id = `textValueInput-${isoDateToday}`; // Use today's date as ID
                     textValueCell.appendChild(textValueInput);
@@ -259,7 +259,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     console.log("Updated Text Values:", textValues);
                     console.log("Value: ", textValues[0]['text-value']);
-
 
                     const payload = {
                         "office-id": "MVS",
@@ -417,18 +416,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     };
 
     const fetchTimeSeriesData = async (tsid) => {
-        // Convert to Date object
-        const date = new Date(isoDateMinus1Day);
-
-        // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
-        date.setTime(date.getTime() + (1 * 60 * 60 * 1000));
-
-        // Convert back to ISO string (preserve UTC format)
-        const isoDateMinus1DayPlus1Hour = date.toISOString();
-
-        console.log("isoDateMinus1DayPlus1Hour: ", isoDateMinus1DayPlus1Hour);
-
-        const tsidData = `${setBaseUrl}timeseries/text?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateToday}&office=${office}`;
+        const tsidData = `${setBaseUrl}timeseries/text?name=${tsid}&begin=${isoDateToday}&end=${isoDateToday}&office=${office}`;
         console.log('tsidData:', tsidData);
         try {
             const response = await fetch(tsidData, {
@@ -447,7 +435,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     fetchTsidData();
 
-    function getIsoDateWithOffset(year, month, day, offset) {
+    function getIsoDateWithOffsetDynamic(year, month, day, offset) {
         // Create a date object in UTC (midnight UTC)
         const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0)); // Set the initial time at 6 AM UTC
 
@@ -460,36 +448,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Return the ISO string
         return date.toISOString();
-    }
-
-    function formatISODateToCSTString(timestamp) {
-        if (typeof timestamp !== "number") {
-            console.error("Invalid timestamp:", timestamp);
-            return "Invalid Date";
-        }
-
-        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
-        if (isNaN(date.getTime())) {
-            console.error("Invalid date conversion:", timestamp);
-            return "Invalid Date";
-        }
-
-        // Convert to CST (Central Standard Time)
-        const options = {
-            timeZone: 'America/Chicago',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-
-        const formatter = new Intl.DateTimeFormat('en-US', options);
-        const formattedDate = formatter.format(date);
-
-        return formattedDate.replace(',', ''); // Removes the comma between date and time
     }
 
     function convertUnixTimestampToISO(timestamp) {
@@ -506,6 +464,61 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
 
         return date.toISOString(); // Convert to "YYYY-MM-DDTHH:mm:ssZ" format
+    }
+
+    function convertUnixTimestampToISO_CST(timestamp, dstOffsetHours) {
+        if (typeof timestamp !== "number") {
+            console.error("Invalid timestamp:", timestamp);
+            return "Invalid Date";
+        }
+    
+        const date = new Date(timestamp); // Convert milliseconds to Date object
+    
+        if (isNaN(date.getTime())) {
+            console.error("Invalid date conversion:", timestamp);
+            return "Invalid Date";
+        }
+    
+        // Convert UTC time to CST (UTC-6) by subtracting 6 hours
+        date.setUTCHours(date.getUTCHours() - dstOffsetHours);
+    
+        return date.toISOString(); // Return in "YYYY-MM-DDTHH:mm:ss.000Z" format
+    }
+
+    function getIsoDateWithOffsetDynamic(year, month, day, offset) {
+        // Create a date object at 6 AM UTC
+        const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0));
+
+        // Get the timezone offset dynamically based on CST/CDT
+        const localTime = new Date(date.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+        const timeOffset = (date.getTime() - localTime.getTime()) / (60 * 1000); // Offset in minutes
+
+        // Adjust to 5 AM if not in daylight saving time
+        if (localTime.getHours() !== 6) {
+            date.setUTCHours(5);
+        }
+
+        // Adjust for the offset in days
+        date.setUTCDate(date.getUTCDate() + offset);
+
+        // Adjust for the timezone offset
+        date.setMinutes(date.getMinutes() + timeOffset);
+
+        // Return the ISO string
+        return date.toISOString();
+    }
+
+    function getDSTOffsetInHours() {
+        // Get the current date
+        const now = new Date();
+
+        // Get the current time zone offset in minutes (with DST, if applicable)
+        const currentOffset = now.getTimezoneOffset();
+
+        // Convert the offset from minutes to hours
+        const dstOffsetHours = currentOffset / 60;
+
+        return dstOffsetHours; // Returns the offset in hours (e.g., -5 or -6)
     }
 });
 
