@@ -190,8 +190,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     return {
                         ...entry, // Retain other data
-                        formattedTimestampUTC: convertUnixTimestamp(timestamp, false),  // UTC time
-                        formattedTimestampCST: convertUnixTimestamp(timestamp, true),    // CST/CDT adjusted time
+                        formattedTimestampUTC: convertUnixTimestamp(timestamp, true),  // UTC time
+                        formattedTimestampCST: convertUnixTimestamp(timestamp, false),    // CST/CDT adjusted time
                     };
                 });
                 console.log("Formatted timeSeriesDataOutflow:", formattedData);
@@ -203,8 +203,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         return {
                             ...entry, // Retain other data
-                            formattedTimestampUTC: convertUnixTimestamp(timestamp, false),  // UTC time
-                            formattedTimestampCST: convertUnixTimestamp(timestamp, true),    // CST/CDT adjusted time
+                            formattedTimestampUTC: convertUnixTimestamp(timestamp, true),  // UTC time
+                            formattedTimestampCST: convertUnixTimestamp(timestamp, false),    // CST/CDT adjusted time
                         };
                     });
 
@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 0
                             ];
                         }),
-                        "version-date": isoDateToday,
+                        "version-date": convertTo6AMCST(isoDateToday),
                     };
                     console.log("Preparing payload...");
                     console.log("payloadOutflow:", payloadOutflow);
@@ -333,7 +333,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     0 // Placeholder for the third value (set to 0 for now)
                                 ];
                             }),
-                            "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
+                            "version-date": convertTo6AMCST(isoDateToday), // Ensure this is the correct ISO formatted date
                         };
 
                         console.log("payloadInflow: ", payloadInflow);
@@ -372,14 +372,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                         let response = null;
 
                         if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1Day}&end=${isoDateDay6}&office=MVS&version-date=${isoDateToday}`, {
+                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1Day}&end=${isoDateDay6}&office=MVS&version-date=${convertTo6AMCST(isoDateToday)}`, {
                                 headers: {
                                     "Accept": "application/json;version=2", // Ensuring the correct version is used
                                     "cache-control": "no-cache"
                                 }
                             });
                         } else {
-                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay6}&office=MVS&version-date=${isoDateToday}`, {
+                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay6}&office=MVS&version-date=${convertTo6AMCST(isoDateToday)}`, {
                                 headers: {
                                     "Accept": "application/json;version=2", // Ensuring the correct version is used
                                     "cache-control": "no-cache"
@@ -485,7 +485,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
                     dates = [isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
                 } else {
-                    dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
+                    // dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5]; // convertTo6AMCST(isoDateToday)
+                    dates = [convertTo6AMCST(isoDateToday), convertTo6AMCST(isoDateDay1), convertTo6AMCST(isoDateDay2), convertTo6AMCST(isoDateDay3), convertTo6AMCST(isoDateDay4), convertTo6AMCST(isoDateDay5)];
                 }
 
                 console.log("dates (UTC):", dates);
@@ -585,12 +586,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // console.log("adjustedTimestampUnix:", adjustedTimestampUnix);
 
                             return [
-                                adjustedTimestampUnix,  // Timestamp for the day at 6 AM
+                                timestampUnix,  // Timestamp for the day at 6 AM
                                 parseInt(outflowValue), // Stage value (forecast outflow) as number
                                 0 // Placeholder for the third value (set to 0 for now)
                             ];
                         }),
-                        "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
+                        "version-date": convertTo6AMCST(isoDateToday), // Ensure this is the correct ISO formatted date
                     };
 
                     console.log("payloadOutflow: ", payloadOutflow);
@@ -690,14 +691,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                         let response = null;
 
                         if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1Day}&end=${isoDateDay6}&office=MVS&version-date=${isoDateToday}`, {
+                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1Day}&end=${isoDateDay6}&office=MVS&version-date=${convertTo6AMCST(isoDateToday)}`, {
                                 headers: {
                                     "Accept": "application/json;version=2", // Ensuring the correct version is used
                                     "cache-control": "no-cache"
                                 }
                             });
                         } else {
-                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay6}&office=MVS&version-date=${isoDateToday}`, {
+                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateToday}&end=${isoDateDay6}&office=MVS&version-date=${convertTo6AMCST(isoDateToday)}`, {
                                 headers: {
                                     "Accept": "application/json;version=2", // Ensuring the correct version is used
                                     "cache-control": "no-cache"
@@ -777,9 +778,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         const fetchTimeSeriesData = async (tsidOutflow) => {
             let tsidData = null;
             if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                tsidData = `${setBaseUrl}timeseries?name=${tsidOutflow}&begin=${isoDateMinus1Day}&end=${isoDateDay6}&office=${office}&version-date=${isoDateToday}`;
+                tsidData = `${setBaseUrl}timeseries?name=${tsidOutflow}&begin=${isoDateMinus1Day}&end=${isoDateDay6}&office=${office}&version-date=${convertTo6AMCST(isoDateToday)}`;
             } else {
-                tsidData = `${setBaseUrl}timeseries?name=${tsidOutflow}&begin=${isoDateToday}&end=${isoDateDay6}&office=${office}&version-date=${isoDateToday}`;
+                tsidData = `${setBaseUrl}timeseries?name=${tsidOutflow}&begin=${isoDateToday}&end=${isoDateDay6}&office=${office}&version-date=${convertTo6AMCST(isoDateToday)}`;
             }
             console.log('tsidData:', tsidData);
 
@@ -926,6 +927,20 @@ document.addEventListener('DOMContentLoaded', async function () {
         const cstDate = new Date(cstDateString + " UTC"); // Convert back to Date
 
         return cstDate.toISOString();
+    }
+
+    function convertTo6AMCST(isoDateToday) {
+        // Parse the UTC date
+        let utcDate = new Date(isoDateToday);
+    
+        // Convert to CST (America/Chicago)
+        let cstDate = new Date(utcDate.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+    
+        // Set the time to 6 AM CST
+        cstDate.setHours(6, 0, 0, 0);
+    
+        // Convert back to ISO format
+        return new Date(cstDate.getTime() - (cstDate.getTimezoneOffset() * 60000)).toISOString();
     }
 });
 

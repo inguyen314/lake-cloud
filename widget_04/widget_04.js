@@ -1537,36 +1537,82 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // Step 2: Format the data to include CST timestamps
                             console.log("formattedDataOutflowTotal: ", formattedDataOutflowTotal);
 
-                            // Step 3: Calculate the average outflow
-                            let totalFlow = 0;
-                            let numberOfEntries = formattedDataOutflowTotal.length;
+                            formattedDataOutflowTotal.forEach(entry => {
+                                const isoDate = new Date(entry["0"]).toISOString();
+                                entry.isoTimestampUTC = isoDate;
+                            });
+
+                            console.log("formattedDataOutflowTotal: ", formattedDataOutflowTotal);
+
+                            formattedDataOutflowTotal = formattedDataOutflowTotal.map(entry => ([
+                                new Date(entry["0"]).toISOString(),
+                                entry["1"],
+                                entry["2"]
+                            ]));
+
+                            console.log("formattedDataOutflowTotal: ", formattedDataOutflowTotal); // This is a payload format now
+
+                            // Step 3: Calculate the weighted average outflow
+                            const totalHours = 24;
+                            let weightedSum = 0;
+                            let totalDuration = 0;
+                            let averageOutflowPayload = null;
 
                             if (formattedDataOutflowTotal.length === 0) {
                                 console.error("Error: formattedDataOutflowTotal is empty.");
                             } else {
-                                // Sum all the flow values (second element of each object, indexed as '1')
-                                formattedDataOutflowTotal.forEach(entry => {
-                                    totalFlow += entry[1]; // Add up the flow values (second element, indexed as '1')
-                                });
+                                let lastHour = new Date(formattedDataOutflowTotal[0][0]).getHours() || 0;
 
-                                // Compute the average flow
-                                const averageFlow = totalFlow / numberOfEntries;
-                                console.log("averageFlow: ", averageFlow);
+                                if (formattedDataOutflowTotal.length === 1) {
+                                    const value = formattedDataOutflowTotal[0][1] ?? 0;
+                                    const duration = totalHours - lastHour;
+                                    weightedSum = value * duration;
+                                    console.log("weightedSum:", weightedSum);
+                                    totalDuration = duration;
+                                } else {
+                                    for (let i = 1; i < formattedDataOutflowTotal.length; i++) {
+                                        const currentHour = new Date(formattedDataOutflowTotal[i][0]).getHours() || 0;
+                                        const prevValue = formattedDataOutflowTotal[i - 1][1] ?? 0;
+                                        const duration = Math.max(currentHour - lastHour, 1); // Avoid zero duration
 
-                                // Step 4: Construct payloadOutflowAverageAdditional
-                                payloadOutflowAverageAdditional = {
-                                    "name": tsidOutflowAverage,
-                                    "office-id": "MVS",
-                                    "units": "cfs",
-                                    "values": [
-                                        [
-                                            isoDateToday,
-                                            averageFlow,  // Use the calculated average flow
-                                            0
-                                        ]
-                                    ].filter(item => item[0] !== null), // Filters out entries where time1 is null
-                                };
+                                        weightedSum += prevValue * duration;
+                                        console.log("weightedSum:", weightedSum);
+                                        totalDuration += duration;
+
+                                        lastHour = currentHour;
+                                    }
+
+                                    // Add the final chunk from lastHour to 24
+                                    const lastValue = formattedDataOutflowTotal[formattedDataOutflowTotal.length - 1][1] ?? 0;
+                                    const lastDuration = totalHours - lastHour;
+
+                                    weightedSum += lastValue * lastDuration;
+                                    console.log("weightedSum:", weightedSum);
+                                    totalDuration += lastDuration;
+                                }
+
+                                averageOutflowPayload = weightedSum / totalHours;
+                                averageOutflowPayload = Math.round(averageOutflowPayload / 10) * 10;
+
+                                console.log("weightedSum:", weightedSum);
+                                console.log("totalDuration (should be 24):", totalDuration);
+                                console.log("averageOutflowPayload:", averageOutflowPayload);
                             }
+
+                            // Step 4: Construct payloadAverageOutflow
+                            payloadOutflowAverageAdditional = {
+                                "name": tsidOutflowAverage,
+                                "office-id": "MVS",
+                                "units": "cfs",
+                                "values": [
+                                    [
+                                        isoDateToday,
+                                        averageOutflowPayload,  // Use the calculated average flow
+                                        0
+                                    ]
+                                ].filter(item => item[0] !== null), // Filters out entries where time1 is null
+                            };
+                            console.log("payloadOutflowAverageAdditional: ", payloadOutflowAverageAdditional);
                         }
                         console.log("payloadOutflowAverageAdditional: ", payloadOutflowAverageAdditional);
                     } else {
@@ -1824,37 +1870,48 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 // Step 3: Calculate the weighted average outflow
                                 const totalHours = 24;
                                 let weightedSum = 0;
-                                let lastHour = 0;
+                                let totalDuration = 0;
                                 let averageOutflowPayload = null;
 
                                 if (payloadOutflowAverage.length === 0) {
                                     console.error("Error: payloadOutflowAverage is empty.");
                                 } else {
-                                    lastHour = new Date(payloadOutflowAverage[0][0]).getHours() || 0;
-                                    weightedSum = 0;
+                                    let lastHour = new Date(payloadOutflowAverage[0][0]).getHours() || 0;
 
                                     if (payloadOutflowAverage.length === 1) {
-                                        weightedSum = (payloadOutflowAverage[0][1] ?? 0) * (totalHours - lastHour);
+                                        const value = payloadOutflowAverage[0][1] ?? 0;
+                                        const duration = totalHours - lastHour;
+                                        weightedSum = value * duration;
+                                        console.log("weightedSum:", weightedSum);
+                                        totalDuration = duration;
                                     } else {
-                                        payloadOutflowAverage.forEach((entry, index) => {
-                                            const currentHour = new Date(entry[0]).getHours() || 0;
-                                            const value = entry[1] ?? 0; // Ensure value exists
+                                        for (let i = 1; i < payloadOutflowAverage.length; i++) {
+                                            const currentHour = new Date(payloadOutflowAverage[i][0]).getHours() || 0;
+                                            const prevValue = payloadOutflowAverage[i - 1][1] ?? 0;
+                                            const duration = Math.max(currentHour - lastHour, 1); // Avoid zero duration
 
-                                            if (index > 0) {
-                                                const duration = Math.max(currentHour - lastHour, 1); // Ensure duration is at least 1
-                                                weightedSum += (payloadOutflowAverage[index - 1][1] ?? 0) * duration;
-                                            }
+                                            weightedSum += prevValue * duration;
+                                            console.log("weightedSum:", weightedSum);
+                                            totalDuration += duration;
+
                                             lastHour = currentHour;
-                                        });
+                                        }
 
-                                        // Add the last duration from the last timestamp to 24
+                                        // Add the final chunk from lastHour to 24
+                                        const lastValue = payloadOutflowAverage[payloadOutflowAverage.length - 1][1] ?? 0;
                                         const lastDuration = totalHours - lastHour;
-                                        weightedSum += (payloadOutflowAverage[payloadOutflowAverage.length - 1][1] ?? 0) * lastDuration;
+
+                                        weightedSum += lastValue * lastDuration;
+                                        console.log("weightedSum:", weightedSum);
+                                        totalDuration += lastDuration;
                                     }
 
-                                    // Compute the weighted average
                                     averageOutflowPayload = weightedSum / totalHours;
-                                    console.log("averageOutflowPayload: ", averageOutflowPayload);
+                                    averageOutflowPayload = Math.round(averageOutflowPayload / 10) * 10;
+
+                                    console.log("weightedSum:", weightedSum);
+                                    console.log("totalDuration (should be 24):", totalDuration);
+                                    console.log("averageOutflowPayload:", averageOutflowPayload);
                                 }
 
                                 // Step 4: Construct payloadAverageOutflow
