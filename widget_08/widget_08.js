@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const precipCell = document.createElement("td");
                     const precipInput = document.createElement("input");
                     precipInput.type = "number";
-                    precipInput.value = 0.00;
+                    precipInput.value = 0.00.toFixed(2);
                     precipInput.step = "0.01";
                     precipInput.className = "outflow-input";
                     precipInput.id = `precipInput-${isoDateToday}`;
