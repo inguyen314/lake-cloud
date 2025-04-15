@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     const urltsid1 = `${setBaseUrl}timeseries/group/Storage?office=${office}&category-id=${lake}`;
     const urltsid2 = `${setBaseUrl}timeseries/group/Outflow-Average-Lake-Test?office=${office}&category-id=${lake}`;
+    const urltsid3 = `${setBaseUrl}timeseries/group/Consensus-Test?office=${office}&category-id=${lake}`;
 
     const levelId = `${lake}.Evap.Inst.0.Evaporation`;
     console.log("levelId:", levelId);
@@ -81,10 +82,12 @@ document.addEventListener('DOMContentLoaded', async function () {
             const response1 = await fetch(urltsid1);
             const response2 = await fetch(urltsid2);
             const response3 = await fetch(levelIdUrl);
+            const response4 = await fetch(urltsid3);
 
             const tsidData1 = await response1.json();
             const tsidData2 = await response2.json();
             const evapLevelData = await response3.json();
+            const tsidData3 = await response4.json();
 
             console.log("evapLevelData:", evapLevelData);
 
@@ -92,6 +95,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const tsid1 = tsidData1['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
             const tsid2 = tsidData2['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
             const tsid3 = evapLevelData['location-level-id'] // Grab the first timeseries-id
+            const tsid4 = tsidData3['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
 
             const curentMonthEvapValue = getEvapValueForMonth(evapLevelData, month);
             console.log("curentMonthEvapValue:", curentMonthEvapValue);
@@ -99,20 +103,25 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("tsid1:", tsid1);
             console.log("tsid2:", tsid2);
             console.log("tsid3:", tsid3);
+            console.log("tsid4:", tsid4);
 
             // Fetch time series data using tsid values
             const timeSeriesData1 = await fetchTimeSeriesData(tsid1);
             const timeSeriesData2 = await fetchTimeSeriesData(tsid2);
+            const timeSeriesData3 = await fetchTimeSeriesData(tsid4);
 
             console.log("timeSeriesData1:", timeSeriesData1);
             console.log("timeSeriesData2:", timeSeriesData2);
+            console.log("timeSeriesData3:", timeSeriesData3);
 
             // Call getHourlyDataOnTopOfHour for both time series data
             const hourlyData1 = getMidnightData(timeSeriesData1, tsid1);
             const hourlyData2 = getMidnightData(timeSeriesData2, tsid2);
+            const hourlyData3 = getMidnightData(timeSeriesData3, tsid4);
 
             console.log("hourlyData1:", hourlyData1);
             console.log("hourlyData2:", hourlyData2);
+            console.log("hourlyData3:", hourlyData3);
 
             let cdaSaveBtn;
 
@@ -176,7 +185,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             // Calculate the delta storage
 
-            function createTable(formattedData1, formattedData2, curentMonthEvapValue) {
+            function createTable(formattedData1, formattedData2, curentMonthEvapValue, hourlyData3) {
                 // Create the table element
                 const table = document.createElement("table");
 
@@ -217,16 +226,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                 let j = 0;
 
                 while (i < formattedData1.length - 1 && j < formattedData2.length - 1) {
-                    // Find matching formattedTimestamps
                     if (formattedData1[i].formattedTimestamp === formattedData2[j].formattedTimestamp) {
                         const row = document.createElement("tr");
 
-                        // Date column (from formattedData1)
+                        // Date Time
                         const dateCell = document.createElement("td");
                         dateCell.textContent = formattedData1[i].formattedTimestamp; // Display formattedTimestamp as Date
                         row.appendChild(dateCell);
 
-                        // Stage column (from formattedData1)
+                        // Change in Storage
                         const chgStorageCell = document.createElement("td");
                         const delta = formattedData1[i].delta;
 
@@ -240,17 +248,33 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         row.appendChild(chgStorageCell);
 
-                        // Outflow column (from formattedData2)
+                        // Average Outflow
                         const averageOutflowCell = document.createElement("td");
-                        averageOutflowCell.textContent = formattedData2[j].value.toFixed(0); 
+                        averageOutflowCell.textContent = formattedData2[j].value.toFixed(0);
                         row.appendChild(averageOutflowCell);
 
-                        // Outflow column (from formattedData2)
+                        // Storage + Average Outflow + Evaporation
                         const storageOutflowEvapCell = document.createElement("td");
-                        storageOutflowEvapCell.textContent = ((parseFloat(formattedData2[j].value) + parseFloat(delta)) + parseFloat(curentMonthEvapValue)).toFixed(0); 
-
-
+                        storageOutflowEvapCell.textContent = ((parseFloat(formattedData2[j].value) + parseFloat(delta)) + parseFloat(curentMonthEvapValue)).toFixed(0);
                         row.appendChild(storageOutflowEvapCell);
+
+                        // Consensus
+                        const consensusCell = document.createElement("td");
+                        const input = document.createElement("input");
+                        input.type = "number";
+                        input.value = (hourlyData3[i].value).toFixed(0);
+                        input.style.width = "60px"; // Optional: set a width for better appearance
+                        consensusCell.appendChild(input);
+                        row.appendChild(consensusCell);
+
+                        // Quality Code
+                        const qualityCodeCell = document.createElement("td");
+                        const qualityInput = document.createElement("input");
+                        qualityInput.type = "text";
+                        qualityInput.value = hourlyData3[i].qualityCode;
+                        qualityInput.style.width = "60px"; // Optional styling
+                        qualityCodeCell.appendChild(qualityInput);
+                        row.appendChild(qualityCodeCell);
 
                         table.appendChild(row);
 
@@ -473,7 +497,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             // Call the function with formattedData1 and formattedData2
-            createTable(formattedData1, formattedData2, curentMonthEvapValue);
+            createTable(formattedData1, formattedData2, curentMonthEvapValue, hourlyData3);
 
             // Call the function
             createTableAvg(formattedData2);
