@@ -241,9 +241,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                         if (delta == null) {
                             chgStorageCell.textContent = '—'; // or 'N/A'
                         } else if (delta < 0) {
-                            chgStorageCell.textContent = `- ${Math.abs(delta).toFixed(0)}`;
+                            chgStorageCell.textContent = `-${Math.abs(delta).toFixed(0)}`;
                         } else {
-                            chgStorageCell.textContent = `+ ${(delta).toFixed(0)}`;
+                            chgStorageCell.textContent = `+${(delta).toFixed(0)}`;
                         }
 
                         row.appendChild(chgStorageCell);
@@ -264,6 +264,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         input.type = "number";
                         input.value = (hourlyData3[i].value).toFixed(0);
                         input.style.width = "60px"; // Optional: set a width for better appearance
+                        input.id = `consensus-${formattedData1[i].formattedTimestamp}`;
                         consensusCell.appendChild(input);
                         row.appendChild(consensusCell);
 
@@ -273,6 +274,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         qualityInput.type = "text";
                         qualityInput.value = hourlyData3[i].qualityCode;
                         qualityInput.style.width = "60px"; // Optional styling
+                        qualityInput.id = `quality-code-${formattedData1[i].formattedTimestamp}`;
                         qualityCodeCell.appendChild(qualityInput);
                         row.appendChild(qualityCodeCell);
 
@@ -291,10 +293,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
 
                 // Append the table to the specific container (id="output5")
-                const output4Div = document.getElementById("output5");
-                output4Div.innerHTML = ""; // Clear any existing content
-                output4Div.appendChild(table);
-
                 const output8Div = document.getElementById("output5");
                 output8Div.innerHTML = "";
                 output8Div.appendChild(table);
@@ -315,35 +313,33 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output8Div.appendChild(statusDiv);
 
                 cdaSaveBtn.addEventListener("click", async () => {
-                    const values = [];
-
-                    if (formattedData.length === 0) {
-                        // No data, only today's input (single row scenario)
-                        const precipInput = document.getElementById(`precipInput-${isoDateToday}`).value;
-                        let precipValue = precipInput ? parseFloat(parseFloat(precipInput).toFixed(2)) : 909;
-                        const timestampUnix = new Date(new Date(isoDateToday).getTime() + 6 * 3600000).toISOString(); // Adjust to 6 AM CST
-
-                        values.push([timestampUnix, precipValue, 0]);
-                    } else {
-                        // Use existing formattedData entries
-                        formattedData.forEach(entry => {
-                            const precipInput = document.getElementById(`precipInput-${isoDateToday}`).value;
-                            let precipValue = precipInput ? parseFloat(parseFloat(precipInput).toFixed(2)) : 909;
-                            const timestampUnix = new Date(new Date(isoDateToday).getTime() + 6 * 3600000).toISOString(); // Adjust to 6 AM CST
-
-                            values.push([timestampUnix, precipValue, 0]);
-                        });
-                    }
-
-                    const payload = {
-                        "name": tsidPrecip,
+                    const payloadConsensus = {
+                        "name": tsid4,
                         "office-id": "MVS",
-                        "units": "in",
-                        "values": values
+                        "units": "cfs",
+                        "values": formattedData1.map(entry => {
+                            const timestamp = entry.formattedTimestamp;
+                            const outflowInput = document.getElementById(`consensus-${timestamp}`);
+                            const qualityInput = document.getElementById(`quality-code-${timestamp}`);
+                    
+                            if (!outflowInput || !qualityInput) {
+                                console.warn(`Missing input for timestamp: ${timestamp}`);
+                                return null; // Or handle this more gracefully
+                            }
+                    
+                            const outflowValue = outflowInput.value;
+                            const qualityCodeValue = qualityInput.value;
+                    
+                            const timestampUnix = new Date(timestamp).getTime();
+                    
+                            return [
+                                timestampUnix,
+                                parseFloat(outflowValue),
+                                parseFloat(qualityCodeValue)
+                            ];
+                        }).filter(Boolean) // remove any null entries
                     };
-
-                    console.log("Preparing payload...");
-                    console.log("payload:", payload);
+                    console.log("payloadConsensus:", payloadConsensus);                    
 
                     async function loginCDA() {
                         if (await isLoggedIn()) return true;
@@ -374,18 +370,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
-                    async function fetchUpdatedData(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip) {
-                        // Convert to Date object
-                        const date = new Date(isoDateDay1);
-
-                        // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
-                        date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
-
-                        // Convert back to ISO string (preserve UTC format)
-                        const isoDateDay1Minus1Hour = date.toISOString();
-
+                    async function fetchUpdatedData(isoDateMinus6Days, isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid4) {
                         let response = null;
-                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsidPrecip}&begin=${isoDateToday}&end=${isoDateDay1Minus1Hour}&office=MVS`, {
+                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid4}&begin=${isoDateMinus6Days}&end=${isoDateToday}&office=MVS`, {
                             headers: {
                                 "Accept": "application/json;version=2", // Ensuring the correct version is used
                                 "cache-control": "no-cache"
@@ -432,12 +419,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                     } else {
                         try {
                             showSpinner(); // Show the spinner before creating the version
-                            await createTS(payload);
+                            await createTS(payloadConsensus);
                             cdaStatusBtn.innerText = "Write successful!";
 
-                            // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip);
-                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, updatedData);
+                            // // Fetch updated data and refresh the table
+                            const updatedData = await fetchUpdatedData(isoDateMinus6Days, isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid4);
+                            const hourlyData3 = getMidnightData(updatedData, tsid4);
+                            createTable(formattedData1, formattedData2, curentMonthEvapValue, hourlyData3);
+                            createTableAvg(formattedData2);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
