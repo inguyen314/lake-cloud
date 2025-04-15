@@ -455,6 +455,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                 table.style.marginTop = "10px";
                 table.style.marginBottom = "10px";
 
+                const header = table.insertRow();
+                const title = header.insertCell();
+                title.colSpan = 3;
+                title.style.fontWeight = "bold";
+                title.style.fontSize = "1.2em";
+                title.textContent = "Balance Window";
+
                 // Create the header row
                 const headerRow = table.insertRow();
                 const col1 = headerRow.insertCell();
