@@ -2191,6 +2191,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 entryDates = [1]; // Blank entries for dropdown
 
                 const selectedHours = {};
+                let averageOutflowCalculate = null;
 
                 entryDates.forEach((date, index) => {
                     const row = document.createElement("tr");
@@ -2328,11 +2329,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                     gateTotalCell.appendChild(gateTotalInput);
                     row.appendChild(gateTotalCell);
 
-                    // Gate Outflow (calculated)
+                    // Gate Outflow Total (calculated)
+                    averageOutflowCalculate = (formattedYesterdayDataGateTotal.at(-1)[1] + formattedYesterdayDataSluiceTotal.at(-1)[1]).toFixed(0);
                     const gateOutflowTotalCell = document.createElement("td");
                     const gateOutflowTotalInput = document.createElement("input");
                     gateOutflowTotalInput.type = "number";
-                    gateOutflowTotalInput.value = (formattedYesterdayDataGateTotal.at(-1)[1] + formattedYesterdayDataSluiceTotal.at(-1)[1]).toFixed(0);
+                    gateOutflowTotalInput.value = averageOutflowCalculate;
                     gateOutflowTotalInput.id = `gateOutflowTotalInput`;
                     gateOutflowTotalInput.readOnly = true; // Make it read-only
                     gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
@@ -2366,7 +2368,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const secondCell = document.createElement("td");
                 secondCell.type = "number";
                 secondCell.id = `gateOutflowAverageInput`;
-                secondCell.textContent = formattedYesterdayDataOutflowAverage.at(-1)[1].toFixed(0);
+                // secondCell.textContent = formattedYesterdayDataOutflowAverage.at(-1)[1].toFixed(0); // This is yesterday last Average Outflow (cfs)
+                secondCell.textContent = averageOutflowCalculate;
                 tableRow.appendChild(secondCell);
 
                 // Append the row to the tableOutflowAvg
