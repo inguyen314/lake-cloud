@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Add header row
                 const headerRow = table.insertRow();
-                ["Date of Last Balance", "Sum of Consensus Inflow", "Sum of Computed Inflow"].forEach(text => {
+                ["Date of Last Balance", "Sum of Computed Inflow", "Sum of Consensus Inflow"].forEach(text => {
                     const cell = headerRow.insertCell();
                     cell.textContent = text;
                     cell.style.fontWeight = "bold";
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Add data row
                 const dataRow = table.insertRow();
-                [formattedDateTime, sumConsensusAfter, sumComputedInflowAfter].forEach(value => {
+                [formattedDateTime, sumComputedInflowAfter, sumConsensusAfter].forEach(value => {
                     const cell = dataRow.insertCell();
                     cell.textContent = typeof value === 'number' ? parseFloat(value).toFixed(0) : value;
                 });

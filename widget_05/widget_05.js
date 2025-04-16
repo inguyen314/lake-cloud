@@ -274,8 +274,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const consensusCell = document.createElement("td");
                         const input = document.createElement("input");
                         input.type = "number";
-                        input.value = (hourlyConsensusData[i].value).toFixed(0);
-                        input.style.width = "60px"; // Optional: set a width for better appearance
+
+                        const consensusEntry = hourlyConsensusData[i];
+                        const consensusValue = consensusEntry && consensusEntry.value != null ? consensusEntry.value : 909;
+                        input.value = Number(consensusValue).toFixed(0);
+
+                        // Set background color to purple if value is 909
+                        if (Number(consensusValue) === 909) {
+                            input.style.backgroundColor = "pink";
+                        }
+
+                        input.style.width = "60px";
                         input.id = `consensus-${formattedStorageData[i].formattedTimestamp}`;
                         consensusCell.appendChild(input);
                         row.appendChild(consensusCell);
@@ -284,8 +293,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const qualityCodeCell = document.createElement("td");
                         const qualityInput = document.createElement("input");
                         qualityInput.type = "text";
-                        qualityInput.value = hourlyConsensusData[i].qualityCode;
-                        qualityInput.style.width = "60px"; // Optional styling
+
+                        // Set qualityInput to 0 if consensusValue is 909
+                        if (Number(consensusValue) === 909) {
+                            qualityInput.value = "0";
+                        } else {
+                            qualityInput.value = consensusEntry && consensusEntry.qualityCode != null ? consensusEntry.qualityCode : '';
+                        }
+
+                        qualityInput.style.width = "60px";
                         qualityInput.id = `quality-code-${formattedStorageData[i].formattedTimestamp}`;
                         qualityCodeCell.appendChild(qualityInput);
                         row.appendChild(qualityCodeCell);
@@ -323,6 +339,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                 cdaStatusBtn.disabled = false;
                 statusDiv.appendChild(cdaStatusBtn);
                 output8Div.appendChild(statusDiv);
+
+                // Create a button element
+                const button = document.createElement('button');
+
+                // Set the button text
+                button.textContent = 'Signifies estimated value';
+                button.style.backgroundColor = 'pink';
+
+                // Append the button to the same container (output7)
+                output8Div.appendChild(button);
 
                 cdaSaveBtn.addEventListener("click", async () => {
                     const payloadStorageOutflowEvap = {
