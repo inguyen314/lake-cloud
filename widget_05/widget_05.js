@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const urlTsidStorage = `${setBaseUrl}timeseries/group/Storage?office=${office}&category-id=${lake}`;
     const urlTsidAverageOutflow = `${setBaseUrl}timeseries/group/Outflow-Average-Lake-Test?office=${office}&category-id=${lake}`;
     const urlTsidConsensus = `${setBaseUrl}timeseries/group/Consensus-Test?office=${office}&category-id=${lake}`;
+    const urlTsidComputedInflow = `${setBaseUrl}timeseries/group/Computed-Inflow?office=${office}&category-id=${lake}`;
 
     const levelId = `${lake}.Evap.Inst.0.Evaporation`;
     console.log("levelId:", levelId);
@@ -83,11 +84,13 @@ document.addEventListener('DOMContentLoaded', async function () {
             const response2 = await fetch(urlTsidAverageOutflow);
             const response3 = await fetch(levelIdUrl);
             const response4 = await fetch(urlTsidConsensus);
+            const response5 = await fetch(urlTsidComputedInflow);
 
             const tsidStorageData = await response1.json();
             const tsidAverageOutflowData = await response2.json();
             const tsidEvapLevelData = await response3.json();
             const tsidConsensusData = await response4.json();
+            const tsidComputedInflowData = await response5.json();
 
             console.log("tsidEvapLevelData:", tsidEvapLevelData);
 
@@ -96,6 +99,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const tsidAverageOutflow = tsidAverageOutflowData['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
             const tsidEvaporation = tsidEvapLevelData['location-level-id'] // Grab the first timeseries-id
             const tsidConsensus = tsidConsensusData['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
+            const tsidComputedInflow = tsidComputedInflowData['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
 
             const curentMonthEvapValue = getEvapValueForMonth(tsidEvapLevelData, month);
             console.log("curentMonthEvapValue:", curentMonthEvapValue);
@@ -104,24 +108,29 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("tsidAverageOutflow:", tsidAverageOutflow);
             console.log("tsidEvaporation:", tsidEvaporation);
             console.log("tsidConsensus:", tsidConsensus);
+            console.log("tsidComputedInflow:", tsidComputedInflow);
 
             // Fetch time series data using tsid values
             const timeSeriesData1 = await fetchTimeSeriesData(tsidStorage);
             const timeSeriesData2 = await fetchTimeSeriesData(tsidAverageOutflow);
             const timeSeriesData3 = await fetchTimeSeriesData(tsidConsensus);
+            const timeSeriesData4 = await fetchTimeSeriesData(tsidComputedInflow);
 
             console.log("timeSeriesData1:", timeSeriesData1);
             console.log("timeSeriesData2:", timeSeriesData2);
             console.log("timeSeriesData3:", timeSeriesData3);
+            console.log("timeSeriesData4:", timeSeriesData4);
 
             // Call getHourlyDataOnTopOfHour for both time series data
             const hourlyData1 = getMidnightData(timeSeriesData1, tsidStorage);
             const hourlyData2 = getMidnightData(timeSeriesData2, tsidAverageOutflow);
             const hourlyConsensusData = getMidnightData(timeSeriesData3, tsidConsensus);
+            const hourlyComputedInflowData = getMidnightData(timeSeriesData4, tsidComputedInflow);
 
             console.log("hourlyData1:", hourlyData1);
             console.log("hourlyData2:", hourlyData2);
             console.log("hourlyConsensusData:", hourlyConsensusData);
+            console.log("hourlyComputedInflowData:", hourlyComputedInflowData);
 
             let cdaSaveBtn;
 
@@ -317,7 +326,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 cdaSaveBtn.addEventListener("click", async () => {
                     const payloadStorageOutflowEvap = {
-                        "name": 'Lk Shelbyville-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed', // tsidAverageOutflow,
+                        "name": tsidComputedInflow,
                         "office-id": "MVS",
                         "units": "cfs",
                         "values": formattedStorageData.map(entry => {
@@ -456,7 +465,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                             const updatedData = await fetchUpdatedData(isoDateMinus6Days, isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidConsensus);
                             const hourlyConsensusData = getMidnightData(updatedData, tsidConsensus);
                             createTable(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData);
-                            createTableAvg(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
