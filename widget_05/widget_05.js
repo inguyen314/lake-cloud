@@ -50,9 +50,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("isoDateDay6:", isoDateDay6);
     console.log("isoDateDay7:", isoDateDay7);
 
-    const urltsid1 = `${setBaseUrl}timeseries/group/Storage?office=${office}&category-id=${lake}`;
-    const urltsid2 = `${setBaseUrl}timeseries/group/Outflow-Average-Lake-Test?office=${office}&category-id=${lake}`;
-    const urltsid3 = `${setBaseUrl}timeseries/group/Consensus-Test?office=${office}&category-id=${lake}`;
+    const urlTsidStorage = `${setBaseUrl}timeseries/group/Storage?office=${office}&category-id=${lake}`;
+    const urlTsidAverageOutflow = `${setBaseUrl}timeseries/group/Outflow-Average-Lake-Test?office=${office}&category-id=${lake}`;
+    const urlTsidConsensus = `${setBaseUrl}timeseries/group/Consensus-Test?office=${office}&category-id=${lake}`;
 
     const levelId = `${lake}.Evap.Inst.0.Evaporation`;
     console.log("levelId:", levelId);
@@ -79,49 +79,49 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     const fetchTsidData = async () => {
         try {
-            const response1 = await fetch(urltsid1);
-            const response2 = await fetch(urltsid2);
+            const response1 = await fetch(urlTsidStorage);
+            const response2 = await fetch(urlTsidAverageOutflow);
             const response3 = await fetch(levelIdUrl);
-            const response4 = await fetch(urltsid3);
+            const response4 = await fetch(urlTsidConsensus);
 
-            const tsidData1 = await response1.json();
-            const tsidData2 = await response2.json();
-            const evapLevelData = await response3.json();
-            const tsidData3 = await response4.json();
+            const tsidStorageData = await response1.json();
+            const tsidAverageOutflowData = await response2.json();
+            const tsidEvapLevelData = await response3.json();
+            const tsidConsensusData = await response4.json();
 
-            console.log("evapLevelData:", evapLevelData);
+            console.log("tsidEvapLevelData:", tsidEvapLevelData);
 
             // Extract the timeseries-id from the response
-            const tsid1 = tsidData1['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
-            const tsid2 = tsidData2['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
-            const tsid3 = evapLevelData['location-level-id'] // Grab the first timeseries-id
-            const tsid4 = tsidData3['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
+            const tsidStorage = tsidStorageData['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
+            const tsidAverageOutflow = tsidAverageOutflowData['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
+            const tsidEvaporation = tsidEvapLevelData['location-level-id'] // Grab the first timeseries-id
+            const tsidConsensus = tsidConsensusData['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
 
-            const curentMonthEvapValue = getEvapValueForMonth(evapLevelData, month);
+            const curentMonthEvapValue = getEvapValueForMonth(tsidEvapLevelData, month);
             console.log("curentMonthEvapValue:", curentMonthEvapValue);
 
-            console.log("tsid1:", tsid1);
-            console.log("tsid2:", tsid2);
-            console.log("tsid3:", tsid3);
-            console.log("tsid4:", tsid4);
+            console.log("tsidStorage:", tsidStorage);
+            console.log("tsidAverageOutflow:", tsidAverageOutflow);
+            console.log("tsidEvaporation:", tsidEvaporation);
+            console.log("tsidConsensus:", tsidConsensus);
 
             // Fetch time series data using tsid values
-            const timeSeriesData1 = await fetchTimeSeriesData(tsid1);
-            const timeSeriesData2 = await fetchTimeSeriesData(tsid2);
-            const timeSeriesData3 = await fetchTimeSeriesData(tsid4);
+            const timeSeriesData1 = await fetchTimeSeriesData(tsidStorage);
+            const timeSeriesData2 = await fetchTimeSeriesData(tsidAverageOutflow);
+            const timeSeriesData3 = await fetchTimeSeriesData(tsidConsensus);
 
             console.log("timeSeriesData1:", timeSeriesData1);
             console.log("timeSeriesData2:", timeSeriesData2);
             console.log("timeSeriesData3:", timeSeriesData3);
 
             // Call getHourlyDataOnTopOfHour for both time series data
-            const hourlyData1 = getMidnightData(timeSeriesData1, tsid1);
-            const hourlyData2 = getMidnightData(timeSeriesData2, tsid2);
-            const hourlyData3 = getMidnightData(timeSeriesData3, tsid4);
+            const hourlyData1 = getMidnightData(timeSeriesData1, tsidStorage);
+            const hourlyData2 = getMidnightData(timeSeriesData2, tsidAverageOutflow);
+            const hourlyConsensusData = getMidnightData(timeSeriesData3, tsidConsensus);
 
             console.log("hourlyData1:", hourlyData1);
             console.log("hourlyData2:", hourlyData2);
-            console.log("hourlyData3:", hourlyData3);
+            console.log("hourlyConsensusData:", hourlyConsensusData);
 
             let cdaSaveBtn;
 
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 cdaSaveBtn.disabled = false; // Re-enable button
             }
 
-            let formattedData1 = hourlyData1.map(entry => {
+            let formattedStorageData = hourlyData1.map(entry => {
                 const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
                 // console.log("Original (hourlyData1):", entry.timestamp, "Formatted:", formattedTimestamp);
                 return {
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             });
 
-            let formattedData2 = hourlyData2.map(entry => {
+            let formattedAverageOutflowData = hourlyData2.map(entry => {
                 const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
                 // console.log("Original (hourlyData2):", entry.timestamp, "Formatted:", formattedTimestamp);
                 return {
@@ -175,17 +175,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             });
 
-            formattedData1 = addDeltaAsDsfToData(formattedData1);
-            formattedData1 = shiftDeltaUp(formattedData1);
+            formattedStorageData = addDeltaAsDsfToData(formattedStorageData);
+            formattedStorageData = shiftDeltaUp(formattedStorageData);
 
             // Now you have formatted data for both datasets
-            console.log("Formatted Data for HourlyData1:", formattedData1);
-            console.log("Formatted Data for HourlyData2:", formattedData2);
+            console.log("Formatted Data for HourlyData1:", formattedStorageData);
+            console.log("Formatted Data for HourlyData2:", formattedAverageOutflowData);
 
 
             // Calculate the delta storage
 
-            function createTable(formattedData1, formattedData2, curentMonthEvapValue, hourlyData3) {
+            function createTable(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData) {
                 // Create the table element
                 const table = document.createElement("table");
 
@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 headerRow.appendChild(storageOutflowEvapHeader);
 
                 const consensusHeader = document.createElement("th");
-                consensusHeader.textContent = "Consensus(dsf)";
+                consensusHeader.textContent = "Consensus (dsf)";
                 headerRow.appendChild(consensusHeader);
 
                 const balanceFlagHeader = document.createElement("th");
@@ -225,18 +225,18 @@ document.addEventListener('DOMContentLoaded', async function () {
                 let i = 0;
                 let j = 0;
 
-                while (i < formattedData1.length - 1 && j < formattedData2.length - 1) {
-                    if (formattedData1[i].formattedTimestamp === formattedData2[j].formattedTimestamp) {
+                while (i < formattedStorageData.length - 1 && j < formattedAverageOutflowData.length - 1) {
+                    if (formattedStorageData[i].formattedTimestamp === formattedAverageOutflowData[j].formattedTimestamp) {
                         const row = document.createElement("tr");
 
                         // Date Time
                         const dateCell = document.createElement("td");
-                        dateCell.textContent = formattedData1[i].formattedTimestamp; // Display formattedTimestamp as Date
+                        dateCell.textContent = formattedStorageData[i].formattedTimestamp; // Display formattedTimestamp as Date
                         row.appendChild(dateCell);
 
                         // Change in Storage
                         const chgStorageCell = document.createElement("td");
-                        const delta = formattedData1[i].delta;
+                        const delta = formattedStorageData[i].delta;
 
                         if (delta == null) {
                             chgStorageCell.textContent = '—'; // or 'N/A'
@@ -250,21 +250,24 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // Average Outflow
                         const averageOutflowCell = document.createElement("td");
-                        averageOutflowCell.textContent = formattedData2[j].value.toFixed(0);
+                        averageOutflowCell.textContent = formattedAverageOutflowData[j].value.toFixed(0);
                         row.appendChild(averageOutflowCell);
 
                         // Storage + Average Outflow + Evaporation
                         const storageOutflowEvapCell = document.createElement("td");
-                        storageOutflowEvapCell.textContent = ((parseFloat(formattedData2[j].value) + parseFloat(delta)) + parseFloat(curentMonthEvapValue)).toFixed(0);
+                        storageOutflowEvapCell.textContent = ((parseFloat(formattedAverageOutflowData[j].value) + parseFloat(delta)) + parseFloat(curentMonthEvapValue)).toFixed(0);
+                        storageOutflowEvapCell.type = "number";
+                        storageOutflowEvapCell.value = ((parseFloat(formattedAverageOutflowData[j].value) + parseFloat(delta)) + parseFloat(curentMonthEvapValue)).toFixed(0);
+                        storageOutflowEvapCell.id = `storage-outflow-evap-${formattedStorageData[i].formattedTimestamp}`;
                         row.appendChild(storageOutflowEvapCell);
 
                         // Consensus
                         const consensusCell = document.createElement("td");
                         const input = document.createElement("input");
                         input.type = "number";
-                        input.value = (hourlyData3[i].value).toFixed(0);
+                        input.value = (hourlyConsensusData[i].value).toFixed(0);
                         input.style.width = "60px"; // Optional: set a width for better appearance
-                        input.id = `consensus-${formattedData1[i].formattedTimestamp}`;
+                        input.id = `consensus-${formattedStorageData[i].formattedTimestamp}`;
                         consensusCell.appendChild(input);
                         row.appendChild(consensusCell);
 
@@ -272,9 +275,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const qualityCodeCell = document.createElement("td");
                         const qualityInput = document.createElement("input");
                         qualityInput.type = "text";
-                        qualityInput.value = hourlyData3[i].qualityCode;
+                        qualityInput.value = hourlyConsensusData[i].qualityCode;
                         qualityInput.style.width = "60px"; // Optional styling
-                        qualityInput.id = `quality-code-${formattedData1[i].formattedTimestamp}`;
+                        qualityInput.id = `quality-code-${formattedStorageData[i].formattedTimestamp}`;
                         qualityCodeCell.appendChild(qualityInput);
                         row.appendChild(qualityCodeCell);
 
@@ -283,11 +286,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                         // Move to next entry in both datasets
                         i++;
                         j++;
-                    } else if (formattedData1[i].formattedTimestamp < formattedData2[j].formattedTimestamp) {
-                        // If the timestamp in formattedData1 is earlier, just move to the next entry in formattedData1
+                    } else if (formattedStorageData[i].formattedTimestamp < formattedAverageOutflowData[j].formattedTimestamp) {
+                        // If the timestamp in formattedStorageData is earlier, just move to the next entry in formattedStorageData
                         i++;
                     } else {
-                        // If the timestamp in formattedData2 is earlier, just move to the next entry in formattedData2
+                        // If the timestamp in formattedAverageOutflowData is earlier, just move to the next entry in formattedAverageOutflowData
                         j++;
                     }
                 }
@@ -313,25 +316,51 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output8Div.appendChild(statusDiv);
 
                 cdaSaveBtn.addEventListener("click", async () => {
-                    const payloadConsensus = {
-                        "name": tsid4,
+                    const payloadStorageOutflowEvap = {
+                        "name": 'Lk Shelbyville-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed', // tsidAverageOutflow,
                         "office-id": "MVS",
                         "units": "cfs",
-                        "values": formattedData1.map(entry => {
+                        "values": formattedStorageData.map(entry => {
+                            const timestamp = entry.formattedTimestamp;
+                            const outflowInput = document.getElementById(`storage-outflow-evap-${timestamp}`);
+
+                            if (!outflowInput) {
+                                console.warn(`Missing input for timestamp: ${timestamp}`);
+                                return null; // Or handle this more gracefully
+                            }
+
+                            const outflowValue = outflowInput.value;
+
+                            const timestampUnix = new Date(timestamp).getTime();
+
+                            return [
+                                timestampUnix,
+                                parseFloat(outflowValue),
+                                0
+                            ];
+                        }).filter(Boolean) // remove any null entries
+                    };
+                    console.log("payloadStorageOutflowEvap:", payloadStorageOutflowEvap);
+
+                    const payloadConsensus = {
+                        "name": tsidConsensus,
+                        "office-id": "MVS",
+                        "units": "cfs",
+                        "values": formattedStorageData.map(entry => {
                             const timestamp = entry.formattedTimestamp;
                             const outflowInput = document.getElementById(`consensus-${timestamp}`);
                             const qualityInput = document.getElementById(`quality-code-${timestamp}`);
-                    
+
                             if (!outflowInput || !qualityInput) {
                                 console.warn(`Missing input for timestamp: ${timestamp}`);
                                 return null; // Or handle this more gracefully
                             }
-                    
+
                             const outflowValue = outflowInput.value;
                             const qualityCodeValue = qualityInput.value;
-                    
+
                             const timestampUnix = new Date(timestamp).getTime();
-                    
+
                             return [
                                 timestampUnix,
                                 parseFloat(outflowValue),
@@ -339,7 +368,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             ];
                         }).filter(Boolean) // remove any null entries
                     };
-                    console.log("payloadConsensus:", payloadConsensus);                    
+                    console.log("payloadConsensus:", payloadConsensus);
 
                     async function loginCDA() {
                         if (await isLoggedIn()) return true;
@@ -370,9 +399,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
-                    async function fetchUpdatedData(isoDateMinus6Days, isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid4) {
+                    async function fetchUpdatedData(isoDateMinus6Days, isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidConsensus) {
                         let response = null;
-                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid4}&begin=${isoDateMinus6Days}&end=${isoDateToday}&office=MVS`, {
+                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsidConsensus}&begin=${isoDateMinus6Days}&end=${isoDateToday}&office=MVS`, {
                             headers: {
                                 "Accept": "application/json;version=2", // Ensuring the correct version is used
                                 "cache-control": "no-cache"
@@ -420,13 +449,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                         try {
                             showSpinner(); // Show the spinner before creating the version
                             await createTS(payloadConsensus);
+                            await createTS(payloadStorageOutflowEvap);
                             cdaStatusBtn.innerText = "Write successful!";
 
                             // // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(isoDateMinus6Days, isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid4);
-                            const hourlyData3 = getMidnightData(updatedData, tsid4);
-                            createTable(formattedData1, formattedData2, curentMonthEvapValue, hourlyData3);
-                            createTableAvg(formattedData2);
+                            const updatedData = await fetchUpdatedData(isoDateMinus6Days, isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidConsensus);
+                            const hourlyConsensusData = getMidnightData(updatedData, tsidConsensus);
+                            createTable(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData);
+                            createTableAvg(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
@@ -438,10 +468,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 });
             }
 
-            function createTableAvg(formattedData2, evapLevelData) {
+            function createTableAvg(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData) {
                 // Extract the last two values
-                const lastValue = formattedData2[formattedData2.length - 1].value;
-                const secondLastValue = formattedData2[formattedData2.length - 2].value;
+                const lastValue = formattedAverageOutflowData[formattedAverageOutflowData.length - 1].value;
+                const secondLastValue = formattedAverageOutflowData[formattedAverageOutflowData.length - 2].value;
 
                 // Calculate the average of the last two values
                 const averageValue = (lastValue + secondLastValue) / 2;
@@ -456,11 +486,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                 table.style.marginBottom = "10px";
 
                 const header = table.insertRow();
-                const title = header.insertCell();
+                const title = document.createElement("th");
                 title.colSpan = 3;
                 title.style.fontWeight = "bold";
                 title.style.fontSize = "1.2em";
                 title.textContent = "Balance Window";
+                header.appendChild(title);
 
                 // Create the header row
                 const headerRow = table.insertRow();
@@ -492,11 +523,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 outputDiv.appendChild(table);
             }
 
-            // Call the function with formattedData1 and formattedData2
-            createTable(formattedData1, formattedData2, curentMonthEvapValue, hourlyData3);
+            // Call the function with formattedStorageData and formattedAverageOutflowData
+            createTable(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData);
 
             // Call the function
-            createTableAvg(formattedData2);
+            createTableAvg(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData);
 
             loginStateController()
             // Setup timers
