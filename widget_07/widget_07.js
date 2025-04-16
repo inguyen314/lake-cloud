@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Create table
                 const table = document.createElement("table");
-                table.id = "gate-settings";
+                table.id = "inflow";
                 table.style.margin = "10px 0";
 
                 // Add table title
@@ -177,19 +177,46 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const outputDiv = document.getElementById("output7");
                 outputDiv.appendChild(table);
 
-                // Create a button element
+                // Create the first button
                 const button = document.createElement('button');
-
-                // Set the button text
                 button.textContent = 'Balance Inflow Module';
-
-                // Optionally add an ID or class
-                button.id = 'myButton';
+                button.id = 'balanceInflowBtn'; // Unique ID
                 button.className = 'btn';
-
-                // Append the button to the same container (output7)
                 outputDiv.appendChild(button);
 
+                // Add a line break between buttons
+                const lineBreak = document.createElement('br');
+                outputDiv.appendChild(lineBreak);
+
+                // Create the refresh button
+                const buttonRefresh = document.createElement('button');
+                buttonRefresh.textContent = 'Refresh';
+                buttonRefresh.id = 'refreshBtn'; // Unique ID
+                buttonRefresh.className = 'fetch-btn';
+                outputDiv.appendChild(buttonRefresh);
+
+                // Add click event to refresh the table and remove buttons
+                buttonRefresh.addEventListener('click', () => {
+                    // Remove existing table
+                    const existingTable = document.getElementById('inflow');
+                    if (existingTable) {
+                        existingTable.remove();
+                    }
+
+                    // Remove both buttons
+                    const existingButton = document.getElementById('balanceInflowBtn');
+                    if (existingButton) {
+                        existingButton.remove();
+                    }
+
+                    const existingRefresh = document.getElementById('refreshBtn');
+                    if (existingRefresh) {
+                        existingRefresh.remove();
+                    }
+
+                    // Fetch and create new table
+                    fetchTsidData();
+                });
             }
 
             // Call the function
@@ -288,8 +315,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     function subtractHoursFromDate(date, hoursToSubtract) {
         return new Date(date.getTime() - (hoursToSubtract * 60 * 60 * 1000));
     }
-
-
 
     function formatISODateToUTCString(timestamp) {
         if (typeof timestamp !== "number") {

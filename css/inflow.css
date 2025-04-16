@@ -1,0 +1,55 @@
+#inflow {
+    width: 100%;
+    table-layout: fixed;
+    /* Ensures equal width for each column */
+    border-collapse: collapse;
+    /* Ensures cells are neatly aligned */
+}
+
+#inflow th,
+#inflow td {
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #ddd;
+    /* Light border for better visibility */
+}
+
+#inflow th {
+    background-color: darkblue;
+    /* Light gray for headers */
+    font-weight: bold;
+}
+
+#inflow input {
+    width: 100%;
+    /* Ensures input fields take full width of the cells */
+    box-sizing: border-box;
+    /* Makes sure padding does not affect width */
+}
+
+#inflow tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#inflow tr:hover {
+    background-color: #f1f1f1;
+}
+
+#inflow td {
+    font-size: 14px;
+}
+
+#inflow td a {
+    color: darkblue;
+    text-decoration: none;
+}
+
+#inflow td a:hover {
+    text-decoration: underline;
+}
+
+#inflow caption {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}

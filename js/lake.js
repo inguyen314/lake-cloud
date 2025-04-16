@@ -2,11 +2,11 @@ document.addEventListener("DOMContentLoaded", function () {
     if (lake === "Mark Twain Lk-Salt") {
         document.getElementById("widget3").style.display = "block";
         document.getElementById("widget12").style.display = "block";
-        document.getElementById("widget13").style.display = "block"; 
+        document.getElementById("widget13").style.display = "block";
     } else {
         document.getElementById("widget3").style.display = "none";
         document.getElementById("widget12").style.display = "none";
-        document.getElementById("widget13").style.display = "none"; 
+        document.getElementById("widget13").style.display = "none";
     }
 
     if (lake !== null && datetime !== null) {
