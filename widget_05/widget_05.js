@@ -468,66 +468,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 });
             }
 
-            function createTableAvg(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData) {
-                // Extract the last two values
-                const lastValue = formattedAverageOutflowData[formattedAverageOutflowData.length - 1].value;
-                const secondLastValue = formattedAverageOutflowData[formattedAverageOutflowData.length - 2].value;
-
-                // Calculate the average of the last two values
-                const averageValue = (lastValue + secondLastValue) / 2;
-
-                // Create the table structure
-                const table = document.createElement("table");
-
-                // Apply the ID "gate-settings" to the table
-                table.id = "gate-settings";
-                // table.style.width = "75%";
-                table.style.marginTop = "10px";
-                table.style.marginBottom = "10px";
-
-                const header = table.insertRow();
-                const title = document.createElement("th");
-                title.colSpan = 3;
-                title.style.fontWeight = "bold";
-                title.style.fontSize = "1.2em";
-                title.textContent = "Balance Window";
-                header.appendChild(title);
-
-                // Create the header row
-                const headerRow = table.insertRow();
-                const col1 = headerRow.insertCell();
-                const col2 = headerRow.insertCell();
-                const col3 = headerRow.insertCell();
-
-                col1.textContent = "Date of Last Balance";
-                col1.style.fontWeight = "bold";
-                col2.textContent = "Sum of Computed Inflow";
-                col2.style.fontWeight = "bold";
-                col3.textContent = "Sum of Computed Inflow";
-                col3.style.fontWeight = "bold";
-
-                // Create the header row
-                const headerRow2 = table.insertRow();
-                const col4 = headerRow2.insertCell();
-                const col5 = headerRow2.insertCell();
-                const col6 = headerRow2.insertCell();
-
-                col4.textContent = "01-01-1990";
-                col5.textContent = 999;
-                col6.textContent = 999;
-
-
-
-                // Insert the table into the "output5" div
-                const outputDiv = document.getElementById("output5");
-                outputDiv.appendChild(table);
-            }
-
             // Call the function with formattedStorageData and formattedAverageOutflowData
             createTable(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData);
-
-            // Call the function
-            createTableAvg(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData);
 
             loginStateController()
             // Setup timers
