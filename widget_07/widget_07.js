@@ -127,28 +127,28 @@ document.addEventListener('DOMContentLoaded', async function () {
                         new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest,
                         { timestamp: 0 }
                     );
-            
+
                 const latestTimestamp = new Date(latestEntry.timestamp).getTime();
-                const formattedDateTime = latestEntry.formattedTimestamp; // includes date and time
+                const formattedDateTime = latestEntry.formattedTimestamp.split(' ')[0]; // includes date and time
                 console.log("Latest Timestamp:", formattedDateTime);
-            
+
                 // Sum values after the latest consensus timestamp
                 const sumConsensusAfter = formattedConsensusData
                     .filter(d => new Date(d.timestamp).getTime() > latestTimestamp)
                     .reduce((sum, d) => sum + d.value, 0);
-            
+
                 const sumComputedInflowAfter = formattedComputedInflowData
                     .filter(entry => entry.timestamp > latestTimestamp)
                     .reduce((sum, entry) => sum + entry.value, 0);
-            
+
                 console.log("Sum (Consensus After):", sumConsensusAfter);
                 console.log("Sum (Computed Inflow After):", sumComputedInflowAfter);
-            
+
                 // Create table
                 const table = document.createElement("table");
                 table.id = "gate-settings";
                 table.style.margin = "10px 0";
-            
+
                 // Add table title
                 const titleRow = table.insertRow();
                 const titleCell = document.createElement("th");
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 titleCell.style.fontSize = "1.2em";
                 titleCell.textContent = "Balance Window";
                 titleRow.appendChild(titleCell);
-            
+
                 // Add header row
                 const headerRow = table.insertRow();
                 ["Date of Last Balance", "Sum of Consensus Inflow", "Sum of Computed Inflow"].forEach(text => {
@@ -165,18 +165,32 @@ document.addEventListener('DOMContentLoaded', async function () {
                     cell.textContent = text;
                     cell.style.fontWeight = "bold";
                 });
-            
+
                 // Add data row
                 const dataRow = table.insertRow();
                 [formattedDateTime, sumConsensusAfter, sumComputedInflowAfter].forEach(value => {
                     const cell = dataRow.insertCell();
                     cell.textContent = typeof value === 'number' ? parseFloat(value).toFixed(0) : value;
                 });
-            
+
                 // Insert table into DOM
                 const outputDiv = document.getElementById("output7");
                 outputDiv.appendChild(table);
-            }                       
+
+                // Create a button element
+                const button = document.createElement('button');
+
+                // Set the button text
+                button.textContent = 'Balance Inflow Module';
+
+                // Optionally add an ID or class
+                button.id = 'myButton';
+                button.className = 'btn';
+
+                // Append the button to the same container (output7)
+                outputDiv.appendChild(button);
+
+            }
 
             // Call the function
             createTableAvg(formattedConsensusData, formattedComputedInflowData);

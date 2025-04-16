@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // Date Time
                         const dateCell = document.createElement("td");
-                        dateCell.textContent = formattedStorageData[i].formattedTimestamp; // Display formattedTimestamp as Date
+                        dateCell.textContent = formattedStorageData[i].formattedTimestamp.split(' ')[0]; // Display formattedTimestamp as Date
                         row.appendChild(dateCell);
 
                         // Change in Storage
