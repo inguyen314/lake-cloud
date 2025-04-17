@@ -130,7 +130,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const latestTimestamp = new Date(latestEntry.timestamp).getTime();
                 const formattedDateTime = latestEntry.formattedTimestamp.split(' ')[0]; // includes date and time
-                console.log("Latest Timestamp:", formattedDateTime);
+                console.log("latestTimestamp:", latestTimestamp);
+                console.log("formattedDateTimep:", formattedDateTime);
 
                 // Sum values after the latest consensus timestamp
                 const sumConsensusAfter = formattedConsensusData
@@ -184,8 +185,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 button.className = 'fetch-btn';
 
                 // Open link in a new tab when clicked
+                const isoDateLastBalance = new Date(latestTimestamp).toISOString();;
                 button.addEventListener('click', () => {
-                    window.open(`widget_5_Inflow.html?office=${office}&lake=${lake}&datetime=${datetime}&lookback=${isoDateMinus2Years}`, '_blank');
+                    window.open(`widget_5_Inflow.html?office=${office}&lake=${lake}&datetime=${datetime}&lookback=${isoDateLastBalance}`, '_blank');
                 });
 
                 outputDiv.appendChild(button);
