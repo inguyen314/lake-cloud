@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', async function () {
     if (lake === "Rend Lk-Big Muddy" || lake === "Rend Lk") {
-        console.log("****************** Rend Lk-Big Muddy");
         console.log('datetime: ', datetime);
 
         let setBaseUrl = null;
@@ -54,6 +53,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         const urltsid1 = `${setBaseUrl}timeseries/group/Stage?office=${office}&category-id=${lake}`;
         const urltsid2 = `${setBaseUrl}timeseries/group/Flow?office=${office}&category-id=${lake}`;
+        const urltsid3 = `${setBaseUrl}timeseries/group/Outflow-Average-Lake-Test?office=${office}&category-id=${lake}`;
 
         const fetchTimeSeriesData = async (tsid) => {
             const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus8Days}&end=${isoDateToday}&office=${office}`;
@@ -76,58 +76,141 @@ document.addEventListener('DOMContentLoaded', async function () {
             try {
                 const response1 = await fetch(urltsid1);
                 const response2 = await fetch(urltsid2);
+                const response3 = await fetch(urltsid3);
 
                 const tsidData1 = await response1.json();
                 const tsidData2 = await response2.json();
+                const tsidData3 = await response3.json();
 
                 // Extract the timeseries-id from the response
                 const tsid1 = tsidData1['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
                 const tsid2 = tsidData2['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
+                const tsid3 = tsidData3['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
 
                 console.log("tsid1:", tsid1);
                 console.log("tsid2:", tsid2);
+                console.log("tsid3:", tsid3);
 
                 // Fetch time series data using tsid values
                 const timeSeriesData1 = await fetchTimeSeriesData(tsid1);
                 const timeSeriesData2 = await fetchTimeSeriesData(tsid2);
+                const timeSeriesData3 = await fetchTimeSeriesData(tsid3);
 
-                // Call getHourlyDataOnTopOfHour for both time series data
-                const hourlyData1 = getMidnightData(timeSeriesData1, tsid1);
-                const hourlyData2 = getMidnightData(timeSeriesData2, tsid2);
+                console.log("timeSeriesData1:", timeSeriesData1);
+                console.log("timeSeriesData2:", timeSeriesData2);
+                console.log("timeSeriesData3:", timeSeriesData3);
 
-                console.log("hourlyData1:", hourlyData1);
-                console.log("hourlyData2:", hourlyData2);
+                let cdaSaveBtn;
 
-                const formattedData1 = hourlyData1.map(entry => {
-                    const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
-                    // console.log("Original (hourlyData1):", entry.timestamp, "Formatted:", formattedTimestamp);
-                    return {
-                        ...entry,
-                        formattedTimestamp
+                async function isLoggedIn() {
+                    try {
+                        const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", {
+                            method: "GET"
+                        });
+
+                        if (response.status === 401) return false;
+
+                        console.log('status', response.status);
+                        return true;
+
+                    } catch (error) {
+                        console.error('Error checking login status:', error);
+                        return false;
+                    }
+                }
+
+                async function loginStateController() {
+                    cdaSaveBtn = document.getElementById("cda-btn-gate"); // Get the button by its ID
+
+                    cdaSaveBtn.disabled = true; // Disable button while checking login state
+
+                    // Update button text based on login status
+                    if (await isLoggedIn()) {
+                        cdaSaveBtn.innerText = "Save";
+                    } else {
+                        cdaSaveBtn.innerText = "Login";
+                    }
+
+                    cdaSaveBtn.disabled = false; // Re-enable button
+                }
+
+                // Check for Stage and outflow data before calling createTable
+                if (1==1) {
+                    // Call the createTable function with formattedData1 and formattedData2
+                    createTable(timeSeriesData1, timeSeriesData2, timeSeriesData3);
+
+                    // Call the createTableAvg function with formattedData2
+                    // createTableAvg(formattedData1, formattedData2, formattedData3, averageOutflowYesterday);
+
+                    // Set up the login state controller
+                    loginStateController()
+                    setInterval(async () => {
+                        loginStateController()
+                    }, 10000)
+                }
+
+                function createTable(timeSeriesData1, timeSeriesData2, timeSeriesData3) {
+                    console.log("Creating table with formatted data...");
+
+                    // Call getHourlyDataOnTopOfHour for both time series data
+                    const midNightData1 = updateDataWithMidnight(timeSeriesData1, tsid1);
+                    const midNightData2 = updateDataWithMidnight(timeSeriesData2, tsid2);
+                    const midNightData3 = updateDataWithMidnight(timeSeriesData3, tsid3);
+
+                    console.log("midNightData1:", midNightData1);
+                    console.log("midNightData2:", midNightData2);
+                    console.log("midNightData3:", midNightData3);
+
+                    let formattedData1 = {
+                        ...midNightData1,
+                        values: midNightData1.values.map(entry => {
+                            const readable = formatISODate2ReadableDate(entry[0]);
+                            return [...entry, readable];
+                        }),
+                        midnight: midNightData1.midnight.map(entry => {
+                            const readable = formatISODate2ReadableDate(entry[0]);
+                            return [...entry, readable];
+                        })
                     };
-                });
 
-                const formattedData2 = hourlyData2.map(entry => {
-                    const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
-                    // console.log("Original (hourlyData2):", entry.timestamp, "Formatted:", formattedTimestamp);
-                    return {
-                        ...entry,
-                        formattedTimestamp
+                    let formattedData2 = {
+                        ...midNightData2,
+                        values: midNightData2.values.map(entry => {
+                            const readable = formatISODate2ReadableDate(entry[0]);
+                            return [...entry, readable];
+                        }),
+                        midnight: midNightData2.midnight.map(entry => {
+                            const readable = formatISODate2ReadableDate(entry[0]);
+                            return [...entry, readable];
+                        })
                     };
-                });
 
-                // Now you have formatted data for both datasets
-                console.log("Formatted Data for HourlyData1:", formattedData1);
-                console.log("Formatted Data for HourlyData2:", formattedData2);
+                    let formattedData3 = {
+                        ...midNightData3,
+                        values: midNightData3.values.map(entry => {
+                            const readable = formatISODate2ReadableDate(entry[0]);
+                            return [...entry, readable];
+                        }),
+                        midnight: midNightData3.midnight.map(entry => {
+                            const readable = formatISODate2ReadableDate(entry[0]);
+                            return [...entry, readable];
+                        })
+                    };
 
-                function createTable(formattedData1, formattedData2) {
-                    // Create the table element
+                    const averages = calculateDailyAverages(formattedData2);
+                    console.log("averages: ", averages);
+
+                    const averageOutflowYesterday = averages[averages.length - 2];
+                    console.log("averageOutflowYesterday: ", averageOutflowYesterday);
+
+                    console.log("formattedData1:", formattedData1);
+                    console.log("formattedData2:", formattedData2);
+                    console.log("formattedData3:", formattedData3);
+
                     const table = document.createElement("table");
-
-                    // Apply the ID "gate-settings" to the table
                     table.id = "gate-settings";
 
-                    // Create the table header row
+                    // Create header row
                     const headerRow = document.createElement("tr");
 
                     const dateHeader = document.createElement("th");
@@ -144,108 +227,208 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     table.appendChild(headerRow);
 
-                    // Combine the data based on matching timestamps
-                    let i = 0;
-                    let j = 0;
+                    // Loop through formattedData1 and find midnight values
+                    formattedData1.midnight.forEach((map, index) => {
+                        const row = document.createElement("tr");
 
-                    while (i < formattedData1.length && j < formattedData2.length) {
-                        // Find matching formattedTimestamps
-                        if (formattedData1[i].formattedTimestamp === formattedData2[j].formattedTimestamp) {
-                            const row = document.createElement("tr");
+                        // Date column
+                        const dateCell = document.createElement("td");
+                        dateCell.textContent = map[3];
+                        row.appendChild(dateCell);
 
-                            // Date column (from formattedData1)
-                            const dateCell = document.createElement("td");
-                            dateCell.textContent = formattedData1[i].formattedTimestamp; // Display formattedTimestamp as Date
-                            row.appendChild(dateCell);
+                        // Stage column
+                        const stageCell = document.createElement("td");
+                        stageCell.textContent = map[1].toFixed(2);
+                        row.appendChild(stageCell);
 
-                            // Stage column (from formattedData1)
-                            const stageCell = document.createElement("td");
-                            stageCell.textContent = formattedData1[i].value.toFixed(2); // Assuming stage is from formattedData1
-                            row.appendChild(stageCell);
+                        // Outflow column from formattedData2
+                        const outflowValue = formattedData2.midnight[index]?.[1];
+                        const outflowCell = document.createElement("td");
+                        outflowCell.textContent = outflowValue !== undefined ? outflowValue.toFixed(0) : "N/A";
+                        row.appendChild(outflowCell);
 
-                            // Outflow column (from formattedData2)
-                            const sluice2Cell = document.createElement("td");
-                            sluice2Cell.textContent = formattedData2[j].value.toFixed(0); // Assuming outflow is from formattedData2
-                            row.appendChild(sluice2Cell);
+                        table.appendChild(row);
+                    });
 
-                            table.appendChild(row);
-
-                            // Move to next entry in both datasets
-                            i++;
-                            j++;
-                        } else if (formattedData1[i].formattedTimestamp < formattedData2[j].formattedTimestamp) {
-                            // If the timestamp in formattedData1 is earlier, just move to the next entry in formattedData1
-                            i++;
-                        } else {
-                            // If the timestamp in formattedData2 is earlier, just move to the next entry in formattedData2
-                            j++;
-                        }
-                    }
-
-                    // Append the table to the specific container (id="output4")
                     const output4Div = document.getElementById("output4");
-                    output4Div.innerHTML = ""; // Clear any existing content
+                    output4Div.innerHTML = "";
                     output4Div.appendChild(table);
-                }
 
-                function createTableAvg(formattedData2) {
-                    // Extract the last two values
-                    const lastValue = formattedData2[formattedData2.length - 1].value;
-                    const secondLastValue = formattedData2[formattedData2.length - 2].value;
 
                     // Calculate the average of the last two values
-                    const averageValue = (lastValue + secondLastValue) / 2;
+                    let averageOutflowYesterdayValue = averageOutflowYesterday.average;
+
+                    let isSaved = false; // Flag to track if the data has been saved
+                    if (formattedData1.midnight.length === formattedData3.midnight.length) {
+                        isSaved = true; // Set to true if the lengths match
+                    }
 
                     // Create the table structure
-                    const table = document.createElement("table");
+                    const tableOutflow = document.createElement("table");
 
                     // Apply the ID "gate-settings" to the table
-                    table.id = "gate-settings";
-                    table.style.width = "50%";
-                    table.style.marginTop = "10px";
-                    table.style.marginBottom = "10px";
+                    tableOutflow.id = "gate-settings";
+                    tableOutflow.style.width = "50%";
+                    tableOutflow.style.marginTop = "10px";
+                    tableOutflow.style.marginBottom = "10px";
 
                     // Create the header row
-                    const headerRow = table.insertRow();
-                    const col1 = headerRow.insertCell();
-                    const col2 = headerRow.insertCell();
+                    const headerOutflowRow = tableOutflow.insertRow();
+                    const col1 = headerOutflowRow.insertCell();
+                    const col2 = headerOutflowRow.insertCell();
 
                     col1.textContent = "Average Outflow for Yesterday:";
-                    col2.textContent = averageValue.toFixed(0);  // Format the average value to 0 decimal places
+                    col2.textContent = averageOutflowYesterdayValue.toFixed(0);  // Format the average value to 0 decimal places
+                    col2.value = averageOutflowYesterdayValue;
                     col2.style.fontWeight = "bold";
+                    if (isSaved === false) {
+                        col2.style.backgroundColor = "pink";
+                    }
+                    col2.id = 'averageOutflowYesterdayValue';
 
                     // Set column widths: 2/3 for col1 and 1/3 for col2
                     col1.style.width = "66%";  // 2/3 width
                     col2.style.width = "33%";  // 1/3 width
 
                     // Add a title for the tooltip when hovering over col2
-                    col2.title = `The average outflow value for yesterday is: ${lastValue.toFixed(0)}/${secondLastValue.toFixed(0)} =  ${averageValue.toFixed(0)}`;
+                    col2.title = `The average outflow value for yesterday is: ${averageOutflowYesterdayValue.toFixed(0)}`;
 
                     // Insert the table into the "output4" div
                     const outputDiv = document.getElementById("output4");
-                    outputDiv.appendChild(table);
+                    outputDiv.appendChild(tableOutflow);
+
+                    // Save and Status Button
+                    const cdaSaveBtn = document.createElement("button");
+                    cdaSaveBtn.textContent = "Submit";
+                    cdaSaveBtn.id = "cda-btn-gate";
+                    cdaSaveBtn.disabled = true;
+                    outputDiv.appendChild(cdaSaveBtn);
+
+                    const statusDiv = document.createElement("div");
+                    statusDiv.className = "status";
+                    const cdaStatusBtn = document.createElement("button");
+                    cdaStatusBtn.textContent = "";
+                    cdaStatusBtn.id = "cda-btn-gate";
+                    cdaStatusBtn.disabled = false;
+                    statusDiv.appendChild(cdaStatusBtn);
+                    outputDiv.appendChild(statusDiv);
+
+                    cdaSaveBtn.addEventListener("click", async () => {
+                        const values = [];
+                        const averageOutflowYesterdayInput = document.getElementById(`averageOutflowYesterdayValue`).value;
+                        let averageOutflowYesterdayValue = averageOutflowYesterdayInput ? parseFloat(parseFloat(averageOutflowYesterdayInput).toFixed(2)) : 909;
+                        const timestampUnix = new Date(new Date(isoDateToday).getTime()).toISOString(); // Today Midnight CST
+                        values.push([timestampUnix, averageOutflowYesterdayValue, 0]);
+
+                        const payload = {
+                            "name": tsid3,
+                            "office-id": "MVS",
+                            "units": "cfs",
+                            "values": values
+                        };
+
+                        console.log("Preparing payload...");
+                        console.log("payload:", payload);
+
+                        async function loginCDA() {
+                            if (await isLoggedIn()) return true;
+                            window.location.href = `https://wm.mvs.ds.usace.army.mil:8243/CWMSLogin/login?OriginalLocation=${encodeURIComponent(window.location.href)}`;
+                        }
+
+                        async function isLoggedIn() {
+                            try {
+                                const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", { method: "GET" });
+                                return response.status !== 401;
+                            } catch (error) {
+                                console.error('Error checking login status:', error);
+                                return false;
+                            }
+                        }
+
+                        async function createTS(payload) {
+                            if (!payload) throw new Error("You must specify a payload!");
+                            const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?store-rule=REPLACE%20ALL", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json;version=2" },
+                                body: JSON.stringify(payload)
+                            });
+
+                            if (!response.ok) {
+                                const errorText = await response.text();
+                                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                            }
+                        }
+
+                        async function fetchUpdatedData(isoDateMinus8Days, isoDateToday, tsid) {
+                            let response = null;
+                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid}&begin=${isoDateMinus8Days}&end=${isoDateToday}&office=MVS`, {
+                                headers: {
+                                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                                    "cache-control": "no-cache"
+                                }
+                            });
+
+                            if (!response.ok) {
+                                throw new Error(`Failed to fetch updated data: ${response.status}`);
+                            }
+
+                            const data = await response.json();
+
+                            // Log the raw data received
+                            console.log('Fetched Data:', data);
+
+                            return data;
+                        }
+
+                        // Function to show the spinner while waiting
+                        function showSpinner() {
+                            const spinner = document.createElement('img');
+                            spinner.src = 'images/loading4.gif';
+                            spinner.id = 'loadingSpinner';
+                            spinner.style.width = '40px';  // Set the width to 40px
+                            spinner.style.height = '40px'; // Set the height to 40px
+                            document.body.appendChild(spinner);
+                        }
+
+                        // Function to hide the spinner once the operation is complete
+                        function hideSpinner() {
+                            const spinner = document.getElementById('loadingSpinner');
+                            if (spinner) {
+                                spinner.remove();
+                            }
+                        }
+
+                        if (cdaSaveBtn.innerText === "Login") {
+                            showSpinner(); // Show the spinner before the login
+                            const loginResult = await loginCDA();
+                            hideSpinner(); // Hide the spinner after login is complete
+
+                            cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
+                            cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
+                        } else {
+                            try {
+                                showSpinner(); // Show the spinner before creating the version
+                                await createTS(payload);
+                                cdaStatusBtn.innerText = "Write successful!";
+
+                                // Fetch updated data and refresh the table
+                                const timeSeriesData1 = await fetchUpdatedData(isoDateMinus8Days, isoDateToday, tsid1);
+                                const timeSeriesData2 = await fetchUpdatedData(isoDateMinus8Days, isoDateToday, tsid2);
+                                const timeSeriesData3 = await fetchUpdatedData(isoDateMinus8Days, isoDateToday, tsid3);
+
+                                createTable(timeSeriesData1, timeSeriesData2, timeSeriesData3);
+                            } catch (error) {
+                                hideSpinner(); // Hide the spinner if an error occurs
+                                cdaStatusBtn.innerText = "Failed to write data!";
+                                console.error(error);
+                            }
+
+                            hideSpinner(); // Hide the spinner after the operation completes
+                        }
+                    });
                 }
-
-                // Call the function with formattedData1 and formattedData2
-                createTable(formattedData1, formattedData2);
-
-                // Call the function
-                createTableAvg(formattedData2);
-
             } catch (error) {
                 console.error("Error fetching tsid data:", error);
-
-                // // Show the "Report Issue" button
-                // document.getElementById('reportIssueBtn').style.display = "block";
-
-                // // Ensure sendEmail is globally accessible
-                // window.sendEmail = function () {
-                //     const subject = encodeURIComponent("Cloud Database Down");
-                //     const body = encodeURIComponent("Hello,\n\nIt appears that the cloud database is down. Please investigate the issue." + setBaseUrl);
-                //     const email = "DLL-CEMVS-WM-SysAdmins@usace.army.mil"; // Replace with actual support email
-
-                //     window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-                // };
             }
         };
 
@@ -270,38 +453,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             const min = String(date.getMinutes()).padStart(2, '0'); // Minutes
             return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
         }
-
-        function getHourlyDataOnTopOfHour(data, tsid) {
-            const hourlyData = [];
-
-            data.values.forEach(entry => {
-                const [timestamp, value, qualityCode] = entry;
-
-                // Normalize the timestamp
-                let date;
-                if (typeof timestamp === "string") {
-                    date = new Date(timestamp.replace(/-/g, '/')); // Replace hyphens with slashes for iOS
-                } else if (typeof timestamp === "number") {
-                    date = new Date(timestamp); // Assume it's a UNIX timestamp
-                } else {
-                    console.warn("Unrecognized timestamp format:", timestamp);
-                    return; // Skip invalid entries
-                }
-
-                // Validate date
-                if (isNaN(date.getTime())) {
-                    console.warn("Invalid date:", timestamp);
-                    return; // Skip invalid dates
-                }
-
-                // Check if the time is exactly at the top of the hour
-                if (date.getMinutes() === 0 && date.getSeconds() === 0) {
-                    hourlyData.push({ timestamp, value, qualityCode, tsid });
-                }
-            });
-
-            return hourlyData;
-        };
 
         function getMidnightData(data, tsid) {
             const midnightData = [];
@@ -328,17 +479,65 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Check if the time is exactly midnight (00:00:00)
                 if (date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0) {
-                    midnightData.push({ timestamp, value, qualityCode, tsid });
+                    midnightData.push([timestamp, value, qualityCode]);
                 }
             });
 
             return midnightData;
         };
 
-        function subtractHoursFromDate(date, hoursToSubtract) {
-            return new Date(date.getTime() - (hoursToSubtract * 60 * 60 * 1000));
+        function updateDataWithMidnight(data) {
+            return {
+                ...data,
+                'midnight': getMidnightData(data),
+            };
         }
 
+        function calculateDailyAverages(data) {
+            // Helper function to format the timestamp into just the date (YYYY-MM-DD)
+            function extractDate(timestamp) {
+                const date = timestamp.split(' ')[0]; // Get the date part before the space (remove time)
+                return date; // Returns the date as YYYY-MM-DD
+            }
+
+            // Create an object to store the sums and counts for each day
+            const dailyData = {};
+
+            // Iterate over each data entry in the values array
+            data.values.forEach(entry => {
+                const timestamp = entry[3]; // The 4th item in the array (timestamp '04-14-2025 00:00')
+                const value = entry[1]; // The second item in the array (the value to average)
+
+                const date = extractDate(timestamp); // Extract the date (YYYY-MM-DD)
+
+                // If the date doesn't exist in dailyData, initialize it
+                if (!dailyData[date]) {
+                    dailyData[date] = { sum: 0, count: 0, values: [] }; // Store values for logging
+                }
+
+                // Add the value to the sum and increment the count for the date
+                dailyData[date].sum += value;
+                dailyData[date].count += 1;
+                dailyData[date].values.push(value);
+
+                // Log the value and the current sum and count for this day
+                // console.log(`Date: ${date}, Timestamp: ${timestamp}, Value: ${value}`);
+                // console.log(`Current Sum: ${dailyData[date].sum}, Current Count: ${dailyData[date].count}`);
+            });
+
+            // Now calculate the average for each day
+            const dailyAverages = [];
+            for (const date in dailyData) {
+                const avg = dailyData[date].sum / dailyData[date].count;
+
+                // Log the final average for the day
+                // console.log(`Final Average for ${date}: ${avg}`);
+
+                dailyAverages.push({ date, average: avg });
+            }
+
+            return dailyAverages;
+        }
     } else {
         const loadingIndicator = document.getElementById('loading_json');
         loadingIndicator.style.display = 'block';
@@ -3217,6 +3416,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 });
 
+// Lk Shelbyville-Kaskaskia
 // Lk Shelbyville-Kaskaskia.Opening.Inst.~30Minutes.0.lakerep-rev-G1-test (Gate-Lake-Test)
 // Lk Shelbyville-Kaskaskia.Opening.Inst.~30Minutes.0.lakerep-rev-G2-test (Gate-Lake-Test)
 // Lk Shelbyville-Kaskaskia.Opening.Inst.~30Minutes.0.lakerep-rev-G3-test (Gate-Lake-Test)
@@ -3231,3 +3431,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 // Lk Shelbyville-Kaskaskia.Flow.Inst.~30Minutes.0.lakerep-rev-test (Outflow-Total-Lake-Test)
 
 // Lk Shelbyville-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test (Outflow-Average-Lake-Test)
+
+
+// Rend Lk-Big Muddy
+// Rend Lk-Big Muddy.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test (Outflow-Total-Lake-Test)

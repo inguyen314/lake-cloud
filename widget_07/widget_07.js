@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const button = document.createElement('button');
                 button.textContent = 'Balance Inflow Module';
                 button.id = 'balanceInflowBtn'; // Unique ID
-                button.className = 'btn';
+                button.className = 'fetch-btn';
                 outputDiv.appendChild(button);
 
                 // Add a line break between buttons
