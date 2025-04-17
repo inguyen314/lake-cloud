@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const [month, day, year] = datetime.split('-');
 
     // Generate ISO strings for the previous 7 days and today
-    const isoDateMinus2Years = getIsoDateWithOffsetDynamic(year, month, day, -730);
+    const isoDateMinus2Years = getIsoDateWithOffsetDynamic(year, month, day, -720);
     const isoDateMinus8Days = getIsoDateWithOffsetDynamic(year, month, day, -8);
     const isoDateMinus7Days = getIsoDateWithOffsetDynamic(year, month, day, -7);
     const isoDateMinus6Days = getIsoDateWithOffsetDynamic(year, month, day, -6);
@@ -182,6 +182,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                 button.textContent = 'Balance Inflow Module';
                 button.id = 'balanceInflowBtn'; // Unique ID
                 button.className = 'fetch-btn';
+
+                // Open link in a new tab when clicked
+                button.addEventListener('click', () => {
+                    window.open(`widget_5_Inflow.html?office=${office}&lake=${lake}&datetime=${datetime}&lookback=${isoDateMinus2Years}`, '_blank');
+                });
+
                 outputDiv.appendChild(button);
 
                 // Add a line break between buttons

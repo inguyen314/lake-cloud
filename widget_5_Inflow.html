@@ -12,7 +12,7 @@
     const documentRoot = window.location.protocol + "//" + window.location.host + "/";
     console.log("documentRoot: ", documentRoot);
 
-    if (documentRoot === `https://wm.${office.toLocaleLowerCase()}.ds.usace.army.mil/` || `http://localhost:5173/` || `https://wm.rsgis.dev/` || `https://wm-${office.toLocaleLowerCase()}coop.mvk.ds.usace.army.mil/`) {
+    if (documentRoot === `https://wm.${office.toLocaleLowerCase()}.ds.usace.army.mil/`) {
         cdaDefault = "internal";
     } else if (documentRoot === `https://wm-${office.toLocaleLowerCase()}coop.mvk.ds.usace.army.mil/`) {
         cdaDefault = "internal-coop";
@@ -35,7 +35,7 @@
     var datetime = urlParams.get('datetime') || formatDate(new Date());
     console.log('datetime: ', datetime);
 
-    var lookback = urlParams.get('lookback');
+    var lookback = urlParams.get('lookback') || '2025-01-01T05:00:00.000Z';
     console.log('lookback: ', lookback);
 
     function formatDate(date) {

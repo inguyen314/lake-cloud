@@ -62,7 +62,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("levelIdUrl:", levelIdUrl);
 
     const fetchTimeSeriesData = async (tsid) => {
-        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus6Days}&end=${isoDateToday}&office=${office}`;
+        // Handle blance inflow module
+        const beginDate = lookback !== null ? lookback : isoDateMinus6Days;
+        const tsidData = `${setBaseUrl}timeseries?page-size=1000000&name=${tsid}&begin=${beginDate}&end=${isoDateToday}&office=${office}`;
         console.log('tsidData:', tsidData);
         try {
             const response = await fetch(tsidData, {
@@ -188,8 +190,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             formattedStorageData = shiftDeltaUp(formattedStorageData);
 
             // Now you have formatted data for both datasets
-            console.log("Formatted Data for HourlyData1:", formattedStorageData);
-            console.log("Formatted Data for HourlyData2:", formattedAverageOutflowData);
+            console.log("formattedStorageData:", formattedStorageData);
+            console.log("formattedAverageOutflowData:", formattedAverageOutflowData);
 
 
             // Calculate the delta storage
@@ -456,7 +458,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     async function fetchUpdatedData(isoDateMinus6Days, isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidConsensus) {
                         let response = null;
-                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsidConsensus}&begin=${isoDateMinus6Days}&end=${isoDateToday}&office=MVS`, {
+                        const beginDate = lookback !== null ? lookback : isoDateMinus6Days;
+                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsidConsensus}&begin=${beginDate}&end=${isoDateToday}&office=MVS`, {
                             headers: {
                                 "Accept": "application/json;version=2", // Ensuring the correct version is used
                                 "cache-control": "no-cache"
