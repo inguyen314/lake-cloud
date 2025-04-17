@@ -259,14 +259,34 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // Average Outflow
                         const averageOutflowCell = document.createElement("td");
-                        averageOutflowCell.textContent = formattedAverageOutflowData[j].value.toFixed(0);
+                        if (formattedAverageOutflowData[j].value !== null && formattedAverageOutflowData[j].value !== undefined) {
+                            averageOutflowCell.textContent = formattedAverageOutflowData[j].value.toFixed(0);
+                        } else {
+                            // Handle the case where the value is null or undefined
+                            averageOutflowCell.textContent = 'N/A'; // Or any default value you'd prefer
+                        }
+
                         row.appendChild(averageOutflowCell);
 
                         // Storage + Average Outflow + Evaporation
-                        const storageOutflowEvapCell = document.createElement("td");
-                        storageOutflowEvapCell.textContent = ((parseFloat(formattedAverageOutflowData[j].value) + parseFloat(delta)) + parseFloat(curentMonthEvapValue)).toFixed(0);
-                        storageOutflowEvapCell.type = "number";
-                        storageOutflowEvapCell.value = ((parseFloat(formattedAverageOutflowData[j].value) + parseFloat(delta)) + parseFloat(curentMonthEvapValue)).toFixed(0);
+                        const val = parseFloat(formattedAverageOutflowData[j]?.value);
+                        const deltaVal = parseFloat(delta);
+                        const evapVal = parseFloat(curentMonthEvapValue);
+                        let storageOutflowEvapCell = document.createElement("td");
+
+                        // Check if any of the values are NaN (which means they were null, undefined, or not numeric)
+                        if (isNaN(val) || isNaN(deltaVal) || isNaN(evapVal)) {
+                            storageOutflowEvapCell.textContent = 'N/A';
+                            storageOutflowEvapCell.type = "text";
+                            storageOutflowEvapCell.value = 'N/A';
+                        } else {
+                            const total = val + deltaVal + evapVal;
+                            const totalFixed = total.toFixed(0);
+                            storageOutflowEvapCell.textContent = totalFixed;
+                            storageOutflowEvapCell.type = "number";
+                            storageOutflowEvapCell.value = totalFixed;
+                        }
+
                         storageOutflowEvapCell.id = `storage-outflow-evap-${formattedStorageData[i].formattedTimestamp}`;
                         row.appendChild(storageOutflowEvapCell);
 
@@ -538,38 +558,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
     }
 
-    function getHourlyDataOnTopOfHour(data, tsid) {
-        const hourlyData = [];
-
-        data.values.forEach(entry => {
-            const [timestamp, value, qualityCode] = entry;
-
-            // Normalize the timestamp
-            let date;
-            if (typeof timestamp === "string") {
-                date = new Date(timestamp.replace(/-/g, '/')); // Replace hyphens with slashes for iOS
-            } else if (typeof timestamp === "number") {
-                date = new Date(timestamp); // Assume it's a UNIX timestamp
-            } else {
-                console.warn("Unrecognized timestamp format:", timestamp);
-                return; // Skip invalid entries
-            }
-
-            // Validate date
-            if (isNaN(date.getTime())) {
-                console.warn("Invalid date:", timestamp);
-                return; // Skip invalid dates
-            }
-
-            // Check if the time is exactly at the top of the hour
-            if (date.getMinutes() === 0 && date.getSeconds() === 0) {
-                hourlyData.push({ timestamp, value, qualityCode, tsid });
-            }
-        });
-
-        return hourlyData;
-    };
-
     function getMidnightData(data, tsid) {
         const midnightData = [];
 
@@ -602,57 +590,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         return midnightData;
     };
 
-    function subtractHoursFromDate(date, hoursToSubtract) {
-        return new Date(date.getTime() - (hoursToSubtract * 60 * 60 * 1000));
-    }
-
-
-
-    function formatISODateToUTCString(timestamp) {
-        if (typeof timestamp !== "number") {
-            console.error("Invalid timestamp:", timestamp);
-            return "Invalid Date";
-        }
-
-        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
-        if (isNaN(date.getTime())) {
-            console.error("Invalid date conversion:", timestamp);
-            return "Invalid Date";
-        }
-
-        return date.toISOString().replace(/\.\d{3}Z$/, 'Z'); // Removes milliseconds
-    }
-
-    function formatISODateToCSTString(timestamp) {
-        if (typeof timestamp !== "number") {
-            console.error("Invalid timestamp:", timestamp);
-            return "Invalid Date";
-        }
-
-        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
-        if (isNaN(date.getTime())) {
-            console.error("Invalid date conversion:", timestamp);
-            return "Invalid Date";
-        }
-
-        // Convert to CST (Central Standard Time)
-        const options = {
-            timeZone: 'America/Chicago',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-
-        const formatter = new Intl.DateTimeFormat('en-US', options);
-        const formattedDate = formatter.format(date);
-
-        return formattedDate.replace(',', ''); // Removes the comma between date and time
-    }
-
     function getIsoDateWithOffsetDynamic(year, month, day, offset) {
         // Create a date object at 6 AM UTC
         const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0));
@@ -674,62 +611,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Return the ISO string
         return date.toISOString();
-    }
-
-    function getDSTOffsetInHours() {
-        // Get the current date
-        const now = new Date();
-
-        // Get the current time zone offset in minutes (with DST, if applicable)
-        const currentOffset = now.getTimezoneOffset();
-
-        // Convert the offset from minutes to hours
-        const dstOffsetHours = currentOffset / 60;
-
-        return dstOffsetHours; // Returns the offset in hours (e.g., -5 or -6)
-    }
-
-    function filterPayloads(payloads) {
-        let filteredPayloads = {};
-
-        for (const key in payloads) {
-            if (payloads.hasOwnProperty(key)) {
-                let filteredValues = payloads[key].values.filter(entry => !entry[0].includes("T04:59:00.000Z"));
-
-                if (filteredValues.length > 0) {
-                    filteredPayloads[key] = {
-                        ...payloads[key],
-                        values: filteredValues
-                    };
-                }
-            }
-        }
-
-        return filteredPayloads;
-    }
-
-    function convertUnixTimestamp(timestamp, toCST = false) {
-        if (typeof timestamp !== "number") {
-            console.error("Invalid timestamp:", timestamp);
-            return "Invalid Date";
-        }
-
-        const dateUTC = new Date(timestamp); // Convert milliseconds to Date object
-        if (isNaN(dateUTC.getTime())) {
-            console.error("Invalid date conversion:", timestamp);
-            return "Invalid Date";
-        }
-
-        if (!toCST) {
-            return dateUTC.toISOString(); // Return UTC time
-        }
-
-        // Convert to CST/CDT (America/Chicago) while adjusting for daylight saving time
-        const options = { timeZone: "America/Chicago", hour12: false };
-        const cstDateString = dateUTC.toLocaleString("en-US", options);
-        const cstDate = new Date(cstDateString + " UTC"); // Convert back to Date
-
-        return cstDate.toISOString();
     }
 
     function addDeltaAsDsfToData(data) {
@@ -765,17 +646,17 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 });
 
-// Lk Shelbyville-Kaskaskia.Opening.Inst.~30Minutes.0.lakerep-rev-G1-test (Gate-Lake-Test)
-// Lk Shelbyville-Kaskaskia.Opening.Inst.~30Minutes.0.lakerep-rev-G2-test (Gate-Lake-Test)
-// Lk Shelbyville-Kaskaskia.Opening.Inst.~30Minutes.0.lakerep-rev-G3-test (Gate-Lake-Test)
-// Lk Shelbyville-Kaskaskia.Opening.Inst.~30Minutes.0.lakerep-rev-G4-test (NOT USED)
-// Lk Shelbyville-Kaskaskia.Flow-Taint.Inst.~30Minutes.0.lakerep-rev-test (Gate-Total-Lake-Test)
+// Lk Shelbyville-Kaskaskia
+// tsidStorage: Lk Shelbyville-Kaskaskia.Stor.Inst.30Minutes.0.RatingCOE
+// tsidAverageOutflow: Lk Shelbyville-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test
+// tsidEvaporation: Lk Shelbyville-Kaskaskia.Evap.Inst.0.Evaporation
+// tsidConsensus: Lk Shelbyville-Kaskaskia.Flow-In.Ave.~1Day.1Day.lakerep-rev-test
+// tsidComputedInflow: Lk Shelbyville-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed
 
-// Lk Shelbyville-Kaskaskia.Opening.Inst.~30Minutes.0.lakerep-rev-S1-test (Sluice-Lake-Test)
-// Lk Shelbyville-Kaskaskia.Opening.Inst.~30Minutes.0.lakerep-rev-S2-test (Sluice-Lake-Test)
-// Lk Shelbyville-Kaskaskia.Opening.Inst.~30Minutes.0.lakerep-rev-S3-test (NOT USED)
-// Lk Shelbyville-Kaskaskia.Flow-Sluice.Inst.~30Minutes.0.lakerep-rev-test (Sluice-Total-Lake-Test)
 
-// Lk Shelbyville-Kaskaskia.Flow.Inst.~30Minutes.0.lakerep-rev-test (Outflow-Total-Lake-Test)
-
-// Lk Shelbyville-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test (Outflow-Average-Lake-Test)
+// Rend Lk-Big Muddy
+// tsidStorage: Rend Lk-Big Muddy.Stor.Inst.30Minutes.0.RatingCOE
+// tsidAverageOutflow: Rend Lk-Big Muddy.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test
+// tsidEvaporation: Rend Lk-Big Muddy.Evap.Inst.0.Evaporation
+// tsidConsensus: Rend Lk-Big Muddy.Flow-In.Ave.~1Day.1Day.lakerep-rev-test
+// tsidComputedInflow: Rend Lk-Big Muddy.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed
