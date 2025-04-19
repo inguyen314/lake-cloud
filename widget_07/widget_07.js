@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Create table
                 const table = document.createElement("table");
-                table.id = "inflow";
+                table.id = "balance-window";
                 table.style.margin = "10px 0";
 
                 // Add table title
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Add click event to refresh the table and remove buttons
                 buttonRefresh.addEventListener('click', () => {
                     // Remove existing table
-                    const existingTable = document.getElementById('inflow');
+                    const existingTable = document.getElementById('balance-window');
                     if (existingTable) {
                         existingTable.remove();
                     }

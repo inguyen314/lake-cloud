@@ -1,53 +1,69 @@
+#inflow,
+#balance-window,
 #gate-settings {
     width: 100%;
     table-layout: fixed;
-    /* Ensures equal width for each column */
     border-collapse: collapse;
-    /* Ensures cells are neatly aligned */
 }
 
+#inflow th,
+#balance-window th,
 #gate-settings th,
+#inflow td,
+#balance-window td,
 #gate-settings td {
     padding: 2px;
     text-align: center;
     border: 1px solid #ddd;
-    /* Light border for better visibility */
 }
 
+#inflow th,
+#balance-window th,
 #gate-settings th {
     background-color: darkblue;
-    /* Light gray for headers */
     font-weight: bold;
 }
 
+#inflow input,
+#balance-window input,
 #gate-settings input {
     width: 100%;
-    /* Ensures input fields take full width of the cells */
     box-sizing: border-box;
-    /* Makes sure padding does not affect width */
 }
 
+#inflow tr:nth-child(even),
+#balance-window tr:nth-child(even),
 #gate-settings tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
+#inflow tr:hover,
+#balance-window tr:hover,
 #gate-settings tr:hover {
     background-color: #f1f1f1;
 }
 
+#inflow td,
+#balance-window td,
 #gate-settings td {
     font-size: 14px;
 }
 
+#inflow td a,
+#balance-window td a,
 #gate-settings td a {
     color: darkblue;
     text-decoration: none;
 }
 
+#inflow td a:hover,
+#balance-window td a:hover,
 #gate-settings td a:hover {
     text-decoration: underline;
 }
 
+#inflow caption,
+#balance-window caption,
 #gate-settings caption {
     font-size: 18px;
     font-weight: bold;
