@@ -233,3 +233,13 @@ table {
     margin: 0 auto; /* This will center the button horizontally */
     text-align: center;
 }
+/*** ===================================================================================== ***/
+/*** WIDGET 7 ***/
+/*** ===================================================================================== ***/
+#balanceInflowBtn, #refreshBtn, #estimated-value {
+    display: block;
+    margin: 0 auto; /* This will center the button horizontally */
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}

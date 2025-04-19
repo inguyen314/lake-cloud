@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
 
                 // Check for Stage and outflow data before calling createTable
-                if (1==1) {
+                if (1 == 1) {
                     // Call the createTable function with formattedData1 and formattedData2
                     createTable(timeSeriesData1, timeSeriesData2, timeSeriesData3);
 
@@ -601,11 +601,21 @@ document.addEventListener('DOMContentLoaded', async function () {
         let dstOffsetHours = getDSTOffsetInHours();
         console.log(`dstOffsetHours: ${dstOffsetHours} hours`);
 
-        const urlTsidSluice = `${setBaseUrl}timeseries/group/Sluice-Lake-Test?office=${office}&category-id=${lake}`;
-        console.log("urlTsidSluice:", urlTsidSluice);
+        let urlTsidSluice = null;
+        let urlTsidSluiceTotal = null;
+        let urlTsidOutflowTotal = null;
+        if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+            urlTsidSluice = `${setBaseUrl}timeseries/group/Sluice-Lake-Test?office=${office}&category-id=${lake}`;
+            console.log("urlTsidSluice:", urlTsidSluice);
 
-        const urlTsidSluiceTotal = `${setBaseUrl}timeseries/group/Sluice-Total-Lake-Test?office=${office}&category-id=${lake}`;
-        console.log("urlTsidSluiceTotal:", urlTsidSluiceTotal);
+            urlTsidSluiceTotal = `${setBaseUrl}timeseries/group/Sluice-Total-Lake-Test?office=${office}&category-id=${lake}`;
+            console.log("urlTsidSluiceTotal:", urlTsidSluiceTotal);
+
+            urlTsidOutflowTotal = `${setBaseUrl}timeseries/group/Outflow-Total-Lake-Test?office=${office}&category-id=${lake}`;
+            console.log("urlTsidOutflowTotal:", urlTsidOutflowTotal);
+        }
+
+
 
         const urlTsidGate = `${setBaseUrl}timeseries/group/Gate-Lake-Test?office=${office}&category-id=${lake}`;
         console.log("urlTsidGate:", urlTsidGate);
@@ -613,21 +623,32 @@ document.addEventListener('DOMContentLoaded', async function () {
         const urlTsidGateTotal = `${setBaseUrl}timeseries/group/Gate-Total-Lake-Test?office=${office}&category-id=${lake}`;
         console.log("urlTsidGateTotal:", urlTsidGateTotal);
 
-        const urlTsidOutflowTotal = `${setBaseUrl}timeseries/group/Outflow-Total-Lake-Test?office=${office}&category-id=${lake}`;
-        console.log("urlTsidOutflowTotal:", urlTsidOutflowTotal);
+
 
         const urlTsidOutflowAverage = `${setBaseUrl}timeseries/group/Outflow-Average-Lake-Test?office=${office}&category-id=${lake}`;
         console.log("urlTsidOutflowAverage:", urlTsidOutflowAverage);
 
         const fetchTsidData = async () => {
             try {
-                const responseSluice = await fetch(urlTsidSluice);
-                const tsidSluiceData = await responseSluice.json();
-                console.log("tsidSluiceData:", tsidSluiceData);
+                let responseSluice = null;
+                let tsidSluiceData = null;
+                let responseSluiceTotal = null;
+                let tsidSluiceTotalData = null;
+                let responseOutflowTotal = null;
+                let tsidOutflowTotalData = null;
+                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                    responseSluice = await fetch(urlTsidSluice);
+                    tsidSluiceData = await responseSluice.json();
+                    console.log("tsidSluiceData:", tsidSluiceData);
 
-                const responseSluiceTotal = await fetch(urlTsidSluiceTotal);
-                const tsidSluiceTotalData = await responseSluiceTotal.json();
-                console.log("tsidSluiceTotalData:", tsidSluiceTotalData);
+                    responseSluiceTotal = await fetch(urlTsidSluiceTotal);
+                    tsidSluiceTotalData = await responseSluiceTotal.json();
+                    console.log("tsidSluiceTotalData:", tsidSluiceTotalData);
+
+                    responseOutflowTotal = await fetch(urlTsidOutflowTotal);
+                    tsidOutflowTotalData = await responseOutflowTotal.json();
+                    console.log("tsidOutflowTotalData:", tsidOutflowTotalData);
+                }
 
                 const responseGate = await fetch(urlTsidGate);
                 const tsidGateData = await responseGate.json();
@@ -637,9 +658,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const tsidGateTotalData = await responseGateTotal.json();
                 console.log("tsidGateTotalData:", tsidGateTotalData);
 
-                const responseOutflowTotal = await fetch(urlTsidOutflowTotal);
-                const tsidOutflowTotalData = await responseOutflowTotal.json();
-                console.log("tsidOutflowTotalData:", tsidOutflowTotalData);
+
 
                 const responseOutflowAverage = await fetch(urlTsidOutflowAverage);
                 const tsidOutflowAverageData = await responseOutflowAverage.json();
@@ -679,88 +698,119 @@ document.addEventListener('DOMContentLoaded', async function () {
                     cdaSaveBtn.disabled = false; // Re-enable button
                 }
 
+                let tsidSluice1 = null;
+                let tsidSluice2 = null;
+                let tsidSluiceTotal = null;
+                let tsidGate1 = null;
+                let tsidGate2 = null;
+                let tsidGate3 = null;
+                let tsidGate4 = null;
+                let tsidGateTotal = null;
+                let tsidOutflowTotal = null;
+                let tsidOutflowAverage = null;
+                let timeSeriesDataSluice1 = null;
+                let timeSeriesDataSluice2 = null;
+                let timeSeriesDataSluiceTotal = null;
+                let timeSeriesDataGate1 = null;
+                let timeSeriesDataGate2 = null;
+                let timeSeriesDataGate3 = null;
+                let timeSeriesDataGate4 = null;
+                let timeSeriesDataGateTotal = null;
+                let timeSeriesDataOutflowTotal = null;
+                let timeSeriesDataOutflowAverage = null;
+                let timeSeriesYesterdayDataSluice1 = null;
+                let timeSeriesYesterdayDataSluice2 = null;
+                let timeSeriesYesterdayDataSluiceTotal = null;
+                let timeSeriesYesterdayDataGate1 = null;
+                let timeSeriesYesterdayDataGate2 = null;
+                let timeSeriesYesterdayDataGate3 = null;
+                let timeSeriesYesterdayDataGate4 = null;
+                let timeSeriesYesterdayDataGateTotal = null;
+                let timeSeriesYesterdayDataOutflowTotal = null;
+                let timeSeriesYesterdayDataOutflowAverage = null;
+
                 if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
-                    const tsidSluice1 = tsidSluiceData['assigned-time-series'][0]['timeseries-id'];
+                    tsidSluice1 = tsidSluiceData['assigned-time-series'][0]['timeseries-id'];
                     console.log("tsidSluice1:", tsidSluice1);
 
-                    const tsidSluice2 = tsidSluiceData['assigned-time-series'][1]['timeseries-id'];
+                    tsidSluice2 = tsidSluiceData['assigned-time-series'][1]['timeseries-id'];
                     console.log("tsidSluice2:", tsidSluice2);
 
-                    const tsidSluiceTotal = tsidSluiceTotalData['assigned-time-series'][0]['timeseries-id'];
+                    tsidSluiceTotal = tsidSluiceTotalData['assigned-time-series'][0]['timeseries-id'];
                     console.log("tsidSluiceTotal:", tsidSluiceTotal);
 
-                    const tsidGate1 = tsidGateData['assigned-time-series'][0]['timeseries-id'];
+                    tsidGate1 = tsidGateData['assigned-time-series'][0]['timeseries-id'];
                     console.log("tsidGate1:", tsidGate1);
 
-                    const tsidGate2 = tsidGateData['assigned-time-series'][1]['timeseries-id'];
+                    tsidGate2 = tsidGateData['assigned-time-series'][1]['timeseries-id'];
                     console.log("tsidGate2:", tsidGate2);
 
-                    const tsidGate3 = tsidGateData['assigned-time-series'][2]['timeseries-id'];
+                    tsidGate3 = tsidGateData['assigned-time-series'][2]['timeseries-id'];
                     console.log("tsidGate3:", tsidGate3);
 
-                    const tsidGateTotal = tsidGateTotalData['assigned-time-series'][0]['timeseries-id'];
+                    tsidGateTotal = tsidGateTotalData['assigned-time-series'][0]['timeseries-id'];
                     console.log("tsidGateTotal:", tsidGateTotal);
 
-                    const tsidOutflowTotal = tsidOutflowTotalData['assigned-time-series'][0]['timeseries-id'];
+                    tsidOutflowTotal = tsidOutflowTotalData['assigned-time-series'][0]['timeseries-id'];
                     console.log("tsidOutflowTotal:", tsidOutflowTotal);
 
-                    const tsidOutflowAverage = tsidOutflowAverageData['assigned-time-series'][0]['timeseries-id'];
+                    tsidOutflowAverage = tsidOutflowAverageData['assigned-time-series'][0]['timeseries-id'];
                     console.log("tsidOutflowAverage:", tsidOutflowAverage);
 
                     // Fetch time series data
-                    const timeSeriesDataSluice1 = await fetchTimeSeriesData(tsidSluice1);
+                    timeSeriesDataSluice1 = await fetchTimeSeriesData(tsidSluice1);
                     console.log("timeSeriesDataSluice1:", timeSeriesDataSluice1);
 
-                    const timeSeriesDataSluice2 = await fetchTimeSeriesData(tsidSluice2);
+                    timeSeriesDataSluice2 = await fetchTimeSeriesData(tsidSluice2);
                     console.log("timeSeriesDataSluice2:", timeSeriesDataSluice2);
 
-                    const timeSeriesDataSluiceTotal = await fetchTimeSeriesData(tsidSluiceTotal);
+                    timeSeriesDataSluiceTotal = await fetchTimeSeriesData(tsidSluiceTotal);
                     console.log("timeSeriesDataSluiceTotal:", timeSeriesDataSluiceTotal);
 
-                    const timeSeriesDataGate1 = await fetchTimeSeriesData(tsidGate1);
+                    timeSeriesDataGate1 = await fetchTimeSeriesData(tsidGate1);
                     console.log("timeSeriesDataGate1:", timeSeriesDataGate1);
 
-                    const timeSeriesDataGate2 = await fetchTimeSeriesData(tsidGate2);
+                    timeSeriesDataGate2 = await fetchTimeSeriesData(tsidGate2);
                     console.log("timeSeriesDataGate2:", timeSeriesDataGate2);
 
-                    const timeSeriesDataGate3 = await fetchTimeSeriesData(tsidGate3);
+                    timeSeriesDataGate3 = await fetchTimeSeriesData(tsidGate3);
                     console.log("timeSeriesDataGate3:", timeSeriesDataGate3);
 
-                    const timeSeriesDataGateTotal = await fetchTimeSeriesData(tsidGateTotal);
+                    timeSeriesDataGateTotal = await fetchTimeSeriesData(tsidGateTotal);
                     console.log("timeSeriesDataGateTotal:", timeSeriesDataGateTotal);
 
-                    const timeSeriesDataOutflowTotal = await fetchTimeSeriesData(tsidOutflowTotal);
+                    timeSeriesDataOutflowTotal = await fetchTimeSeriesData(tsidOutflowTotal);
                     console.log("timeSeriesDataOutflowTotal:", timeSeriesDataOutflowTotal);
 
-                    const timeSeriesDataOutflowAverage = await fetchTimeSeriesData(tsidOutflowAverage);
+                    timeSeriesDataOutflowAverage = await fetchTimeSeriesData(tsidOutflowAverage);
                     console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage);
 
                     // Fetch yesterday time series data
-                    const timeSeriesYesterdayDataSluice1 = await fetchTimeSeriesYesterdayData(tsidSluice1);
+                    timeSeriesYesterdayDataSluice1 = await fetchTimeSeriesYesterdayData(tsidSluice1);
                     console.log("timeSeriesYesterdayDataSluice1:", timeSeriesYesterdayDataSluice1);
 
-                    const timeSeriesYesterdayDataSluice2 = await fetchTimeSeriesYesterdayData(tsidSluice2);
+                    timeSeriesYesterdayDataSluice2 = await fetchTimeSeriesYesterdayData(tsidSluice2);
                     console.log("timeSeriesYesterdayDataSluice2:", timeSeriesYesterdayDataSluice2);
 
-                    const timeSeriesYesterdayDataSluiceTotal = await fetchTimeSeriesYesterdayData(tsidSluiceTotal);
+                    timeSeriesYesterdayDataSluiceTotal = await fetchTimeSeriesYesterdayData(tsidSluiceTotal);
                     console.log("timeSeriesYesterdayDataSluiceTotal:", timeSeriesYesterdayDataSluiceTotal);
 
-                    const timeSeriesYesterdayDataGate1 = await fetchTimeSeriesYesterdayData(tsidGate1);
+                    timeSeriesYesterdayDataGate1 = await fetchTimeSeriesYesterdayData(tsidGate1);
                     console.log("timeSeriesYesterdayDataGate1:", timeSeriesYesterdayDataGate1);
 
-                    const timeSeriesYesterdayDataGate2 = await fetchTimeSeriesYesterdayData(tsidGate2);
+                    timeSeriesYesterdayDataGate2 = await fetchTimeSeriesYesterdayData(tsidGate2);
                     console.log("timeSeriesYesterdayDataGate2:", timeSeriesYesterdayDataGate2);
 
-                    const timeSeriesYesterdayDataGate3 = await fetchTimeSeriesYesterdayData(tsidGate3);
+                    timeSeriesYesterdayDataGate3 = await fetchTimeSeriesYesterdayData(tsidGate3);
                     console.log("timeSeriesYesterdayDataGate3:", timeSeriesYesterdayDataGate3);
 
-                    const timeSeriesYesterdayDataGateTotal = await fetchTimeSeriesYesterdayData(tsidGateTotal);
+                    timeSeriesYesterdayDataGateTotal = await fetchTimeSeriesYesterdayData(tsidGateTotal);
                     console.log("timeSeriesYesterdayDataGateTotal:", timeSeriesYesterdayDataGateTotal);
 
-                    const timeSeriesYesterdayDataOutflowTotal = await fetchTimeSeriesYesterdayData(tsidOutflowTotal);
+                    timeSeriesYesterdayDataOutflowTotal = await fetchTimeSeriesYesterdayData(tsidOutflowTotal);
                     console.log("timeSeriesYesterdayDataOutflowTotal:", timeSeriesYesterdayDataOutflowTotal);
 
-                    const timeSeriesYesterdayDataOutflowAverage = await fetchTimeSeriesYesterdayData(tsidOutflowAverage);
+                    timeSeriesYesterdayDataOutflowAverage = await fetchTimeSeriesYesterdayData(tsidOutflowAverage);
                     console.log("timeSeriesYesterdayDataOutflowAverage:", timeSeriesYesterdayDataOutflowAverage);
 
 
@@ -804,6 +854,103 @@ document.addEventListener('DOMContentLoaded', async function () {
                         console.log("Recomedation: Please enter data for the previous day.");
                         alert("No data from today or previous day found, Please enter data for the previous day.");
                     }
+                } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                    tsidGate1 = tsidGateData['assigned-time-series'][0]['timeseries-id'];
+                    console.log("tsidGate1:", tsidGate1);
+
+                    tsidGate2 = tsidGateData['assigned-time-series'][1]['timeseries-id'];
+                    console.log("tsidGate2:", tsidGate2);
+
+                    tsidGate3 = tsidGateData['assigned-time-series'][2]['timeseries-id'];
+                    console.log("tsidGate3:", tsidGate3);
+
+                    tsidGate4 = tsidGateData['assigned-time-series'][3]['timeseries-id'];
+                    console.log("tsidGate4:", tsidGate4);
+
+                    tsidGateTotal = tsidGateTotalData['assigned-time-series'][0]['timeseries-id'];
+                    console.log("tsidGateTotal:", tsidGateTotal);
+
+                    tsidOutflowAverage = tsidOutflowAverageData['assigned-time-series'][0]['timeseries-id'];
+                    console.log("tsidOutflowAverage:", tsidOutflowAverage);
+
+                    // Fetch time series data
+                    timeSeriesDataGate1 = await fetchTimeSeriesData(tsidGate1);
+                    console.log("timeSeriesDataGate1:", timeSeriesDataGate1);
+
+                    timeSeriesDataGate2 = await fetchTimeSeriesData(tsidGate2);
+                    console.log("timeSeriesDataGate2:", timeSeriesDataGate2);
+
+                    timeSeriesDataGate3 = await fetchTimeSeriesData(tsidGate3);
+                    console.log("timeSeriesDataGate3:", timeSeriesDataGate3);
+
+                    timeSeriesDataGate4 = await fetchTimeSeriesData(tsidGate4);
+                    console.log("timeSeriesDataGate4:", timeSeriesDataGate4);
+
+                    timeSeriesDataGateTotal = await fetchTimeSeriesData(tsidGateTotal);
+                    console.log("timeSeriesDataGateTotal:", timeSeriesDataGateTotal);
+
+                    timeSeriesDataOutflowAverage = await fetchTimeSeriesData(tsidOutflowAverage);
+                    console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage);
+
+                    // Fetch yesterday time series data
+                    timeSeriesYesterdayDataGate1 = await fetchTimeSeriesYesterdayData(tsidGate1);
+                    console.log("timeSeriesYesterdayDataGate1:", timeSeriesYesterdayDataGate1);
+
+                    timeSeriesYesterdayDataGate2 = await fetchTimeSeriesYesterdayData(tsidGate2);
+                    console.log("timeSeriesYesterdayDataGate2:", timeSeriesYesterdayDataGate2);
+
+                    timeSeriesYesterdayDataGate3 = await fetchTimeSeriesYesterdayData(tsidGate3);
+                    console.log("timeSeriesYesterdayDataGate3:", timeSeriesYesterdayDataGate3);
+
+                    timeSeriesYesterdayDataGate4 = await fetchTimeSeriesYesterdayData(tsidGate4);
+                    console.log("timeSeriesYesterdayDataGate4:", timeSeriesYesterdayDataGate4);
+
+                    timeSeriesYesterdayDataGateTotal = await fetchTimeSeriesYesterdayData(tsidGateTotal);
+                    console.log("timeSeriesYesterdayDataGateTotal:", timeSeriesYesterdayDataGateTotal);
+
+                    timeSeriesYesterdayDataOutflowAverage = await fetchTimeSeriesYesterdayData(tsidOutflowAverage);
+                    console.log("timeSeriesYesterdayDataOutflowAverage:", timeSeriesYesterdayDataOutflowAverage);
+
+                    if (timeSeriesDataGate1 && timeSeriesDataGate1.values && timeSeriesDataGate1.values.length > 0) {
+                        console.log("Data for today found, Calling createTable ...");
+                        console.log("This is a multiple row save.");
+
+                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
+                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
+                            tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
+                            timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
+                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4);
+
+                        loadingIndicator.style.display = 'none';
+
+                        loginStateController()
+                        setInterval(async () => {
+                            loginStateController()
+                        }, 10000)
+                    } else if (timeSeriesDataGate1 && timeSeriesDataGate1.values && timeSeriesDataGate1.values.length > 0) {
+                        console.log("Data from previous day found, Calling createDataEntryTable ...");
+                        console.log("This is a single save row.");
+
+                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
+                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
+                            tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
+                            timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
+                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4);
+
+                        loadingIndicator.style.display = 'none';
+
+                        loginStateController()
+                        setInterval(async () => {
+                            loginStateController()
+                        }, 10000)
+                    } else {
+                        console.log("Calling createDataEntryTable ...");
+                        console.log("No data from today or previous day found, Creating Data Entry Table ...");
+                        console.log("Recomedation: Please enter data for the previous day.");
+                        alert("No data from today or previous day found, Please enter data for the previous day.");
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching tsidOutflow data:", error);
@@ -826,7 +973,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
                 tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
                 timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
-                timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage) {
+                timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4) {
 
                 const formatData = (data) => data.values.map(entry => {
                     const timestamp = entry[0];
@@ -2274,7 +2421,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
                 tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
                 timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
-                timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage
+                timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4
             ) {
 
                 const formatData = (data) => data.values.map(entry => {
@@ -3315,21 +3462,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         fetchTsidData();
     }
 
-    function formatISODateToUTCString(timestamp) {
-        if (typeof timestamp !== "number") {
-            console.error("Invalid timestamp:", timestamp);
-            return "Invalid Date";
-        }
-
-        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
-        if (isNaN(date.getTime())) {
-            console.error("Invalid date conversion:", timestamp);
-            return "Invalid Date";
-        }
-
-        return date.toISOString().replace(/\.\d{3}Z$/, 'Z'); // Removes milliseconds
-    }
-
     function formatISODateToCSTString(timestamp) {
         if (typeof timestamp !== "number") {
             console.error("Invalid timestamp:", timestamp);
@@ -3432,6 +3564,17 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 // Lk Shelbyville-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test (Outflow-Average-Lake-Test)
 
+// **************************************************************************************************************************************************************************
 
 // Rend Lk-Big Muddy
 // Rend Lk-Big Muddy.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test (Outflow-Total-Lake-Test)
+
+// **************************************************************************************************************************************************************************
+
+// Mark Twain Lk-Salt
+// Mark Twain Lk-Salt.Opening.Inst.~30Minutes.0.lakerep-rev-G1 (Gate-Lake-Test)
+// Mark Twain Lk-Salt.Opening.Inst.~30Minutes.0.lakerep-rev-G2 (Gate-Lake-Test)
+// Mark Twain Lk-Salt.Opening.Inst.~30Minutes.0.lakerep-rev-G3 (Gate-Lake-Test)
+// Mark Twain Lk-Salt.Opening.Inst.~30Minutes.0.lakerep-rev-G4 (Gate-Lake-Test)
+// Mark Twain Lk-Salt.Flow-Taint.Inst.~30Minutes.0.lakerep-rev-test (Gate-Total-Lake-Test)
+// Mark Twain Lk-Salt.Flow-Spill.Ave.~1Day.1Day.lakerep-rev-test (Outflow-Average-Lake-Test)

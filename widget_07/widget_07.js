@@ -192,9 +192,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 outputDiv.appendChild(button);
 
-                // Add a line break between buttons
-                const lineBreak = document.createElement('br');
-                outputDiv.appendChild(lineBreak);
+                // // Add a line break between buttons
+                // const lineBreak = document.createElement('br');
+                // outputDiv.appendChild(lineBreak);
 
                 // Create the refresh button
                 const buttonRefresh = document.createElement('button');

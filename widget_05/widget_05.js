@@ -200,8 +200,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Create the table element
                 const table = document.createElement("table");
 
-                // Apply the ID "gate-settings" to the table
-                table.id = "gate-settings";
+                // Apply the ID "inflow" to the table
+                table.id = "inflow";
 
                 // Create the table header row
                 const headerRow = document.createElement("tr");
@@ -363,14 +363,49 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output8Div.appendChild(statusDiv);
 
                 // Create a button element
-                const button = document.createElement('button');
+                const buttonEstimatedValue = document.createElement('button');
 
-                // Set the button text
-                button.textContent = 'Signifies estimated value';
-                button.style.backgroundColor = 'pink';
+                // Set the buttonEstimatedValue text
+                buttonEstimatedValue.textContent = 'Signifies estimated value';
+                buttonEstimatedValue.id = 'estimated-value';
+                buttonEstimatedValue.style.backgroundColor = 'pink';
 
-                // Append the button to the same container (output7)
-                output8Div.appendChild(button);
+                // Append the buttonEstimatedValue to the same container
+                output8Div.appendChild(buttonEstimatedValue);
+
+                // Create the buttonRefresh button
+                const buttonRefresh = document.createElement('button');
+                buttonRefresh.textContent = 'Refresh';
+                buttonRefresh.id = 'refreshBtn';
+                buttonRefresh.className = 'fetch-btn';
+                output8Div.appendChild(buttonRefresh);
+
+                buttonRefresh.addEventListener('click', () => {
+                    // Remove existing table
+                    const existingTable = document.getElementById('inflow');
+                    if (existingTable) {
+                        existingTable.remove();
+                    }
+
+                    // Remove both buttons
+                    const existingButton = document.getElementById('cda-btn-inflow');
+                    if (existingButton) {
+                        existingButton.remove();
+                    }
+
+                    const existingRefresh = document.getElementById('cda-btn-inflow');
+                    if (existingRefresh) {
+                        existingRefresh.remove();
+                    }
+
+                    const estimatedValueRefresh = document.getElementById('estimated-value');
+                    if (estimatedValueRefresh) {
+                        estimatedValueRefresh.remove();
+                    }
+
+                    // Fetch and create new table
+                    fetchTsidData();
+                });
 
                 cdaSaveBtn.addEventListener("click", async () => {
                     const payloadStorageOutflowEvap = {
