@@ -996,16 +996,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                 let formattedDataOutflowTotal = formatData(timeSeriesDataOutflowTotal);
                 let formattedDataOutflowAverage = formatData(timeSeriesDataOutflowAverage);
 
-                console.log("Formatted timeSeriesDataSluice1:", formattedDataSluice1);
-                console.log("Formatted timeSeriesDataSluice2:", formattedDataSluice2);
-                console.log("Formatted timeSeriesDataSluiceTotal:", formattedDataSluiceTotal);
-                console.log("Formatted timeSeriesDataGate1:", formattedDataGate1);
-                console.log("Formatted timeSeriesDataGate2:", formattedDataGate2);
-                console.log("Formatted timeSeriesDataGate3:", formattedDataGate3);
-                console.log("Formatted timeSeriesDataGate4:", formattedDataGate4);
-                console.log("Formatted timeSeriesDataGateTotal:", formattedDataGateTotal);
-                console.log("Formatted timeSeriesDataOutflowTotal:", formattedDataOutflowTotal);
-                console.log("Formatted timeSeriesDataOutflowAverage:", formattedDataOutflowAverage);
+                console.log("formattedDataSluice1:", formattedDataSluice1);
+                console.log("formattedDataSluice2:", formattedDataSluice2);
+                console.log("formattedDataSluiceTotal:", formattedDataSluiceTotal);
+                console.log("formattedDataGate1:", formattedDataGate1);
+                console.log("formattedDataGate2:", formattedDataGate2);
+                console.log("formattedDataGate3:", formattedDataGate3);
+                console.log("formattedDataGate4:", formattedDataGate4);
+                console.log("formattedDataGateTotal:", formattedDataGateTotal);
+                console.log("formattedDataOutflowTotal:", formattedDataOutflowTotal);
+                console.log("formattedDataOutflowAverage:", formattedDataOutflowAverage);
 
                 // Yesterday's data
                 let formattedYesterdayDataSluice1 = formatData(timeSeriesYesterdayDataSluice1);
@@ -1019,16 +1019,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                 let formattedYesterdayDataOutflowTotal = formatData(timeSeriesYesterdayDataOutflowTotal);
                 let formattedYesterdayDataOutflowAverage = formatData(timeSeriesYesterdayDataOutflowAverage);
 
-                console.log("Formatted timeSeriesYesterdayDataSluice1:", formattedYesterdayDataSluice1);
-                console.log("Formatted timeSeriesYesterdayDataSluice2:", formattedYesterdayDataSluice2);
-                console.log("Formatted timeSeriesYesterdayDataSluiceTotal:", formattedYesterdayDataSluiceTotal);
-                console.log("Formatted timeSeriesYesterdayDataGate1:", formattedYesterdayDataGate1);
-                console.log("Formatted timeSeriesYesterdayDataGate2:", formattedYesterdayDataGate2);
-                console.log("Formatted timeSeriesYesterdayDataGate3:", formattedYesterdayDataGate3);
-                console.log("Formatted timeSeriesYesterdayDataGate4:", formattedYesterdayDataGate4);
-                console.log("Formatted timeSeriesYesterdayDataGateTotal:", formattedYesterdayDataGateTotal);
-                console.log("Formatted timeSeriesYesterdayDataOutflowTotal:", formattedYesterdayDataOutflowTotal);
-                console.log("Formatted timeSeriesYesterdayDataOutflowAverage:", formattedYesterdayDataOutflowAverage);
+                console.log("formattedYesterdayDataSluice1:", formattedYesterdayDataSluice1);
+                console.log("formattedYesterdayDataSluice2:", formattedYesterdayDataSluice2);
+                console.log("formattedYesterdayDataSluiceTotal:", formattedYesterdayDataSluiceTotal);
+                console.log("formattedYesterdayDataGate1:", formattedYesterdayDataGate1);
+                console.log("formattedYesterdayDataGate2:", formattedYesterdayDataGate2);
+                console.log("formattedYesterdayDataGate3:", formattedYesterdayDataGate3);
+                console.log("formattedYesterdayDataGate4:", formattedYesterdayDataGate4);
+                console.log("formattedYesterdayDataGateTotal:", formattedYesterdayDataGateTotal);
+                console.log("formattedYesterdayDataOutflowTotal:", formattedYesterdayDataOutflowTotal);
+                console.log("formattedYesterdayDataOutflowAverage:", formattedYesterdayDataOutflowAverage);
 
                 const table = document.createElement("table");
 
@@ -1072,15 +1072,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                     headerRow.appendChild(gate4Header);
                 }
 
-                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
-                    const gateTotalHeader = document.createElement("th");
-                    gateTotalHeader.textContent = "Gate Total (cfs)";
-                    headerRow.appendChild(gateTotalHeader);
-                }
+                const gateTotalHeader = document.createElement("th");
+                gateTotalHeader.textContent = "Gate Total (cfs)";
+                headerRow.appendChild(gateTotalHeader);
 
-                const outflowTotalHeader = document.createElement("th");
-                outflowTotalHeader.textContent = "Outflow Total (cfs)";
-                headerRow.appendChild(outflowTotalHeader);
+                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                    const outflowTotalHeader = document.createElement("th");
+                    outflowTotalHeader.textContent = "Outflow Total (cfs)";
+                    headerRow.appendChild(outflowTotalHeader);
+                }
 
                 table.appendChild(headerRow);
 
@@ -1102,9 +1102,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Display existing data
                 formattedDataGate1.forEach((date, index) => {
-                    // console.log("index:", index);
-                    // console.log("formattedTimestampCST:", date.formattedTimestampCST);
-
                     const row = document.createElement("tr");
 
                     const timeCell = document.createElement("td");
@@ -1149,7 +1146,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const sluice1Cell = document.createElement("td");
                         const sluice1Input = document.createElement("input");
                         sluice1Input.type = "number";
-                        sluice1Input.value = (date[1]).toFixed(1);
+                        sluice1Input.step = "0.1";
+                        sluice1Input.value = formattedDataSluice1[index] ? formattedDataSluice1[index][1].toFixed(1) : 909; // (date[1]).toFixed(1);
                         sluice1Input.id = `sluice1Input-${index}`;
                         sluice1Cell.appendChild(sluice1Input);
                         row.appendChild(sluice1Cell);
@@ -1160,7 +1158,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const sluice2Cell = document.createElement("td");
                         const sluice2Input = document.createElement("input");
                         sluice2Input.type = "number";
-                        sluice2Input.value = formattedDataSluice2[index] ? formattedDataSluice2[index][1].toFixed(1) : -999;
+                        sluice2Input.step = "0.1";
+                        sluice2Input.value = formattedDataSluice2[index] ? formattedDataSluice2[index][1].toFixed(1) : 909;
                         sluice2Input.id = `sluice2Input-${index}`;
                         sluice2Cell.appendChild(sluice2Input);
                         row.appendChild(sluice2Cell);
@@ -1170,7 +1169,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const sluiceTotalCell = document.createElement("td");
                         const sluiceTotalInput = document.createElement("input");
                         sluiceTotalInput.type = "number";
-                        sluiceTotalInput.value = formattedDataSluiceTotal[index] ? formattedDataSluiceTotal[index][1].toFixed(0) : -999;
+                        sluiceTotalInput.step = "10.0";
+                        sluiceTotalInput.value = formattedDataSluiceTotal[index] ? formattedDataSluiceTotal[index][1].toFixed(0) : 909;
                         sluiceTotalInput.id = `sluiceTotalInput-${index}`;
                         sluiceTotalCell.appendChild(sluiceTotalInput);
                         row.appendChild(sluiceTotalCell);
@@ -1180,7 +1180,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate1Cell = document.createElement("td");
                     const gate1Input = document.createElement("input");
                     gate1Input.type = "number";
-                    gate1Input.value = formattedDataGate1[index] ? formattedDataGate1[index][1].toFixed(1) : -999;
+                    gate1Input.step = "0.1";
+                    gate1Input.value = formattedDataGate1[index] ? formattedDataGate1[index][1].toFixed(1) : 909;
                     gate1Input.id = `gate1Input-${index}`;
                     gate1Cell.appendChild(gate1Input);
                     row.appendChild(gate1Cell);
@@ -1189,7 +1190,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate2Cell = document.createElement("td");
                     const gate2Input = document.createElement("input");
                     gate2Input.type = "number";
-                    gate2Input.value = formattedDataGate2[index] ? formattedDataGate2[index][1].toFixed(1) : -999;
+                    gate2Input.step = "0.1";
+                    gate2Input.value = formattedDataGate2[index] ? formattedDataGate2[index][1].toFixed(1) : 909;
                     gate2Input.id = `gate2Input-${index}`;
                     gate2Cell.appendChild(gate2Input);
                     row.appendChild(gate2Cell);
@@ -1198,7 +1200,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate3Cell = document.createElement("td");
                     const gate3Input = document.createElement("input");
                     gate3Input.type = "number";
-                    gate3Input.value = formattedDataGate3[index] ? formattedDataGate3[index][1].toFixed(1) : -999;
+                    gate3Input.step = "0.1";
+                    gate3Input.value = formattedDataGate3[index] ? formattedDataGate3[index][1].toFixed(1) : 909;
                     gate3Input.id = `gate3Input-${index}`;
                     gate3Cell.appendChild(gate3Input);
                     row.appendChild(gate3Cell);
@@ -1208,38 +1211,41 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const gate4Cell = document.createElement("td");
                         const gate4Input = document.createElement("input");
                         gate4Input.type = "number";
-                        gate4Input.value = formattedDataGate4[index] ? formattedDataGate4[index][1].toFixed(1) : -999;
+                        gate4Input.step = "0.1";
+                        gate4Input.value = formattedDataGate4[index] ? formattedDataGate4[index][1].toFixed(1) : 909;
                         gate4Input.id = `gate3Input-${index}`;
                         gate4Cell.appendChild(gate4Input);
                         row.appendChild(gate4Cell);
                     }
 
                     // Gate Total (calculated)
+                    const gateTotalCell = document.createElement("td");
+                    const gateTotalInput = document.createElement("input");
+                    gateTotalInput.type = "number";
+                    gateTotalInput.step = "10.0";
+                    gateTotalInput.value = formattedDataGateTotal[index][1].toFixed(0);
+                    gateTotalInput.id = `gateTotalInput-${index}`;
+                    gateTotalCell.appendChild(gateTotalInput);
+                    row.appendChild(gateTotalCell);
+
+
+                    // Outflow Total (calculated)
                     if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
-                        const gateTotalCell = document.createElement("td");
-                        const gateTotalInput = document.createElement("input");
-                        gateTotalInput.type = "number";
-                        gateTotalInput.value = formattedDataGateTotal[index][1].toFixed(0);
-                        gateTotalInput.id = `gateTotalInput-${index}`;
-                        gateTotalCell.appendChild(gateTotalInput);
-                        row.appendChild(gateTotalCell);
+                        const gateOutflowTotalCell = document.createElement("td");
+                        const gateOutflowTotalInput = document.createElement("input");
+                        gateOutflowTotalInput.type = "number";
+
+                        const gateValue = formattedDataGateTotal[index]?.[1] || 0;
+                        const sluiceValue = formattedDataSluiceTotal ? (formattedDataSluiceTotal[index]?.[1] || 0) : 0;
+
+                        gateOutflowTotalInput.value = (gateValue + sluiceValue).toFixed(0);
+                        gateOutflowTotalInput.id = `gateOutflowTotalInput-${index}`;
+                        gateOutflowTotalInput.readOnly = true;
+                        gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
+
+                        gateOutflowTotalCell.appendChild(gateOutflowTotalInput);
+                        row.appendChild(gateOutflowTotalCell);
                     }
-
-                    // Gate Outflow (calculated)
-                    const gateOutflowTotalCell = document.createElement("td");
-                    const gateOutflowTotalInput = document.createElement("input");
-                    gateOutflowTotalInput.type = "number";
-
-                    const gateValue = formattedDataGateTotal[index]?.[1] || 0;
-                    const sluiceValue = formattedDataSluiceTotal ? (formattedDataSluiceTotal[index]?.[1] || 0) : 0;
-
-                    gateOutflowTotalInput.value = (gateValue + sluiceValue).toFixed(0);
-                    gateOutflowTotalInput.id = `gateOutflowTotalInput-${index}`;
-                    gateOutflowTotalInput.readOnly = true;
-                    gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
-
-                    gateOutflowTotalCell.appendChild(gateOutflowTotalInput);
-                    row.appendChild(gateOutflowTotalCell);
 
                     table.appendChild(row);
                 });
@@ -2007,6 +2013,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         console.log("getAllGate1Values: ", getAllGate1Values());
                         console.log("getAllGate2Values: ", getAllGate2Values());
                         console.log("getAllGate3Values: ", getAllGate3Values());
+                        console.log("getAllGate4Values: ", getAllGate4Values());
                         console.log("getAllGateTotalValues: ", getAllGateTotalValues());
                         console.log("getAllOutflowTotalValues: ", getAllOutflowTotalValues());
                         console.log("getAllOutflowAverageValues: ", getAllOutflowAverageValues());
@@ -2105,6 +2112,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                         function getAllGate3Values() {
                             return formattedDataGate3.map((_, index) =>
                                 parseFloat(document.getElementById(`gate3Input-${index}`).value)
+                            );
+                        }
+
+                        function getAllGate4Values() {
+                            return formattedDataGate4.map((_, index) =>
+                                parseFloat(document.getElementById(`gate4Input-${index}`).value)
                             );
                         }
 
