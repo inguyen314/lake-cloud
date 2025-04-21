@@ -195,7 +195,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 
             // Calculate the delta storage
-
             function createTable(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData) {
                 // Create the table element
                 const table = document.createElement("table");
@@ -275,6 +274,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const deltaVal = parseFloat(delta);
                         const evapVal = parseFloat(curentMonthEvapValue);
                         let storageOutflowEvapCell = document.createElement("td");
+                        let total = null;
 
                         // Check if any of the values are NaN (which means they were null, undefined, or not numeric)
                         if (isNaN(val) || isNaN(deltaVal) || isNaN(evapVal)) {
@@ -282,11 +282,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                             storageOutflowEvapCell.type = "text";
                             storageOutflowEvapCell.value = 'N/A';
                         } else {
-                            const total = val + deltaVal + evapVal;
-                            const totalFixed = total.toFixed(0);
-                            storageOutflowEvapCell.textContent = totalFixed;
+                            total = (val + deltaVal + evapVal).toFixed(0);
+                            storageOutflowEvapCell.textContent = total;
                             storageOutflowEvapCell.type = "number";
-                            storageOutflowEvapCell.value = totalFixed;
+                            storageOutflowEvapCell.value = total;
                         }
 
                         storageOutflowEvapCell.id = `storage-outflow-evap-${formattedStorageData[i].formattedTimestamp}`;
@@ -294,6 +293,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // Consensus
                         const consensusCell = document.createElement("td");
+                        consensusCell.style.textAlign = "center"; // Horizontally center the cell content
+                        consensusCell.style.verticalAlign = "middle"; // Vertically center the content
+
                         const input = document.createElement("input");
                         input.type = "number";
 
@@ -301,18 +303,23 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const consensusValue = consensusEntry && consensusEntry.value != null ? consensusEntry.value : 909;
                         input.value = Number(consensusValue).toFixed(0);
 
-                        // Set background color to purple if value is 909
+                        // Set background color to pink if value is 909
                         if (Number(consensusValue) === 909) {
                             input.style.backgroundColor = "pink";
                         }
 
                         input.style.width = "60px";
+                        input.style.textAlign = "center"; // Horizontally center text inside the input
+
                         input.id = `consensus-${formattedStorageData[i].formattedTimestamp}`;
                         consensusCell.appendChild(input);
                         row.appendChild(consensusCell);
 
                         // Quality Code
                         const qualityCodeCell = document.createElement("td");
+                        qualityCodeCell.style.textAlign = "center"; // Horizontally center the cell content
+                        qualityCodeCell.style.verticalAlign = "middle"; // Vertically center the content
+
                         const qualityInput = document.createElement("input");
                         qualityInput.type = "text";
 
@@ -324,7 +331,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
 
                         qualityInput.style.width = "60px";
+                        qualityInput.style.textAlign = "center"; // Center text inside input
                         qualityInput.id = `quality-code-${formattedStorageData[i].formattedTimestamp}`;
+
                         qualityCodeCell.appendChild(qualityInput);
                         row.appendChild(qualityCodeCell);
 

@@ -615,15 +615,11 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("urlTsidOutflowTotal:", urlTsidOutflowTotal);
         }
 
-
-
         const urlTsidGate = `${setBaseUrl}timeseries/group/Gate-Lake-Test?office=${office}&category-id=${lake}`;
         console.log("urlTsidGate:", urlTsidGate);
 
         const urlTsidGateTotal = `${setBaseUrl}timeseries/group/Gate-Total-Lake-Test?office=${office}&category-id=${lake}`;
         console.log("urlTsidGateTotal:", urlTsidGateTotal);
-
-
 
         const urlTsidOutflowAverage = `${setBaseUrl}timeseries/group/Outflow-Average-Lake-Test?office=${office}&category-id=${lake}`;
         console.log("urlTsidOutflowAverage:", urlTsidOutflowAverage);
@@ -1153,7 +1149,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const sluice1Cell = document.createElement("td");
                         const sluice1Input = document.createElement("input");
                         sluice1Input.type = "number";
-                        sluice1Input.step = "0.1";
                         sluice1Input.value = (date[1]).toFixed(1);
                         sluice1Input.id = `sluice1Input-${index}`;
                         sluice1Cell.appendChild(sluice1Input);
@@ -1165,7 +1160,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const sluice2Cell = document.createElement("td");
                         const sluice2Input = document.createElement("input");
                         sluice2Input.type = "number";
-                        sluice2Input.step = "0.1";
                         sluice2Input.value = formattedDataSluice2[index] ? formattedDataSluice2[index][1].toFixed(1) : -999;
                         sluice2Input.id = `sluice2Input-${index}`;
                         sluice2Cell.appendChild(sluice2Input);
@@ -1176,7 +1170,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const sluiceTotalCell = document.createElement("td");
                         const sluiceTotalInput = document.createElement("input");
                         sluiceTotalInput.type = "number";
-                        sluiceTotalInput.step = "10.0";
                         sluiceTotalInput.value = formattedDataSluiceTotal[index] ? formattedDataSluiceTotal[index][1].toFixed(0) : -999;
                         sluiceTotalInput.id = `sluiceTotalInput-${index}`;
                         sluiceTotalCell.appendChild(sluiceTotalInput);
@@ -1187,7 +1180,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate1Cell = document.createElement("td");
                     const gate1Input = document.createElement("input");
                     gate1Input.type = "number";
-                    gate1Input.step = "0.1";
                     gate1Input.value = formattedDataGate1[index] ? formattedDataGate1[index][1].toFixed(1) : -999;
                     gate1Input.id = `gate1Input-${index}`;
                     gate1Cell.appendChild(gate1Input);
@@ -1197,7 +1189,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate2Cell = document.createElement("td");
                     const gate2Input = document.createElement("input");
                     gate2Input.type = "number";
-                    gate2Input.step = "0.1";
                     gate2Input.value = formattedDataGate2[index] ? formattedDataGate2[index][1].toFixed(1) : -999;
                     gate2Input.id = `gate2Input-${index}`;
                     gate2Cell.appendChild(gate2Input);
@@ -1207,7 +1198,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gate3Cell = document.createElement("td");
                     const gate3Input = document.createElement("input");
                     gate3Input.type = "number";
-                    gate3Input.step = "0.1";
                     gate3Input.value = formattedDataGate3[index] ? formattedDataGate3[index][1].toFixed(1) : -999;
                     gate3Input.id = `gate3Input-${index}`;
                     gate3Cell.appendChild(gate3Input);
@@ -1218,9 +1208,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const gate4Cell = document.createElement("td");
                         const gate4Input = document.createElement("input");
                         gate4Input.type = "number";
-                        gate4Input.step = "0.1";
                         gate4Input.value = formattedDataGate4[index] ? formattedDataGate4[index][1].toFixed(1) : -999;
-                        gate4Input.id = `gate4Input-${index}`;
+                        gate4Input.id = `gate3Input-${index}`;
                         gate4Cell.appendChild(gate4Input);
                         row.appendChild(gate4Cell);
                     }
@@ -1230,7 +1219,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const gateTotalCell = document.createElement("td");
                         const gateTotalInput = document.createElement("input");
                         gateTotalInput.type = "number";
-                        gateTotalInput.step = "0.1";
                         gateTotalInput.value = formattedDataGateTotal[index][1].toFixed(0);
                         gateTotalInput.id = `gateTotalInput-${index}`;
                         gateTotalCell.appendChild(gateTotalInput);
@@ -1245,21 +1233,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const gateValue = formattedDataGateTotal[index]?.[1] || 0;
                     const sluiceValue = formattedDataSluiceTotal ? (formattedDataSluiceTotal[index]?.[1] || 0) : 0;
 
-                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
-                        gateOutflowTotalInput.value = (gateValue + sluiceValue).toFixed(0);
-                        gateOutflowTotalInput.id = `gateOutflowTotalInput-${index}`;
-                        gateOutflowTotalInput.readOnly = true;
-                        gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
-                        gateOutflowTotalCell.appendChild(gateOutflowTotalInput);
-                    } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                        const gateOutflowTotalInput = document.createElement("input");
-                        gateOutflowTotalInput.type = "number";
-                        gateOutflowTotalInput.step = "10";
-                        gateOutflowTotalInput.value = formattedDataGateTotal[index][1].toFixed(0);
-                        gateOutflowTotalInput.id = `gateOutflowTotalInput-${index}`;
-                        gateOutflowTotalCell.appendChild(gateOutflowTotalInput);
-                    }
+                    gateOutflowTotalInput.value = (gateValue + sluiceValue).toFixed(0);
+                    gateOutflowTotalInput.id = `gateOutflowTotalInput-${index}`;
+                    gateOutflowTotalInput.readOnly = true;
+                    gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
 
+                    gateOutflowTotalCell.appendChild(gateOutflowTotalInput);
                     row.appendChild(gateOutflowTotalCell);
 
                     table.appendChild(row);
@@ -1365,29 +1344,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                     gate3Cell.appendChild(gate3Input);
                     row.appendChild(gate3Cell);
 
-                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                        // Gate 4 (editable)
-                        const gate4Cell = document.createElement("td");
-                        const gate4Input = document.createElement("input");
-                        gate4Input.type = "number";
-                        gate4Input.value = null;
-                        gate4Input.id = `gate4AdditionalInput`;
-                        gate4Input.style.backgroundColor = "lightgray";
-                        gate4Cell.appendChild(gate4Input);
-                        row.appendChild(gate4Cell);
-                    }
-
                     // Gate Total (calculated)
-                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
-                        const gateTotalCell = document.createElement("td");
-                        const gateTotalInput = document.createElement("input");
-                        gateTotalInput.type = "number";
-                        gateTotalInput.value = null;
-                        gateTotalInput.id = `gateTotalAdditionalInput`;
-                        gateTotalInput.style.backgroundColor = "lightgray";
-                        gateTotalCell.appendChild(gateTotalInput);
-                        row.appendChild(gateTotalCell);
-                    }
+                    const gateTotalCell = document.createElement("td");
+                    const gateTotalInput = document.createElement("input");
+                    gateTotalInput.type = "number";
+                    gateTotalInput.value = null;
+                    gateTotalInput.id = `gateTotalAdditionalInput`;
+                    gateTotalInput.style.backgroundColor = "lightgray";
+                    gateTotalCell.appendChild(gateTotalInput);
+                    row.appendChild(gateTotalCell);
 
                     // Gate Outflow (calculated)
                     const gateOutflowTotalCell = document.createElement("td");
@@ -1408,7 +1373,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output6Div.innerHTML = ""; // Clear any existing content
                 output6Div.appendChild(table);
 
-                // Create a div for the average outflow
                 const gateAverageDiv = document.createElement("div");
                 gateAverageDiv.className = "status";
 
@@ -3467,18 +3431,12 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Convert back to ISO string (preserve UTC format)
             const end = date.toISOString();
 
-            // console.log("begin: ", isoDateMinus1Day);
-            // console.log("end: ", end);
-
-            // isoDateToday
-
             const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${end}&office=${office}`;
-            // const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1DayPlus1Hour}&end=${isoDateDay1}&office=${office}`;
             console.log('tsidData:', tsidData);
             try {
                 const response = await fetch(tsidData, {
                     headers: {
-                        "Accept": "application/json;version=2", // Ensuring the correct version is used
+                        "Accept": "application/json;version=2",
                         "cache-control": "no-cache"
                     }
                 });
@@ -3498,13 +3456,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
 
             // Convert back to ISO string (preserve UTC format)
-            const isoDateTodayMinus1Hour = date.toISOString();
+            const end = date.toISOString();
 
-            // console.log("fetchTimeSeriesYesterdayData begin (yesterday midnight): ", isoDateMinus1Day);
-            // console.log("fetchTimeSeriesYesterdayData end (midnight minus 1 hour): ", isoDateTodayMinus1Hour);
-
-            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateToday}&office=${office}`;
-            // const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1DayPlus1Hour}&end=${isoDateDay1}&office=${office}`;
+            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${end}&office=${office}`;
             console.log('tsidData:', tsidData);
             try {
                 const response = await fetch(tsidData, {
