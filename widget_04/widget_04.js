@@ -985,50 +985,102 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
 
                 // Today's data
-                let formattedDataSluice1 = formatData(timeSeriesDataSluice1);
-                let formattedDataSluice2 = formatData(timeSeriesDataSluice2);
-                let formattedDataSluiceTotal = formatData(timeSeriesDataSluiceTotal);
-                let formattedDataGate1 = formatData(timeSeriesDataGate1);
-                let formattedDataGate2 = formatData(timeSeriesDataGate2);
-                let formattedDataGate3 = formatData(timeSeriesDataGate3);
-                let formattedDataGate4 = formatData(timeSeriesDataGate4);
-                let formattedDataGateTotal = formatData(timeSeriesDataGateTotal);
-                let formattedDataOutflowTotal = formatData(timeSeriesDataOutflowTotal);
-                let formattedDataOutflowAverage = formatData(timeSeriesDataOutflowAverage);
-
-                console.log("formattedDataSluice1:", formattedDataSluice1);
-                console.log("formattedDataSluice2:", formattedDataSluice2);
-                console.log("formattedDataSluiceTotal:", formattedDataSluiceTotal);
-                console.log("formattedDataGate1:", formattedDataGate1);
-                console.log("formattedDataGate2:", formattedDataGate2);
-                console.log("formattedDataGate3:", formattedDataGate3);
-                console.log("formattedDataGate4:", formattedDataGate4);
-                console.log("formattedDataGateTotal:", formattedDataGateTotal);
-                console.log("formattedDataOutflowTotal:", formattedDataOutflowTotal);
-                console.log("formattedDataOutflowAverage:", formattedDataOutflowAverage);
+                let formattedDataSluice1 = null;
+                let formattedDataSluice2 = null;
+                let formattedDataSluiceTotal = null;
+                let formattedDataGate1 = null;;
+                let formattedDataGate2 = null;;
+                let formattedDataGate3 = null;
+                let formattedDataGate4 = null;
+                let formattedDataGateTotal = null;
+                let formattedDataOutflowTotal = null;;
+                let formattedDataOutflowAverage = null;
 
                 // Yesterday's data
-                let formattedYesterdayDataSluice1 = formatData(timeSeriesYesterdayDataSluice1);
-                let formattedYesterdayDataSluice2 = formatData(timeSeriesYesterdayDataSluice2);
-                let formattedYesterdayDataSluiceTotal = formatData(timeSeriesYesterdayDataSluiceTotal);
-                let formattedYesterdayDataGate1 = formatData(timeSeriesYesterdayDataGate1);
-                let formattedYesterdayDataGate2 = formatData(timeSeriesYesterdayDataGate2);
-                let formattedYesterdayDataGate3 = formatData(timeSeriesYesterdayDataGate3);
-                let formattedYesterdayDataGate4 = formatData(timeSeriesYesterdayDataGate4);
-                let formattedYesterdayDataGateTotal = formatData(timeSeriesYesterdayDataGateTotal);
-                let formattedYesterdayDataOutflowTotal = formatData(timeSeriesYesterdayDataOutflowTotal);
-                let formattedYesterdayDataOutflowAverage = formatData(timeSeriesYesterdayDataOutflowAverage);
+                let formattedYesterdayDataSluice1 = null;
+                let formattedYesterdayDataSluice2 = null;
+                let formattedYesterdayDataSluiceTotal = null;
+                let formattedYesterdayDataGate1 = null;
+                let formattedYesterdayDataGate2 = null;
+                let formattedYesterdayDataGate3 = null;
+                let formattedYesterdayDataGate4 = null;
+                let formattedYesterdayDataGateTotal = null;
+                let formattedYesterdayDataOutflowTotal = null;
+                let formattedYesterdayDataOutflowAverage = null;
 
-                console.log("formattedYesterdayDataSluice1:", formattedYesterdayDataSluice1);
-                console.log("formattedYesterdayDataSluice2:", formattedYesterdayDataSluice2);
-                console.log("formattedYesterdayDataSluiceTotal:", formattedYesterdayDataSluiceTotal);
-                console.log("formattedYesterdayDataGate1:", formattedYesterdayDataGate1);
-                console.log("formattedYesterdayDataGate2:", formattedYesterdayDataGate2);
-                console.log("formattedYesterdayDataGate3:", formattedYesterdayDataGate3);
-                console.log("formattedYesterdayDataGate4:", formattedYesterdayDataGate4);
-                console.log("formattedYesterdayDataGateTotal:", formattedYesterdayDataGateTotal);
-                console.log("formattedYesterdayDataOutflowTotal:", formattedYesterdayDataOutflowTotal);
-                console.log("formattedYesterdayDataOutflowAverage:", formattedYesterdayDataOutflowAverage);
+                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                    // Today's data
+                    formattedDataSluice1 = formatData(timeSeriesDataSluice1);
+                    formattedDataSluice2 = formatData(timeSeriesDataSluice2);
+                    formattedDataSluiceTotal = formatData(timeSeriesDataSluiceTotal);
+                    formattedDataGate1 = formatData(timeSeriesDataGate1);
+                    formattedDataGate2 = formatData(timeSeriesDataGate2);
+                    formattedDataGate3 = formatData(timeSeriesDataGate3);
+                    formattedDataGateTotal = formatData(timeSeriesDataGateTotal);
+                    formattedDataOutflowTotal = formatData(timeSeriesDataOutflowTotal);
+                    formattedDataOutflowAverage = formatData(timeSeriesDataOutflowAverage);
+
+                    console.log("formattedDataSluice1:", formattedDataSluice1);
+                    console.log("formattedDataSluice2:", formattedDataSluice2);
+                    console.log("formattedDataSluiceTotal:", formattedDataSluiceTotal);
+                    console.log("formattedDataGate1:", formattedDataGate1);
+                    console.log("formattedDataGate2:", formattedDataGate2);
+                    console.log("formattedDataGate3:", formattedDataGate3);
+                    console.log("formattedDataGateTotal:", formattedDataGateTotal);
+                    console.log("formattedDataOutflowTotal:", formattedDataOutflowTotal);
+                    console.log("formattedDataOutflowAverage:", formattedDataOutflowAverage);
+
+                    // Yesterday's data
+                    formattedYesterdayDataSluice1 = formatData(timeSeriesYesterdayDataSluice1);
+                    formattedYesterdayDataSluice2 = formatData(timeSeriesYesterdayDataSluice2);
+                    formattedYesterdayDataSluiceTotal = formatData(timeSeriesYesterdayDataSluiceTotal);
+                    formattedYesterdayDataGate1 = formatData(timeSeriesYesterdayDataGate1);
+                    formattedYesterdayDataGate2 = formatData(timeSeriesYesterdayDataGate2);
+                    formattedYesterdayDataGate3 = formatData(timeSeriesYesterdayDataGate3);
+                    formattedYesterdayDataGateTotal = formatData(timeSeriesYesterdayDataGateTotal);
+                    formattedYesterdayDataOutflowTotal = formatData(timeSeriesYesterdayDataOutflowTotal);
+                    formattedYesterdayDataOutflowAverage = formatData(timeSeriesYesterdayDataOutflowAverage);
+
+                    console.log("formattedYesterdayDataSluice1:", formattedYesterdayDataSluice1);
+                    console.log("formattedYesterdayDataSluice2:", formattedYesterdayDataSluice2);
+                    console.log("formattedYesterdayDataSluiceTotal:", formattedYesterdayDataSluiceTotal);
+                    console.log("formattedYesterdayDataGate1:", formattedYesterdayDataGate1);
+                    console.log("formattedYesterdayDataGate2:", formattedYesterdayDataGate2);
+                    console.log("formattedYesterdayDataGate3:", formattedYesterdayDataGate3);
+                    console.log("formattedYesterdayDataGateTotal:", formattedYesterdayDataGateTotal);
+                    console.log("formattedYesterdayDataOutflowTotal:", formattedYesterdayDataOutflowTotal);
+                    console.log("formattedYesterdayDataOutflowAverage:", formattedYesterdayDataOutflowAverage);
+                } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                    // Today's data
+                    formattedDataGate1 = formatData(timeSeriesDataGate1);
+                    formattedDataGate2 = formatData(timeSeriesDataGate2);
+                    formattedDataGate3 = formatData(timeSeriesDataGate3);
+                    formattedDataGate4 = formatData(timeSeriesDataGate4);
+                    formattedDataGateTotal = formatData(timeSeriesDataGateTotal);
+                    formattedDataOutflowAverage = formatData(timeSeriesDataOutflowAverage);
+
+                    console.log("formattedDataGate1:", formattedDataGate1);
+                    console.log("formattedDataGate2:", formattedDataGate2);
+                    console.log("formattedDataGate3:", formattedDataGate3);
+                    console.log("formattedDataGate4:", formattedDataGate4);
+                    console.log("formattedDataGateTotal:", formattedDataGateTotal);
+                    console.log("formattedDataOutflowAverage:", formattedDataOutflowAverage);
+
+                    // Yesterday's data
+                    formattedYesterdayDataGate1 = formatData(timeSeriesYesterdayDataGate1);
+                    formattedYesterdayDataGate2 = formatData(timeSeriesYesterdayDataGate2);
+                    formattedYesterdayDataGate3 = formatData(timeSeriesYesterdayDataGate3);
+                    formattedYesterdayDataGate4 = formatData(timeSeriesYesterdayDataGate4);
+                    formattedYesterdayDataGateTotal = formatData(timeSeriesYesterdayDataGateTotal);
+                    formattedYesterdayDataOutflowAverage = formatData(timeSeriesYesterdayDataOutflowAverage);
+
+                    console.log("formattedYesterdayDataGate1:", formattedYesterdayDataGate1);
+                    console.log("formattedYesterdayDataGate2:", formattedYesterdayDataGate2);
+                    console.log("formattedYesterdayDataGate3:", formattedYesterdayDataGate3);
+                    console.log("formattedYesterdayDataGate4:", formattedYesterdayDataGate4);
+                    console.log("formattedYesterdayDataGateTotal:", formattedYesterdayDataGateTotal);
+                    console.log("formattedYesterdayDataOutflowAverage:", formattedYesterdayDataOutflowAverage);
+                }
 
                 const table = document.createElement("table");
 
