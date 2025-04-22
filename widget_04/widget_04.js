@@ -704,6 +704,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 let tsidGateTotal = null;
                 let tsidOutflowTotal = null;
                 let tsidOutflowAverage = null;
+
                 let timeSeriesDataSluice1 = null;
                 let timeSeriesDataSluice2 = null;
                 let timeSeriesDataSluiceTotal = null;
@@ -714,6 +715,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 let timeSeriesDataGateTotal = null;
                 let timeSeriesDataOutflowTotal = null;
                 let timeSeriesDataOutflowAverage = null;
+
                 let timeSeriesYesterdayDataSluice1 = null;
                 let timeSeriesYesterdayDataSluice2 = null;
                 let timeSeriesYesterdayDataSluiceTotal = null;
@@ -909,14 +911,13 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     if (timeSeriesDataGate1 && timeSeriesDataGate1.values && timeSeriesDataGate1.values.length > 0) {
                         console.log("Data for today found, Calling createTable ...");
-                        console.log("This is a multiple row save.");
 
                         createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
                             tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
                             tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
                             tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
                             timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
-                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4);
+                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4, timeSeriesYesterdayDataGate4);
 
                         loadingIndicator.style.display = 'none';
 
@@ -926,7 +927,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }, 10000)
                     } else if (timeSeriesDataGate1 && timeSeriesDataGate1.values && timeSeriesDataGate1.values.length > 0) {
                         console.log("Data from previous day found, Calling createDataEntryTable ...");
-                        console.log("This is a single save row.");
 
                         createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
                             tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
@@ -1494,7 +1494,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     let payloadOutflowTotalAdditional = null;
                     let payloadOutflowAverageAdditional = null;
 
-                    // New data entry
+                    // Determine if the paylaod is "New Entry" or "Update Existing". Use hasValidNewEntryHour
                     if (hasValidNewEntryHour === true) {
                         Object.keys(selectedHours).forEach(hour => {
                             console.log(`${hour} selected:`, selectedHours[hour]);
@@ -2057,7 +2057,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                         console.log("payloadOutflowAverageAdditional: ", payloadOutflowAverageAdditional);
                     } else {
-                        // Existing Data Entry
                         if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
                             console.log("getAllSelectedTimes: ", getAllSelectedTimes());
                             console.log("getAllSluice1Values: ", getAllSluice1Values());
@@ -2069,20 +2068,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                             console.log("getAllGateTotalValues: ", getAllGateTotalValues());
                             console.log("getAllOutflowTotalValues: ", getAllOutflowTotalValues());
                             console.log("getAllOutflowAverageValues: ", getAllOutflowAverageValues());
-                        } else {
+                        } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
                             console.log("getAllSelectedTimes: ", getAllSelectedTimes());
                             console.log("getAllGate1Values: ", getAllGate1Values());
                             console.log("getAllGate2Values: ", getAllGate2Values());
                             console.log("getAllGate3Values: ", getAllGate3Values());
                             console.log("getAllGate4Values: ", getAllGate4Values());
                             console.log("getAllGateTotalValues: ", getAllGateTotalValues());
-                            console.log("getAllOutflowTotalValues: ", getAllOutflowTotalValues());
                             console.log("getAllOutflowAverageValues: ", getAllOutflowAverageValues());
                         }
 
                         const selectedTimes = getAllSelectedTimes();
 
                         let tsidCategories = {};
+                        let dataCategories = {};
 
                         if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
                             tsidCategories = {
@@ -2095,14 +2094,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 gateTotal: tsidGateTotal,
                                 outflowTotal: tsidOutflowTotal,
                             };
-                        } else {
+                        } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
                             tsidCategories = {
                                 gate1: tsidGate1,
                                 gate2: tsidGate2,
                                 gate3: tsidGate3,
                                 gate4: tsidGate4,
                                 gateTotal: tsidGateTotal,
-                                outflowTotal: tsidOutflowTotal,
                             };
                         }
 
@@ -2117,14 +2115,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 gateTotal: getAllGateTotalValues(),
                                 outflowTotal: getAllOutflowTotalValues(),
                             };
-                        } else {
+                        } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
                             dataCategories = {
                                 gate1: getAllGate1Values(),
                                 gate2: getAllGate2Values(),
                                 gate3: getAllGate3Values(),
                                 gate4: getAllGate4Values(),
                                 gateTotal: getAllGateTotalValues(),
-                                outflowTotal: getAllOutflowTotalValues(),
                             };
                         }
 
@@ -2335,7 +2332,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             console.log("Payloads: ", payloads);
 
                             // Prepare payloadAverageOutflow
-                            if (!payloads || !payloads.outflowTotal || !Array.isArray(payloads.outflowTotal.values)) {
+                            if (!payloads || !payloads.gateTotal || !Array.isArray(payloads.gateTotal.values)) {
                                 console.log("No payloads or payloads.outflowTotal.values is null or invalid. This mean were adding new entries.");
                                 payloadAverageOutflow = {
                                     "name": tsidOutflowAverage,
@@ -2343,10 +2340,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     "units": "cfs",
                                     "values": [[isoDateToday, null, 0]] // Default to null if no valid data
                                 };
+                                console.log("payloadAverageOutflow: ", payloadAverageOutflow);
                             } else {
-                                // Step 2: Format the data to include CST timestamps
-                                const payloadOutflowAverage = payloads.outflowTotal.values;
-                                console.log("payloadOutflowAverage: ", payloadOutflowAverage);
+                                let payloadOutflowAverage = null;
+                                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") { // look for outflowTotal because of sluice and gate
+                                    payloadOutflowAverage = payloads.outflowTotal.values;
+                                    console.log("payloadOutflowAverage: ", payloadOutflowAverage);
+                                } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") { // look for gateTotal because of no sluice
+                                    payloadOutflowAverage = payloads.gateTotal.values;
+                                    console.log("payloadOutflowAverage: ", payloadOutflowAverage);
+                                }
 
                                 // Step 3: Calculate the weighted average outflow
                                 const totalHours = 24;
@@ -2469,6 +2472,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 }
                             }
 
+                            // Check if the payloads are valid and if the new entry hour is valid
                             if (hasValidNewEntryHour === true) {
                                 console.log("Creating new entries...");
                                 showSpinner(); // Show the spinner before creating the version
@@ -2507,41 +2511,70 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // Ensure data is saved before creating the table
                             await new Promise(resolve => setTimeout(resolve, 4000)); // Small delay for safety
 
-                            const [
-                                updatedDataSluice1,
-                                updatedDataSluice2,
-                                updatedDataSluiceTotal,
-                                updatedDataGate1,
-                                updatedDataGate2,
-                                updatedDataGate3,
-                                updatedDataGateTotal,
-                                updatedDataOutflowTotal,
-                                updatedDataOutflowAverage
-                            ] = await Promise.all([
-                                fetchUpdatedData(tsidSluice1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
-                                fetchUpdatedData(tsidSluice2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
-                                fetchUpdatedData(tsidSluiceTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
-                                fetchUpdatedData(tsidGate1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
-                                fetchUpdatedData(tsidGate2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
-                                fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
-                                fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
-                                fetchUpdatedData(tsidOutflowTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
-                                fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
-                            ]);
 
-                            createTable(
-                                isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                            // Initialize variables to prevent reference errors
+                            let updatedDataSluice1 = null;
+                            let updatedDataSluice2 = null;
+                            let updatedDataSluiceTotal = null;
+                            let updatedDataGate1 = null;
+                            let updatedDataGate2 = null;
+                            let updatedDataGate3 = null;
+                            let updatedDataGate4 = null;
+                            let updatedDataGateTotal = null;
+                            let updatedDataOutflowTotal = null;
+                            let updatedDataOutflowAverage = null;
+
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                [
+                                    updatedDataSluice1,
+                                    updatedDataSluice2,
+                                    updatedDataSluiceTotal,
+                                    updatedDataGate1,
+                                    updatedDataGate2,
+                                    updatedDataGate3,
+                                    updatedDataGateTotal,
+                                    updatedDataOutflowTotal,
+                                    updatedDataOutflowAverage
+                                ] = await Promise.all([
+                                    fetchUpdatedData(tsidSluice1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidSluice2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidSluiceTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidOutflowTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
+                                ]);
+                            } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                                [
+                                    updatedDataGate1,
+                                    updatedDataGate2,
+                                    updatedDataGate3,
+                                    updatedDataGate4,
+                                    updatedDataGateTotal,
+                                    updatedDataOutflowAverage
+                                ] = await Promise.all([
+                                    fetchUpdatedData(tsidGate1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate4, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
+                                ]);
+                            }
+
+                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
                                 tsidSluice1, updatedDataSluice1, tsidSluice2, updatedDataSluice2, tsidSluiceTotal, updatedDataSluiceTotal,
                                 tsidGate1, updatedDataGate1, tsidGate2, updatedDataGate2, tsidGate3, updatedDataGate3, tsidGateTotal, updatedDataGateTotal,
                                 tsidOutflowTotal, updatedDataOutflowTotal, tsidOutflowAverage, updatedDataOutflowAverage,
                                 timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal,
                                 timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2, timeSeriesYesterdayDataGate3,
-                                timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage
-                            );
+                                timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, updatedDataGate4, null); // null is for yesterday data
                         } catch (error) {
-                            // hideSpinner(); // Hide the spinner if an error occurs
-                            // cdaStatusBtn.innerText = "Failed to write data!";
-                            // console.error(error);
+                            hideSpinner(); // Hide the spinner if an error occurs
+                            cdaStatusBtn.innerText = "Failed to write data!";
+                            console.error(error);
                         }
 
                         hideSpinner(); // Hide the spinner after the operation completes
