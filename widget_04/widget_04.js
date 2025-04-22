@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const col2 = headerOutflowRow.insertCell();
 
                     col1.textContent = "Average Outflow for Yesterday:";
-                    col2.textContent = averageOutflowYesterdayValue.toFixed(0);  // Format the average value to 0 decimal places
+                    col2.textContent = (Math.round(averageOutflowYesterdayValue / 10) * 10).toFixed(0);
                     col2.value = averageOutflowYesterdayValue;
                     col2.style.fontWeight = "bold";
                     if (isSaved === false) {
