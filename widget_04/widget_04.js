@@ -1213,7 +1213,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         gate4Input.type = "number";
                         gate4Input.step = "0.1";
                         gate4Input.value = formattedDataGate4[index] ? formattedDataGate4[index][1].toFixed(1) : 909;
-                        gate4Input.id = `gate3Input-${index}`;
+                        gate4Input.id = `gate4Input-${index}`;
                         gate4Cell.appendChild(gate4Input);
                         row.appendChild(gate4Cell);
                     }
@@ -2006,40 +2006,75 @@ document.addEventListener('DOMContentLoaded', async function () {
                         console.log("payloadOutflowAverageAdditional: ", payloadOutflowAverageAdditional);
                     } else {
                         // Existing Data Entry
-                        console.log("getAllSelectedTimes: ", getAllSelectedTimes());
-                        console.log("getAllSluice1Values: ", getAllSluice1Values());
-                        console.log("getAllSluice2Values: ", getAllSluice2Values());
-                        console.log("getAllSluiceTotalValues: ", getAllSluiceTotalValues());
-                        console.log("getAllGate1Values: ", getAllGate1Values());
-                        console.log("getAllGate2Values: ", getAllGate2Values());
-                        console.log("getAllGate3Values: ", getAllGate3Values());
-                        console.log("getAllGate4Values: ", getAllGate4Values());
-                        console.log("getAllGateTotalValues: ", getAllGateTotalValues());
-                        console.log("getAllOutflowTotalValues: ", getAllOutflowTotalValues());
-                        console.log("getAllOutflowAverageValues: ", getAllOutflowAverageValues());
+                        if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                            console.log("getAllSelectedTimes: ", getAllSelectedTimes());
+                            console.log("getAllSluice1Values: ", getAllSluice1Values());
+                            console.log("getAllSluice2Values: ", getAllSluice2Values());
+                            console.log("getAllSluiceTotalValues: ", getAllSluiceTotalValues());
+                            console.log("getAllGate1Values: ", getAllGate1Values());
+                            console.log("getAllGate2Values: ", getAllGate2Values());
+                            console.log("getAllGate3Values: ", getAllGate3Values());
+                            console.log("getAllGateTotalValues: ", getAllGateTotalValues());
+                            console.log("getAllOutflowTotalValues: ", getAllOutflowTotalValues());
+                            console.log("getAllOutflowAverageValues: ", getAllOutflowAverageValues());
+                        } else {
+                            console.log("getAllSelectedTimes: ", getAllSelectedTimes());
+                            console.log("getAllGate1Values: ", getAllGate1Values());
+                            console.log("getAllGate2Values: ", getAllGate2Values());
+                            console.log("getAllGate3Values: ", getAllGate3Values());
+                            console.log("getAllGate4Values: ", getAllGate4Values());
+                            console.log("getAllGateTotalValues: ", getAllGateTotalValues());
+                            console.log("getAllOutflowTotalValues: ", getAllOutflowTotalValues());
+                            console.log("getAllOutflowAverageValues: ", getAllOutflowAverageValues());
+                        }
 
-                        const selectedTimes = getAllSelectedTimes(); // Retrieve times
-                        const tsidCategories = {
-                            sluice1: tsidSluice1,
-                            sluice2: tsidSluice2,
-                            sluiceTotal: tsidSluiceTotal,
-                            gate1: tsidGate1,
-                            gate2: tsidGate2,
-                            gate3: tsidGate3,
-                            gateTotal: tsidGateTotal,
-                            outflowTotal: tsidOutflowTotal,
-                        };
+                        const selectedTimes = getAllSelectedTimes();
 
-                        const dataCategories = {
-                            sluice1: getAllSluice1Values(),
-                            sluice2: getAllSluice2Values(),
-                            sluiceTotal: getAllSluiceTotalValues(),
-                            gate1: getAllGate1Values(),
-                            gate2: getAllGate2Values(),
-                            gate3: getAllGate3Values(),
-                            gateTotal: getAllGateTotalValues(),
-                            outflowTotal: getAllOutflowTotalValues(),
-                        };
+                        let tsidCategories = {};
+
+                        if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                            tsidCategories = {
+                                sluice1: tsidSluice1,
+                                sluice2: tsidSluice2,
+                                sluiceTotal: tsidSluiceTotal,
+                                gate1: tsidGate1,
+                                gate2: tsidGate2,
+                                gate3: tsidGate3,
+                                gateTotal: tsidGateTotal,
+                                outflowTotal: tsidOutflowTotal,
+                            };
+                        } else {
+                            tsidCategories = {
+                                gate1: tsidGate1,
+                                gate2: tsidGate2,
+                                gate3: tsidGate3,
+                                gate4: tsidGate4,
+                                gateTotal: tsidGateTotal,
+                                outflowTotal: tsidOutflowTotal,
+                            };
+                        }
+
+                        if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                            dataCategories = {
+                                sluice1: getAllSluice1Values(),
+                                sluice2: getAllSluice2Values(),
+                                sluiceTotal: getAllSluiceTotalValues(),
+                                gate1: getAllGate1Values(),
+                                gate2: getAllGate2Values(),
+                                gate3: getAllGate3Values(),
+                                gateTotal: getAllGateTotalValues(),
+                                outflowTotal: getAllOutflowTotalValues(),
+                            };
+                        } else {
+                            dataCategories = {
+                                gate1: getAllGate1Values(),
+                                gate2: getAllGate2Values(),
+                                gate3: getAllGate3Values(),
+                                gate4: getAllGate4Values(),
+                                gateTotal: getAllGateTotalValues(),
+                                outflowTotal: getAllOutflowTotalValues(),
+                            };
+                        }
 
                         payloads = {};
                         if (Array.isArray(selectedTimes) && Object.values(dataCategories).every(Array.isArray)) {
@@ -2070,7 +2105,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         // Function to get all selected times
                         function getAllSelectedTimes() {
                             let selectedTimes = [];
-                            formattedDataSluice1.forEach((_, index) => {
+                            formattedDataGate1.forEach((_, index) => {
                                 const selectedTime = document.getElementById(`timeSelect${index}`).value;
                                 selectedTimes.push(selectedTime);
                             });
@@ -2216,7 +2251,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
-                    // Function to show the spinner while waiting
                     function showSpinner() {
                         const spinner = document.createElement('img');
                         spinner.src = 'images/loading4.gif';
@@ -2226,7 +2260,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         document.body.appendChild(spinner);
                     }
 
-                    // Function to hide the spinner once the operation is complete
                     function hideSpinner() {
                         const spinner = document.getElementById('loadingSpinner');
                         if (spinner) {

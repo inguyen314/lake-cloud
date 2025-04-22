@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Create the refresh button
                 const buttonRefresh = document.createElement('button');
                 buttonRefresh.textContent = 'Refresh';
-                buttonRefresh.id = 'refreshBtn'; // Unique ID
+                buttonRefresh.id = 'refreshBtnBalanceWindow'; // Unique ID
                 buttonRefresh.className = 'fetch-btn';
                 outputDiv.appendChild(buttonRefresh);
 
@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         existingButton.remove();
                     }
 
-                    const existingRefresh = document.getElementById('refreshBtn');
+                    const existingRefresh = document.getElementById('refreshBtnBalanceWindow');
                     if (existingRefresh) {
                         existingRefresh.remove();
                     }
