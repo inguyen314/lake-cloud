@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     if (timeSeriesDataOutflow && timeSeriesDataOutflow.values && timeSeriesDataOutflow.values.length > 0) {
                         console.log("Calling createTable ...");
 
-                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, timeSeriesDataOutflow);
+                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, timeSeriesDataOutflow, tsidInflow, timeSeriesDataInflow);
 
                         loginStateController()
                         // Setup timers
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }, 10000) // time is in millis
                     } else {
                         console.log("Calling createDataEntryTable ...");
-                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow);
+                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, tsidInflow);
 
                         loginStateController()
                         // Setup timers
@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const inflowCell = document.createElement("td");
                         const inflowInput = document.createElement("input");
                         inflowInput.type = "number";
-                        inflowInput.value = formattedDataInflow[index] ? formattedDataInflow[index][1].toFixed(0) : 0; // Use inflow data if available
+                        inflowInput.value = formattedDataInflow[index][1].toFixed(0); // Use inflow data if available
                         inflowInput.className = "inflow-input";
                         inflowInput.id = `inflowInput-${entry[0]}`;
                         inflowCell.appendChild(inflowInput);
@@ -256,6 +256,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const outflowCell = document.createElement("td");
                     const outflowInput = document.createElement("input");
                     outflowInput.type = "number";
+                    outflowInput.step = "10.0"; 
                     outflowInput.value = entry[1].toFixed(0); // Outflow uses formattedData
                     outflowInput.className = "outflow-input";
                     outflowInput.id = `outflowInput-${entry[0]}`;
@@ -483,28 +484,29 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 let dates = [];
                 if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                    dates = [isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
+                    // dates = [isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5];
+                    dates = [convertTo6AMCST(isoDateMinus1Day), convertTo6AMCST(isoDateToday), convertTo6AMCST(isoDateDay1), convertTo6AMCST(isoDateDay2), convertTo6AMCST(isoDateDay3), convertTo6AMCST(isoDateDay4), convertTo6AMCST(isoDateDay5)];
                 } else {
                     // dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5]; // convertTo6AMCST(isoDateToday)
                     dates = [convertTo6AMCST(isoDateToday), convertTo6AMCST(isoDateDay1), convertTo6AMCST(isoDateDay2), convertTo6AMCST(isoDateDay3), convertTo6AMCST(isoDateDay4), convertTo6AMCST(isoDateDay5)];
                 }
 
-                console.log("dates (UTC):", dates);
+                console.log("dates (6am cst in utc):", dates);
 
                 // Convert each date from UTC to CST and format it
                 const options = { timeZone: 'America/Chicago', hour12: false };
 
-                const formattedDates = dates.map(date => {
-                    const d = new Date(date);
-                    const cstDate = d.toLocaleString('en-US', options);
+                // const formattedDates = dates.map(date => {
+                //     const d = new Date(date);
+                //     const cstDate = d.toLocaleString('en-US', options);
 
-                    // Extract the date and time parts and format as MM-DD-YYYY HH:mm
-                    const [month, day, year, hour, minute] = cstDate.match(/(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{1,2}):(\d{2})/).slice(1);
+                //     // Extract the date and time parts and format as MM-DD-YYYY HH:mm
+                //     const [month, day, year, hour, minute] = cstDate.match(/(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{1,2}):(\d{2})/).slice(1);
 
-                    return `${month.padStart(2, '0')}-${day.padStart(2, '0')}-${year} ${hour}:${minute}`;
-                });
+                //     return `${month.padStart(2, '0')}-${day.padStart(2, '0')}-${year} ${hour}:${minute}`;
+                // });
 
-                console.log("formattedDates (CST):", formattedDates);
+                // console.log("formattedDates (CST):", formattedDates);
 
                 dates.forEach((date, index) => {
                     const row = document.createElement("tr");
@@ -626,7 +628,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     0 // Placeholder for the third value (set to 0 for now)
                                 ];
                             }),
-                            "version-date": isoDateToday, // Ensure this is the correct ISO formatted date
+                            "version-date": convertTo6AMCST(isoDateToday), // Ensure this is the correct ISO formatted date
                         };
 
                         console.log("payloadInflow: ", payloadInflow);
@@ -687,7 +689,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     }
 
-                    async function fetchUpdatedData(name, isoDateDay6, isoDateToday) {
+                    async function fetchUpdatedData(name, isoDateMinus1Day, isoDateToday, isoDateDay6) {
                         let response = null;
 
                         if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
@@ -755,11 +757,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                             }
 
                             // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay6, isoDateToday, isoDateMinus1Day);
+                            const updatedData = await fetchUpdatedData(tsidOutflow, isoDateMinus1Day, isoDateToday, isoDateDay6);
 
                             let updatedDataInflow = null;
                             if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                                updatedDataInflow = await fetchUpdatedData(tsidInflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                                updatedDataInflow = await fetchUpdatedData(tsidInflow, isoDateMinus1Day, isoDateToday, isoDateDay6);
                             }
                             createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, updatedData, tsidInflow, updatedDataInflow);
                         } catch (error) {
@@ -929,18 +931,29 @@ document.addEventListener('DOMContentLoaded', async function () {
         return cstDate.toISOString();
     }
 
+    // function convertTo6AMCST(isoDateToday) {
+    //     // Parse the UTC date
+    //     let utcDate = new Date(isoDateToday);
+    
+    //     // Convert to CST (America/Chicago)
+    //     let cstDate = new Date(utcDate.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+    
+    //     // Set the time to 6 AM CST
+    //     cstDate.setHours(6, 0, 0, 0);
+    
+    //     // Convert back to ISO format
+    //     return new Date(cstDate.getTime() - (cstDate.getTimezoneOffset() * 60000)).toISOString();
+    // }
+
     function convertTo6AMCST(isoDateToday) {
-        // Parse the UTC date
-        let utcDate = new Date(isoDateToday);
+        // Parse the input date
+        let date = new Date(isoDateToday);
     
-        // Convert to CST (America/Chicago)
-        let cstDate = new Date(utcDate.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+        // Add 6 hours (6 * 60 * 60 * 1000 ms)
+        date = new Date(date.getTime() + 6 * 60 * 60 * 1000);
     
-        // Set the time to 6 AM CST
-        cstDate.setHours(6, 0, 0, 0);
-    
-        // Convert back to ISO format
-        return new Date(cstDate.getTime() - (cstDate.getTimezoneOffset() * 60000)).toISOString();
+        // Return the new ISO string
+        return date.toISOString();
     }
 });
 
