@@ -349,6 +349,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                 statusDiv.appendChild(cdaStatusBtn);
                 outputDiv.appendChild(statusDiv);
 
+                const sendMvkBtn = document.createElement("button");
+                sendMvkBtn.textContent = "Send MVK Instructions";
+                sendMvkBtn.id = "send-mvk";
+                sendMvkBtn.disabled = false;
+                sendMvkBtn.className = "fetch-btn";
+                outputDiv.appendChild(sendMvkBtn);
+
+                const sendSwpaBtn = document.createElement("button");
+                sendSwpaBtn.textContent = "Send SWPA Message";
+                sendSwpaBtn.id = "send-swpa";
+                sendSwpaBtn.disabled = false;
+                sendSwpaBtn.className = "fetch-btn";
+                outputDiv.appendChild(sendSwpaBtn);
+
                 cdaSaveBtn.addEventListener("click", async () => {
                     let textScheduleValues = [];
 

@@ -236,7 +236,7 @@ table {
 /*** ===================================================================================== ***/
 /*** WIDGET 7 ***/
 /*** ===================================================================================== ***/
-#balanceInflowBtn, #refreshBtn, #estimated-value, #cda-btn-inflow, #cda-btn-gate {
+#balanceInflowBtn, #refreshBtn, #estimated-value, #cda-btn-inflow, #cda-btn-gate, #send-mvk, #send-swpa {
     display: block;
     margin: 0 auto; /* This will center the button horizontally */
     text-align: center;
