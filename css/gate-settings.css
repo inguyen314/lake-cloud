@@ -1,6 +1,7 @@
 #inflow,
 #balance-window,
-#gate-settings {
+#gate-settings,
+#generation-release {
     width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
@@ -9,9 +10,11 @@
 #inflow th,
 #balance-window th,
 #gate-settings th,
+#generation-release th,
 #inflow td,
 #balance-window td,
-#gate-settings td {
+#gate-settings td,
+#generation-release td {
     padding: 2px;
     text-align: center;
     border: 1px solid #ddd;
@@ -19,52 +22,60 @@
 
 #inflow th,
 #balance-window th,
-#gate-settings th {
+#gate-settings th,
+#generation-release th {
     background-color: darkblue;
     font-weight: bold;
 }
 
 #inflow input,
 #balance-window input,
-#gate-settings input {
+#gate-settings input,
+#generation-release input {
     width: 100%;
     box-sizing: border-box;
 }
 
 #inflow tr:nth-child(even),
 #balance-window tr:nth-child(even),
-#gate-settings tr:nth-child(even) {
+#gate-settings tr:nth-child(even),
+#generation-release tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
 #inflow tr:hover,
 #balance-window tr:hover,
-#gate-settings tr:hover {
+#gate-settings tr:hover,
+#generation-release tr:hover {
     background-color: #f1f1f1;
 }
 
 #inflow td,
 #balance-window td,
-#gate-settings td {
+#gate-settings td,
+#generation-release td {
     font-size: 14px;
 }
 
 #inflow td a,
 #balance-window td a,
-#gate-settings td a {
+#gate-settings td a,
+#generation-release td a {
     color: darkblue;
     text-decoration: none;
 }
 
 #inflow td a:hover,
 #balance-window td a:hover,
-#gate-settings td a:hover {
+#gate-settings td a:hover,
+#generation-release td a:hover {
     text-decoration: underline;
 }
 
 #inflow caption,
 #balance-window caption,
-#gate-settings caption {
+#gate-settings caption,
+#generation-release caption {
     font-size: 18px;
     font-weight: bold;
     margin-bottom: 10px;
