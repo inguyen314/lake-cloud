@@ -139,9 +139,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidSchedule, timeSeriesDataSchedule, timeSeriesDataScheduleYesterday, tsidInstruction, timeSeriesDataInstruction, timeSeriesDataInstructionYesterday) {
-                console.log("timeSeriesDataSchedule:", timeSeriesDataSchedule);
-                console.log("timeSeriesDataScheduleYesterday:", timeSeriesDataScheduleYesterday);
-
                 timeSeriesDataSchedule["regular-text-values"].forEach(item => {
                     // Check if "date-time" exists and is a valid Unix timestamp (number)
                     if (item["date-time"] && typeof item["date-time"] === "number") {
@@ -164,8 +161,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
                 });
 
-                const formattedData = timeSeriesDataSchedule;
-                console.log("formattedData:", formattedData);
+                const formattedScheduleData = timeSeriesDataSchedule;
+                console.log("formattedScheduleData:", formattedScheduleData);
 
                 timeSeriesDataScheduleYesterday["regular-text-values"].forEach(item => {
                     // Check if "date-time" exists and is a valid Unix timestamp (number)
@@ -189,8 +186,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
                 });
 
-                const formattedDataYesterday = timeSeriesDataScheduleYesterday;
-                console.log("formattedDataYesterday:", formattedDataYesterday);
+                const formattedDataScheduleYesterday = timeSeriesDataScheduleYesterday;
+                console.log("formattedDataScheduleYesterday:", formattedDataScheduleYesterday);
 
                 timeSeriesDataInstruction["regular-text-values"].forEach(item => {
                     // Check if "date-time" exists and is a valid Unix timestamp (number)
@@ -257,9 +254,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 table.appendChild(headerRow);
 
                 // Check if "regular-text-values" exists and is an array
-                if (Array.isArray(formattedData["regular-text-values"]) && formattedData["regular-text-values"].length > 0) {
+                if (Array.isArray(formattedScheduleData["regular-text-values"]) && formattedScheduleData["regular-text-values"].length > 0) {
                     // Render rows from "regular-text-values"
-                    formattedData["regular-text-values"].forEach((entry) => {
+                    formattedScheduleData["regular-text-values"].forEach((entry) => {
                         const row = document.createElement("tr");
 
                         // Use "date-time-iso" for the date
@@ -269,19 +266,19 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // Make the "text-value" editable
                         const textValueCell = document.createElement("td");
-                        const textValueInput = document.createElement("input");
-                        textValueInput.type = "text";
-                        textValueInput.value = entry["text-value"] || "No Text";
-                        textValueInput.className = "text-value-input";
-                        textValueInput.id = `textValueInput-${entry["date-time-iso"]}`;
-                        textValueCell.appendChild(textValueInput);
+                        const textValueScheduleInput = document.createElement("input");
+                        textValueScheduleInput.type = "text";
+                        textValueScheduleInput.value = entry["text-value"] || "No Text";
+                        textValueScheduleInput.className = "text-value-input";
+                        textValueScheduleInput.id = `textValueScheduleInput-${entry["date-time-iso"]}`;
+                        textValueCell.appendChild(textValueScheduleInput);
                         row.appendChild(textValueCell);
 
                         table.appendChild(row);
                     });
                 } else {
                     const fallbackTextValue =
-                        formattedDataYesterday?.["regular-text-values"]?.[0]?.["text-value"];
+                        formattedDataScheduleYesterday?.["regular-text-values"]?.[0]?.["text-value"];
 
                     const row = document.createElement("tr");
 
@@ -292,13 +289,13 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // Editable "text-value" with fallback from yesterday's data
                     const textValueCell = document.createElement("td");
-                    const textValueInput = document.createElement("input");
-                    textValueInput.type = "text";
-                    textValueInput.value = fallbackTextValue;
-                    textValueInput.style.backgroundColor = "pink";
-                    textValueInput.className = "text-value-input";
-                    textValueInput.id = `textValueInput-${isoDateToday}`;
-                    textValueCell.appendChild(textValueInput);
+                    const textValueScheduleInput = document.createElement("input");
+                    textValueScheduleInput.type = "text";
+                    textValueScheduleInput.value = fallbackTextValue;
+                    textValueScheduleInput.style.backgroundColor = "pink";
+                    textValueScheduleInput.className = "text-value-input";
+                    textValueScheduleInput.id = `textValueScheduleInput-${isoDateToday}`;
+                    textValueCell.appendChild(textValueScheduleInput);
                     row.appendChild(textValueCell);
 
                     table.appendChild(row);
@@ -353,36 +350,36 @@ document.addEventListener('DOMContentLoaded', async function () {
                 outputDiv.appendChild(statusDiv);
 
                 cdaSaveBtn.addEventListener("click", async () => {
-                    let textValues = [];
+                    let textScheduleValues = [];
 
                     // If data exists in "regular-text-values", grab values from the inputs
-                    if (Array.isArray(formattedData["regular-text-values"]) && formattedData["regular-text-values"].length > 0) {
+                    if (Array.isArray(formattedScheduleData["regular-text-values"]) && formattedScheduleData["regular-text-values"].length > 0) {
                         // Loop through each entry and get the input values
-                        formattedData["regular-text-values"].forEach((entry) => {
-                            const textValueInput = document.getElementById(`textValueInput-${entry["date-time-iso"]}`);
-                            if (textValueInput) {
-                                textValues.push({
+                        formattedScheduleData["regular-text-values"].forEach((entry) => {
+                            const textValueScheduleInput = document.getElementById(`textValueScheduleInput-${entry["date-time-iso"]}`);
+                            if (textValueScheduleInput) {
+                                textScheduleValues.push({
                                     "date-time-iso": entry["date-time-iso"],
-                                    "text-value": textValueInput.value
+                                    "text-value": textValueScheduleInput.value
                                 });
                             }
                         });
                     } else {
                         // If no data exists, get the value from the input for today's date
-                        const textValueInput = document.getElementById(`textValueInput-${isoDateToday}`);
-                        if (textValueInput) {
-                            textValues.push({
+                        const textValueScheduleInput = document.getElementById(`textValueScheduleInput-${isoDateToday}`);
+                        if (textValueScheduleInput) {
+                            textScheduleValues.push({
                                 "date-time-iso": isoDateToday,
-                                "text-value": textValueInput.value
+                                "text-value": textValueScheduleInput.value
                             });
                         }
                     }
 
-                    console.log("Updated Schedule Text Values:", textValues);
-                    console.log("Value: ", textValues[0]['text-value']);
+                    console.log("Updated Schedule Text Values:", textScheduleValues);
+                    console.log("Value Schedule: ", textScheduleValues[0]['text-value']);
 
 
-                    const payload = {
+                    const payloadSchedule = {
                         "office-id": "MVS",
                         "name": tsidSchedule,
                         "interval-offset": 0,
@@ -391,7 +388,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             {
                                 "date-time": isoDateToday,
                                 "data-entry-date": isoDateToday,
-                                "text-value": textValues[0]['text-value'],
+                                "text-value": textScheduleValues[0]['text-value'],
                                 "filename": "test.txt",
                                 "media-type": "text/plain",
                                 "quality-code": 0,
@@ -400,7 +397,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             }
                         ]
                     }
-                    console.log("payload:", payload);
+                    console.log("payloadSchedule:", payloadSchedule);
 
                     let textInstructionValues = [];
 
@@ -430,7 +427,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
 
                     console.log("Updated Instruction Text Values:", textInstructionValues);
-                    console.log("Value: ", textInstructionValues[0]['text-value']);
+                    console.log("Value Instruction: ", textInstructionValues[0]['text-value']);
 
                     const payloadInstruction = {
                         "office-id": "MVS",
@@ -590,8 +587,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     } else {
                         try {
                             showSpinner(); // Show the spinner before creating the version
-                            await writeTSText(payload);
-                            cdaStatusBtn.innerText = "Write payload successful!";
+                            await writeTSText(payloadSchedule);
+                            cdaStatusBtn.innerText = "Write payloadSchedule successful!";
                             await writeTSText(payloadInstruction);
                             cdaStatusBtn.innerText = "Write payloadInstruction successful!";
 
