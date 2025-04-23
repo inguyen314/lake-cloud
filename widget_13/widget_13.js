@@ -119,19 +119,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                 createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidSchedule, timeSeriesDataSchedule, timeSeriesDataScheduleYesterday);
 
                 loginStateController()
-                // Setup timers
                 setInterval(async () => {
                     loginStateController()
-                }, 10000) // time is in millis
+                }, 10000)
             } else {
                 console.log("Calling createDataEntryTable ...");
                 createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidSchedule, timeSeriesDataSchedule, timeSeriesDataScheduleYesterday);
 
                 loginStateController()
-                // Setup timers
                 setInterval(async () => {
                     loginStateController()
-                }, 10000) // time is in millis
+                }, 10000)
             }
 
             function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidSchedule, timeSeriesDataSchedule, timeSeriesDataScheduleYesterday) {
@@ -371,10 +369,50 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     }
 
-                    async function fetchUpdatedData(tsidSchedule, isoDateDay5, isoDateToday, isoDateMinus1Day) {
+                    async function fetchUpdatedData(tsidSchedule, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1) {
+                        // Convert to Date object
+                        const date = new Date(isoDateDay1);
+
+                        // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
+                        date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
+
+                        // Convert back to ISO string (preserve UTC format)
+                        const end = date.toISOString();
+
                         let response = null;
 
-                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries/text?office=MVS&name=${tsidSchedule}&begin=${isoDateToday}&end=${isoDateToday}`, {
+                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries/text?office=MVS&name=${tsidSchedule}&begin=${isoDateToday}&end=${end}`, {
+                            method: "GET",
+                            headers: {
+                                "Content-Type": "application/json;version=2",
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch updated data: ${response.status}`);
+                        }
+
+                        const data = await response.json();
+
+                        // Log the raw data received
+                        console.log('Fetched Data:', data);
+
+                        return data;
+                    }
+
+                    async function fetchUpdatedDataYesterday(tsidSchedule, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1) {
+                        // Convert to Date object
+                        const date = new Date(isoDateToday);
+
+                        // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
+                        date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
+
+                        // Convert back to ISO string (preserve UTC format)
+                        const end = date.toISOString();
+
+                        let response = null;
+
+                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries/text?office=MVS&name=${tsidSchedule}&begin=${isoDateMinus1Day}&end=${end}`, {
                             method: "GET",
                             headers: {
                                 "Content-Type": "application/json;version=2",
@@ -425,8 +463,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                             cdaStatusBtn.innerText = "Write successful!";
 
                             // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(tsidSchedule, isoDateDay5, isoDateToday, isoDateMinus1Day);
-                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidSchedule, updatedData);
+                            const updatedData = await fetchUpdatedData(tsidSchedule, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1);
+                            const updatedDataYesterday = await fetchUpdatedDataYesterday(tsidSchedule, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1);
+                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidSchedule, updatedData, updatedDataYesterday);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
