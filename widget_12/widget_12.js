@@ -149,7 +149,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     cdaSaveBtn.disabled = false; // Re-enable button
                 }
 
-                if (timeSeriesDataSpillway && timeSeriesDataSpillway.values && timeSeriesDataSpillway.values.length > 0) {
+                // Check if timeSeriesDataSpillway have values and if they are greater than 1 (this means you saved gate settings data)
+                if (timeSeriesDataSpillway && timeSeriesDataSpillway.values && timeSeriesDataSpillway.values.length > 1) {
                     console.log("Calling createTable ...");
 
                     createTable(isoDateMinus3Days, isoDateMinus2Days, isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidTurb, timeSeriesDataTurb, tsidSpillway, timeSeriesDataSpillway, tsidTotal, timeSeriesDataTotal);
@@ -250,24 +251,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const turbInput = document.createElement("input");
                     turbInput.type = "number";
                     turbInput.step = "10.0"; 
-
                     const value = (formattedDataTurb[index] && formattedDataTurb[index][1] !== undefined)
                         ? formattedDataTurb[index][1].toFixed(0)
                         : 909;
-
-                    console.log("value:", value);
-
                     turbInput.value = value;
                     turbInput.className = "turb-input";
                     turbInput.id = `turbInput-${entry[0]}`;
                     turbInput.style.textAlign = "center";
                     turbInput.style.verticalAlign = "middle";
-
-                    // Highlight missing/default value
                     if (value === 909) {
                         turbInput.style.backgroundColor = "pink";
                     }
-
                     turbCell.appendChild(turbInput);
                     row.appendChild(turbCell);
 
@@ -276,17 +270,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const outflowCell = document.createElement("td");
                     const outflowSpan = document.createElement("span");
                     outflowSpan.textContent = entry[1].toFixed(0);
-                    outflowSpan.className = "spillway-value";  // Use a class for styling if needed
-                    outflowSpan.id = `spillwayInput-${entry[0]}`;  // Keep the original id
+                    outflowSpan.className = "spillway-value";
+                    outflowSpan.id = `spillwayInput-${entry[0]}`;
                     outflowCell.appendChild(outflowSpan);
                     row.appendChild(outflowCell);
 
                     // Total cell (non-editable)
                     const totalCell = document.createElement("td");
                     const totalSpan = document.createElement("span");
-                    totalSpan.textContent = formattedDataTotal[index][1].toFixed(0);
-                    totalSpan.className = "total-value";  // Use a class for styling if needed
-                    totalSpan.id = `totalInput-${entry[0]}`;  // Keep the original id
+                    const valueTotal = (formattedDataTotal[index] && formattedDataTotal[index][1] !== undefined)
+                        ? formattedDataTotal[index][1].toFixed(0)
+                        : 0;
+                    totalSpan.textContent = valueTotal;
+                    totalSpan.className = "total-value";
+                    totalSpan.id = `totalInput-${entry[0]}`;
                     totalCell.appendChild(totalSpan);
                     row.appendChild(totalCell);
 
@@ -357,11 +354,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                             ];
                         }).filter(item => item !== undefined), // Filter out undefined entries
                     };
-                    // const setDummyDataTommrrow = [new Date(isoDateDay1).getTime(), 909, 0];
-
-                    // // Append the new data
-                    // payloadTurb.values.push(setDummyDataTommrrow);
-
                     console.log("payloadTurb:", payloadTurb);
 
                     const payloadSpillway = {
@@ -399,12 +391,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                     };
                     console.log("payloadSpillway: ", payloadSpillway);
 
-
                     const payloadTotal = {
                         "name": tsidTotal,
                         "office-id": "MVS",
                         "units": "cfs",
-                        "values": formattedDataTotal.map(entry => {
+                        "values": formattedDataSpillway.map(entry => {
                             // Get the elements by ID
                             const turbElement = document.getElementById(`turbInput-${entry[0]}`);
                             const spillwayElement = document.getElementById(`spillwayInput-${entry[0]}`);
@@ -550,65 +541,27 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             function createDataEntryTable(isoDateMinus3Days, isoDateMinus2Days, isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidTurb, timeSeriesDataTurb, tsidSpillway, timeSeriesDataSpillway, tsidTotal, timeSeriesDataTotal) {
-                // Create the empty table element
                 const table = document.createElement("table");
-
-                // Apply the ID "generation-release" to the table
                 table.id = "generation-release";
 
-                // Create the table header row
                 const headerRow = document.createElement("tr");
-
                 const dateHeader = document.createElement("th");
-                dateHeader.textContent = "Day";
+                dateHeader.textContent = "Date";
                 headerRow.appendChild(dateHeader);
 
                 const inflowHeader = document.createElement("th");
-                inflowHeader.textContent = "Forecast Inflow (cfs)";
+                inflowHeader.textContent = "Turbines (dsf)";
                 headerRow.appendChild(inflowHeader);
 
                 const outflowHeader = document.createElement("th");
-                outflowHeader.textContent = "Forecast Outflow (cfs)";
+                outflowHeader.textContent = "Spillway (dsf)";
                 headerRow.appendChild(outflowHeader);
 
+                const totalHeader = document.createElement("th");
+                totalHeader.textContent = "Total Flow (dsf)";
+                headerRow.appendChild(totalHeader);
+
                 table.appendChild(headerRow);
-
-                let dates = [];
-                dates = [convertTo6AMCST(isoDateMinus1Day), convertTo6AMCST(isoDateToday), convertTo6AMCST(isoDateDay1), convertTo6AMCST(isoDateDay2), convertTo6AMCST(isoDateDay3), convertTo6AMCST(isoDateDay4), convertTo6AMCST(isoDateDay5)];
-
-                console.log("dates (6am cst in utc):", dates);
-
-                dates.forEach((date, index) => {
-                    const row = document.createElement("tr");
-
-                    // Date cell
-                    const dateCell = document.createElement("td");
-                    dateCell.textContent = dates[index];  // Use the corresponding formatted date
-                    row.appendChild(dateCell);
-
-                    // Inflow cell (editable)
-                    const inflowCell = document.createElement("td");
-                    const inflowInput = document.createElement("input");
-                    inflowInput.type = "text";
-                    inflowInput.value = "";
-                    inflowInput.id = `inflowInput-${date}`;
-                    inflowInput.style.backgroundColor = "pink";  // Set pink background
-                    inflowCell.appendChild(inflowInput);
-                    row.appendChild(inflowCell);
-
-
-                    // Outflow cell (editable)
-                    const outflowCell = document.createElement("td");
-                    const outflowInput = document.createElement("input");
-                    outflowInput.type = "text";
-                    outflowInput.value = "";
-                    outflowInput.id = `outflowInput-${date}`;
-                    outflowInput.style.backgroundColor = "pink";  // Set pink background
-                    outflowCell.appendChild(outflowInput);
-                    row.appendChild(outflowCell);
-
-                    table.appendChild(row);
-                });
 
                 // Append the table to the specific container (id="output12")
                 const output6Div = document.getElementById("output12");
@@ -617,216 +570,44 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
-                cdaSaveBtn.id = "cda-btn";
+                cdaSaveBtn.id = "cda-btn-generation";
                 cdaSaveBtn.disabled = true;
                 output6Div.appendChild(cdaSaveBtn);
 
                 const statusDiv = document.createElement("div");
                 statusDiv.className = "status";
                 const cdaStatusBtn = document.createElement("button");
-                cdaStatusBtn.textContent = "";
-                cdaStatusBtn.id = "cda-btn";
+                cdaStatusBtn.textContent = "Save 'Gate Settings', then Click Refresh!";
+                cdaStatusBtn.style.color = "red";
+                cdaStatusBtn.style.fontWeight = "bold";
+                cdaStatusBtn.id = "cda-btn-generation";
                 cdaStatusBtn.disabled = false;
                 statusDiv.appendChild(cdaStatusBtn);
                 output6Div.appendChild(statusDiv);
 
-                // Add event listener to the submit button
-                cdaSaveBtn.addEventListener("click", async () => {
-                    const payloadOutflow = {
-                        "date-version-type": "MAX_AGGREGATE",
-                        "name": tsidOutflow,
-                        "office-id": "MVS",
-                        "units": "cfs",
-                        "values": dates.map((date, index) => {
-                            let outflowValue = document.getElementById(`outflowInput-${date}`).value; // Get value from input field
-                            // console.log("outflowValue:", outflowValue);
+                // Create the refresh button
+                const buttonRefresh = document.createElement('button');
+                buttonRefresh.textContent = 'Refresh';
+                buttonRefresh.id = 'refreshBtnGen'; // Unique ID
+                buttonRefresh.className = 'fetch-btn';
+                output6Div.appendChild(buttonRefresh);
 
-                            // If outflowValue is empty or null, set it to 909
-                            if (!outflowValue) {
-                                outflowValue = "909"; // Default value when empty or null
-                            }
-
-                            console.log("date:", date); // this is UTC
-
-                            // Convert ISO date string to timestamp
-                            const timestampUnix = new Date(date).getTime(); // Correct timestamp conversion
-                            // console.log("timestampUnix:", timestampUnix);
-
-                            // Convert 6am in milliseconds and add it, this is CST/CDT
-                            const adjustedTimestampUnix = timestampUnix + 6 * 60 * 60 * 1000;
-                            // console.log("adjustedTimestampUnix:", adjustedTimestampUnix);
-
-                            return [
-                                timestampUnix,  // Timestamp for the day at 6 AM
-                                parseInt(outflowValue), // Stage value (forecast outflow) as number
-                                0 // Placeholder for the third value (set to 0 for now)
-                            ];
-                        }),
-                        "version-date": convertTo6AMCST(isoDateToday), // Ensure this is the correct ISO formatted date
-                    };
-
-                    console.log("payloadOutflow: ", payloadOutflow);
-
-                    let payloadInflow = null;
-                    payloadInflow = {
-                        "date-version-type": "MAX_AGGREGATE",
-                        "name": tsidTurb,
-                        "office-id": "MVS",
-                        "units": "cfs",
-                        "values": dates.map((date, index) => {
-                            let inflowValue = document.getElementById(`inflowInput-${date}`).value; // Get value from input field
-                            // console.log("inflowValue:", inflowValue);
-
-                            // If inflowValue is empty or null, set it to 909
-                            if (!inflowValue) {
-                                inflowValue = "909"; // Default value when empty or null
-                            }
-
-                            // Convert ISO date string to timestamp
-                            const timestampUnix = new Date(date).getTime(); // Correct timestamp conversion
-                            // console.log("timestampUnix:", timestampUnix);
-
-                            // Convert 6am in milliseconds and add it, this is CST/CDT
-                            const adjustedTimestampUnix = timestampUnix + 6 * 60 * 60 * 1000;
-                            // console.log("adjustedTimestampUnix:", adjustedTimestampUnix);
-
-                            return [
-                                adjustedTimestampUnix,  // Timestamp for the day at 6 AM
-                                parseInt(inflowValue), // Stage value (forecast outflow) as number
-                                0 // Placeholder for the third value (set to 0 for now)
-                            ];
-                        }),
-                        "version-date": convertTo6AMCST(isoDateToday), // Ensure this is the correct ISO formatted date
-                    };
-
-                    console.log("payloadInflow: ", payloadInflow);
-
-                    async function loginCDA() {
-                        console.log("page");
-                        if (await isLoggedIn()) return true;
-                        console.log('is false');
-
-                        // Redirect to login page
-                        window.location.href = `https://wm.mvs.ds.usace.army.mil:8243/CWMSLogin/login?OriginalLocation=${encodeURIComponent(window.location.href)}`;
+                // Add click event to refresh the table and remove buttons
+                buttonRefresh.addEventListener('click', () => {
+                    // Remove existing table
+                    const existingTable = document.getElementById('generation-release');
+                    if (existingTable) {
+                        existingTable.remove();
                     }
 
-                    async function isLoggedIn() {
-                        try {
-                            const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", {
-                                method: "GET"
-                            });
-
-                            if (response.status === 401) return false;
-
-                            console.log('status', response.status);
-                            return true;
-
-                        } catch (error) {
-                            console.error('Error checking login status:', error);
-                            return false;
-                        }
+                    const existingRefresh = document.getElementById('refreshBtnGen');
+                    if (existingRefresh) {
+                        existingRefresh.remove();
                     }
 
-                    async function createTS(payload) {
-
-                        if (!payload) throw new Error("You must specify a payload!");
-                        try {
-                            const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?store-rule=REPLACE%20ALL", {
-                                method: "POST",
-                                headers: {
-                                    // "accept": "*/*",
-                                    "Content-Type": "application/json;version=2",
-                                },
-
-
-                                body: JSON.stringify(payload)
-                            });
-
-                            if (!response.ok) {
-                                const errorText = await response.text();
-                                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-                            }
-
-                            return true;
-
-                        } catch (error) {
-                            console.error('Error writing timeseries:', error);
-                            throw error;
-                        }
-
-                    }
-
-                    async function fetchUpdatedData(name, isoDateMinus1Day, isoDateToday, isoDateDay6) {
-                        let response = null;
-                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${name}&begin=${isoDateMinus1Day}&end=${isoDateDay6}&office=MVS&version-date=${convertTo6AMCST(isoDateToday)}`, {
-                            headers: {
-                                "Accept": "application/json;version=2", // Ensuring the correct version is used
-                                "cache-control": "no-cache"
-                            }
-                        });
-
-                        if (!response.ok) {
-                            throw new Error(`Failed to fetch updated data: ${response.status}`);
-                        }
-
-                        const data = await response.json();
-
-                        // Log the raw data received
-                        console.log('Fetched Data:', data);
-
-                        return data;
-                    }
-
-                    // Function to show the spinner while waiting
-                    function showSpinner() {
-                        const spinner = document.createElement('img');
-                        spinner.src = 'images/loading4.gif';
-                        spinner.id = 'loadingSpinner';
-                        spinner.style.width = '40px';  // Set the width to 40px
-                        spinner.style.height = '40px'; // Set the height to 40px
-                        document.body.appendChild(spinner);
-                    }
-
-                    // Function to hide the spinner once the operation is complete
-                    function hideSpinner() {
-                        const spinner = document.getElementById('loadingSpinner');
-                        if (spinner) {
-                            spinner.remove();
-                        }
-                    }
-
-                    if (cdaSaveBtn.innerText === "Login") {
-                        showSpinner(); // Show the spinner before the login
-                        const loginResult = await loginCDA();
-                        hideSpinner(); // Hide the spinner after login is complete
-
-                        cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
-                        cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
-                    } else {
-                        try {
-                            showSpinner(); // Show the spinner before creating the version
-                            await createTS(payloadOutflow);
-                            cdaStatusBtn.innerText = "Write successful!";
-
-                            await createTS(payloadInflow);
-                            cdaStatusBtn.innerText = "Write payloadInflow successful!";
-
-                            // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(tsidOutflow, isoDateMinus1Day, isoDateToday, isoDateDay6);
-
-                            let updatedDataInflow = null;
-                            updatedDataInflow = await fetchUpdatedData(tsidTurb, isoDateMinus1Day, isoDateToday, isoDateDay6);
-                            createTable(isoDateMinus3Days, isoDateMinus2Days, isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, updatedData, tsidTurb, updatedDataInflow);
-                        } catch (error) {
-                            hideSpinner(); // Hide the spinner if an error occurs
-                            cdaStatusBtn.innerText = "Failed to write data!";
-                            console.error(error);
-                        }
-
-                        hideSpinner(); // Hide the spinner after the operation completes
-                    }
+                    // Fetch and create new table
+                    fetchTsidData();
                 });
-
             }
         };
 

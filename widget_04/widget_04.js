@@ -925,7 +925,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         setInterval(async () => {
                             loginStateController()
                         }, 10000)
-                    } else if (timeSeriesDataGate1 && timeSeriesDataGate1.values && timeSeriesDataGate1.values.length > 0) {
+                    } else if (timeSeriesYesterdayDataGate1 && timeSeriesYesterdayDataGate1.values && timeSeriesYesterdayDataGate1.values.length > 0) {
                         console.log("Data from previous day found, Calling createDataEntryTable ...");
 
                         createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
@@ -933,7 +933,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
                             tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
                             timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
-                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4);
+                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4, timeSeriesYesterdayDataGate4);
 
                         loadingIndicator.style.display = 'none';
 
@@ -2583,65 +2583,123 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             }
 
-            function createDataEntryTable(
-                isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+            function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
                 tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
                 tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
                 tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
                 timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
-                timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4
-            ) {
+                timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4, timeSeriesYesterdayDataGate4) {
 
-                const formatData = (data) => data.values.map(entry => {
-                    const timestamp = entry[0];
-                    const formattedTimestampCST = formatISODateToCSTString(Number(timestamp));
-                    return {
-                        ...entry,
-                        formattedTimestampCST
-                    };
-                });
+                const formatData = (data) => {
+                    if (!data || !Array.isArray(data.values)) return [];
+
+                    return data.values.map((entry) => {
+                        const timestamp = entry[0];
+                        const formattedTimestampCST = formatISODateToCSTString(Number(timestamp));
+                        return {
+                            ...entry,
+                            formattedTimestampCST
+                        };
+                    });
+                };
 
                 // Today's data
-                let formattedDataSluice1 = formatData(timeSeriesDataSluice1);
-                let formattedDataSluice2 = formatData(timeSeriesDataSluice2);
-                let formattedDataSluiceTotal = formatData(timeSeriesDataSluiceTotal);
-                let formattedDataGate1 = formatData(timeSeriesDataGate1);
-                let formattedDataGate2 = formatData(timeSeriesDataGate2);
-                let formattedDataGate3 = formatData(timeSeriesDataGate3);
-                let formattedDataGateTotal = formatData(timeSeriesDataGateTotal);
-                let formattedDataOutflowTotal = formatData(timeSeriesDataOutflowTotal);
-                let formattedDataOutflowAverage = formatData(timeSeriesDataOutflowAverage);
-
-                console.log("Formatted timeSeriesDataSluice1:", formattedDataSluice1);
-                console.log("Formatted timeSeriesDataSluice2:", formattedDataSluice2);
-                console.log("Formatted timeSeriesDataSluiceTotal:", formattedDataSluiceTotal);
-                console.log("Formatted timeSeriesDataGate1:", formattedDataGate1);
-                console.log("Formatted timeSeriesDataGate2:", formattedDataGate2);
-                console.log("Formatted timeSeriesDataGate3:", formattedDataGate3);
-                console.log("Formatted timeSeriesDataGateTotal:", formattedDataGateTotal);
-                console.log("Formatted timeSeriesDataOutflowTotal:", formattedDataOutflowTotal);
-                console.log("Formatted timeSeriesDataOutflowAverage:", formattedDataOutflowAverage);
+                let formattedDataSluice1 = null;
+                let formattedDataSluice2 = null;
+                let formattedDataSluiceTotal = null;
+                let formattedDataGate1 = null;;
+                let formattedDataGate2 = null;;
+                let formattedDataGate3 = null;
+                let formattedDataGate4 = null;
+                let formattedDataGateTotal = null;
+                let formattedDataOutflowTotal = null;;
+                let formattedDataOutflowAverage = null;
 
                 // Yesterday's data
-                let formattedYesterdayDataSluice1 = formatData(timeSeriesYesterdayDataSluice1);
-                let formattedYesterdayDataSluice2 = formatData(timeSeriesYesterdayDataSluice2);
-                let formattedYesterdayDataSluiceTotal = formatData(timeSeriesYesterdayDataSluiceTotal);
-                let formattedYesterdayDataGate1 = formatData(timeSeriesYesterdayDataGate1);
-                let formattedYesterdayDataGate2 = formatData(timeSeriesYesterdayDataGate2);
-                let formattedYesterdayDataGate3 = formatData(timeSeriesYesterdayDataGate3);
-                let formattedYesterdayDataGateTotal = formatData(timeSeriesYesterdayDataGateTotal);
-                let formattedYesterdayDataOutflowTotal = formatData(timeSeriesYesterdayDataOutflowTotal);
-                let formattedYesterdayDataOutflowAverage = formatData(timeSeriesYesterdayDataOutflowAverage);
+                let formattedYesterdayDataSluice1 = null;
+                let formattedYesterdayDataSluice2 = null;
+                let formattedYesterdayDataSluiceTotal = null;
+                let formattedYesterdayDataGate1 = null;
+                let formattedYesterdayDataGate2 = null;
+                let formattedYesterdayDataGate3 = null;
+                let formattedYesterdayDataGate4 = null;
+                let formattedYesterdayDataGateTotal = null;
+                let formattedYesterdayDataOutflowTotal = null;
+                let formattedYesterdayDataOutflowAverage = null;
 
-                console.log("Formatted timeSeriesYesterdayDataSluice1:", formattedYesterdayDataSluice1);
-                console.log("Formatted timeSeriesYesterdayDataSluice2:", formattedYesterdayDataSluice2);
-                console.log("Formatted timeSeriesYesterdayDataSluiceTotal:", formattedYesterdayDataSluiceTotal);
-                console.log("Formatted timeSeriesYesterdayDataGate1:", formattedYesterdayDataGate1);
-                console.log("Formatted timeSeriesYesterdayDataGate2:", formattedYesterdayDataGate2);
-                console.log("Formatted timeSeriesYesterdayDataGate3:", formattedYesterdayDataGate3);
-                console.log("Formatted timeSeriesYesterdayDataGateTotal:", formattedYesterdayDataGateTotal);
-                console.log("Formatted timeSeriesYesterdayDataOutflowTotal:", formattedYesterdayDataOutflowTotal);
-                console.log("Formatted timeSeriesYesterdayDataOutflowAverage:", formattedYesterdayDataOutflowAverage);
+                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                    // Today's data
+                    formattedDataSluice1 = formatData(timeSeriesDataSluice1);
+                    formattedDataSluice2 = formatData(timeSeriesDataSluice2);
+                    formattedDataSluiceTotal = formatData(timeSeriesDataSluiceTotal);
+                    formattedDataGate1 = formatData(timeSeriesDataGate1);
+                    formattedDataGate2 = formatData(timeSeriesDataGate2);
+                    formattedDataGate3 = formatData(timeSeriesDataGate3);
+                    formattedDataGateTotal = formatData(timeSeriesDataGateTotal);
+                    formattedDataOutflowTotal = formatData(timeSeriesDataOutflowTotal);
+                    formattedDataOutflowAverage = formatData(timeSeriesDataOutflowAverage);
+
+                    console.log("formattedDataSluice1:", formattedDataSluice1);
+                    console.log("formattedDataSluice2:", formattedDataSluice2);
+                    console.log("formattedDataSluiceTotal:", formattedDataSluiceTotal);
+                    console.log("formattedDataGate1:", formattedDataGate1);
+                    console.log("formattedDataGate2:", formattedDataGate2);
+                    console.log("formattedDataGate3:", formattedDataGate3);
+                    console.log("formattedDataGateTotal:", formattedDataGateTotal);
+                    console.log("formattedDataOutflowTotal:", formattedDataOutflowTotal);
+                    console.log("formattedDataOutflowAverage:", formattedDataOutflowAverage);
+
+                    // Yesterday's data
+                    formattedYesterdayDataSluice1 = formatData(timeSeriesYesterdayDataSluice1);
+                    formattedYesterdayDataSluice2 = formatData(timeSeriesYesterdayDataSluice2);
+                    formattedYesterdayDataSluiceTotal = formatData(timeSeriesYesterdayDataSluiceTotal);
+                    formattedYesterdayDataGate1 = formatData(timeSeriesYesterdayDataGate1);
+                    formattedYesterdayDataGate2 = formatData(timeSeriesYesterdayDataGate2);
+                    formattedYesterdayDataGate3 = formatData(timeSeriesYesterdayDataGate3);
+                    formattedYesterdayDataGateTotal = formatData(timeSeriesYesterdayDataGateTotal);
+                    formattedYesterdayDataOutflowTotal = formatData(timeSeriesYesterdayDataOutflowTotal);
+                    formattedYesterdayDataOutflowAverage = formatData(timeSeriesYesterdayDataOutflowAverage);
+
+                    console.log("formattedYesterdayDataSluice1:", formattedYesterdayDataSluice1);
+                    console.log("formattedYesterdayDataSluice2:", formattedYesterdayDataSluice2);
+                    console.log("formattedYesterdayDataSluiceTotal:", formattedYesterdayDataSluiceTotal);
+                    console.log("formattedYesterdayDataGate1:", formattedYesterdayDataGate1);
+                    console.log("formattedYesterdayDataGate2:", formattedYesterdayDataGate2);
+                    console.log("formattedYesterdayDataGate3:", formattedYesterdayDataGate3);
+                    console.log("formattedYesterdayDataGateTotal:", formattedYesterdayDataGateTotal);
+                    console.log("formattedYesterdayDataOutflowTotal:", formattedYesterdayDataOutflowTotal);
+                    console.log("formattedYesterdayDataOutflowAverage:", formattedYesterdayDataOutflowAverage);
+                } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                    // Today's data
+                    formattedDataGate1 = formatData(timeSeriesDataGate1);
+                    formattedDataGate2 = formatData(timeSeriesDataGate2);
+                    formattedDataGate3 = formatData(timeSeriesDataGate3);
+                    formattedDataGate4 = formatData(timeSeriesDataGate4);
+                    formattedDataGateTotal = formatData(timeSeriesDataGateTotal);
+                    formattedDataOutflowAverage = formatData(timeSeriesDataOutflowAverage);
+
+                    console.log("formattedDataGate1:", formattedDataGate1);
+                    console.log("formattedDataGate2:", formattedDataGate2);
+                    console.log("formattedDataGate3:", formattedDataGate3);
+                    console.log("formattedDataGate4:", formattedDataGate4);
+                    console.log("formattedDataGateTotal:", formattedDataGateTotal);
+                    console.log("formattedDataOutflowAverage:", formattedDataOutflowAverage);
+
+                    // Yesterday's data
+                    formattedYesterdayDataGate1 = formatData(timeSeriesYesterdayDataGate1);
+                    formattedYesterdayDataGate2 = formatData(timeSeriesYesterdayDataGate2);
+                    formattedYesterdayDataGate3 = formatData(timeSeriesYesterdayDataGate3);
+                    formattedYesterdayDataGate4 = formatData(timeSeriesYesterdayDataGate4);
+                    formattedYesterdayDataGateTotal = formatData(timeSeriesYesterdayDataGateTotal);
+                    formattedYesterdayDataOutflowAverage = formatData(timeSeriesYesterdayDataOutflowAverage);
+
+                    console.log("formattedYesterdayDataGate1:", formattedYesterdayDataGate1);
+                    console.log("formattedYesterdayDataGate2:", formattedYesterdayDataGate2);
+                    console.log("formattedYesterdayDataGate3:", formattedYesterdayDataGate3);
+                    console.log("formattedYesterdayDataGate4:", formattedYesterdayDataGate4);
+                    console.log("formattedYesterdayDataGateTotal:", formattedYesterdayDataGateTotal);
+                    console.log("formattedYesterdayDataOutflowAverage:", formattedYesterdayDataOutflowAverage);
+                }
 
                 const table = document.createElement("table");
 
@@ -2653,17 +2711,19 @@ document.addEventListener('DOMContentLoaded', async function () {
                 dateHeader.textContent = "Time";
                 headerRow.appendChild(dateHeader);
 
-                const sluice1Header = document.createElement("th");
-                sluice1Header.textContent = "Sluice 1 (ft)";
-                headerRow.appendChild(sluice1Header);
+                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                    const sluice1Header = document.createElement("th");
+                    sluice1Header.textContent = "Sluice 1 (ft)";
+                    headerRow.appendChild(sluice1Header);
 
-                const sluice2Header = document.createElement("th");
-                sluice2Header.textContent = "Sluice 2 (ft)";
-                headerRow.appendChild(sluice2Header);
+                    const sluice2Header = document.createElement("th");
+                    sluice2Header.textContent = "Sluice 2 (ft)";
+                    headerRow.appendChild(sluice2Header);
 
-                const sluiceTotalHeader = document.createElement("th");
-                sluiceTotalHeader.textContent = "Sluice Total (cfs)";
-                headerRow.appendChild(sluiceTotalHeader);
+                    const sluiceTotalHeader = document.createElement("th");
+                    sluiceTotalHeader.textContent = "Sluice Total (cfs)";
+                    headerRow.appendChild(sluiceTotalHeader);
+                }
 
                 const gate1Header = document.createElement("th");
                 gate1Header.textContent = "Gate 1 (ft)";
@@ -2677,13 +2737,25 @@ document.addEventListener('DOMContentLoaded', async function () {
                 gate3Header.textContent = "Gate 3 (ft)";
                 headerRow.appendChild(gate3Header);
 
-                const gateTotalHeader = document.createElement("th");
-                gateTotalHeader.textContent = "Gate Total (cfs)";
-                headerRow.appendChild(gateTotalHeader);
+                if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                    const gate4Header = document.createElement("th");
+                    gate4Header.textContent = "Gate 4 (ft)";
+                    headerRow.appendChild(gate4Header);
 
-                const outflowTotalHeader = document.createElement("th");
-                outflowTotalHeader.textContent = "Outflow Total (cfs)";
-                headerRow.appendChild(outflowTotalHeader);
+                    const gateTotalHeader = document.createElement("th");
+                    gateTotalHeader.textContent = "Gate Total (cfs)";
+                    headerRow.appendChild(gateTotalHeader);
+                }
+
+                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                    const gateTotalHeader = document.createElement("th");
+                    gateTotalHeader.textContent = "Gate Total (cfs)";
+                    headerRow.appendChild(gateTotalHeader);
+
+                    const outflowTotalHeader = document.createElement("th");
+                    outflowTotalHeader.textContent = "Outflow Total (cfs)";
+                    headerRow.appendChild(outflowTotalHeader);
+                }
 
                 table.appendChild(headerRow);
 
@@ -2750,50 +2822,51 @@ document.addEventListener('DOMContentLoaded', async function () {
                     timeCell.appendChild(timeSelect);
                     row.appendChild(timeCell);
 
+                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                        // Sluice1 cell (editable)
+                        const sluice1Cell = document.createElement("td");
+                        const sluice1Input = document.createElement("input");
+                        sluice1Input.type = "number";
+                        sluice1Input.value = formattedYesterdayDataSluice1.at(-1)[1].toFixed(1);
+                        sluice1Input.id = `sluice1Input`;
 
-                    // Sluice1 cell (editable)
-                    const sluice1Cell = document.createElement("td");
-                    const sluice1Input = document.createElement("input");
-                    sluice1Input.type = "number";
-                    sluice1Input.value = formattedYesterdayDataSluice1.at(-1)[1].toFixed(1);
-                    sluice1Input.id = `sluice1Input`;
+                        if (index === 0) {
+                            sluice1Input.style.backgroundColor = "pink";
+                        }
 
-                    if (index === 0) {
-                        sluice1Input.style.backgroundColor = "pink";
+                        sluice1Cell.appendChild(sluice1Input);
+                        row.appendChild(sluice1Cell);
+                        // console.log(document.getElementById(`sluice1Input`));  // Check if element exists
+
+
+                        // Sluice2 cell (editable)
+                        const sluice2Cell = document.createElement("td");
+                        const sluice2Input = document.createElement("input");
+                        sluice2Input.type = "number";
+                        sluice2Input.value = formattedYesterdayDataSluice2.at(-1)[1].toFixed(1);
+                        sluice2Input.id = `sluice2Input`;
+
+                        if (index === 0) {
+                            sluice2Input.style.backgroundColor = "pink";
+                        }
+
+                        sluice2Cell.appendChild(sluice2Input);
+                        row.appendChild(sluice2Cell);
+
+                        // Sluice Total cell (editable)
+                        const sluiceTotalCell = document.createElement("td");
+                        const sluiceTotalInput = document.createElement("input");
+                        sluiceTotalInput.type = "number";
+                        sluiceTotalInput.value = formattedYesterdayDataSluiceTotal.at(-1)[1].toFixed(0);
+                        sluiceTotalInput.id = `sluiceTotalInput`;
+
+                        if (index === 0) {
+                            sluiceTotalInput.style.backgroundColor = "pink";
+                        }
+
+                        sluiceTotalCell.appendChild(sluiceTotalInput);
+                        row.appendChild(sluiceTotalCell);
                     }
-
-                    sluice1Cell.appendChild(sluice1Input);
-                    row.appendChild(sluice1Cell);
-                    // console.log(document.getElementById(`sluice1Input`));  // Check if element exists
-
-
-                    // Sluice2 cell (editable)
-                    const sluice2Cell = document.createElement("td");
-                    const sluice2Input = document.createElement("input");
-                    sluice2Input.type = "number";
-                    sluice2Input.value = formattedYesterdayDataSluice2.at(-1)[1].toFixed(1);
-                    sluice2Input.id = `sluice2Input`;
-
-                    if (index === 0) {
-                        sluice2Input.style.backgroundColor = "pink";
-                    }
-
-                    sluice2Cell.appendChild(sluice2Input);
-                    row.appendChild(sluice2Cell);
-
-                    // Sluice Total cell (editable)
-                    const sluiceTotalCell = document.createElement("td");
-                    const sluiceTotalInput = document.createElement("input");
-                    sluiceTotalInput.type = "number";
-                    sluiceTotalInput.value = formattedYesterdayDataSluiceTotal.at(-1)[1].toFixed(0);
-                    sluiceTotalInput.id = `sluiceTotalInput`;
-
-                    if (index === 0) {
-                        sluiceTotalInput.style.backgroundColor = "pink";
-                    }
-
-                    sluiceTotalCell.appendChild(sluiceTotalInput);
-                    row.appendChild(sluiceTotalCell);
 
                     // Gate 1 (editable)
                     const gate1Cell = document.createElement("td");
@@ -2831,6 +2904,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                     gate3Cell.appendChild(gate3Input);
                     row.appendChild(gate3Cell);
 
+                    // Gate 4 (editable)
+                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                        const gate4Cell = document.createElement("td");
+                        const gate4Input = document.createElement("input");
+                        gate4Input.type = "number";
+                        gate4Input.value = formattedYesterdayDataGate4.at(-1)[1].toFixed(1);
+                        gate4Input.id = `gate4Input`;
+                        if (index === 0) {
+                            gate4Input.style.backgroundColor = "pink";
+                        }
+                        gate4Cell.appendChild(gate4Input);
+                        row.appendChild(gate4Cell);
+                    }
+
                     // Gate Total (calculated)
                     const gateTotalCell = document.createElement("td");
                     const gateTotalInput = document.createElement("input");
@@ -2844,16 +2931,18 @@ document.addEventListener('DOMContentLoaded', async function () {
                     row.appendChild(gateTotalCell);
 
                     // Gate Outflow Total (calculated)
-                    averageOutflowCalculate = (formattedYesterdayDataGateTotal.at(-1)[1] + formattedYesterdayDataSluiceTotal.at(-1)[1]).toFixed(0);
-                    const gateOutflowTotalCell = document.createElement("td");
-                    const gateOutflowTotalInput = document.createElement("input");
-                    gateOutflowTotalInput.type = "number";
-                    gateOutflowTotalInput.value = averageOutflowCalculate;
-                    gateOutflowTotalInput.id = `gateOutflowTotalInput`;
-                    gateOutflowTotalInput.readOnly = true; // Make it read-only
-                    gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
-                    gateOutflowTotalCell.appendChild(gateOutflowTotalInput);
-                    row.appendChild(gateOutflowTotalCell);
+                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                        averageOutflowCalculate = (formattedYesterdayDataGateTotal.at(-1)[1] + formattedYesterdayDataSluiceTotal.at(-1)[1]).toFixed(0);
+                        const gateOutflowTotalCell = document.createElement("td");
+                        const gateOutflowTotalInput = document.createElement("input");
+                        gateOutflowTotalInput.type = "number";
+                        gateOutflowTotalInput.value = averageOutflowCalculate;
+                        gateOutflowTotalInput.id = `gateOutflowTotalInput`;
+                        gateOutflowTotalInput.readOnly = true; // Make it read-only
+                        gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
+                        gateOutflowTotalCell.appendChild(gateOutflowTotalInput);
+                        row.appendChild(gateOutflowTotalCell);
+                    }
 
                     table.appendChild(row);
                 });
@@ -2882,8 +2971,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const secondCell = document.createElement("td");
                 secondCell.type = "number";
                 secondCell.id = `gateOutflowAverageInput`;
-                // secondCell.textContent = formattedYesterdayDataOutflowAverage.at(-1)[1].toFixed(0); // This is yesterday last Average Outflow (cfs)
-                secondCell.textContent = averageOutflowCalculate;
+                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                    secondCell.textContent = averageOutflowCalculate;
+                } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                    secondCell.textContent = formattedYesterdayDataGateTotal.at(-1)[1].toFixed(0);
+                }
                 tableRow.appendChild(secondCell);
 
                 // Append the row to the tableOutflowAvg
@@ -2918,34 +3010,36 @@ document.addEventListener('DOMContentLoaded', async function () {
                         console.log(`${hour} selected:`, selectedHours[hour]);
                     });
 
-                    // Get the sluice1 input element and check if it exists
-                    const sluice1Input = document.getElementById(`sluice1Input`);
-                    if (!sluice1Input) {
-                        console.error("sluice1Input element not found!");
-                        return; // Exit if input is missing
-                    }
-                    if (!sluice1Input.value) {
-                        sluice1Input.value = 909;
-                    }
+                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                        // Get the sluice1 input element and check if it exists
+                        const sluice1Input = document.getElementById(`sluice1Input`);
+                        if (!sluice1Input) {
+                            console.error("sluice1Input element not found!");
+                            return; // Exit if input is missing
+                        }
+                        if (!sluice1Input.value) {
+                            sluice1Input.value = 909;
+                        }
 
-                    // Get the sluice2 input element and check if it exists
-                    const sluice2Input = document.getElementById('sluice2Input');
-                    if (!sluice2Input) {
-                        console.error("sluice2Input element not found!");
-                        return; // Exit if input is missing
-                    }
-                    if (!sluice2Input.value) {
-                        sluice2Input.value = 909;
-                    }
+                        // Get the sluice2 input element and check if it exists
+                        const sluice2Input = document.getElementById('sluice2Input');
+                        if (!sluice2Input) {
+                            console.error("sluice2Input element not found!");
+                            return; // Exit if input is missing
+                        }
+                        if (!sluice2Input.value) {
+                            sluice2Input.value = 909;
+                        }
 
-                    // Get the sluiceTotal input element and check if it exists
-                    const sluiceTotalInput = document.getElementById('sluiceTotalInput');
-                    if (!sluiceTotalInput) {
-                        console.error("sluiceTotalInput element not found!");
-                        return; // Exit if input is missing
-                    }
-                    if (!sluiceTotalInput.value) {
-                        sluiceTotalInput.value = 909;
+                        // Get the sluiceTotal input element and check if it exists
+                        const sluiceTotalInput = document.getElementById('sluiceTotalInput');
+                        if (!sluiceTotalInput) {
+                            console.error("sluiceTotalInput element not found!");
+                            return; // Exit if input is missing
+                        }
+                        if (!sluiceTotalInput.value) {
+                            sluiceTotalInput.value = 909;
+                        }
                     }
 
                     // Get the Gate1 input element and check if it exists
@@ -2978,6 +3072,18 @@ document.addEventListener('DOMContentLoaded', async function () {
                         gate3Input.value = 909;
                     }
 
+                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                        // Get the Gate4 input element and check if it exists
+                        const gate4Input = document.getElementById('gate4Input');
+                        if (!gate4Input) {
+                            console.error("gate4Input element not found!");
+                            return; // Exit if input is missing
+                        }
+                        if (!gate4Input.value) {
+                            gate4Input.value = 909;
+                        }
+                    }
+
                     // Get the GateTotal input element and check if it exists
                     const gateTotalInput = document.getElementById('gateTotalInput');
                     if (!gateTotalInput) {
@@ -2988,16 +3094,18 @@ document.addEventListener('DOMContentLoaded', async function () {
                         gateTotalInput.value = 909;
                     }
 
-                    // ========================== CALCULATE GATE OUTFLOW TOTAL ==========================
-                    // Get the gateOutflowTotal input element and check if it exists
-                    const gateOutflowTotalInput = document.getElementById('gateOutflowTotalInput');
-                    console.log("gateOutflowTotalInput: ", gateOutflowTotalInput);
-                    if (!gateOutflowTotalInput) {
-                        console.error("gateOutflowTotalInput element not found!");
-                        return; // Exit if input is missing
-                    }
-                    if (!gateOutflowTotalInput.value) {
-                        gateOutflowTotalInput.value = 909;
+                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                        // ========================== CALCULATE GATE OUTFLOW TOTAL ==========================
+                        // Get the gateOutflowTotal input element and check if it exists
+                        const gateOutflowTotalInput = document.getElementById('gateOutflowTotalInput');
+                        console.log("gateOutflowTotalInput: ", gateOutflowTotalInput);
+                        if (!gateOutflowTotalInput) {
+                            console.error("gateOutflowTotalInput element not found!");
+                            return; // Exit if input is missing
+                        }
+                        if (!gateOutflowTotalInput.value) {
+                            gateOutflowTotalInput.value = 909;
+                        }
                     }
 
                     // ========================== CALCULATE GATE OUTFLOW AVERAGE ==========================
@@ -3041,125 +3149,137 @@ document.addEventListener('DOMContentLoaded', async function () {
                         time6 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour6'] + `:00Z`;
                     }
 
-                    // Payload for sluice1 values
-                    const payloadSluice1 = {
-                        "name": tsidSluice1,
-                        "office-id": "MVS",
-                        "units": "ft",
-                        "values": [
-                            [
-                                convertToISO(selectedHours['hour1']),
-                                sluice1Input.value,
-                                0
-                            ],
-                            // [
-                            //     time2,
-                            //     sluice1Input.value,
-                            //     0
-                            // ],
-                            // [
-                            //     time3,
-                            //     sluice1Input.value,
-                            //     0
-                            // ],
-                            // [
-                            //     time4,
-                            //     sluice1Input.value,
-                            //     0
-                            // ],
-                            // [
-                            //     time5,
-                            //     sluice1Input.value,
-                            //     0
-                            // ],
-                            // [
-                            //     time6,
-                            //     sluice1Input.value,
-                            //     0
-                            // ],
-                        ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
-                    };
-                    console.log("payloadSluice1: ", payloadSluice1);
+                    let payloadSluice1 = null;
+                    let payloadSluice2 = null;
+                    let payloadSluiceTotal = null;
+                    let payloadGate1 = null;
+                    let payloadGate2 = null;
+                    let payloadGate3 = null;
+                    let payloadGate4 = null;
+                    let payloadGateTotal = null;
+                    let payloadOutflowTotal = null;
+                    let payloadOutflowAverage = null;
 
-                    const payloadSluice2 = {
-                        "name": tsidSluice2,
-                        "office-id": "MVS",
-                        "units": "ft",
-                        "values": [
-                            [
-                                convertToISO(selectedHours['hour1']),
-                                sluice2Input.value,
-                                0
-                            ],
-                            // [
-                            //     time2,
-                            //     sluice2Input.value,
-                            //     0
-                            // ],
-                            // [
-                            //     time3,
-                            //     sluice2Input.value,
-                            //     0
-                            // ],
-                            // [
-                            //     time4,
-                            //     sluice2Input.value,
-                            //     0
-                            // ],
-                            // [
-                            //     time5,
-                            //     sluice2Input.value,
-                            //     0
-                            // ],
-                            // [
-                            //     time6,
-                            //     sluice2Input.value,
-                            //     0
-                            // ],
-                        ].filter(item => item[0] !== null),
-                    };
-                    console.log("payloadSluice2: ", payloadSluice2);
+                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                        payloadSluice1 = {
+                            "name": tsidSluice1,
+                            "office-id": "MVS",
+                            "units": "ft",
+                            "values": [
+                                [
+                                    convertToISO(selectedHours['hour1']),
+                                    sluice1Input.value,
+                                    0
+                                ],
+                                // [
+                                //     time2,
+                                //     sluice1Input.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time3,
+                                //     sluice1Input.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time4,
+                                //     sluice1Input.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time5,
+                                //     sluice1Input.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time6,
+                                //     sluice1Input.value,
+                                //     0
+                                // ],
+                            ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                        };
+                        console.log("payloadSluice1: ", payloadSluice1);
 
-                    const payloadSluiceTotal = {
-                        "name": tsidSluiceTotal,
-                        "office-id": "MVS",
-                        "units": "cfs",
-                        "values": [
-                            [
-                                convertToISO(selectedHours['hour1']),
-                                sluiceTotalInput.value,
-                                0
-                            ],
-                            // [
-                            //     time2,
-                            //     sluiceTotalInput.value,
-                            //     0
-                            // ],
-                            // [
-                            //     time3,
-                            //     sluiceTotalInput.value,
-                            //     0
-                            // ],
-                            // [
-                            //     time4,
-                            //     sluiceTotalInput.value,
-                            //     0
-                            // ],
-                            // [
-                            //     time5,
-                            //     sluiceTotalInput.value,
-                            //     0
-                            // ],
-                            // [
-                            //     time6,
-                            //     sluiceTotalInput.value,
-                            //     0
-                            // ],
-                        ].filter(item => item[0] !== null),
-                    };
-                    console.log("payloadSluiceTotal: ", payloadSluiceTotal);
+                        payloadSluice2 = {
+                            "name": tsidSluice2,
+                            "office-id": "MVS",
+                            "units": "ft",
+                            "values": [
+                                [
+                                    convertToISO(selectedHours['hour1']),
+                                    sluice2Input.value,
+                                    0
+                                ],
+                                // [
+                                //     time2,
+                                //     sluice2Input.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time3,
+                                //     sluice2Input.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time4,
+                                //     sluice2Input.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time5,
+                                //     sluice2Input.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time6,
+                                //     sluice2Input.value,
+                                //     0
+                                // ],
+                            ].filter(item => item[0] !== null),
+                        };
+                        console.log("payloadSluice2: ", payloadSluice2);
 
-                    const payloadGate1 = {
+                        payloadSluiceTotal = {
+                            "name": tsidSluiceTotal,
+                            "office-id": "MVS",
+                            "units": "cfs",
+                            "values": [
+                                [
+                                    convertToISO(selectedHours['hour1']),
+                                    sluiceTotalInput.value,
+                                    0
+                                ],
+                                // [
+                                //     time2,
+                                //     sluiceTotalInput.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time3,
+                                //     sluiceTotalInput.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time4,
+                                //     sluiceTotalInput.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time5,
+                                //     sluiceTotalInput.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time6,
+                                //     sluiceTotalInput.value,
+                                //     0
+                                // ],
+                            ].filter(item => item[0] !== null),
+                        };
+                        console.log("payloadSluiceTotal: ", payloadSluiceTotal);
+                    }
+
+                    payloadGate1 = {
                         "name": tsidGate1,
                         "office-id": "MVS",
                         "units": "ft",
@@ -3198,7 +3318,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     };
                     console.log("payloadGate1: ", payloadGate1);
 
-                    const payloadGate2 = {
+                    payloadGate2 = {
                         "name": tsidGate2,
                         "office-id": "MVS",
                         "units": "ft",
@@ -3237,7 +3357,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     };
                     console.log("payloadGate2: ", payloadGate2);
 
-                    const payloadGate3 = {
+                    payloadGate3 = {
                         "name": tsidGate3,
                         "office-id": "MVS",
                         "units": "ft",
@@ -3276,7 +3396,48 @@ document.addEventListener('DOMContentLoaded', async function () {
                     };
                     console.log("payloadGate3: ", payloadGate3);
 
-                    const payloadGateTotal = {
+                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                        payloadGate4 = {
+                            "name": tsidGate4,
+                            "office-id": "MVS",
+                            "units": "ft",
+                            "values": [
+                                [
+                                    convertToISO(selectedHours['hour1']),
+                                    gate4Input.value,
+                                    0
+                                ],
+                                // [
+                                //     time2,
+                                //     gate3Input.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time3,
+                                //     gate3Input.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time4,
+                                //     gate3Input.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time5,
+                                //     gate3Input.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time6,
+                                //     gate3Input.value,
+                                //     0
+                                // ],
+                            ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                        };
+                        console.log("payloadGate4: ", payloadGate4);
+                    }
+
+                    payloadGateTotal = {
                         "name": tsidGateTotal,
                         "office-id": "MVS",
                         "units": "cfs",
@@ -3315,46 +3476,48 @@ document.addEventListener('DOMContentLoaded', async function () {
                     };
                     console.log("payloadGateTotal: ", payloadGateTotal);
 
-                    const payloadOutflowTotal = {
-                        "name": tsidOutflowTotal,
-                        "office-id": "MVS",
-                        "units": "cfs",
-                        "values": [
-                            [
-                                convertToISO(selectedHours['hour1']),
-                                gateOutflowTotalInput.value,
-                                0
-                            ],
-                            // [
-                            //     time2,
-                            //     gateTotalInput.value,
-                            //     0
-                            // ],
-                            // [
-                            //     time3,
-                            //     gateTotalInput.value,
-                            //     0
-                            // ],
-                            // [
-                            //     time4,
-                            //     gateTotalInput.value,
-                            //     0
-                            // ],
-                            // [
-                            //     time5,
-                            //     gateTotalInput.value,
-                            //     0
-                            // ],
-                            // [
-                            //     time6,
-                            //     gateTotalInput.value,
-                            //     0
-                            // ],
-                        ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
-                    };
-                    console.log("payloadOutflowTotal: ", payloadOutflowTotal);
+                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                        payloadOutflowTotal = {
+                            "name": tsidOutflowTotal,
+                            "office-id": "MVS",
+                            "units": "cfs",
+                            "values": [
+                                [
+                                    convertToISO(selectedHours['hour1']),
+                                    gateOutflowTotalInput.value,
+                                    0
+                                ],
+                                // [
+                                //     time2,
+                                //     gateTotalInput.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time3,
+                                //     gateTotalInput.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time4,
+                                //     gateTotalInput.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time5,
+                                //     gateTotalInput.value,
+                                //     0
+                                // ],
+                                // [
+                                //     time6,
+                                //     gateTotalInput.value,
+                                //     0
+                                // ],
+                            ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                        };
+                        console.log("payloadOutflowTotal: ", payloadOutflowTotal);
+                    }
 
-                    const payloadOutflowAverage = {
+                    payloadOutflowAverage = {
                         "name": tsidOutflowAverage,
                         "office-id": "MVS",
                         "units": "cfs",
@@ -3487,58 +3650,93 @@ document.addEventListener('DOMContentLoaded', async function () {
                         cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
                     } else {
                         try {
-                            showSpinner(); // Show the spinner before creating the version
-                            await createTS(payloadSluice1);
-                            cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
-                            await createTS(payloadSluice2);
-                            cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
-                            await createTS(payloadSluiceTotal);
-                            cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
+                            showSpinner();
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                await createTS(payloadSluice1);
+                                cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
+                                await createTS(payloadSluice2);
+                                cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
+                                await createTS(payloadSluiceTotal);
+                                cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
+                            }
                             await createTS(payloadGate1);
                             cdaStatusBtn.innerText = "Write payloadGate1 successful!";
                             await createTS(payloadGate2);
                             cdaStatusBtn.innerText = "Write payloadGate2 successful!";
                             await createTS(payloadGate3);
                             cdaStatusBtn.innerText = "Write payloadGate3 successful!";
+                            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                                await createTS(payloadGate4);
+                                cdaStatusBtn.innerText = "Write payloadGate4 successful!";
+                            }
                             await createTS(payloadGateTotal);
                             cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
-                            await createTS(payloadOutflowTotal);
-                            cdaStatusBtn.innerText = "Write payloadOutflowTotal successful!";
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                await createTS(payloadOutflowTotal);
+                                cdaStatusBtn.innerText = "Write payloadOutflowTotal successful!";
+                            }
                             await createTS(payloadOutflowAverage);
                             cdaStatusBtn.innerText = "Write payloadOutflowAverage successful!";
 
-                            // // Fetch updated data and refresh the table
-                            const [
-                                updatedDataSluice1,
-                                updatedDataSluice2,
-                                updatedDataSluiceTotal,
-                                updatedDataGate1,
-                                updatedDataGate2,
-                                updatedDataGate3,
-                                updatedDataGateTotal,
-                                updatedDataOutflowTotal,
-                                updatedDataOutflowAverage
-                            ] = await Promise.all([
-                                fetchUpdatedData(tsidSluice1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
-                                fetchUpdatedData(tsidSluice2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
-                                fetchUpdatedData(tsidSluiceTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
-                                fetchUpdatedData(tsidGate1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
-                                fetchUpdatedData(tsidGate2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
-                                fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
-                                fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
-                                fetchUpdatedData(tsidOutflowTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
-                                fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
-                            ]);
+                            // Initialize variables to prevent reference errors
+                            let updatedDataSluice1 = null;
+                            let updatedDataSluice2 = null;
+                            let updatedDataSluiceTotal = null;
+                            let updatedDataGate1 = null;
+                            let updatedDataGate2 = null;
+                            let updatedDataGate3 = null;
+                            let updatedDataGate4 = null;
+                            let updatedDataGateTotal = null;
+                            let updatedDataOutflowTotal = null;
+                            let updatedDataOutflowAverage = null;
 
-                            createTable(
-                                isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                [
+                                    updatedDataSluice1,
+                                    updatedDataSluice2,
+                                    updatedDataSluiceTotal,
+                                    updatedDataGate1,
+                                    updatedDataGate2,
+                                    updatedDataGate3,
+                                    updatedDataGateTotal,
+                                    updatedDataOutflowTotal,
+                                    updatedDataOutflowAverage
+                                ] = await Promise.all([
+                                    fetchUpdatedData(tsidSluice1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidSluice2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidSluiceTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidOutflowTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
+                                ]);
+                            } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                                [
+                                    updatedDataGate1,
+                                    updatedDataGate2,
+                                    updatedDataGate3,
+                                    updatedDataGate4,
+                                    updatedDataGateTotal,
+                                    updatedDataOutflowAverage
+                                ] = await Promise.all([
+                                    fetchUpdatedData(tsidGate1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate4, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
+                                ]);
+                            }
+
+                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
                                 tsidSluice1, updatedDataSluice1, tsidSluice2, updatedDataSluice2, tsidSluiceTotal, updatedDataSluiceTotal,
                                 tsidGate1, updatedDataGate1, tsidGate2, updatedDataGate2, tsidGate3, updatedDataGate3, tsidGateTotal, updatedDataGateTotal,
                                 tsidOutflowTotal, updatedDataOutflowTotal, tsidOutflowAverage, updatedDataOutflowAverage,
                                 timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal,
                                 timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2, timeSeriesYesterdayDataGate3,
-                                timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage
-                            );
+                                timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, updatedDataGate4, null); // null is for yesterday data
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
