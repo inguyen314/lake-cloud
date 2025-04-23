@@ -80,6 +80,12 @@ document.addEventListener('DOMContentLoaded', async function () {
             const timeSeriesDataScheduleYesterday = await fetchTimeSeriesDataYesterday(tsidSchedule);
             console.log("timeSeriesDataScheduleYesterday:", timeSeriesDataScheduleYesterday);
 
+            // Fetch time series data using tsid values
+            const timeSeriesDataInstruction = await fetchTimeSeriesData(tsidInstruction);
+            console.log("timeSeriesDataInstruction:", timeSeriesDataInstruction);
+            const timeSeriesDataInstructionYesterday = await fetchTimeSeriesDataYesterday(tsidInstruction);
+            console.log("timeSeriesDataInstructionYesterday:", timeSeriesDataInstructionYesterday);
+
             let cdaSaveBtn;
 
             async function isLoggedIn() {
@@ -116,7 +122,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             if (timeSeriesDataSchedule && timeSeriesDataSchedule['regular-text-values'] && timeSeriesDataSchedule['regular-text-values'].length > 0) {
                 console.log("Calling createTable ...");
-                createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidSchedule, timeSeriesDataSchedule, timeSeriesDataScheduleYesterday);
+                createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidSchedule, timeSeriesDataSchedule, timeSeriesDataScheduleYesterday, tsidInstruction, timeSeriesDataInstruction, timeSeriesDataInstructionYesterday);
 
                 loginStateController()
                 setInterval(async () => {
@@ -124,7 +130,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }, 10000)
             } else {
                 console.log("Calling createDataEntryTable ...");
-                createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidSchedule, timeSeriesDataSchedule, timeSeriesDataScheduleYesterday);
+                createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidSchedule, timeSeriesDataSchedule, timeSeriesDataScheduleYesterday, tsidInstruction, timeSeriesDataInstruction, timeSeriesDataInstructionYesterday);
 
                 loginStateController()
                 setInterval(async () => {
@@ -132,11 +138,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }, 10000)
             }
 
-            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidSchedule, timeSeriesDataSchedule, timeSeriesDataScheduleYesterday) {
+            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidSchedule, timeSeriesDataSchedule, timeSeriesDataScheduleYesterday, tsidInstruction, timeSeriesDataInstruction, timeSeriesDataInstructionYesterday) {
                 console.log("timeSeriesDataSchedule:", timeSeriesDataSchedule);
                 console.log("timeSeriesDataScheduleYesterday:", timeSeriesDataScheduleYesterday);
 
-                // Convert timestamps in "regular-text-values" array
                 timeSeriesDataSchedule["regular-text-values"].forEach(item => {
                     // Check if "date-time" exists and is a valid Unix timestamp (number)
                     if (item["date-time"] && typeof item["date-time"] === "number") {
@@ -187,6 +192,56 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const formattedDataYesterday = timeSeriesDataScheduleYesterday;
                 console.log("formattedDataYesterday:", formattedDataYesterday);
 
+                timeSeriesDataInstruction["regular-text-values"].forEach(item => {
+                    // Check if "date-time" exists and is a valid Unix timestamp (number)
+                    if (item["date-time"] && typeof item["date-time"] === "number") {
+                        item["date-time-iso"] = convertUnixTimestampToISO(item["date-time"]);
+                    } else {
+                        console.error("Invalid timestamp for date-time:", item["date-time"]);
+                    }
+
+                    // Check if "data-entry-date" exists and is a valid Unix timestamp (number)
+                    if (item["data-entry-date"] && typeof item["data-entry-date"] === "number") {
+                        // Add the ISO format for "data-entry-date" without overwriting the existing "data-entry-date-iso" field
+                        if (!item["data-entry-date-iso"]) {
+                            item["data-entry-date-iso"] = convertUnixTimestampToISO(item["data-entry-date"]);
+                        }
+                    } else if (item["data-entry-date"] && typeof item["data-entry-date"] === "string" && !isNaN(Date.parse(item["data-entry-date"]))) {
+                        // If "data-entry-date" is already an ISO string, just add a new field with the same value
+                        item["data-entry-date-iso"] = item["data-entry-date"];
+                    } else {
+                        console.error("Invalid date format for data-entry-date:", item["data-entry-date"]);
+                    }
+                });
+
+                const formattedDataInstruction = timeSeriesDataInstruction;
+                console.log("formattedDataInstruction:", formattedDataInstruction);
+
+                timeSeriesDataInstructionYesterday["regular-text-values"].forEach(item => {
+                    // Check if "date-time" exists and is a valid Unix timestamp (number)
+                    if (item["date-time"] && typeof item["date-time"] === "number") {
+                        item["date-time-iso"] = convertUnixTimestampToISO(item["date-time"]);
+                    } else {
+                        console.error("Invalid timestamp for date-time:", item["date-time"]);
+                    }
+
+                    // Check if "data-entry-date" exists and is a valid Unix timestamp (number)
+                    if (item["data-entry-date"] && typeof item["data-entry-date"] === "number") {
+                        // Add the ISO format for "data-entry-date" without overwriting the existing "data-entry-date-iso" field
+                        if (!item["data-entry-date-iso"]) {
+                            item["data-entry-date-iso"] = convertUnixTimestampToISO(item["data-entry-date"]);
+                        }
+                    } else if (item["data-entry-date"] && typeof item["data-entry-date"] === "string" && !isNaN(Date.parse(item["data-entry-date"]))) {
+                        // If "data-entry-date" is already an ISO string, just add a new field with the same value
+                        item["data-entry-date-iso"] = item["data-entry-date"];
+                    } else {
+                        console.error("Invalid date format for data-entry-date:", item["data-entry-date"]);
+                    }
+                });
+
+                const formattedDataInstructionYesterday = timeSeriesDataInstructionYesterday;
+                console.log("formattedDataInstructionYesterday:", formattedDataInstructionYesterday);
+
                 const table = document.createElement("table");
                 table.id = "gate-settings";
 
@@ -225,9 +280,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         table.appendChild(row);
                     });
                 } else {
-                    // Use fallback value from formattedDataYesterday
                     const fallbackTextValue =
-                        formattedDataYesterday?.["regular-text-values"]?.[0]?.["text-value"] || "C";
+                        formattedDataYesterday?.["regular-text-values"]?.[0]?.["text-value"];
 
                     const row = document.createElement("tr");
 
@@ -254,16 +308,34 @@ document.addEventListener('DOMContentLoaded', async function () {
                 outputDiv.innerHTML = "";
                 outputDiv.appendChild(table);
 
-                const instructionDiv = document.createElement("div");
-                instructionDiv.className = "status";
-                const instructionInput = document.createElement("input");
-                instructionInput.type = "text";
-                instructionInput.value = "Note Goes Here";
-                instructionInput.id = "instruction-input";
-                instructionInput.placeholder = "Type your note...";
-                instructionInput.className = "editable-input";
-                instructionDiv.appendChild(instructionInput);
-                outputDiv.appendChild(instructionDiv);
+                if (Array.isArray(formattedDataInstruction["regular-text-values"]) && formattedDataInstruction["regular-text-values"].length > 0) {
+                    formattedDataInstruction["regular-text-values"].forEach((entry) => {
+                        const instructionDiv = document.createElement("div");
+                        instructionDiv.className = "status";
+                        const instructionInput = document.createElement("input");
+                        instructionInput.type = "text";
+                        instructionInput.value = entry["text-value"] || "No Text";
+                        instructionInput.id = "instruction-input";
+                        instructionInput.placeholder = "Type your note...";
+                        instructionInput.className = "editable-input";
+                        instructionDiv.appendChild(instructionInput);
+                        outputDiv.appendChild(instructionDiv);
+                    });
+                } else {
+                    const fallbackInstructionTextValue =
+                        formattedDataInstructionYesterday?.["regular-text-values"]?.[0]?.["text-value"];
+
+                    const instructionDiv = document.createElement("div");
+                    instructionDiv.className = "status";
+                    const instructionInput = document.createElement("input");
+                    instructionInput.type = "text";
+                    instructionInput.value = fallbackInstructionTextValue;
+                    instructionInput.id = "instruction-input";
+                    instructionInput.placeholder = "Type your note...";
+                    instructionInput.className = "editable-input";
+                    instructionDiv.appendChild(instructionInput);
+                    outputDiv.appendChild(instructionDiv);
+                }
 
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
@@ -306,7 +378,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
-                    console.log("Updated Text Values:", textValues);
+                    console.log("Updated Schedule Text Values:", textValues);
                     console.log("Value: ", textValues[0]['text-value']);
 
 
@@ -315,8 +387,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         "name": tsidSchedule,
                         "interval-offset": 0,
                         "time-zone": "GMT",
-                        // "date-version-type": "MAX_AGGREGATE",
-                        // "version-date": isoDateToday,
                         "regular-text-values": [
                             {
                                 "date-time": isoDateToday,
@@ -331,6 +401,56 @@ document.addEventListener('DOMContentLoaded', async function () {
                         ]
                     }
                     console.log("payload:", payload);
+
+                    let textInstructionValues = [];
+
+                    // If data exists in "regular-text-values", grab values from the inputs
+                    if (Array.isArray(formattedDataInstruction["regular-text-values"]) && formattedDataInstruction["regular-text-values"].length > 0) {
+                        // Loop through each entry and get the input values
+                        formattedDataInstruction["regular-text-values"].forEach((entry) => {
+                            const textInstructionValueInput = document.getElementById(`instruction-input`);
+                            if (textInstructionValueInput) {
+                                const value = textInstructionValueInput.value.trim() || "NA"; // Default to NA if empty
+                                textInstructionValues.push({
+                                    "date-time-iso": entry["date-time-iso"],
+                                    "text-value": value
+                                });
+                            }
+                        });
+                    } else {
+                        // If no data exists, get the value from the input for today's date
+                        const textInstructionValueInput = document.getElementById(`instruction-input`);
+                        if (textInstructionValueInput) {
+                            const value = textInstructionValueInput.value.trim() || "NA"; // Default to NA if empty
+                            textInstructionValues.push({
+                                "date-time-iso": isoDateToday,
+                                "text-value": value
+                            });
+                        }
+                    }
+
+                    console.log("Updated Instruction Text Values:", textInstructionValues);
+                    console.log("Value: ", textInstructionValues[0]['text-value']);
+
+                    const payloadInstruction = {
+                        "office-id": "MVS",
+                        "name": tsidInstruction,
+                        "interval-offset": 0,
+                        "time-zone": "GMT",
+                        "regular-text-values": [
+                            {
+                                "date-time": isoDateToday,
+                                "data-entry-date": isoDateToday,
+                                "text-value": textInstructionValues[0]['text-value'],
+                                "filename": "test.txt",
+                                "media-type": "text/plain",
+                                "quality-code": 0,
+                                "dest-flag": 0,
+                                "value-url": "https://cwms-data.usace.army.mil/cwms-data/timeseries/text/ignored?text-id=someId&office-id=MVS&value=true"
+                            }
+                        ]
+                    }
+                    console.log("payloadInstruction:", payloadInstruction);
 
                     async function loginCDA() {
                         if (await isLoggedIn()) return true;
@@ -471,12 +591,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                         try {
                             showSpinner(); // Show the spinner before creating the version
                             await writeTSText(payload);
-                            cdaStatusBtn.innerText = "Write successful!";
+                            cdaStatusBtn.innerText = "Write payload successful!";
+                            await writeTSText(payloadInstruction);
+                            cdaStatusBtn.innerText = "Write payloadInstruction successful!";
 
                             // Fetch updated data and refresh the table
                             const updatedData = await fetchUpdatedData(tsidSchedule, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1);
                             const updatedDataYesterday = await fetchUpdatedDataYesterday(tsidSchedule, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1);
-                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidSchedule, updatedData, updatedDataYesterday);
+                            const updatedDataInstruction = await fetchUpdatedData(tsidInstruction, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1);
+                            const updatedDataYesterdayInstruction = await fetchUpdatedDataYesterday(tsidInstruction, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1);
+                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidSchedule, updatedData, updatedDataYesterday, tsidInstruction, updatedDataInstruction, updatedDataYesterdayInstruction);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             cdaStatusBtn.innerText = "Failed to write data!";
