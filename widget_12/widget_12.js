@@ -242,13 +242,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // Create and populate the date cell
                     const dateCell = document.createElement("td");
-                    dateCell.textContent = entry.formattedTimestampCST || entry[0];
+                    dateCell.textContent = (entry.formattedTimestampCST || entry[0]).split('T')[0].replace(/^(\d{4})-(\d{2})-(\d{2})$/, '$2-$3-$1');
                     row.appendChild(dateCell);
 
                     // Create and populate the inflow (Turb) cell
-                    const inflowCell = document.createElement("td");
-                    const inflowInput = document.createElement("input");
-                    inflowInput.type = "number";
+                    const turbCell = document.createElement("td");
+                    const turbInput = document.createElement("input");
+                    turbInput.type = "number";
+                    turbInput.step = "10.0"; 
 
                     const value = (formattedDataTurb[index] && formattedDataTurb[index][1] !== undefined)
                         ? formattedDataTurb[index][1].toFixed(0)
@@ -256,19 +257,19 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     console.log("value:", value);
 
-                    inflowInput.value = value;
-                    inflowInput.className = "turb-input";
-                    inflowInput.id = `turbInput-${entry[0]}`;
-                    inflowInput.style.textAlign = "center";
-                    inflowInput.style.verticalAlign = "middle";
+                    turbInput.value = value;
+                    turbInput.className = "turb-input";
+                    turbInput.id = `turbInput-${entry[0]}`;
+                    turbInput.style.textAlign = "center";
+                    turbInput.style.verticalAlign = "middle";
 
                     // Highlight missing/default value
                     if (value === 909) {
-                        inflowInput.style.backgroundColor = "pink";
+                        turbInput.style.backgroundColor = "pink";
                     }
 
-                    inflowCell.appendChild(inflowInput);
-                    row.appendChild(inflowCell);
+                    turbCell.appendChild(turbInput);
+                    row.appendChild(turbCell);
 
 
                     // Spillway cell (non-editable)
