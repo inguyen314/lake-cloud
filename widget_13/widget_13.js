@@ -250,15 +250,26 @@ document.addEventListener('DOMContentLoaded', async function () {
                     table.appendChild(row);
                 }
 
-                const output11Div = document.getElementById("output13");
-                output11Div.innerHTML = "";
-                output11Div.appendChild(table);
+                const outputDiv = document.getElementById("output13");
+                outputDiv.innerHTML = "";
+                outputDiv.appendChild(table);
+
+                const instructionDiv = document.createElement("div");
+                instructionDiv.className = "status";
+                const instructionInput = document.createElement("input");
+                instructionInput.type = "text";
+                instructionInput.value = "Note Goes Here";
+                instructionInput.id = "instruction-input";
+                instructionInput.placeholder = "Type your note...";
+                instructionInput.className = "editable-input";
+                instructionDiv.appendChild(instructionInput);
+                outputDiv.appendChild(instructionDiv);
 
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
                 cdaSaveBtn.id = "cda-btn-schedule";
                 cdaSaveBtn.disabled = false;
-                output11Div.appendChild(cdaSaveBtn);
+                outputDiv.appendChild(cdaSaveBtn);
 
                 const statusDiv = document.createElement("div");
                 statusDiv.className = "status";
@@ -267,7 +278,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 cdaStatusBtn.id = "cda-btn-schedule";
                 cdaStatusBtn.disabled = false;
                 statusDiv.appendChild(cdaStatusBtn);
-                output11Div.appendChild(statusDiv);
+                outputDiv.appendChild(statusDiv);
 
                 cdaSaveBtn.addEventListener("click", async () => {
                     let textValues = [];
