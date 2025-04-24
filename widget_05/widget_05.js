@@ -682,30 +682,38 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 // Lk Shelbyville-Kaskaskia
-// tsidStorage: Lk Shelbyville-Kaskaskia.Stor.Inst.30Minutes.0.RatingCOE
-// tsidAverageOutflow: Lk Shelbyville-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test
+// tsidStorage: Lk Shelbyville-Kaskaskia.Stor.Inst.30Minutes.0.RatingCOE (Storage)
+// tsidAverageOutflow: Lk Shelbyville-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test (Outflow-Average-Lake-Test)
 // tsidEvaporation: Lk Shelbyville-Kaskaskia.Evap.Inst.0.Evaporation
-// tsidConsensus: Lk Shelbyville-Kaskaskia.Flow-In.Ave.~1Day.1Day.lakerep-rev-test
-// tsidComputedInflow: Lk Shelbyville-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed
+// tsidConsensus: Lk Shelbyville-Kaskaskia.Flow-In.Ave.~1Day.1Day.lakerep-rev-test (Consensus-Test)
+// tsidComputedInflow: Lk Shelbyville-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed (Computed-Inflow)
 
+//*******************************************************************************************************************************/ 
 
 // Rend Lk-Big Muddy
-// tsidStorage: Rend Lk-Big Muddy.Stor.Inst.30Minutes.0.RatingCOE
-// tsidAverageOutflow: Rend Lk-Big Muddy.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test
+// tsidStorage: Rend Lk-Big Muddy.Stor.Inst.30Minutes.0.RatingCOE (Storage)
+// tsidAverageOutflow: Rend Lk-Big Muddy.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test (Outflow-Average-Lake-Test)
 // tsidEvaporation: Rend Lk-Big Muddy.Evap.Inst.0.Evaporation
-// tsidConsensus: Rend Lk-Big Muddy.Flow-In.Ave.~1Day.1Day.lakerep-rev-test
-// tsidComputedInflow: Rend Lk-Big Muddy.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed
+// tsidConsensus: Rend Lk-Big Muddy.Flow-In.Ave.~1Day.1Day.lakerep-rev-test (Consensus-Test)
+// tsidComputedInflow: Rend Lk-Big Muddy.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed (Computed-Inflow)
 
+//*******************************************************************************************************************************/ 
 
 // Mark Twain Lk-Salt
-// tsidStorage: Mark Twain Lk-Salt.Stor.Inst.30Minutes.0.RatingCOE
-// tsidAverageOutflow: Mark Twain Lk-Salt.Flow.Ave.~1Day.1Day.lakerep-rev-test
+// tsidStorage: Mark Twain Lk-Salt.Stor.Inst.30Minutes.0.RatingCOE (Storage)
+// tsidAverageOutflow: Mark Twain Lk-Salt.Flow.Ave.~1Day.1Day.lakerep-rev-test (Outflow-Average-Lake-Test)
 // tsidEvaporation: Mark Twain Lk-Salt.Evap.Inst.0.Evaporation
-// tsidConsensus: Mark Twain Lk-Salt.Flow-In.Ave.~1Day.1Day.lakerep-rev-test
-// tsidComputedInflow: Mark Twain Lk-Salt.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed
+// tsidConsensus: Mark Twain Lk-Salt.Flow-In.Ave.~1Day.1Day.lakerep-rev-test (Consensus-Test)
+// tsidComputedInflow: Mark Twain Lk-Salt.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed (Computed-Inflow)
 
+//*******************************************************************************************************************************/ 
 
-
+// Carlyle Lk-Kaskaskia
+// tsidStorage: Carlyle Lk-Kaskaskia.Stor.Inst.30Minutes.0.RatingCOE (Storage)
+// tsidAverageOutflow: Carlyle Lk-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test (Outflow-Average-Lake-Test)
+// tsidEvaporation: Carlyle Lk-Kaskaskia.Evap.Inst.0.Evaporation
+// tsidConsensus: Carlyle Lk-Kaskaskia.Flow-In.Ave.~1Day.1Day.lakerep-rev-test (Consensus-Test)
+// tsidComputedInflow: Carlyle Lk-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed (Computed-Inflow)
 
 
 // declare
