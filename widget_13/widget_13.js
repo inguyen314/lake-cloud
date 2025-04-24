@@ -410,51 +410,140 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const cc = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil";
 
                     const today = new Date();
-                    const dateStr = today.toISOString().split('T')[0]; // e.g., "2025-04-23"
-                    const timeStr = today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // e.g., "12:25 PM"
+                    const yesterday = new Date(today);
+                    yesterday.setDate(today.getDate() - 1);
+                    const day1 = new Date(today);
+                    day1.setDate(day1.getDate() + 1);
+                    const day2 = new Date(today);
+                    day2.setDate(day2.getDate() + 2);
+                    const day3 = new Date(today);
+                    day3.setDate(day3.getDate() + 3);
+                    const timeStr = today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    // Format the date as MM-DD-YY
+                    const formattedDateToday = today.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    }).replace(/\//g, '-');
+                    const formattedDateYesterday = yesterday.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    }).replace(/\//g, '-');
+                    const formattedDateDay1 = day1.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    }).replace(/\//g, '-');
+                    const formattedDateDay2 = day2.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    }).replace(/\//g, '-');
+                    const formattedDateDay3 = day3.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    }).replace(/\//g, '-');
+
 
                     const subject = encodeURIComponent("Mark Twain Lake Data");
 
-                    const body = encodeURIComponent(
-                        `Today's Mark Twain Lake Data (${dateStr})\n` +
-                        `Internal use only. Do not distribute.\n\n` +
+                    const getEmailBody = async () => {
+                        // your existing logic
+                        let valueTurbEmail = '--';
+                        let valueSpillwayEmail = '--';
+                        let valueTotalEmail = '--';
 
-                        `Mark Twain Lake Data (Sent ${dateStr} ${timeStr})\n` +
+                        const urltsid = `${setBaseUrl}timeseries/group/Turbines-Lake-Test?office=${office}&category-id=${lake}`;
+                        const urltsid2 = `${setBaseUrl}timeseries/group/Outflow-Average-Lake-Test?office=${office}&category-id=${lake}`;
+                        const urltsid3 = `${setBaseUrl}timeseries/group/Generation-Release-Lake-Test?office=${office}&category-id=${lake}`;
 
-                        `Pool:\n` +
-                        `+--------+-------------+\n` +
-                        `| DATE   | ${dateStr} 00:00 |\n` +
-                        `| LEVEL  | 613.09 ft   |\n` +
-                        `+--------+-------------+\n\n` +
+                        const fetchTsidDataGenerationRelease = async () => {
+                            try {
+                                const [response, response2, response3] = await Promise.all([
+                                    fetch(urltsid),
+                                    fetch(urltsid2),
+                                    fetch(urltsid3),
+                                ]);
+                                const [tsidData, tsidData2, tsidData3] = await Promise.all([
+                                    response.json(),
+                                    response2.json(),
+                                    response3.json(),
+                                ]);
 
-                        `Outflow:\n` +
-                        `+----------+-----------+-----------+-------------------+\n` +
-                        `| DATE     | TURBINE   | SPILL     | TOTAL DISCHARGE   |\n` +
-                        `+----------+-----------+-----------+-------------------+\n` +
-                        `| 04-22-25 | 5440 dsf  | 0 dsf     | 5440 dsf          |\n` +
-                        `+----------+-----------+-----------+-------------------+\n\n` +
+                                if (tsidData?.['assigned-time-series']?.[0]) {
+                                    const tsidTurb = tsidData['assigned-time-series'][0]['timeseries-id'];
+                                    const timeSeriesDataTurb = await fetchTimeSeriesDataGenerationRelease(tsidTurb);
+                                    valueTurbEmail = (parseFloat(timeSeriesDataTurb?.['values']?.[0]?.[1])).toFixed(0) || '--';
+                                }
 
-                        `Inflow:\n` +
-                        `+----------+--------------+\n` +
-                        `| DATE     | INFLOW       |\n` +
-                        `+----------+--------------+\n` +
-                        `| 04-22-25 | 18200 dsf    |\n` +
-                        `+----------+--------------+\n\n` +
+                                if (tsidData2?.['assigned-time-series']?.[0]) {
+                                    const tsidSpillway = tsidData2['assigned-time-series'][0]['timeseries-id'];
+                                    const timeSeriesDataSpillway = await fetchTimeSeriesDataGenerationRelease(tsidSpillway);
+                                    valueSpillwayEmail = (parseFloat(timeSeriesDataSpillway?.['values']?.[0]?.[1])).toFixed(0) || '--';
+                                }
 
-                        `Inflow Forecast:\n` +
-                        `+------------+------------+------------+------------+\n` +
-                        `| 04-23-25   | 04-24-25   | 04-25-25   | 04-26-25   |\n` +
-                        `| 9000 dsf   | 6000 dsf   | 4000 dsf   | 2000 dsf   |\n` +
-                        `+------------+------------+------------+------------+\n\n` +
+                                if (tsidData3?.['assigned-time-series']?.[0]) {
+                                    const tsidTotal = tsidData3['assigned-time-series'][0]['timeseries-id'];
+                                    const timeSeriesDataTotal = await fetchTimeSeriesDataGenerationRelease(tsidTotal);
+                                    valueTotalEmail = (parseFloat(timeSeriesDataTotal?.['values']?.[0]?.[1])).toFixed(0) || '--';
+                                }
+                            } catch (error) {
+                                console.error("Error fetching tsidOutflow data:", error);
+                            }
+                        };
 
-                        `Reregulation Pool:\n` +
-                        `+--------+-------------+\n` +
-                        `| DATE   | ${dateStr} 00:00 |\n` +
-                        `| LEVEL  | 523.13 ft   |\n` +
-                        `+--------+-------------+\n\n` +
+                        await fetchTsidDataGenerationRelease();
 
-                        `Questions? Call (314)331-8342.`
-                    );
+                        return encodeURIComponent(
+                            `Today's Mark Twain Lake Data (${formattedDateToday})\n` +
+                            `Internal use only. Do not distribute.\n\n` +
+
+                            `Mark Twain Lake Data (Sent ${formattedDateToday} ${timeStr})\n` +
+
+                            `Pool:\n` +
+                            `+--------+-------------+\n` +
+                            `| DATE   | ${formattedDateToday} 00:00 |\n` +
+                            `| LEVEL  | -- ft   |\n` +
+                            `+--------+-------------+\n\n` +
+
+                            `Outflow:\n` +
+                            `+---------------+-----------+-----------+-------------------+\n` +
+                            `| DATE          | TURBINE   | SPILL     | TOTAL DISCHARGE   |\n` +
+                            `+---------------+-----------+-----------+-------------------+\n` +
+                            `| ${formattedDateYesterday} | ${valueTurbEmail} dsf  | ${valueSpillwayEmail} dsf     | ${valueTotalEmail} dsf          |\n` +
+                            `+---------------+-----------+-----------+-------------------+\n\n` +
+
+                            `Inflow:\n` +
+                            `+---------------+--------------+\n` +
+                            `| DATE          | INFLOW       |\n` +
+                            `+---------------+--------------+\n` +
+                            `| ${formattedDateYesterday} | -- dsf    |\n` +
+                            `+---------------+--------------+\n\n` +
+
+                            `Inflow Forecast:\n` +
+                            `+----------------+----------------+----------------+------------------+\n` +
+                            `| ${formattedDateToday}   | ${formattedDateDay1}    | ${formattedDateDay2}   | ${formattedDateDay3}   |\n` +
+                            `| -- dsf   | -- dsf   | -- dsf   | -- dsf   |\n` +
+                            `+----------------+----------------+----------------+------------------+\n\n` +
+
+                            `Reregulation Pool:\n` +
+                            `+--------+-----------------------+\n` +
+                            `| DATE   | ${formattedDateToday} 00:00 |\n` +
+                            `| LEVEL  | -- ft   |\n` +
+                            `+--------+-----------------------+\n\n` +
+
+                            `Questions? Call (314)331-8342.`
+                        );
+                    };
+
+                    const body = await getEmailBody();
+                    // Use body for your email send logic
+
+
+
 
 
                     const mailtoUrl = `mailto:${recipient}?cc=${cc}&subject=${subject}&body=${body}`;
@@ -739,6 +828,30 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
             };
+        }
+    };
+
+    const fetchTimeSeriesDataGenerationRelease = async (tsid) => {
+        let tsidData = null;
+        tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateToday}&office=${office}`;
+        console.log('tsidData:', tsidData);
+
+        try {
+            const response = await fetch(tsidData, {
+                headers: {
+                    "Accept": "application/json;version=2",
+                    "cache-control": "no-cache"
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error fetching time series data:", error);
         }
     };
 
