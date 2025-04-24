@@ -380,19 +380,82 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const body = encodeURIComponent(
                         `Below is today's Mark Twain Lake Re-Regulation Dam schedule and instructions.\n` +
                         `For internal use only. Not for public distribution.\n\n` +
-                      
+
                         `------------------------------------------------------------\n` +
                         ` Mark Twain Lake Instructions (Sent ${dateStr} ${timeStr})\n` +
                         `------------------------------------------------------------\n` +
                         `Schedule Date: ${dateStr}\n` +
                         `Schedule:      ${scheduleValue}\n\n` +
-                      
+
                         `Special Instructions:\n` +
                         `${instructionValue}\n\n` +
-                      
+
                         `Questions? Call the Water Control Office at 314-331-8342.`
-                      );
-                      
+                    );
+
+
+                    const mailtoUrl = `mailto:${recipient}?cc=${cc}&subject=${subject}&body=${body}`;
+
+                    console.log("mailto URL length:", mailtoUrl.length);
+                    console.log("mailto URL:", mailtoUrl);
+
+                    window.location.href = mailtoUrl;
+                });
+
+                sendSwpaBtn.addEventListener("click", async () => {
+                    // const recipient = "cemvs-cwms@usace.army.mil; ResourcesData@swpa.gov; brian.k.bean@usace.army.mil; Bryan.E.Bennett@usace.army.mil; Gregory.S.Kimery@usace.army.mil; Rocky.L.Reed@usace.army.mil; Larry.J.Hurt@usace.army.mil; Michael.D.Tate@usace.army.mil; James.A.McKeon@usace.army.mil; Joseph.P.Gibbs@usace.army.mil; Deric.K.Bishop@usace.army.mil; Joshua.W.Lewis@usace.army.mil; DLL-CEMVS-OD-JP@usace.army.mil";
+                    // const cc = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil; Allen.Phillips@usace.army.mil; Edward.J.Brauer@usace.army.mil; David.R.Busse@usace.army.mil; Bradley.J.Krischel@usace.army.mil; Kevin.P.Slattery@usace.army.mil";
+
+                    const recipient = "cemvs-cwms@usace.army.mil";
+                    const cc = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil";
+
+                    const today = new Date();
+                    const dateStr = today.toISOString().split('T')[0]; // e.g., "2025-04-23"
+                    const timeStr = today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // e.g., "12:25 PM"
+
+                    const subject = encodeURIComponent("Mark Twain Lake Data");
+
+                    const body = encodeURIComponent(
+                        `Today's Mark Twain Lake Data (${dateStr})\n` +
+                        `Internal use only. Do not distribute.\n\n` +
+
+                        `Mark Twain Lake Data (Sent ${dateStr} ${timeStr})\n` +
+
+                        `Pool:\n` +
+                        `+--------+-------------+\n` +
+                        `| DATE   | ${dateStr} 00:00 |\n` +
+                        `| LEVEL  | 613.09 ft   |\n` +
+                        `+--------+-------------+\n\n` +
+
+                        `Outflow:\n` +
+                        `+----------+-----------+-----------+-------------------+\n` +
+                        `| DATE     | TURBINE   | SPILL     | TOTAL DISCHARGE   |\n` +
+                        `+----------+-----------+-----------+-------------------+\n` +
+                        `| 04-22-25 | 5440 dsf  | 0 dsf     | 5440 dsf          |\n` +
+                        `+----------+-----------+-----------+-------------------+\n\n` +
+
+                        `Inflow:\n` +
+                        `+----------+--------------+\n` +
+                        `| DATE     | INFLOW       |\n` +
+                        `+----------+--------------+\n` +
+                        `| 04-22-25 | 18200 dsf    |\n` +
+                        `+----------+--------------+\n\n` +
+
+                        `Inflow Forecast:\n` +
+                        `+------------+------------+------------+------------+\n` +
+                        `| 04-23-25   | 04-24-25   | 04-25-25   | 04-26-25   |\n` +
+                        `| 9000 dsf   | 6000 dsf   | 4000 dsf   | 2000 dsf   |\n` +
+                        `+------------+------------+------------+------------+\n\n` +
+
+                        `Reregulation Pool:\n` +
+                        `+--------+-------------+\n` +
+                        `| DATE   | ${dateStr} 00:00 |\n` +
+                        `| LEVEL  | 523.13 ft   |\n` +
+                        `+--------+-------------+\n\n` +
+
+                        `Questions? Call (314)331-8342.`
+                    );
+
 
                     const mailtoUrl = `mailto:${recipient}?cc=${cc}&subject=${subject}&body=${body}`;
 
