@@ -79,21 +79,18 @@ document.addEventListener('DOMContentLoaded', async function () {
             const tsidConsensusData = await response4.json();
             const tsidComputedInflowData = await response5.json();
 
-            // Extract the timeseries-id from the response
-            const tsidConsensus = tsidConsensusData['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
-            const tsidComputedInflow = tsidComputedInflowData['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
+            const tsidConsensus = tsidConsensusData['assigned-time-series'][0]['timeseries-id'];
+            const tsidComputedInflow = tsidComputedInflowData['assigned-time-series'][0]['timeseries-id'];
 
             console.log("tsidConsensus:", tsidConsensus);
             console.log("tsidComputedInflow:", tsidComputedInflow);
 
-            // Fetch time series data using tsid values
             const timeSeriesData3 = await fetchTimeSeriesData(tsidConsensus);
             const timeSeriesData4 = await fetchTimeSeriesData(tsidComputedInflow);
 
             console.log("timeSeriesData3:", timeSeriesData3);
             console.log("timeSeriesData4:", timeSeriesData4);
 
-            // Call getHourlyDataOnTopOfHour for both time series data
             const hourlyConsensusData = getMidnightData(timeSeriesData3, tsidConsensus);
             const hourlyComputedInflowData = getMidnightData(timeSeriesData4, tsidComputedInflow);
 
@@ -227,7 +224,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 });
             }
 
-            // Call the function
             createTableAvg(formattedConsensusData, formattedComputedInflowData);
         } catch (error) {
             console.error("Error fetching tsid data:", error);

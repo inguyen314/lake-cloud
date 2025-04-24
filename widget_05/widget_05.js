@@ -318,13 +318,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         const qualityInput = document.createElement("input");
                         qualityInput.type = "text";
-
-                        // Set qualityInput to 0 if consensusValue is 909
-                        if (Number(consensusValue) > 0) {
-                            qualityInput.value = "0";
-                        } else {
-                            qualityInput.value = consensusEntry && consensusEntry.qualityCode != null ? consensusEntry.qualityCode : '';
-                        }
+                        qualityInput.value = consensusEntry && consensusEntry.qualityCode != null ? consensusEntry.qualityCode : '';
 
                         qualityInput.style.width = "60px";
                         qualityInput.style.textAlign = "center"; // Center text inside input
@@ -707,7 +701,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 // tsidStorage: Mark Twain Lk-Salt.Stor.Inst.30Minutes.0.RatingCOE
 // tsidAverageOutflow: Mark Twain Lk-Salt.Flow.Ave.~1Day.1Day.lakerep-rev-test
 // tsidEvaporation: Mark Twain Lk-Salt.Evap.Inst.0.Evaporation
-// tsidConsensus: Mark Twain Lk-Salt.Flow-In.Ave.~1Day.1Day.lakerep-rev-test 
+// tsidConsensus: Mark Twain Lk-Salt.Flow-In.Ave.~1Day.1Day.lakerep-rev-test
 // tsidComputedInflow: Mark Twain Lk-Salt.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed
 
 
