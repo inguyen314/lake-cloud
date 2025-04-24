@@ -300,13 +300,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                         input.type = "number";
 
                         const consensusEntry = hourlyConsensusData[i];
-                        const consensusValue = consensusEntry && consensusEntry.value != null ? consensusEntry.value : 909;
+                        const isMissingValue = !consensusEntry || consensusEntry.value == null;
+
+                        const consensusValue = isMissingValue ? Math.round(total / 10) * 10 : consensusEntry.value;
                         input.value = Number(consensusValue).toFixed(0);
 
-                        // Set background color to pink if value is 909
-                        if (Number(consensusValue) === 909) {
+                        // Set background color to pink if original value was null/undefined
+                        if (isMissingValue) {
                             input.style.backgroundColor = "pink";
                         }
+
 
                         input.style.width = "60px";
                         input.style.textAlign = "center"; // Horizontally center text inside the input
@@ -324,7 +327,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         qualityInput.type = "text";
 
                         // Set qualityInput to 0 if consensusValue is 909
-                        if (Number(consensusValue) === 909) {
+                        if (Number(consensusValue) > 0) {
                             qualityInput.value = "0";
                         } else {
                             qualityInput.value = consensusEntry && consensusEntry.qualityCode != null ? consensusEntry.qualityCode : '';
