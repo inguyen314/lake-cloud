@@ -403,11 +403,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 });
 
                 sendSwpaBtn.addEventListener("click", async () => {
-                    // const recipient = "cemvs-cwms@usace.army.mil; ResourcesData@swpa.gov; brian.k.bean@usace.army.mil; Bryan.E.Bennett@usace.army.mil; Gregory.S.Kimery@usace.army.mil; Rocky.L.Reed@usace.army.mil; Larry.J.Hurt@usace.army.mil; Michael.D.Tate@usace.army.mil; James.A.McKeon@usace.army.mil; Joseph.P.Gibbs@usace.army.mil; Deric.K.Bishop@usace.army.mil; Joshua.W.Lewis@usace.army.mil; DLL-CEMVS-OD-JP@usace.army.mil";
-                    // const cc = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil; Allen.Phillips@usace.army.mil; Edward.J.Brauer@usace.army.mil; David.R.Busse@usace.army.mil; Bradley.J.Krischel@usace.army.mil; Kevin.P.Slattery@usace.army.mil";
+                    const recipient = "cemvs-cwms@usace.army.mil; ResourcesData@swpa.gov; brian.k.bean@usace.army.mil; Bryan.E.Bennett@usace.army.mil; Gregory.S.Kimery@usace.army.mil; Rocky.L.Reed@usace.army.mil; Larry.J.Hurt@usace.army.mil; Michael.D.Tate@usace.army.mil; James.A.McKeon@usace.army.mil; Joseph.P.Gibbs@usace.army.mil; Deric.K.Bishop@usace.army.mil; Joshua.W.Lewis@usace.army.mil; DLL-CEMVS-OD-JP@usace.army.mil";
+                    const cc = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil; Allen.Phillips@usace.army.mil; Edward.J.Brauer@usace.army.mil; David.R.Busse@usace.army.mil; Bradley.J.Krischel@usace.army.mil; Kevin.P.Slattery@usace.army.mil";
 
-                    const recipient = "cemvs-cwms@usace.army.mil";
-                    const cc = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil";
+                    // const recipient = "cemvs-cwms@usace.army.mil";
+                    // const cc = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil";
 
                     const today = new Date();
                     const yesterday = new Date(today);
@@ -455,22 +455,38 @@ document.addEventListener('DOMContentLoaded', async function () {
                         let valueTurbEmail = '--';
                         let valueSpillwayEmail = '--';
                         let valueTotalEmail = '--';
+                        let valueInflowEmail = '--';
+                        let valueForecastDay1Email = '--';
+                        let valueForecastDay2Email = '--';
+                        let valueForecastDay3Email = '--';
+                        let valueForecastDay4Email = '--';
+                        let valueMidNightPoolEmail = '--';
+                        let valueMidNightReRegEmail = '--';
 
                         const urltsid = `${setBaseUrl}timeseries/group/Turbines-Lake-Test?office=${office}&category-id=${lake}`;
                         const urltsid2 = `${setBaseUrl}timeseries/group/Outflow-Average-Lake-Test?office=${office}&category-id=${lake}`;
                         const urltsid3 = `${setBaseUrl}timeseries/group/Generation-Release-Lake-Test?office=${office}&category-id=${lake}`;
+                        const urltsid4 = `${setBaseUrl}timeseries/group/Forecast-Lake?office=${office}&category-id=${lake}`;
+                        const urltsid5 = `${setBaseUrl}timeseries/group/Stage?office=${office}&category-id=${lake}`;
+                        const urltsid6 = `${setBaseUrl}timeseries/group/Stage?office=${office}&category-id=ReReg Pool-Salt`;
 
                         const fetchTsidDataGenerationRelease = async () => {
                             try {
-                                const [response, response2, response3] = await Promise.all([
+                                const [response, response2, response3, response4, response5, response6] = await Promise.all([
                                     fetch(urltsid),
                                     fetch(urltsid2),
                                     fetch(urltsid3),
+                                    fetch(urltsid4),
+                                    fetch(urltsid5),
+                                    fetch(urltsid6),
                                 ]);
-                                const [tsidData, tsidData2, tsidData3] = await Promise.all([
+                                const [tsidData, tsidData2, tsidData3, tsidData4, tsidData5, tsidData6] = await Promise.all([
                                     response.json(),
                                     response2.json(),
                                     response3.json(),
+                                    response4.json(),
+                                    response5.json(),
+                                    response6.json(),
                                 ]);
 
                                 if (tsidData?.['assigned-time-series']?.[0]) {
@@ -490,6 +506,28 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     const timeSeriesDataTotal = await fetchTimeSeriesDataGenerationRelease(tsidTotal);
                                     valueTotalEmail = (parseFloat(timeSeriesDataTotal?.['values']?.[0]?.[1])).toFixed(0) || '--';
                                 }
+
+                                if (tsidData4?.['assigned-time-series']?.[1]) {
+                                    const tsidInflow = tsidData4['assigned-time-series'][1]['timeseries-id'];
+                                    const timeSeriesDataInflow = await fetchTimeSeriesDataInflow(tsidInflow);
+                                    valueInflowEmail = (parseFloat(timeSeriesDataInflow?.['values']?.[0]?.[1])).toFixed(0) || '--';
+                                    valueForecastDay1Email = (parseFloat(timeSeriesDataInflow?.['values']?.[1]?.[1])).toFixed(0) || '--';
+                                    valueForecastDay2Email = (parseFloat(timeSeriesDataInflow?.['values']?.[2]?.[1])).toFixed(0) || '--';
+                                    valueForecastDay3Email = (parseFloat(timeSeriesDataInflow?.['values']?.[3]?.[1])).toFixed(0) || '--';
+                                    valueForecastDay4Email = (parseFloat(timeSeriesDataInflow?.['values']?.[4]?.[1])).toFixed(0) || '--';
+                                }
+
+                                if (tsidData5?.['assigned-time-series']?.[0]) {
+                                    const tsidMidNightPool = tsidData5['assigned-time-series'][0]['timeseries-id'];
+                                    const timeSeriesDataMidNightPool = await fetchTimeSeriesDataMidNightPool(tsidMidNightPool);
+                                    valueMidNightPoolEmail = (parseFloat(timeSeriesDataMidNightPool?.['values']?.[0]?.[1])).toFixed(2) || '--';
+                                }
+
+                                if (tsidData6?.['assigned-time-series']?.[0]) {
+                                    const tsidMidNightReReg = tsidData6['assigned-time-series'][0]['timeseries-id'];
+                                    const timeSeriesDataMidNightReReg = await fetchTimeSeriesDataMidNightPool(tsidMidNightReReg);
+                                    valueMidNightReRegEmail = (parseFloat(timeSeriesDataMidNightReReg?.['values']?.[0]?.[1])).toFixed(2) || '--';
+                                }
                             } catch (error) {
                                 console.error("Error fetching tsidOutflow data:", error);
                             }
@@ -498,42 +536,30 @@ document.addEventListener('DOMContentLoaded', async function () {
                         await fetchTsidDataGenerationRelease();
 
                         return encodeURIComponent(
-                            `Today's Mark Twain Lake Data (${formattedDateToday})\n` +
+                            `Mark Twain Lake Data (${formattedDateToday})\n` +
                             `Internal use only. Do not distribute.\n\n` +
 
-                            `Mark Twain Lake Data (Sent ${formattedDateToday} ${timeStr})\n` +
+                            `Sent: ${formattedDateToday} ${timeStr}\n\n` +
 
                             `Pool:\n` +
-                            `+--------+-------------+\n` +
-                            `| DATE   | ${formattedDateToday} 00:00 |\n` +
-                            `| LEVEL  | -- ft   |\n` +
-                            `+--------+-------------+\n\n` +
+                            `DATE${' '.repeat(18 - 'DATE'.length)}| LEVEL\n` +
+                            `${formattedDateToday} | ${valueMidNightPoolEmail} ft\n\n` +
 
                             `Outflow:\n` +
-                            `+---------------+-----------+-----------+-------------------+\n` +
-                            `| DATE          | TURBINE   | SPILL     | TOTAL DISCHARGE   |\n` +
-                            `+---------------+-----------+-----------+-------------------+\n` +
-                            `| ${formattedDateYesterday} | ${valueTurbEmail} dsf  | ${valueSpillwayEmail} dsf     | ${valueTotalEmail} dsf          |\n` +
-                            `+---------------+-----------+-----------+-------------------+\n\n` +
+                            `DATE${' '.repeat(18 - 'DATE'.length)}| TURBINE${' '.repeat(3)}| SPILL${' '.repeat(5)}| TOTAL\n` +
+                            `${formattedDateYesterday} | ${valueTurbEmail.padEnd(8)}| ${valueSpillwayEmail.padEnd(8)}| ${valueTotalEmail}\n\n` +
 
                             `Inflow:\n` +
-                            `+---------------+--------------+\n` +
-                            `| DATE          | INFLOW       |\n` +
-                            `+---------------+--------------+\n` +
-                            `| ${formattedDateYesterday} | -- dsf    |\n` +
-                            `+---------------+--------------+\n\n` +
+                            `DATE${' '.repeat(18 - 'DATE'.length)}| INFLOW\n` +
+                            `${formattedDateYesterday} | ${valueInflowEmail}\n\n` +
 
-                            `Inflow Forecast:\n` +
-                            `+----------------+----------------+----------------+------------------+\n` +
-                            `| ${formattedDateToday}   | ${formattedDateDay1}    | ${formattedDateDay2}   | ${formattedDateDay3}   |\n` +
-                            `| -- dsf   | -- dsf   | -- dsf   | -- dsf   |\n` +
-                            `+----------------+----------------+----------------+------------------+\n\n` +
+                            `Forecast:\n` +
+                            `${formattedDateToday.padEnd(12)}| ${formattedDateDay1.padEnd(12)}| ${formattedDateDay2.padEnd(12)}| ${formattedDateDay3.padEnd(12)}\n` +
+                            `${valueForecastDay1Email.padEnd(18)}| ${valueForecastDay2Email.padEnd(12)}| ${valueForecastDay3Email.padEnd(12)}| ${valueForecastDay4Email.padEnd(12)}\n\n` +
 
-                            `Reregulation Pool:\n` +
-                            `+--------+-----------------------+\n` +
-                            `| DATE   | ${formattedDateToday} 00:00 |\n` +
-                            `| LEVEL  | -- ft   |\n` +
-                            `+--------+-----------------------+\n\n` +
+                            `Rereg Pool:\n` +
+                            `DATE${' '.repeat(18 - 'DATE'.length)}| LEVEL\n` +
+                            `${formattedDateToday} | ${valueMidNightReRegEmail} ft\n\n` +
 
                             `Questions? Call (314)331-8342.`
                         );
@@ -882,6 +908,33 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     };
 
+    const fetchTimeSeriesDataMidNightPool = async (tsid) => {
+        // Convert to Date object
+        const date = new Date(isoDateDay1);
+
+        // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
+        date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
+
+        // Convert back to ISO string (preserve UTC format)
+        const end = date.toISOString();
+
+        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${end}&office=${office}`;
+        console.log('tsidData:', tsidData);
+        try {
+            const response = await fetch(tsidData, {
+                headers: {
+                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                    "cache-control": "no-cache"
+                }
+            });
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error fetching time series data:", error);
+        }
+    };
+
     const fetchTimeSeriesDataYesterday = async (tsid) => {
         // Convert to Date object
         const date = new Date(isoDateToday);
@@ -908,6 +961,33 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     };
 
+    const fetchTimeSeriesDataInflow = async (tsid) => {
+        let tsidData = null;
+        if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+            tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay6}&office=${office}&version-date=${convertTo6AMCST(isoDateToday)}`;
+        } else {
+            tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${isoDateDay6}&office=${office}&version-date=${convertTo6AMCST(isoDateToday)}`;
+        }
+        console.log('tsidData:', tsidData);
+
+        try {
+            const response = await fetch(tsidData, {
+                headers: {
+                    "Accept": "application/json;version=2",
+                    "cache-control": "no-cache"
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error fetching time series data:", error);
+        }
+    };
 
     fetchTsidData();
 
@@ -1006,6 +1086,17 @@ document.addEventListener('DOMContentLoaded', async function () {
         const dstOffsetHours = currentOffset / 60;
 
         return dstOffsetHours; // Returns the offset in hours (e.g., -5 or -6)
+    }
+
+    function convertTo6AMCST(isoDateToday) {
+        // Parse the input date
+        let date = new Date(isoDateToday);
+
+        // Add 6 hours (6 * 60 * 60 * 1000 ms)
+        date = new Date(date.getTime() + 6 * 60 * 60 * 1000);
+
+        // Return the new ISO string
+        return date.toISOString();
     }
 });
 
