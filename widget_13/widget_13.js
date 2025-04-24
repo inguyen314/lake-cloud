@@ -363,6 +363,45 @@ document.addEventListener('DOMContentLoaded', async function () {
                 sendSwpaBtn.className = "fetch-btn";
                 outputDiv.appendChild(sendSwpaBtn);
 
+                sendMvkBtn.addEventListener("click", async () => {
+                    const recipient = "cemvs-cwms@usace.army.mil; brian.k.bean@usace.army.mil; Bryan.E.Bennett@usace.army.mil; Gregory.S.Kimery@usace.army.mil; Rocky.L.Reed@usace.army.mil; Larry.J.Hurt@usace.army.mil; Michael.D.Tate@usace.army.mil; James.A.McKeon@usace.army.mil; DLL-CEMVS-OD-JP@usace.army.mil";
+                    const cc = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil; Allen.Phillips@usace.army.mil; Edward.J.Brauer@usace.army.mil; David.R.Busse@usace.army.mil; Bradley.J.Krischel@usace.army.mil; Kevin.P.Slattery@usace.army.mil";
+                    // const bcc = "chn262@gmail.com";
+
+                    const today = new Date();
+                    const dateStr = today.toISOString().split('T')[0];
+                    const timeStr = today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    const scheduleValue = formattedScheduleData?.["regular-text-values"]?.[0]?.["text-value"];
+                    const instructionValue = formattedDataInstruction?.["regular-text-values"]?.[0]?.["text-value"];
+
+                    const subject = encodeURIComponent("Mark Twain Lake Instructions");
+
+                    const body = encodeURIComponent(
+                        `Below is today's Mark Twain Lake Re-Regulation Dam schedule and instructions.\n` +
+                        `For internal use only. Not for public distribution.\n\n` +
+                      
+                        `------------------------------------------------------------\n` +
+                        ` Mark Twain Lake Instructions (Sent ${dateStr} ${timeStr})\n` +
+                        `------------------------------------------------------------\n` +
+                        `Schedule Date: ${dateStr}\n` +
+                        `Schedule:      ${scheduleValue}\n\n` +
+                      
+                        `Special Instructions:\n` +
+                        `${instructionValue}\n\n` +
+                      
+                        `Questions? Call the Water Control Office at 314-331-8342.`
+                      );
+                      
+
+                    const mailtoUrl = `mailto:${recipient}?cc=${cc}&subject=${subject}&body=${body}`;
+
+                    console.log("mailto URL length:", mailtoUrl.length);
+                    console.log("mailto URL:", mailtoUrl);
+
+                    window.location.href = mailtoUrl;
+                });
+
                 cdaSaveBtn.addEventListener("click", async () => {
                     let textScheduleValues = [];
 
