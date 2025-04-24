@@ -1570,7 +1570,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const gate4Input = document.createElement("input");
                         gate4Input.type = "number";
                         gate4Input.value = null;
-                        gate4Input.id = `gate3AdditionalInput`;
+                        gate4Input.id = `gate4AdditionalInput`;
                         gate4Input.style.backgroundColor = "lightgray";
                         gate4Cell.appendChild(gate4Input);
                         row.appendChild(gate4Cell);
@@ -1671,44 +1671,59 @@ document.addEventListener('DOMContentLoaded', async function () {
                     let payloadOutflowTotalAdditional = null;
                     let payloadOutflowAverageAdditional = null;
 
+                    let sluice1AdditionalInput = null;
+                    let sluice2AdditionalInput = null;
+                    let sluiceTotalAdditionalInput = null;
+                    let gate1AdditionalInput = null;
+                    let gate2AdditionalInput = null;
+                    let gate3AdditionalInput = null;
+                    let gate4AdditionalInput = null;
+                    let gateTotalAdditionalInput = null;
+                    let gateOutflowTotalAdditionalInput = null;
+                    let gateOutflowAverageAdditionalInput = null;
+
                     // Determine if the paylaod is "New Entry" or "Update Existing". Use hasValidNewEntryHour
                     if (hasValidNewEntryHour === true) {
                         Object.keys(selectedHours).forEach(hour => {
                             console.log(`${hour} selected:`, selectedHours[hour]);
                         });
 
-                        // Get the sluice1 input element and check if it exists
-                        const sluice1AdditionalInput = document.getElementById(`sluice1AdditionalInput`);
-                        if (!sluice1AdditionalInput) {
-                            console.error("sluice1AdditionalInput element not found!");
-                            return; // Exit if input is missing
-                        }
-                        if (!sluice1AdditionalInput.value) {
-                            sluice1AdditionalInput.value = 909;
+                        if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                            // Get the sluice1 input element and check if it exists
+                            sluice1AdditionalInput = document.getElementById(`sluice1AdditionalInput`);
+                            if (!sluice1AdditionalInput) {
+                                console.error("sluice1AdditionalInput element not found!");
+                                return; // Exit if input is missing
+                            }
+                            if (!sluice1AdditionalInput.value) {
+                                sluice1AdditionalInput.value = 909;
+                            }
+
+                            // Get the sluice2 input element and check if it exists
+                            sluice2AdditionalInput = document.getElementById(`sluice2AdditionalInput`);
+                            if (!sluice2AdditionalInput) {
+                                console.error("sluice2AdditionalInput element not found!");
+                                return; // Exit if input is missing
+                            }
+                            if (!sluice2AdditionalInput.value) {
+                                sluice2AdditionalInput.value = 909;
+                            }
                         }
 
-                        // Get the sluice2 input element and check if it exists
-                        const sluice2AdditionalInput = document.getElementById(`sluice2AdditionalInput`);
-                        if (!sluice2AdditionalInput) {
-                            console.error("sluice2AdditionalInput element not found!");
-                            return; // Exit if input is missing
-                        }
-                        if (!sluice2AdditionalInput.value) {
-                            sluice2AdditionalInput.value = 909;
-                        }
-
-                        // Get the sluiceTotal input element and check if it exists
-                        const sluiceTotalAdditionalInput = document.getElementById(`sluiceTotalAdditionalInput`);
-                        if (!sluiceTotalAdditionalInput) {
-                            console.error("sluiceTotalAdditionalInput element not found!");
-                            return; // Exit if input is missing
-                        }
-                        if (!sluiceTotalAdditionalInput.value) {
-                            sluiceTotalAdditionalInput.value = 909;
+                        if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                            // Get the sluiceTotal input element and check if it exists
+                            sluiceTotalAdditionalInput = document.getElementById(`sluiceTotalAdditionalInput`);
+                            if (!sluiceTotalAdditionalInput) {
+                                console.error("sluiceTotalAdditionalInput element not found!");
+                                return; // Exit if input is missing
+                            }
+                            if (!sluiceTotalAdditionalInput.value) {
+                                sluiceTotalAdditionalInput.value = 909;
+                            }
                         }
 
                         // Get the Gate1 input element and check if it exists
-                        const gate1AdditionalInput = document.getElementById(`gate1AdditionalInput`);
+                        gate1AdditionalInput = document.getElementById(`gate1AdditionalInput`);
                         if (!gate1AdditionalInput) {
                             console.error("gate1AdditionalInput element not found!");
                             return; // Exit if input is missing
@@ -1718,7 +1733,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
 
                         // Get the Gate2 input element and check if it exists
-                        const gate2AdditionalInput = document.getElementById(`gate2AdditionalInput`);
+                        gate2AdditionalInput = document.getElementById(`gate2AdditionalInput`);
                         if (!gate2AdditionalInput) {
                             console.error("gate2AdditionalInput element not found!");
                             return; // Exit if input is missing
@@ -1728,7 +1743,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
 
                         // Get the Gate3 input element and check if it exists
-                        const gate3AdditionalInput = document.getElementById(`gate3AdditionalInput`);
+                        gate3AdditionalInput = document.getElementById(`gate3AdditionalInput`);
                         if (!gate3AdditionalInput) {
                             console.error("gate3AdditionalInput element not found!");
                             return; // Exit if input is missing
@@ -1737,18 +1752,19 @@ document.addEventListener('DOMContentLoaded', async function () {
                             gate3AdditionalInput.value = 909;
                         }
 
-                        // Get the Gate4 input element and check if it exists
-                        const gate4AdditionalInput = document.getElementById(`gate4AdditionalInput`);
-                        if (!gate4AdditionalInput) {
-                            console.error("gate4AdditionalInput element not found!");
-                            return; // Exit if input is missing
+                        if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                            // Get the Gate4 input element and check if it exists
+                            gate4AdditionalInput = document.getElementById(`gate4AdditionalInput`);
+                            if (!gate4AdditionalInput) {
+                                console.error("gate4AdditionalInput element not found!");
+                                return; // Exit if input is missing
+                            }
+                            if (!gate4AdditionalInput.value) {
+                                gate4AdditionalInput.value = 909;
+                            }
                         }
-                        if (!gate4AdditionalInput.value) {
-                            gate4AdditionalInput.value = 909;
-                        }
-
                         // Get the GateTotal input element and check if it exists
-                        const gateTotalAdditionalInput = document.getElementById(`gateTotalAdditionalInput`);
+                        gateTotalAdditionalInput = document.getElementById(`gateTotalAdditionalInput`);
                         if (!gateTotalAdditionalInput) {
                             console.error("gateTotalAdditionalInput element not found!");
                             return; // Exit if input is missing
@@ -1757,22 +1773,24 @@ document.addEventListener('DOMContentLoaded', async function () {
                             gateTotalAdditionalInput.value = 909;
                         }
 
-                        // ========================== CALCULATE OUTFLOW TOTAL ==========================
-                        // Get the gateOutflowTotal input element and check if it exists
-                        const gateOutflowTotalInput = document.getElementById('gateOutflowTotalAdditionalInput');
-                        if (!gateOutflowTotalInput) {
-                            console.error("gateOutflowTotalInput element not found!");
-                            return; // Exit if input is missing
-                        }
-                        const gateTotal = gateTotalAdditionalInput ? Number(gateTotalAdditionalInput.value) || 0 : 0;
-                        const sluiceTotal = sluiceTotalAdditionalInput ? Number(sluiceTotalAdditionalInput.value) || 0 : 0;
-                        const calculatedValue = gateTotal + sluiceTotal;
+                        if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                            // ========================== CALCULATE OUTFLOW TOTAL ==========================
+                            // Get the gateOutflowTotal input element and check if it exists
+                            gateOutflowTotalInput = document.getElementById('gateOutflowTotalAdditionalInput');
+                            if (!gateOutflowTotalInput) {
+                                console.error("gateOutflowTotalInput element not found!");
+                                return; // Exit if input is missing
+                            }
+                            const gateTotal = gateTotalAdditionalInput ? Number(gateTotalAdditionalInput.value) || 0 : 0;
+                            const sluiceTotal = sluiceTotalAdditionalInput ? Number(sluiceTotalAdditionalInput.value) || 0 : 0;
+                            const calculatedValue = gateTotal + sluiceTotal;
 
-                        gateOutflowTotalInput.value = calculatedValue > 0 ? calculatedValue : 909;
+                            gateOutflowTotalInput.value = calculatedValue > 0 ? calculatedValue : 909;
+                        }
 
                         // ========================== CALCULATE OUTFLOW AVERAGE ==========================
                         // Get the gateOutflowAverage input element and check if it exists
-                        const gateOutflowAverageInput = document.getElementById(`gateOutflowAverageInput`);
+                        gateOutflowAverageInput = document.getElementById(`gateOutflowAverageInput`);
                         if (!gateOutflowAverageInput) {
                             console.error("gateOutflowAverageInput element not found!");
                             return; // Exit if input is missing
@@ -1828,123 +1846,126 @@ document.addEventListener('DOMContentLoaded', async function () {
                             time6 = isoDateToday.slice(0, 10) + "T" + selectedHours['hour6'] + `:00Z`;
                         }
 
-                        payloadSluice1Additional = {
-                            "name": tsidSluice1,
-                            "office-id": "MVS",
-                            "units": "ft",
-                            "values": [
-                                [
-                                    time1,
-                                    sluice1AdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time2,
-                                    sluice1AdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time3,
-                                    sluice1AdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time4,
-                                    sluice1AdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time5,
-                                    sluice1AdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time6,
-                                    sluice1AdditionalInput.value,
-                                    0
-                                ],
-                            ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
-                        };
-                        console.log("payloadSluice1Additional: ", payloadSluice1Additional);
+                        if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                            payloadSluice1Additional = {
+                                "name": tsidSluice1,
+                                "office-id": "MVS",
+                                "units": "ft",
+                                "values": [
+                                    [
+                                        time1,
+                                        sluice1AdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time2,
+                                        sluice1AdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time3,
+                                        sluice1AdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time4,
+                                        sluice1AdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time5,
+                                        sluice1AdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time6,
+                                        sluice1AdditionalInput.value,
+                                        0
+                                    ],
+                                ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                            };
+                            console.log("payloadSluice1Additional: ", payloadSluice1Additional);
 
-                        payloadSluice2Additional = {
-                            "name": tsidSluice2,
-                            "office-id": "MVS",
-                            "units": "ft",
-                            "values": [
-                                [
-                                    time1,
-                                    sluice2AdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time2,
-                                    sluice2AdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time3,
-                                    sluice2AdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time4,
-                                    sluice2AdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time5,
-                                    sluice2AdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time6,
-                                    sluice2AdditionalInput.value,
-                                    0
-                                ],
-                            ].filter(item => item[0] !== null),
-                        };
-                        console.log("payloadSluice2Additional: ", payloadSluice2Additional);
+                            payloadSluice2Additional = {
+                                "name": tsidSluice2,
+                                "office-id": "MVS",
+                                "units": "ft",
+                                "values": [
+                                    [
+                                        time1,
+                                        sluice2AdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time2,
+                                        sluice2AdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time3,
+                                        sluice2AdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time4,
+                                        sluice2AdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time5,
+                                        sluice2AdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time6,
+                                        sluice2AdditionalInput.value,
+                                        0
+                                    ],
+                                ].filter(item => item[0] !== null),
+                            };
+                            console.log("payloadSluice2Additional: ", payloadSluice2Additional);
+                        }
 
-                        payloadSluiceTotalAdditional = {
-                            "name": tsidSluiceTotal,
-                            "office-id": "MVS",
-                            "units": "cfs",
-                            "values": [
-                                [
-                                    time1,
-                                    sluiceTotalAdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time2,
-                                    sluiceTotalAdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time3,
-                                    sluiceTotalAdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time4,
-                                    sluiceTotalAdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time5,
-                                    sluiceTotalAdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time6,
-                                    sluiceTotalAdditionalInput.value,
-                                    0
-                                ],
-                            ].filter(item => item[0] !== null),
-                        };
-                        console.log("payloadSluiceTotalAdditional: ", payloadSluiceTotalAdditional);
-
+                        if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                            payloadSluiceTotalAdditional = {
+                                "name": tsidSluiceTotal,
+                                "office-id": "MVS",
+                                "units": "cfs",
+                                "values": [
+                                    [
+                                        time1,
+                                        sluiceTotalAdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time2,
+                                        sluiceTotalAdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time3,
+                                        sluiceTotalAdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time4,
+                                        sluiceTotalAdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time5,
+                                        sluiceTotalAdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time6,
+                                        sluiceTotalAdditionalInput.value,
+                                        0
+                                    ],
+                                ].filter(item => item[0] !== null),
+                            };
+                            console.log("payloadSluiceTotalAdditional: ", payloadSluiceTotalAdditional);
+                        }
                         payloadGate1Additional = {
                             "name": tsidGate1,
                             "office-id": "MVS",
@@ -2062,44 +2083,46 @@ document.addEventListener('DOMContentLoaded', async function () {
                         };
                         console.log("payloadGate3Additional: ", payloadGate3Additional);
 
-                        payloadGate4Additional = {
-                            "name": tsidGate4,
-                            "office-id": "MVS",
-                            "units": "ft",
-                            "values": [
-                                [
-                                    time1,
-                                    gate4AdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time2,
-                                    gate4AdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time3,
-                                    gate4AdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time4,
-                                    gate4AdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time5,
-                                    gate4AdditionalInput.value,
-                                    0
-                                ],
-                                [
-                                    time6,
-                                    gate4AdditionalInput.value,
-                                    0
-                                ],
-                            ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
-                        };
-                        console.log("payloadGate4Additional: ", payloadGate4Additional);
+                        if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                            payloadGate4Additional = {
+                                "name": tsidGate4,
+                                "office-id": "MVS",
+                                "units": "ft",
+                                "values": [
+                                    [
+                                        time1,
+                                        gate4AdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time2,
+                                        gate4AdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time3,
+                                        gate4AdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time4,
+                                        gate4AdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time5,
+                                        gate4AdditionalInput.value,
+                                        0
+                                    ],
+                                    [
+                                        time6,
+                                        gate4AdditionalInput.value,
+                                        0
+                                    ],
+                                ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                            };
+                            console.log("payloadGate4Additional: ", payloadGate4Additional);
+                        }
 
                         payloadGateTotalAdditional = {
                             "name": tsidGateTotal,
@@ -2140,44 +2163,46 @@ document.addEventListener('DOMContentLoaded', async function () {
                         };
                         console.log("payloadGateTotalAdditional: ", payloadGateTotalAdditional);
 
-                        payloadOutflowTotalAdditional = {
-                            "name": tsidOutflowTotal,
-                            "office-id": "MVS",
-                            "units": "cfs",
-                            "values": [
-                                [
-                                    time1,
-                                    parseFloat(gateTotalAdditionalInput.value) + parseFloat(sluiceTotalAdditionalInput.value),
-                                    0
-                                ],
-                                [
-                                    time2,
-                                    parseFloat(gateTotalAdditionalInput.value) + parseFloat(sluiceTotalAdditionalInput.value),
-                                    0
-                                ],
-                                [
-                                    time3,
-                                    parseFloat(gateTotalAdditionalInput.value) + parseFloat(sluiceTotalAdditionalInput.value),
-                                    0
-                                ],
-                                [
-                                    time4,
-                                    parseFloat(gateTotalAdditionalInput.value) + parseFloat(sluiceTotalAdditionalInput.value),
-                                    0
-                                ],
-                                [
-                                    time5,
-                                    parseFloat(gateTotalAdditionalInput.value) + parseFloat(sluiceTotalAdditionalInput.value),
-                                    0
-                                ],
-                                [
-                                    time6,
-                                    parseFloat(gateTotalAdditionalInput.value) + parseFloat(sluiceTotalAdditionalInput.value),
-                                    0
-                                ],
-                            ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
-                        };
-                        console.log("payloadOutflowTotalAdditional: ", payloadOutflowTotalAdditional);
+                        if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                            payloadOutflowTotalAdditional = {
+                                "name": tsidOutflowTotal,
+                                "office-id": "MVS",
+                                "units": "cfs",
+                                "values": [
+                                    [
+                                        time1,
+                                        parseFloat(gateTotalAdditionalInput.value) + parseFloat(sluiceTotalAdditionalInput.value),
+                                        0
+                                    ],
+                                    [
+                                        time2,
+                                        parseFloat(gateTotalAdditionalInput.value) + parseFloat(sluiceTotalAdditionalInput.value),
+                                        0
+                                    ],
+                                    [
+                                        time3,
+                                        parseFloat(gateTotalAdditionalInput.value) + parseFloat(sluiceTotalAdditionalInput.value),
+                                        0
+                                    ],
+                                    [
+                                        time4,
+                                        parseFloat(gateTotalAdditionalInput.value) + parseFloat(sluiceTotalAdditionalInput.value),
+                                        0
+                                    ],
+                                    [
+                                        time5,
+                                        parseFloat(gateTotalAdditionalInput.value) + parseFloat(sluiceTotalAdditionalInput.value),
+                                        0
+                                    ],
+                                    [
+                                        time6,
+                                        parseFloat(gateTotalAdditionalInput.value) + parseFloat(sluiceTotalAdditionalInput.value),
+                                        0
+                                    ],
+                                ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                            };
+                            console.log("payloadOutflowTotalAdditional: ", payloadOutflowTotalAdditional);
+                        }
 
                         // Prepare average outflow payload
                         // 1. Loop through the values in payloadOutflowTotalAdditional and combine to formattedDataOutflowTotal
@@ -2735,24 +2760,38 @@ document.addEventListener('DOMContentLoaded', async function () {
                             if (hasValidNewEntryHour === true) {
                                 console.log("Creating new entries...");
                                 showSpinner(); // Show the spinner before creating the version
-                                await createTS(payloadSluice1Additional);
-                                cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
-                                await createTS(payloadSluice2Additional);
-                                cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
-                                await createTS(payloadSluiceTotalAdditional);
-                                cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
+                                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                    await createTS(payloadSluice1Additional);
+                                    cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
+                                    await createTS(payloadSluice2Additional);
+                                    cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
+                                }
+
+                                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                    await createTS(payloadSluiceTotalAdditional);
+                                    cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
+                                }
+
                                 await createTS(payloadGate1Additional);
                                 cdaStatusBtn.innerText = "Write payloadGate1 successful!";
                                 await createTS(payloadGate2Additional);
                                 cdaStatusBtn.innerText = "Write payloadGate2 successful!";
                                 await createTS(payloadGate3Additional);
                                 cdaStatusBtn.innerText = "Write payloadGate3 successful!";
-                                await createTS(payloadGate4Additional);
-                                cdaStatusBtn.innerText = "Write payloadGate4 successful!";
+
+                                if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                    await createTS(payloadGate4Additional);
+                                    cdaStatusBtn.innerText = "Write payloadGate4 successful!";
+                                }
+
                                 await createTS(payloadGateTotalAdditional);
                                 cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
-                                await createTS(payloadOutflowTotalAdditional);
-                                cdaStatusBtn.innerText = "Write payloadOutflowTotalAdditional successful!";
+
+                                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                    await createTS(payloadOutflowTotalAdditional);
+                                    cdaStatusBtn.innerText = "Write payloadOutflowTotalAdditional successful!";
+                                }
+
                                 await createTS(payloadOutflowAverageAdditional);
                                 cdaStatusBtn.innerText = "Write payloadOutflowAverageAdditional successful!";
                             } else if (payloads && Object.keys(payloads).length > 0 && payloadAverageOutflow) {
@@ -2980,6 +3019,44 @@ document.addEventListener('DOMContentLoaded', async function () {
                     console.log("formattedYesterdayDataGate4:", formattedYesterdayDataGate4);
                     console.log("formattedYesterdayDataGateTotal:", formattedYesterdayDataGateTotal);
                     console.log("formattedYesterdayDataOutflowAverage:", formattedYesterdayDataOutflowAverage);
+                } else if (lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                    // Today's data
+                    formattedDataSluiceTotal = formatData(timeSeriesDataSluiceTotal);
+                    formattedDataGate1 = formatData(timeSeriesDataGate1);
+                    formattedDataGate2 = formatData(timeSeriesDataGate2);
+                    formattedDataGate3 = formatData(timeSeriesDataGate3);
+                    formattedDataGate4 = formatData(timeSeriesDataGate4);
+                    formattedDataGateTotal = formatData(timeSeriesDataGateTotal);
+                    formattedDataOutflowTotal = formatData(timeSeriesDataOutflowTotal);
+                    formattedDataOutflowAverage = formatData(timeSeriesDataOutflowAverage);
+
+                    console.log("formattedDataSluiceTotal:", formattedDataSluiceTotal);
+                    console.log("formattedDataGate1:", formattedDataGate1);
+                    console.log("formattedDataGate2:", formattedDataGate2);
+                    console.log("formattedDataGate3:", formattedDataGate3);
+                    console.log("formattedDataGate4:", formattedDataGate4);
+                    console.log("formattedDataGateTotal:", formattedDataGateTotal);
+                    console.log("formattedDataOutflowTotal:", formattedDataOutflowTotal);
+                    console.log("formattedDataOutflowAverage:", formattedDataOutflowAverage);
+
+                    // Yesterday's data
+                    formattedYesterdayDataSluiceTotal = formatData(timeSeriesYesterdayDataSluiceTotal);
+                    formattedYesterdayDataGate1 = formatData(timeSeriesYesterdayDataGate1);
+                    formattedYesterdayDataGate2 = formatData(timeSeriesYesterdayDataGate2);
+                    formattedYesterdayDataGate3 = formatData(timeSeriesYesterdayDataGate3);
+                    formattedYesterdayDataGate4 = formatData(timeSeriesYesterdayDataGate4);
+                    formattedYesterdayDataGateTotal = formatData(timeSeriesYesterdayDataGateTotal);
+                    formattedYesterdayDataOutflowTotal = formatData(timeSeriesYesterdayDataOutflowTotal);
+                    formattedYesterdayDataOutflowAverage = formatData(timeSeriesYesterdayDataOutflowAverage);
+
+                    console.log("formattedYesterdayDataSluiceTotal:", formattedYesterdayDataSluiceTotal);
+                    console.log("formattedYesterdayDataGate1:", formattedYesterdayDataGate1);
+                    console.log("formattedYesterdayDataGate2:", formattedYesterdayDataGate2);
+                    console.log("formattedYesterdayDataGate3:", formattedYesterdayDataGate3);
+                    console.log("formattedYesterdayDataGate4:", formattedYesterdayDataGate4);
+                    console.log("formattedYesterdayDataGateTotal:", formattedYesterdayDataGateTotal);
+                    console.log("formattedYesterdayDataOutflowTotal:", formattedYesterdayDataOutflowTotal);
+                    console.log("formattedYesterdayDataOutflowAverage:", formattedYesterdayDataOutflowAverage);
                 }
 
                 const table = document.createElement("table");
@@ -3006,6 +3083,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                     headerRow.appendChild(sluiceTotalHeader);
                 }
 
+                if (lake === "lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                    const sluiceTotalHeader = document.createElement("th");
+                    sluiceTotalHeader.textContent = "Sluice Total (cfs)";
+                    headerRow.appendChild(sluiceTotalHeader);
+                }
+
                 const gate1Header = document.createElement("th");
                 gate1Header.textContent = "Gate 1 (ft)";
                 headerRow.appendChild(gate1Header);
@@ -3018,7 +3101,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 gate3Header.textContent = "Gate 3 (ft)";
                 headerRow.appendChild(gate3Header);
 
-                if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                     const gate4Header = document.createElement("th");
                     gate4Header.textContent = "Gate 4 (ft)";
                     headerRow.appendChild(gate4Header);
@@ -3033,6 +3116,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                     gateTotalHeader.textContent = "Gate Total (cfs)";
                     headerRow.appendChild(gateTotalHeader);
 
+                    const outflowTotalHeader = document.createElement("th");
+                    outflowTotalHeader.textContent = "Outflow Total (cfs)";
+                    headerRow.appendChild(outflowTotalHeader);
+                }
+
+                if (lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                     const outflowTotalHeader = document.createElement("th");
                     outflowTotalHeader.textContent = "Outflow Total (cfs)";
                     headerRow.appendChild(outflowTotalHeader);
@@ -3119,7 +3208,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         row.appendChild(sluice1Cell);
                         // console.log(document.getElementById(`sluice1Input`));  // Check if element exists
 
-
                         // Sluice2 cell (editable)
                         const sluice2Cell = document.createElement("td");
                         const sluice2Input = document.createElement("input");
@@ -3133,7 +3221,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         sluice2Cell.appendChild(sluice2Input);
                         row.appendChild(sluice2Cell);
+                    }
 
+                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                         // Sluice Total cell (editable)
                         const sluiceTotalCell = document.createElement("td");
                         const sluiceTotalInput = document.createElement("input");
@@ -3186,7 +3276,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     row.appendChild(gate3Cell);
 
                     // Gate 4 (editable)
-                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                         const gate4Cell = document.createElement("td");
                         const gate4Input = document.createElement("input");
                         gate4Input.type = "number";
@@ -3211,8 +3301,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     gateTotalCell.appendChild(gateTotalInput);
                     row.appendChild(gateTotalCell);
 
-                    // Gate Outflow Total (calculated)
-                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                    // Outflow Total (calculated)
+                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                         averageOutflowCalculate = (formattedYesterdayDataGateTotal.at(-1)[1] + formattedYesterdayDataSluiceTotal.at(-1)[1]).toFixed(0);
                         const gateOutflowTotalCell = document.createElement("td");
                         const gateOutflowTotalInput = document.createElement("input");
@@ -3252,7 +3342,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const secondCell = document.createElement("td");
                 secondCell.type = "number";
                 secondCell.id = `gateOutflowAverageInput`;
-                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                     secondCell.textContent = averageOutflowCalculate;
                 } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
                     secondCell.textContent = formattedYesterdayDataGateTotal.at(-1)[1].toFixed(0);
@@ -3311,7 +3401,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                         if (!sluice2Input.value) {
                             sluice2Input.value = 909;
                         }
+                    }
 
+                    if (lake === "lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                         // Get the sluiceTotal input element and check if it exists
                         const sluiceTotalInput = document.getElementById('sluiceTotalInput');
                         if (!sluiceTotalInput) {
@@ -3353,7 +3445,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         gate3Input.value = 909;
                     }
 
-                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                         // Get the Gate4 input element and check if it exists
                         const gate4Input = document.getElementById('gate4Input');
                         if (!gate4Input) {
@@ -3375,8 +3467,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         gateTotalInput.value = 909;
                     }
 
-                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
-                        // ========================== CALCULATE GATE OUTFLOW TOTAL ==========================
+                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                        // ========================== CALCULATE GATE TOTAL ==========================
                         // Get the gateOutflowTotal input element and check if it exists
                         const gateOutflowTotalInput = document.getElementById('gateOutflowTotalInput');
                         console.log("gateOutflowTotalInput: ", gateOutflowTotalInput);
@@ -3389,7 +3481,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
-                    // ========================== CALCULATE GATE OUTFLOW AVERAGE ==========================
+                    // ========================== CALCULATE GATE AVERAGE ==========================
                     // Get the gateOutflowAverage input element and check if it exists
                     const gateOutflowAverageInput = document.getElementById('gateOutflowAverageInput');
                     if (!gateOutflowAverageInput) {
@@ -3519,7 +3611,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                             ].filter(item => item[0] !== null),
                         };
                         console.log("payloadSluice2: ", payloadSluice2);
+                    }
 
+                    if (lake === "lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                         payloadSluiceTotal = {
                             "name": tsidSluiceTotal,
                             "office-id": "MVS",
@@ -3677,7 +3771,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     };
                     console.log("payloadGate3: ", payloadGate3);
 
-                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                         payloadGate4 = {
                             "name": tsidGate4,
                             "office-id": "MVS",
@@ -3757,7 +3851,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     };
                     console.log("payloadGateTotal: ", payloadGateTotal);
 
-                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                         payloadOutflowTotal = {
                             "name": tsidOutflowTotal,
                             "office-id": "MVS",
@@ -3937,6 +4031,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 cdaStatusBtn.innerText = "Write payloadSluice1 successful!";
                                 await createTS(payloadSluice2);
                                 cdaStatusBtn.innerText = "Write payloadSluice2 successful!";
+                            }
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                                 await createTS(payloadSluiceTotal);
                                 cdaStatusBtn.innerText = "Write payloadSluiceTotal successful!";
                             }
@@ -3946,13 +4042,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                             cdaStatusBtn.innerText = "Write payloadGate2 successful!";
                             await createTS(payloadGate3);
                             cdaStatusBtn.innerText = "Write payloadGate3 successful!";
-                            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                                 await createTS(payloadGate4);
                                 cdaStatusBtn.innerText = "Write payloadGate4 successful!";
                             }
                             await createTS(payloadGateTotal);
                             cdaStatusBtn.innerText = "Write payloadGateTotal successful!";
-                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                                 await createTS(payloadOutflowTotal);
                                 cdaStatusBtn.innerText = "Write payloadOutflowTotal successful!";
                             }
@@ -4007,6 +4103,26 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
                                     fetchUpdatedData(tsidGate4, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
                                     fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
+                                ]);
+                            } else if (lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                [
+                                    updatedDataSluiceTotal,
+                                    updatedDataGate1,
+                                    updatedDataGate2,
+                                    updatedDataGate3,
+                                    updatedDataGate4,
+                                    updatedDataGateTotal,
+                                    updatedDataOutflowTotal,
+                                    updatedDataOutflowAverage
+                                ] = await Promise.all([
+                                    fetchUpdatedData(tsidSluiceTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate4, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidOutflowTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
                                     fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
                                 ]);
                             }
