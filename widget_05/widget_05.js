@@ -62,14 +62,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("levelIdUrl:", levelIdUrl);
 
     const fetchTimeSeriesData = async (tsid) => {
-        // Handle blance inflow module
         const beginDate = lookback !== null ? lookback : isoDateMinus6Days;
         const tsidData = `${setBaseUrl}timeseries?page-size=1000000&name=${tsid}&begin=${beginDate}&end=${isoDateToday}&office=${office}`;
         console.log('tsidData:', tsidData);
         try {
             const response = await fetch(tsidData, {
                 headers: {
-                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                    "Accept": "application/json;version=2",
                     "cache-control": "no-cache"
                 }
             });
@@ -96,12 +95,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             console.log("tsidEvapLevelData:", tsidEvapLevelData);
 
-            // Extract the timeseries-id from the response
-            const tsidStorage = tsidStorageData['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
-            const tsidAverageOutflow = tsidAverageOutflowData['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
-            const tsidEvaporation = tsidEvapLevelData['location-level-id'] // Grab the first timeseries-id
-            const tsidConsensus = tsidConsensusData['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
-            const tsidComputedInflow = tsidComputedInflowData['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
+            const tsidStorage = tsidStorageData['assigned-time-series'][0]['timeseries-id'];
+            const tsidAverageOutflow = tsidAverageOutflowData['assigned-time-series'][0]['timeseries-id'];
+            const tsidEvaporation = tsidEvapLevelData['location-level-id'];
+            const tsidConsensus = tsidConsensusData['assigned-time-series'][0]['timeseries-id'];
+            const tsidComputedInflow = tsidComputedInflowData['assigned-time-series'][0]['timeseries-id'];
 
             const curentMonthEvapValue = getEvapValueForMonth(tsidEvapLevelData, month);
             console.log("curentMonthEvapValue:", curentMonthEvapValue);
@@ -112,7 +110,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("tsidConsensus:", tsidConsensus);
             console.log("tsidComputedInflow:", tsidComputedInflow);
 
-            // Fetch time series data using tsid values
             const timeSeriesData1 = await fetchTimeSeriesData(tsidStorage);
             const timeSeriesData2 = await fetchTimeSeriesData(tsidAverageOutflow);
             const timeSeriesData3 = await fetchTimeSeriesData(tsidConsensus);
@@ -123,7 +120,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("timeSeriesData3:", timeSeriesData3);
             console.log("timeSeriesData4:", timeSeriesData4);
 
-            // Call getHourlyDataOnTopOfHour for both time series data
             const hourlyData1 = getMidnightData(timeSeriesData1, tsidStorage);
             const hourlyData2 = getMidnightData(timeSeriesData2, tsidAverageOutflow);
             const hourlyConsensusData = getMidnightData(timeSeriesData3, tsidConsensus);
@@ -189,12 +185,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             formattedStorageData = addDeltaAsDsfToData(formattedStorageData);
             formattedStorageData = shiftDeltaUp(formattedStorageData);
 
-            // Now you have formatted data for both datasets
             console.log("formattedStorageData:", formattedStorageData);
             console.log("formattedAverageOutflowData:", formattedAverageOutflowData);
 
-
-            // Calculate the delta storage
             function createTable(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData) {
                 // Create the table element
                 const table = document.createElement("table");
@@ -572,14 +565,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                 });
             }
 
-            // Call the function with formattedStorageData and formattedAverageOutflowData
             createTable(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData);
 
             loginStateController()
-            // Setup timers
             setInterval(async () => {
                 loginStateController()
-            }, 10000) // time is in millis
+            }, 10000)
 
         } catch (error) {
             console.error("Error fetching tsid data:", error);
@@ -710,3 +701,36 @@ document.addEventListener('DOMContentLoaded', async function () {
 // tsidEvaporation: Rend Lk-Big Muddy.Evap.Inst.0.Evaporation
 // tsidConsensus: Rend Lk-Big Muddy.Flow-In.Ave.~1Day.1Day.lakerep-rev-test
 // tsidComputedInflow: Rend Lk-Big Muddy.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed
+
+
+// Mark Twain Lk-Salt
+// tsidStorage: Mark Twain Lk-Salt.Stor.Inst.30Minutes.0.RatingCOE
+// tsidAverageOutflow: Mark Twain Lk-Salt.Flow.Ave.~1Day.1Day.lakerep-rev-test
+// tsidEvaporation: Mark Twain Lk-Salt.Evap.Inst.0.Evaporation
+// tsidConsensus: Mark Twain Lk-Salt.Flow-In.Ave.~1Day.1Day.lakerep-rev-test 
+// tsidComputedInflow: Mark Twain Lk-Salt.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed
+
+
+
+
+
+// declare
+//    l_svt  cwms_t_tsv_array := cwms_t_tsv_array();
+//    l_tsv  cwms_t_tsv;
+// begin
+//     CWMS_20.CWMS_ENV.SET_SESSION_OFFICE_ID('MVS');
+//        l_svt := cwms_t_tsv_array();
+//        l_tsv := cwms_t_tsv( to_date('04-22-2025 00:00:00','MM-DD-YYYY hh24:mi:ss') , 0, 0 );
+//        l_svt.extend();
+//        l_svt(1) := l_tsv;
+//           CWMS_20.CWMS_TS.store_ts(
+//               p_office_id => 'MVS',
+//               p_cwms_ts_id => 'Mark Twain Lk-Salt.Flow-In.Ave.~1Day.1Day.lakerep-rev-test',
+//               p_units => 'cfs',
+//               p_timeseries_data => l_svt,
+//               p_store_rule => CWMS_20.Cwms_Util.Replace_All,
+//               p_override_prot => CWMS_20.Cwms_Util.False_Num,
+//               p_versiondate => CWMS_20.Cwms_Util.Non_Versioned
+//               );
+//         commit;
+// end;

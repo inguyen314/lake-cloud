@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const urltsid = `${setBaseUrl}timeseries/group/Turbines-Lake-Test?office=${office}&category-id=${lake}`;
         console.log("urltsid:", urltsid);
 
-        const urltsid2 = `${setBaseUrl}timeseries/group/Outflow-Average-Lake-Test?office=${office}&category-id=${lake}`;
+        const urltsid2 = `${setBaseUrl}timeseries/group/Spillway-Lake-Test?office=${office}&category-id=${lake}`;
         console.log("urltsid2:", urltsid2);
 
         const urltsid3 = `${setBaseUrl}timeseries/group/Generation-Release-Lake-Test?office=${office}&category-id=${lake}`;
@@ -735,7 +735,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 //         commit;
 // end;
 
-// Spillway tsid (gates) (Outflow-Average-Lake-Test)
+// Spillway tsid (gates) (Spillway-Lake-Test)
 // Mark Twain Lk-Salt.Flow-Spill.Ave.~1Day.1Day.lakerep-rev-test
 
 // Total Flow tsid (gates + turbines) (Generation-Release-Lake-Test)
