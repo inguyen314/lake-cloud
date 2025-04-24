@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }, 10000) // time is in millis
                     } else {
                         console.log("Calling Mark Twain Lk createDataEntryTable ...");
-                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, tsidInflow);
+                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, timeSeriesDataOutflow, tsidInflow, timeSeriesDataInflow);
 
                         loginStateController()
                         // Setup timers
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }, 10000) // time is in millis
                     } else {
                         console.log("Calling createDataEntryTable ...");
-                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, tsidInflow);
+                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, timeSeriesDataOutflow, tsidInflow, timeSeriesDataInflow);
 
                         loginStateController()
                         // Setup timers
@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
-                    async function fetchUpdatedData(name, isoDateDay6, isoDateToday, isoDateMinus1Day) {
+                    async function fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay6) {
                         let response = null;
 
                         if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
@@ -437,11 +437,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                             }
 
                             // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay6, isoDateToday, isoDateMinus1Day);
+                            const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay6);
 
                             let updatedDataInflow = null;
                             if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                                updatedDataInflow = await fetchUpdatedData(tsidInflow, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                                updatedDataInflow = await fetchUpdatedData(tsidInflow, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay6);
                             }
                             createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, updatedData, tsidInflow, updatedDataInflow);
                         } catch (error) {
@@ -456,7 +456,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             }
 
-            function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, tsidInflow) {
+            function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, timeSeriesDataOutflow, tsidInflow, timeSeriesDataInflow) {
                 // Create the empty table element
                 const table = document.createElement("table");
 
@@ -689,7 +689,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     }
 
-                    async function fetchUpdatedData(name, isoDateMinus1Day, isoDateToday, isoDateDay6) {
+                    async function fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay6) {
                         let response = null;
 
                         if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
@@ -757,11 +757,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                             }
 
                             // Fetch updated data and refresh the table
-                            const updatedData = await fetchUpdatedData(tsidOutflow, isoDateMinus1Day, isoDateToday, isoDateDay6);
+                            const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay6);
 
                             let updatedDataInflow = null;
                             if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                                updatedDataInflow = await fetchUpdatedData(tsidInflow, isoDateMinus1Day, isoDateToday, isoDateDay6);
+                                updatedDataInflow = await fetchUpdatedData(tsidInflow, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay6);
                             }
                             createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidOutflow, updatedData, tsidInflow, updatedDataInflow);
                         } catch (error) {
@@ -777,12 +777,12 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         };
 
-        const fetchTimeSeriesData = async (tsidOutflow) => {
+        const fetchTimeSeriesData = async (tsid) => {
             let tsidData = null;
             if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
-                tsidData = `${setBaseUrl}timeseries?name=${tsidOutflow}&begin=${isoDateMinus1Day}&end=${isoDateDay6}&office=${office}&version-date=${convertTo6AMCST(isoDateToday)}`;
+                tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay6}&office=${office}&version-date=${convertTo6AMCST(isoDateToday)}`;
             } else {
-                tsidData = `${setBaseUrl}timeseries?name=${tsidOutflow}&begin=${isoDateToday}&end=${isoDateDay6}&office=${office}&version-date=${convertTo6AMCST(isoDateToday)}`;
+                tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${isoDateDay6}&office=${office}&version-date=${convertTo6AMCST(isoDateToday)}`;
             }
             console.log('tsidData:', tsidData);
 
