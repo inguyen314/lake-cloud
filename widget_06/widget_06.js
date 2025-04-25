@@ -459,6 +459,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 cdaStatusBtn.innerText = "Write payloadInflow successful!";
                             }
 
+                            // Optional: small delay to allow backend to process the new data
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+
                             // Fetch updated data and refresh the table
                             const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay6);
 
@@ -784,6 +787,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 await createVersionTS(payloadInflow);
                                 cdaStatusBtn.innerText = "Write payloadInflow successful!";
                             }
+
+                            // Optional: small delay to allow backend to process the new data
+                            await new Promise(resolve => setTimeout(resolve, 1000));
 
                             // Fetch updated data and refresh the table
                             const updatedData = await fetchUpdatedData(tsidOutflow, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay6);

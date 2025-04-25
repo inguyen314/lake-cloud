@@ -119,10 +119,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, levelId2, data2);
 
             loginStateController()
-            // Setup timers
             setInterval(async () => {
                 loginStateController()
-            }, 10000) // time is in millis
+            }, 10000)
 
 
             function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, levelId2, data2) {
@@ -325,6 +324,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                             showSpinner(); // Show the spinner before creating the version
                             await writeLocationLevel(payload);
                             cdaStatusBtn.innerText = "Write successful!";
+
+                            // Optional: small delay to allow backend to process the new data
+                            await new Promise(resolve => setTimeout(resolve, 1000));
 
                             // Fetch updated data and refresh the table
                             const updatedData = await fetchUpdatedData(levelId2, isoDateDay5, isoDateToday, isoDateMinus1Day);

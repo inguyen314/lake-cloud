@@ -363,6 +363,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                         console.log("Write successful!");
                         cdaStatusBtn.innerText = "Write successful!";
 
+                        // Optional: small delay to allow backend to process the new data
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+
                         // Fetch updated data and refresh the table
                         console.log("Calling updatedData!");
                         const updatedData = await fetchUpdatedData(tsid, isoDateDay5, isoDateToday, isoDateMinus1Day);
@@ -609,6 +612,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                         await createVersionTS(payload);
                         console.log("Write successful!");
                         cdaStatusBtn.innerText = "Write successful!";
+
+                        // Optional: small delay to allow backend to process the new data
+                        await new Promise(resolve => setTimeout(resolve, 1000));
 
                         // Fetch updated data and refresh the table
                         console.log("Calling updatedData!");

@@ -539,6 +539,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                             await createTS(payloadStorageOutflowEvap);
                             cdaStatusBtn.innerText = "Write successful!";
 
+                            // Optional: small delay to allow backend to process the new data
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+
                             // // Fetch updated data and refresh the table
                             const updatedData = await fetchUpdatedData(isoDateMinus6Days, isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidConsensus);
                             const hourlyConsensusData = getMidnightData(updatedData, tsidConsensus);
@@ -709,6 +712,15 @@ document.addEventListener('DOMContentLoaded', async function () {
 // tsidEvaporation: Carlyle Lk-Kaskaskia.Evap.Inst.0.Evaporation
 // tsidConsensus: Carlyle Lk-Kaskaskia.Flow-In.Ave.~1Day.1Day.lakerep-rev-test (Consensus-Test)
 // tsidComputedInflow: Carlyle Lk-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed (Computed-Inflow)
+
+//*******************************************************************************************************************************/ 
+
+// Wappapello Lk-St Francis
+// tsidStorage: Wappapello Lk-St Francis.Stor.Inst.30Minutes.0.RatingCOE (Storage)
+// tsidAverageOutflow: Wappapello Lk-St Francis.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test (Outflow-Average-Lake-Test)
+// tsidEvaporation: Wappapello Lk-St Francis.Evap.Inst.0.Evaporation
+// tsidConsensus: Wappapello Lk-St Francis.Flow-In.Ave.~1Day.1Day.lakerep-rev-test (Consensus-Test)
+// tsidComputedInflow: Wappapello Lk-St Francis.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed (Computed-Inflow)
 
 
 // declare

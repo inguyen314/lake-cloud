@@ -373,6 +373,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                             await createTS(payload);
                             cdaStatusBtn.innerText = "Write successful!";
 
+                            // Optional: small delay to allow backend to process the new data
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+
                             // Fetch updated data and refresh the table
                             const updatedData = await fetchUpdatedData(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip);
                             createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, updatedData);

@@ -362,7 +362,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries/text?office=MVS&name=${tsidNote}&begin=${isoDateToday}&end=${isoDateToday}`, {
                             method: "GET",
                             headers: {
-                                "Content-Type": "application/json;version=2",
+                                "Accept": "application/json;version=2", // Ensuring the correct version is used
+                                "cache-control": "no-cache"
                             }
                         });
 
@@ -408,6 +409,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                             showSpinner(); // Show the spinner before creating the version
                             await writeTSText(payload);
                             cdaStatusBtn.innerText = "Write successful!";
+
+                            // Optional: small delay to allow backend to process the new data
+                            await new Promise(resolve => setTimeout(resolve, 1000));
 
                             // Fetch updated data and refresh the table
                             const updatedData = await fetchUpdatedData(tsidNote, isoDateDay5, isoDateToday, isoDateMinus1Day);

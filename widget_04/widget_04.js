@@ -4622,8 +4622,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 // Wappapello Lk-St Francis.Flow-Taint.Inst.~30Minutes.0.lakerep-rev-test (Gate-Total-Lake-Test)
 
-// Wappapello Lk-St Francis.Flow.Inst.~30Minutes.0.lakerep-rev-test (Outflow-Total-Lake-Test)
-
 // Wappapello Lk-St Francis.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test (Outflow-Average-Lake-Test)
 
 
