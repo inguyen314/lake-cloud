@@ -783,9 +783,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                         response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries/text?office=MVS&name=${tsidSchedule}&begin=${isoDateToday}&end=${end}`, {
                             method: "GET",
                             headers: {
-                                "Content-Type": "application/json;version=2",
-                            },
-                            cache: "no-store" // <== Additional signal to avoid caching
+                                "Accept": "application/json;version=2",
+                                "cache-control": "no-cache"
+                            }
                         });
 
                         if (!response.ok) {
@@ -816,9 +816,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                         response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries/text?office=MVS&name=${tsidSchedule}&begin=${isoDateMinus1Day}&end=${end}`, {
                             method: "GET",
                             headers: {
-                                "Content-Type": "application/json;version=2",
-                            },
-                            cache: "no-store" // <== Additional signal to avoid caching
+                                "Accept": "application/json;version=2",
+                                "cache-control": "no-cache"
+                            }
                         });
 
                         if (!response.ok) {
