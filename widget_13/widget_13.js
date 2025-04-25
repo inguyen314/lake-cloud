@@ -784,7 +784,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                             method: "GET",
                             headers: {
                                 "Content-Type": "application/json;version=2",
-                            }
+                            },
+                            cache: "no-store" // <== Additional signal to avoid caching
                         });
 
                         if (!response.ok) {
@@ -816,7 +817,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                             method: "GET",
                             headers: {
                                 "Content-Type": "application/json;version=2",
-                            }
+                            },
+                            cache: "no-store" // <== Additional signal to avoid caching
                         });
 
                         if (!response.ok) {
@@ -826,8 +828,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const data = await response.json();
 
                         // Log the raw data received
-                        // console.log('Fetched Yesterday Data:', data);
-                        // console.log('Fetched Yesterday Data:', data[`regular-text-values`][0][`text-value`]);
+                        console.log('Fetched Yesterday Data:', data);
+                        console.log('Fetched Yesterday Data:', data[`regular-text-values`][0][`text-value`]);
 
                         return data;
                     }
@@ -864,6 +866,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                             cdaStatusBtn.innerText = "Write payloadSchedule successful!";
                             await writeTSText(payloadInstruction);
                             cdaStatusBtn.innerText = "Write payloadInstruction successful!";
+
+                            // Optional: small delay to allow backend to process the new data
+                            await new Promise(resolve => setTimeout(resolve, 1000));
 
                             // Fetch updated data and refresh the table
                             const updatedData = await fetchUpdatedData(tsidSchedule, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1);
