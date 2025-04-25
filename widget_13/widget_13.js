@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log("formattedDataInstructionYesterday:", formattedDataInstructionYesterday);
 
                 const table = document.createElement("table");
-                table.id = "release-schedule-and-instruction";
+                table.id = "release-schedule-instruction";
 
                 const headerRow = document.createElement("tr");
                 const dateHeader = document.createElement("th");
@@ -372,7 +372,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 buttonRefresh.addEventListener('click', () => {
                     // Remove existing table
-                    const existingTable = document.getElementById('release-schedule-and-instruction');
+                    const existingTable = document.getElementById('release-schedule-instruction');
                     if (existingTable) {
                         existingTable.remove();
                     }

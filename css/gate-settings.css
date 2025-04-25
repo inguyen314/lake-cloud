@@ -6,7 +6,7 @@
 #lake-office-24-hour-precipitation,
 #rule-curve,
 #notes,
-#release-schedule-and-instruction,
+#release-schedule-instruction,
 #crest-forecast {
     width: 100%;
     table-layout: fixed;
@@ -21,7 +21,7 @@
 #lake-office-24-hour-precipitation th,
 #rule-curve th,
 #notes th,
-#release-schedule-and-instruction th,
+#release-schedule-instruction th,
 #crest-forecast th,
 #inflow td,
 #balance-window td,
@@ -31,7 +31,7 @@
 #lake-office-24-hour-precipitation td,
 #rule-curve td,
 #notes td,
-#release-schedule-and-instruction td,
+#release-schedule-instruction td,
 #crest-forecast td {
     padding: 2px;
     text-align: center;
@@ -46,7 +46,7 @@
 #lake-office-24-hour-precipitation th,
 #rule-curve th,
 #notes th,
-#release-schedule-and-instruction th,
+#release-schedule-instruction th,
 #crest-forecast th {
     background-color: darkblue;
     font-weight: bold;
@@ -60,7 +60,7 @@
 #lake-office-24-hour-precipitation input,
 #rule-curve input,
 #notes input,
-#release-schedule-and-instruction input,
+#release-schedule-instruction input,
 #crest-forecast input {
     width: 100%;
     box-sizing: border-box;
@@ -74,7 +74,7 @@
 #lake-office-24-hour-precipitation tr:nth-child(even),
 #rule-curve tr:nth-child(even),
 #notes tr:nth-child(even),
-#release-schedule-and-instruction tr:nth-child(even),
+#release-schedule-instruction tr:nth-child(even),
 #crest-forecast tr:nth-child(even) {
     background-color: #f9f9f9;
 }
@@ -87,7 +87,7 @@
 #lake-office-24-hour-precipitation tr:hover,
 #rule-curve tr:hover,
 #notes tr:hover,
-#release-schedule-and-instruction tr:hover,
+#release-schedule-instruction tr:hover,
 #crest-forecast tr:hover {
     background-color: #f1f1f1;
 }
@@ -100,7 +100,7 @@
 #lake-office-24-hour-precipitation td,
 #rule-curve td,
 #notes td,
-#release-schedule-and-instruction td,
+#release-schedule-instruction td,
 #crest-forecast td {
     font-size: 14px;
 }
@@ -113,7 +113,7 @@
 #lake-office-24-hour-precipitation td a,
 #rule-curve td a,
 #notes td a,
-#release-schedule-and-instruction td a,
+#release-schedule-instruction td a,
 #crest-forecast td a {
     color: darkblue;
     text-decoration: none;
@@ -127,7 +127,7 @@
 #lake-office-24-hour-precipitation td a:hover,
 #rule-curve td a:hover,
 #notes td a:hover,
-#release-schedule-and-instruction td a:hover,
+#release-schedule-instruction td a:hover,
 #crest-forecast td a:hover {
     text-decoration: underline;
 }
@@ -140,7 +140,7 @@
 #lake-office-24-hour-precipitation caption,
 #rule-curve caption,
 #notes caption,
-#release-schedule-and-instruction caption,
+#release-schedule-instruction caption,
 #crest-forecast caption {
     font-size: 18px;
     font-weight: bold;
