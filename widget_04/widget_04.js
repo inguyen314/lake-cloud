@@ -733,6 +733,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 let timeSeriesYesterdayDataOutflowTotal = null;
                 let timeSeriesYesterdayDataOutflowAverage = null;
 
+                let timeSeriesTomorrowDataOutflowAverage = null;
+
                 if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
                     tsidSluice1 = tsidSluiceData['assigned-time-series'][0]['timeseries-id'];
                     console.log("tsidSluice1:", tsidSluice1);
@@ -1082,6 +1084,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     tsidOutflowAverage = tsidOutflowAverageData['assigned-time-series'][0]['timeseries-id'];
                     console.log("tsidOutflowAverage:", tsidOutflowAverage);
 
+                    console.log("Fetching today time series data ..............................................................................................................");
+
                     // Fetch time series data
                     timeSeriesDataGate1 = await fetchTimeSeriesData(tsidGate1);
                     console.log("timeSeriesDataGate1:", timeSeriesDataGate1);
@@ -1097,6 +1101,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     timeSeriesDataOutflowAverage = await fetchTimeSeriesData(tsidOutflowAverage);
                     console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage);
+
+                    console.log("Fetching yesterday time series data ..............................................................................................................");
 
                     // Fetch yesterday time series data
                     timeSeriesYesterdayDataGate1 = await fetchTimeSeriesYesterdayData(tsidGate1);
@@ -1114,6 +1120,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                     timeSeriesYesterdayDataOutflowAverage = await fetchTimeSeriesYesterdayData(tsidOutflowAverage);
                     console.log("timeSeriesYesterdayDataOutflowAverage:", timeSeriesYesterdayDataOutflowAverage);
 
+                    console.log("Fetching tomorrow time series data ..............................................................................................................");
+
+                    // Fetch tomorrow time series data
+                    timeSeriesTomorrowDataOutflowAverage = await fetchTimeSeriesTomorrowData(tsidOutflowAverage);
+                    console.log("timeSeriesTomorrowDataOutflowAverage:", timeSeriesTomorrowDataOutflowAverage);
+
                     if (timeSeriesDataGate1 && timeSeriesDataGate1.values && timeSeriesDataGate1.values.length > 0) {
                         console.log("Data for today found, Calling createTable ...");
 
@@ -1122,7 +1134,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
                             tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
                             timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
-                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4, timeSeriesYesterdayDataGate4);
+                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4, timeSeriesYesterdayDataGate4, timeSeriesTomorrowDataOutflowAverage);
 
                         loadingIndicator.style.display = 'none';
 
@@ -1138,7 +1150,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
                             tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
                             timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
-                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4, timeSeriesYesterdayDataGate4);
+                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4, timeSeriesYesterdayDataGate4, timeSeriesTomorrowDataOutflowAverage);
 
                         loadingIndicator.style.display = 'none';
 
@@ -1174,7 +1186,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
                 tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
                 timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
-                timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4, timeSeriesYesterdayDataGate4) {
+                timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4, timeSeriesYesterdayDataGate4, timeSeriesTomorrowDataOutflowAverage) {
 
                 const formatData = (data) => {
                     if (!data || !Array.isArray(data.values)) return [];
@@ -1212,6 +1224,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 let formattedYesterdayDataGateTotal = null;
                 let formattedYesterdayDataOutflowTotal = null;
                 let formattedYesterdayDataOutflowAverage = null;
+
+                // Tomorrow's data
+                let formattedTomorrowDataOutflowAverage = null;
 
                 if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
                     // Today's data
@@ -1349,6 +1364,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                     console.log("formattedYesterdayDataGate3:", formattedYesterdayDataGate3);
                     console.log("formattedYesterdayDataGateTotal:", formattedYesterdayDataGateTotal);
                     console.log("formattedYesterdayDataOutflowAverage:", formattedYesterdayDataOutflowAverage);
+
+                    // Tomorrow's data
+                    formattedTomorrowDataOutflowAverage = formatData(timeSeriesTomorrowDataOutflowAverage);
+                    console.log("formattedTomorrowDataOutflowAverage:", formattedTomorrowDataOutflowAverage);
                 }
 
                 const table = document.createElement("table");
@@ -1827,10 +1846,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     let gate3AdditionalInput = null;
                     let gate4AdditionalInput = null;
                     let gateTotalAdditionalInput = null;
-                    let gateOutflowTotalAdditionalInput = null;
-                    let gateOutflowAverageAdditionalInput = null;
 
-                    // Determine if the paylaod is "New Entry" or "Update Existing". Use hasValidNewEntryHour
+                    // Add a new row of data
                     if (hasValidNewEntryHour === true) {
                         Object.keys(selectedHours).forEach(hour => {
                             console.log(`${hour} selected:`, selectedHours[hour]);
@@ -2456,7 +2473,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             console.log("payloadOutflowAverageAdditional:", payloadOutflowAverageAdditional);
                         }
-                    } else {
+                    }
+
+                    // Edit existing rows of data
+                    if (hasValidNewEntryHour === false) {
                         if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
                             console.log("getAllSelectedTimes: ", getAllSelectedTimes());
                             console.log("getAllSluice1Values: ", getAllSluice1Values());
@@ -2579,6 +2599,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                         console.log("dataCategories: ", dataCategories);
                         console.log("tsidCategories: ", tsidCategories);
 
+                        formattedTomorrowDataOutflowAverage = formattedTomorrowDataOutflowAverage.map(entry => ({
+                            ...entry,
+                            "iso": new Date(entry["0"]).toISOString(),
+                        }));
+
+                        console.log("formattedTomorrowDataOutflowAverage: ", formattedTomorrowDataOutflowAverage);
+
+
                         payloads = {};
                         if (Array.isArray(selectedTimes) && Object.values(dataCategories).every(Array.isArray)) {
 
@@ -2604,6 +2632,19 @@ document.addEventListener('DOMContentLoaded', async function () {
                         } else {
                             console.error("One or more arrays are not valid", selectedTimes, dataCategories);
                         }
+
+                        // Append to payloads.gateTotal.values
+                        formattedTomorrowDataOutflowAverage.forEach(entry => {
+                            payloads.gateTotal.values.push([
+                                entry.iso,
+                                entry["1"],
+                                entry["2"]
+                            ]);
+                        });
+
+                        console.log("payloads after append tomorrow data:", payloads);
+
+
 
                         // Function to get all selected times
                         function getAllSelectedTimes() {
@@ -2783,7 +2824,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                             console.log("hasValidNewEntryHour:", hasValidNewEntryHour);
 
                             payloads = filterPayloads(payloads);
-                            console.log("Payloads: ", payloads);
+                            console.log("Payloads after filterPayloads: ", payloads);
+
+                            let isTomorrowGateExist = payloads.gateTotal.values.some(
+                                value => value[0] === isoDateDay1
+                            );
+
+                            console.log("isTomorrowGateExist:", isTomorrowGateExist);
+
 
                             // Prepare payloadAverageOutflow
                             if (!payloads || !payloads.gateTotal || !Array.isArray(payloads.gateTotal.values)) {
@@ -2792,7 +2840,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     "name": tsidOutflowAverage,
                                     "office-id": "MVS",
                                     "units": "cfs",
-                                    "values": [[isoDateToday, null, 0]] // Default to null if no valid data
+                                    "values": [[isoDateToday, null, 0]]
                                 };
                                 console.log("payloadAverageOutflow: ", payloadAverageOutflow);
                             } else {
@@ -2805,51 +2853,59 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     console.log("payloadOutflowAverage: ", payloadOutflowAverage);
                                 }
 
-                                // Step 3: Calculate the weighted average outflow
-                                const totalHours = 24;
+                                let totalHours = 24;
                                 let weightedSum = 0;
                                 let totalDuration = 0;
                                 let averageOutflowPayload = null;
 
-                                if (payloadOutflowAverage.length === 0) {
-                                    console.error("Error: payloadOutflowAverage is empty.");
-                                } else {
-                                    let lastHour = new Date(payloadOutflowAverage[0][0]).getHours() || 0;
+                                // This is for yesterday average outflow calculation
+                                if (isTomorrowGateExist === true) {
+                                    averageOutflowPayload = (payloadOutflowAverage[0][1] + payloadOutflowAverage[1][1]) / 2;
+                                    console.log("averageOutflowPayload: ", averageOutflowPayload);
+                                }
 
-                                    if (payloadOutflowAverage.length === 1) {
-                                        const value = payloadOutflowAverage[0][1] ?? 0;
-                                        const duration = totalHours - lastHour;
-                                        weightedSum = value * duration;
-                                        console.log("weightedSum:", weightedSum);
-                                        totalDuration = duration;
+                                // This is for current day average outflow calculation
+                                if (isTomorrowGateExist === false) {
+                                    if (payloadOutflowAverage.length === 0) {
+                                        console.error("Error: payloadOutflowAverage is empty.");
                                     } else {
-                                        for (let i = 1; i < payloadOutflowAverage.length; i++) {
-                                            const currentHour = new Date(payloadOutflowAverage[i][0]).getHours() || 0;
-                                            const prevValue = payloadOutflowAverage[i - 1][1] ?? 0;
-                                            const duration = Math.max(currentHour - lastHour, 1); // Avoid zero duration
+                                        let lastHour = new Date(payloadOutflowAverage[0][0]).getHours() || 0;
 
-                                            weightedSum += prevValue * duration;
+                                        if (payloadOutflowAverage.length === 1) {
+                                            const value = payloadOutflowAverage[0][1] ?? 0;
+                                            const duration = totalHours - lastHour;
+                                            weightedSum = value * duration;
                                             console.log("weightedSum:", weightedSum);
-                                            totalDuration += duration;
+                                            totalDuration = duration;
+                                        } else {
+                                            for (let i = 1; i < payloadOutflowAverage.length; i++) {
+                                                const currentHour = new Date(payloadOutflowAverage[i][0]).getHours() || 0;
+                                                const prevValue = payloadOutflowAverage[i - 1][1] ?? 0;
+                                                const duration = Math.max(currentHour - lastHour, 1); // Avoid zero duration
 
-                                            lastHour = currentHour;
+                                                weightedSum += prevValue * duration;
+                                                console.log("weightedSum:", weightedSum);
+                                                totalDuration += duration;
+
+                                                lastHour = currentHour;
+                                            }
+
+                                            // Add the final chunk from lastHour to 24
+                                            const lastValue = payloadOutflowAverage[payloadOutflowAverage.length - 1][1] ?? 0;
+                                            const lastDuration = totalHours - lastHour;
+
+                                            weightedSum += lastValue * lastDuration;
+                                            console.log("weightedSum:", weightedSum);
+                                            totalDuration += lastDuration;
                                         }
 
-                                        // Add the final chunk from lastHour to 24
-                                        const lastValue = payloadOutflowAverage[payloadOutflowAverage.length - 1][1] ?? 0;
-                                        const lastDuration = totalHours - lastHour;
+                                        averageOutflowPayload = weightedSum / totalHours;
+                                        averageOutflowPayload = Math.round(averageOutflowPayload / 10) * 10;
 
-                                        weightedSum += lastValue * lastDuration;
                                         console.log("weightedSum:", weightedSum);
-                                        totalDuration += lastDuration;
+                                        console.log("totalDuration (should be 24):", totalDuration);
+                                        console.log("averageOutflowPayload:", averageOutflowPayload);
                                     }
-
-                                    averageOutflowPayload = weightedSum / totalHours;
-                                    averageOutflowPayload = Math.round(averageOutflowPayload / 10) * 10;
-
-                                    console.log("weightedSum:", weightedSum);
-                                    console.log("totalDuration (should be 24):", totalDuration);
-                                    console.log("averageOutflowPayload:", averageOutflowPayload);
                                 }
 
                                 // Step 4: Construct payloadAverageOutflow
@@ -2926,7 +2982,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 }
                             }
 
-                            // Check if the payloads are valid and if the new entry hour is valid
+                            // Saving the data
                             if (hasValidNewEntryHour === true) {
                                 console.log("Creating new entries...");
                                 showSpinner(); // Show the spinner before creating the version
@@ -2980,7 +3036,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             // Ensure data is saved before creating the table
                             await new Promise(resolve => setTimeout(resolve, 4000)); // Small delay for safety
-
 
                             // Initialize variables to prevent reference errors
                             let updatedDataSluice1 = null;
@@ -4450,6 +4505,33 @@ document.addEventListener('DOMContentLoaded', async function () {
             const end = date.toISOString();
 
             const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${end}&office=${office}`;
+            console.log('tsidData:', tsidData);
+            try {
+                const response = await fetch(tsidData, {
+                    headers: {
+                        "Accept": "application/json;version=2", // Ensuring the correct version is used
+                        "cache-control": "no-cache"
+                    }
+                });
+
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error fetching time series data:", error);
+            }
+        };
+
+        const fetchTimeSeriesTomorrowData = async (tsid) => {
+            // Convert to Date object
+            const date = new Date(isoDateDay2);
+
+            // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
+            date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
+
+            // Convert back to ISO string (preserve UTC format)
+            const end = date.toISOString();
+
+            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateDay1}&end=${end}&office=${office}`;
             console.log('tsidData:', tsidData);
             try {
                 const response = await fetch(tsidData, {
