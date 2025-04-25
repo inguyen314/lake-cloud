@@ -1624,8 +1624,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Create the second cell with "--"
                 const secondCell = document.createElement("td");
                 secondCell.id = `gateOutflowAverageInput`;
-                secondCell.value = formattedDataOutflowAverage[0][1];
-                secondCell.innerHTML = (formattedDataOutflowAverage[0][1]).toFixed(0);
+                // Check for valid value, default to 909
+                let outflowValue = (formattedDataOutflowAverage?.[0]?.[1] ?? 909);
+                secondCell.value = outflowValue;
+                secondCell.innerHTML = outflowValue.toFixed(0);
+                // Make background pink if defaulted to 909
+                if (outflowValue === 909) {
+                    secondCell.style.backgroundColor = "pink";
+                }
                 tableRow.appendChild(secondCell);
 
                 // Append the row to the tableOutflowAvg
@@ -1651,6 +1657,35 @@ document.addEventListener('DOMContentLoaded', async function () {
                 cdaStatusBtn.disabled = false;
                 statusDiv.appendChild(cdaStatusBtn);
                 output6Div.appendChild(statusDiv);
+
+                // Create the buttonRefresh button
+                const buttonRefresh = document.createElement('button');
+                buttonRefresh.textContent = 'Refresh';
+                buttonRefresh.id = 'refreshGateSettingsBtn';
+                buttonRefresh.className = 'fetch-btn';
+                output6Div.appendChild(buttonRefresh);
+
+                buttonRefresh.addEventListener('click', () => {
+                    // Remove existing table
+                    const existingTable = document.getElementById('gate-settings');
+                    if (existingTable) {
+                        existingTable.remove();
+                    }
+
+                    // Remove both buttons
+                    const existingButton = document.getElementById('gateOutflowAverageTable');
+                    if (existingButton) {
+                        existingButton.remove();
+                    }
+
+                    const existingRefresh = document.getElementById('cda-btn-gate');
+                    if (existingRefresh) {
+                        existingRefresh.remove();
+                    }
+
+                    // Fetch and create new table
+                    fetchTsidData();
+                });
 
                 let hasValidNewEntryHour = null;
                 let payloads = null;
@@ -3083,7 +3118,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     headerRow.appendChild(sluiceTotalHeader);
                 }
 
-                if (lake === "lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                     const sluiceTotalHeader = document.createElement("th");
                     sluiceTotalHeader.textContent = "Sluice Total (cfs)";
                     headerRow.appendChild(sluiceTotalHeader);
@@ -3328,6 +3363,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Create a tableOutflowAvg
                 const tableOutflowAvg = document.createElement("table");
+                tableOutflowAvg.id = "gateOutflowAverageTable";
                 const tableRow = document.createElement("tr");
                 tableOutflowAvg.style.width = "50%";
                 tableOutflowAvg.style.marginTop = "10px";
@@ -3373,6 +3409,35 @@ document.addEventListener('DOMContentLoaded', async function () {
                 statusDiv.appendChild(cdaStatusBtn);
                 output6Div.appendChild(statusDiv);
 
+                // Create the buttonRefresh button
+                const buttonRefresh = document.createElement('button');
+                buttonRefresh.textContent = 'Refresh';
+                buttonRefresh.id = 'refreshGateSettingsBtn';
+                buttonRefresh.className = 'fetch-btn';
+                output6Div.appendChild(buttonRefresh);
+
+                buttonRefresh.addEventListener('click', () => {
+                    // Remove existing table
+                    const existingTable = document.getElementById('gate-settings');
+                    if (existingTable) {
+                        existingTable.remove();
+                    }
+
+                    // Remove both buttons
+                    const existingButton = document.getElementById('gateOutflowAverageTable');
+                    if (existingButton) {
+                        existingButton.remove();
+                    }
+
+                    const existingRefresh = document.getElementById('cda-btn-gate');
+                    if (existingRefresh) {
+                        existingRefresh.remove();
+                    }
+
+                    // Fetch and create new table
+                    fetchTsidData();
+                });
+
                 // Add event listener to the submit button
                 cdaSaveBtn.addEventListener("click", async () => {
 
@@ -3381,9 +3446,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                         console.log(`${hour} selected:`, selectedHours[hour]);
                     });
 
+                    let sluice1Input = null;
+                    let sluice2Input = null;
+                    let sluiceTotalInput = null;
+                    let gate1Input = null;
+                    let gate2Input = null;
+                    let gate3Input = null;
+                    let gate4Input = null;
+                    let gateTotalInput = null;
+                    let gateOutflowTotalInput = null;
+                    let gateOutflowAverageInput = null;
+
                     if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
                         // Get the sluice1 input element and check if it exists
-                        const sluice1Input = document.getElementById(`sluice1Input`);
+                        sluice1Input = document.getElementById(`sluice1Input`);
                         if (!sluice1Input) {
                             console.error("sluice1Input element not found!");
                             return; // Exit if input is missing
@@ -3393,7 +3469,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
 
                         // Get the sluice2 input element and check if it exists
-                        const sluice2Input = document.getElementById('sluice2Input');
+                        sluice2Input = document.getElementById('sluice2Input');
                         if (!sluice2Input) {
                             console.error("sluice2Input element not found!");
                             return; // Exit if input is missing
@@ -3403,9 +3479,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                     }
 
-                    if (lake === "lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                         // Get the sluiceTotal input element and check if it exists
-                        const sluiceTotalInput = document.getElementById('sluiceTotalInput');
+                        sluiceTotalInput = document.getElementById('sluiceTotalInput');
                         if (!sluiceTotalInput) {
                             console.error("sluiceTotalInput element not found!");
                             return; // Exit if input is missing
@@ -3416,7 +3492,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
 
                     // Get the Gate1 input element and check if it exists
-                    const gate1Input = document.getElementById('gate1Input');
+                    gate1Input = document.getElementById('gate1Input');
                     if (!gate1Input) {
                         console.error("gate1Input element not found!");
                         return; // Exit if input is missing
@@ -3426,7 +3502,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
 
                     // Get the Gate2 input element and check if it exists
-                    const gate2Input = document.getElementById('gate2Input');
+                    gate2Input = document.getElementById('gate2Input');
                     if (!gate2Input) {
                         console.error("gate2Input element not found!");
                         return; // Exit if input is missing
@@ -3436,7 +3512,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
 
                     // Get the Gate3 input element and check if it exists
-                    const gate3Input = document.getElementById('gate3Input');
+                    gate3Input = document.getElementById('gate3Input');
                     if (!gate3Input) {
                         console.error("gate3Input element not found!");
                         return; // Exit if input is missing
@@ -3447,7 +3523,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                         // Get the Gate4 input element and check if it exists
-                        const gate4Input = document.getElementById('gate4Input');
+                        gate4Input = document.getElementById('gate4Input');
                         if (!gate4Input) {
                             console.error("gate4Input element not found!");
                             return; // Exit if input is missing
@@ -3458,7 +3534,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
 
                     // Get the GateTotal input element and check if it exists
-                    const gateTotalInput = document.getElementById('gateTotalInput');
+                    gateTotalInput = document.getElementById('gateTotalInput');
                     if (!gateTotalInput) {
                         console.error("gateTotalInput element not found!");
                         return; // Exit if input is missing
@@ -3470,7 +3546,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                         // ========================== CALCULATE GATE TOTAL ==========================
                         // Get the gateOutflowTotal input element and check if it exists
-                        const gateOutflowTotalInput = document.getElementById('gateOutflowTotalInput');
+                        gateOutflowTotalInput = document.getElementById('gateOutflowTotalInput');
                         console.log("gateOutflowTotalInput: ", gateOutflowTotalInput);
                         if (!gateOutflowTotalInput) {
                             console.error("gateOutflowTotalInput element not found!");
@@ -3483,7 +3559,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // ========================== CALCULATE GATE AVERAGE ==========================
                     // Get the gateOutflowAverage input element and check if it exists
-                    const gateOutflowAverageInput = document.getElementById('gateOutflowAverageInput');
+                    gateOutflowAverageInput = document.getElementById('gateOutflowAverageInput');
                     if (!gateOutflowAverageInput) {
                         console.error("gateOutflowAverageInput element not found!");
                         return; // Exit if input is missing
@@ -3613,7 +3689,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         console.log("payloadSluice2: ", payloadSluice2);
                     }
 
-                    if (lake === "lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                         payloadSluiceTotal = {
                             "name": tsidSluiceTotal,
                             "office-id": "MVS",

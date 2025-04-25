@@ -736,3 +736,12 @@ document.addEventListener('DOMContentLoaded', async function () {
 //               );
 //         commit;
 // end;
+
+// SELECT *
+//     FROM(
+//         SELECT *
+//         FROM wm_mvs_lake.carlyle_q
+//     ORDER BY date_time DESC
+//     FETCH FIRST 150 ROWS ONLY
+//     )
+// ORDER BY date_time ASC;

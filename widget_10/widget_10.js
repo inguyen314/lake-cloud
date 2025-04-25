@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("Formatted timeSeriesDataCrest:", formattedData);
 
             const table = document.createElement("table");
-            table.id = "gate-settings";
+            table.id = "crest-forecast";
 
             // Create the table header row
             const headerRow = document.createElement("tr");
@@ -362,8 +362,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Create the empty table element
             const table = document.createElement("table");
 
-            // Apply the ID "gate-settings" to the table
-            table.id = "gate-settings";
+            // Apply the ID "crest-forecast" to the table
+            table.id = "crest-forecast";
 
             // Create the table header row
             const headerRow = document.createElement("tr");

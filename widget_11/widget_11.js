@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log("formattedData:", formattedData);
 
                 const table = document.createElement("table");
-                table.id = "gate-settings";
+                table.id = "notes";
 
                 const headerRow = document.createElement("tr");
                 const dateHeader = document.createElement("th");

@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
 
                 const table = document.createElement("table");
-                table.id = "gate-settings";
+                table.id = "lake-forecast";
 
                 const headerRow = document.createElement("tr");
                 const dateHeader = document.createElement("th");
@@ -460,8 +460,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Create the empty table element
                 const table = document.createElement("table");
 
-                // Apply the ID "gate-settings" to the table
-                table.id = "gate-settings";
+                table.id = "lake-forecast";
 
                 // Create the table header row
                 const headerRow = document.createElement("tr");

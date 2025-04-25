@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
 
                 const table = document.createElement("table");
-                table.id = "gate-settings";
+                table.id = "lake-office-24-hour-precipitation";
 
                 const headerRow = document.createElement("tr");
                 const dateHeader = document.createElement("th");

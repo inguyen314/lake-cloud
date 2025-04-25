@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log("formattedDataInstructionYesterday:", formattedDataInstructionYesterday);
 
                 const table = document.createElement("table");
-                table.id = "gate-settings";
+                table.id = "release-schedule-and-instruction";
 
                 const headerRow = document.createElement("tr");
                 const dateHeader = document.createElement("th");

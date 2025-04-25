@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log("constant-value: ", data2['constant-value']);
 
                 const table = document.createElement("table");
-                table.id = "gate-settings";
+                table.id = "rule-curve";
 
                 const headerRow = document.createElement("tr");
                 const dateHeader = document.createElement("th");
