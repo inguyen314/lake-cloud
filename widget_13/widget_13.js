@@ -69,9 +69,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             const tsidDataInstruction = await response2.json();
 
             // Extract the timeseries-id from the response
-            const tsidSchedule = tsidDataNote['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
+            const tsidSchedule = tsidDataNote['assigned-time-series'][0]['timeseries-id'];
             console.log("tsidSchedule:", tsidSchedule);
-            const tsidInstruction = tsidDataInstruction['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
+            const tsidInstruction = tsidDataInstruction['assigned-time-series'][0]['timeseries-id'];
             console.log("tsidInstruction:", tsidInstruction);
 
             // Fetch time series data using tsid values
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             async function loginStateController() {
-                cdaSaveBtn = document.getElementById("cda-btn-schedule"); // Get the button by its ID
+                cdaSaveBtn = document.getElementById("cda-btn-schedule-instruction "); // Get the button by its ID
 
                 cdaSaveBtn.disabled = true; // Disable button while checking login state
 
@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
-                cdaSaveBtn.id = "cda-btn-schedule";
+                cdaSaveBtn.id = "cda-btn-schedule-instruction ";
                 cdaSaveBtn.disabled = false;
                 output13Div.appendChild(cdaSaveBtn);
 
@@ -344,7 +344,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 statusDiv.className = "status";
                 const cdaStatusBtn = document.createElement("button");
                 cdaStatusBtn.textContent = "";
-                cdaStatusBtn.id = "cda-btn-schedule";
+                cdaStatusBtn.id = "cda-btn-schedule-instruction ";
                 cdaStatusBtn.disabled = false;
                 statusDiv.appendChild(cdaStatusBtn);
                 output13Div.appendChild(statusDiv);
@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Create the buttonRefresh button
                 const buttonRefresh = document.createElement('button');
                 buttonRefresh.textContent = 'Refresh';
-                buttonRefresh.id = 'refreshGateSettingsBtn';
+                buttonRefresh.id = 'refresh-schedule-instruction';
                 buttonRefresh.className = 'fetch-btn';
                 output13Div.appendChild(buttonRefresh);
 
@@ -384,7 +384,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
 
                     // Remove both buttons
-                    const existingSaveButton = document.getElementById('cda-btn-schedule');
+                    const existingSaveButton = document.getElementById('cda-btn-schedule-instruction ');
                     if (existingSaveButton) {
                         existingSaveButton.remove();
                     }
@@ -650,7 +650,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                     console.log("Updated Schedule Text Values:", textScheduleValues);
                     console.log("Value Schedule: ", textScheduleValues[0]['text-value']);
 
-
                     const payloadSchedule = {
                         "office-id": "MVS",
                         "name": tsidSchedule,
@@ -795,7 +794,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const data = await response.json();
 
                         // Log the raw data received
-                        console.log('Fetched Data:', data);
+                        console.log('Fetched Today Data:', data);
+                        console.log('Fetched Today Data:', data[`regular-text-values`][0][`text-value`]);
 
                         return data;
                     }
@@ -826,7 +826,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const data = await response.json();
 
                         // Log the raw data received
-                        console.log('Fetched Data:', data);
+                        // console.log('Fetched Yesterday Data:', data);
+                        // console.log('Fetched Yesterday Data:', data[`regular-text-values`][0][`text-value`]);
 
                         return data;
                     }
@@ -883,42 +884,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         } catch (error) {
             console.error("Error fetching tsid data:", error);
-
-            // Show the "Report Issue" button
-            document.getElementById('reportIssueBtn').style.display = "block";
-
-            // Ensure sendEmail is globally accessible
-            window.sendEmail = function () {
-                const subject = encodeURIComponent("Cloud Database Down");
-                const body = encodeURIComponent("Hello,\n\nIt appears that the cloud database is down. Please investigate the issue." + setBaseUrl);
-                const email = "DLL-CEMVS-WM-SysAdmins@usace.army.mil"; // Replace with actual support email
-
-                window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-            };
-        }
-    };
-
-    const fetchTimeSeriesDataGenerationRelease = async (tsid) => {
-        let tsidData = null;
-        tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateToday}&office=${office}`;
-        console.log('tsidData:', tsidData);
-
-        try {
-            const response = await fetch(tsidData, {
-                headers: {
-                    "Accept": "application/json;version=2",
-                    "cache-control": "no-cache"
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error("Error fetching time series data:", error);
         }
     };
 
@@ -933,33 +898,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         const end = date.toISOString();
 
         const tsidData = `${setBaseUrl}timeseries/text?name=${tsid}&begin=${isoDateToday}&end=${end}&office=${office}`;
-        console.log('tsidData:', tsidData);
-        try {
-            const response = await fetch(tsidData, {
-                headers: {
-                    "Accept": "application/json;version=2", // Ensuring the correct version is used
-                    "cache-control": "no-cache"
-                }
-            });
-
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error("Error fetching time series data:", error);
-        }
-    };
-
-    const fetchTimeSeriesDataMidNightPool = async (tsid) => {
-        // Convert to Date object
-        const date = new Date(isoDateDay1);
-
-        // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
-        date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
-
-        // Convert back to ISO string (preserve UTC format)
-        const end = date.toISOString();
-
-        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${end}&office=${office}`;
         console.log('tsidData:', tsidData);
         try {
             const response = await fetch(tsidData, {
@@ -995,6 +933,57 @@ document.addEventListener('DOMContentLoaded', async function () {
                     "cache-control": "no-cache"
                 }
             });
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error fetching time series data:", error);
+        }
+    };
+
+    const fetchTimeSeriesDataMidNightPool = async (tsid) => {
+        // Convert to Date object
+        const date = new Date(isoDateDay1);
+
+        // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
+        date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
+
+        // Convert back to ISO string (preserve UTC format)
+        const end = date.toISOString();
+
+        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${end}&office=${office}`;
+        console.log('tsidData:', tsidData);
+        try {
+            const response = await fetch(tsidData, {
+                headers: {
+                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                    "cache-control": "no-cache"
+                }
+            });
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error fetching time series data:", error);
+        }
+    };
+
+    const fetchTimeSeriesDataGenerationRelease = async (tsid) => {
+        let tsidData = null;
+        tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateToday}&office=${office}`;
+        console.log('tsidData:', tsidData);
+
+        try {
+            const response = await fetch(tsidData, {
+                headers: {
+                    "Accept": "application/json;version=2",
+                    "cache-control": "no-cache"
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
             const data = await response.json();
             return data;
         } catch (error) {
