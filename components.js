@@ -26,3 +26,21 @@ buttonRefresh.addEventListener('click', () => {
     // Fetch and create new table
     fetchTsidData();
 });
+
+
+try {
+    const response = await fetch(tsidData, {
+        headers: {
+            "Accept": "application/json;version=2", // Ensuring the correct version is used
+            "cache-control": "no-cache"
+        }
+    });
+
+    const data = await response.json();
+    return data;
+} catch (error) {
+    console.error("Error fetching time series data:", error);
+}
+
+
+lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk"

@@ -604,6 +604,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         let urlTsidSluice = null;
         let urlTsidSluiceTotal = null;
         let urlTsidOutflowTotal = null;
+
         if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
             urlTsidSluice = `${setBaseUrl}timeseries/group/Sluice-Lake-Test?office=${office}&category-id=${lake}`;
             console.log("urlTsidSluice:", urlTsidSluice);
@@ -1065,6 +1066,92 @@ document.addEventListener('DOMContentLoaded', async function () {
                         console.log("Recomedation: Please enter data for the previous day.");
                         alert("No data from today or previous day found, Please enter data for the previous day.");
                     }
+                } else if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                    tsidGate1 = tsidGateData['assigned-time-series'][0]['timeseries-id'];
+                    console.log("tsidGate1:", tsidGate1);
+
+                    tsidGate2 = tsidGateData['assigned-time-series'][1]['timeseries-id'];
+                    console.log("tsidGate2:", tsidGate2);
+
+                    tsidGate3 = tsidGateData['assigned-time-series'][2]['timeseries-id'];
+                    console.log("tsidGate3:", tsidGate3);
+
+                    tsidGateTotal = tsidGateTotalData['assigned-time-series'][0]['timeseries-id'];
+                    console.log("tsidGateTotal:", tsidGateTotal);
+
+                    tsidOutflowAverage = tsidOutflowAverageData['assigned-time-series'][0]['timeseries-id'];
+                    console.log("tsidOutflowAverage:", tsidOutflowAverage);
+
+                    // Fetch time series data
+                    timeSeriesDataGate1 = await fetchTimeSeriesData(tsidGate1);
+                    console.log("timeSeriesDataGate1:", timeSeriesDataGate1);
+
+                    timeSeriesDataGate2 = await fetchTimeSeriesData(tsidGate2);
+                    console.log("timeSeriesDataGate2:", timeSeriesDataGate2);
+
+                    timeSeriesDataGate3 = await fetchTimeSeriesData(tsidGate3);
+                    console.log("timeSeriesDataGate3:", timeSeriesDataGate3);
+
+                    timeSeriesDataGateTotal = await fetchTimeSeriesData(tsidGateTotal);
+                    console.log("timeSeriesDataGateTotal:", timeSeriesDataGateTotal);
+
+                    timeSeriesDataOutflowAverage = await fetchTimeSeriesData(tsidOutflowAverage);
+                    console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage);
+
+                    // Fetch yesterday time series data
+                    timeSeriesYesterdayDataGate1 = await fetchTimeSeriesYesterdayData(tsidGate1);
+                    console.log("timeSeriesYesterdayDataGate1:", timeSeriesYesterdayDataGate1);
+
+                    timeSeriesYesterdayDataGate2 = await fetchTimeSeriesYesterdayData(tsidGate2);
+                    console.log("timeSeriesYesterdayDataGate2:", timeSeriesYesterdayDataGate2);
+
+                    timeSeriesYesterdayDataGate3 = await fetchTimeSeriesYesterdayData(tsidGate3);
+                    console.log("timeSeriesYesterdayDataGate3:", timeSeriesYesterdayDataGate3);
+
+                    timeSeriesYesterdayDataGateTotal = await fetchTimeSeriesYesterdayData(tsidGateTotal);
+                    console.log("timeSeriesYesterdayDataGateTotal:", timeSeriesYesterdayDataGateTotal);
+
+                    timeSeriesYesterdayDataOutflowAverage = await fetchTimeSeriesYesterdayData(tsidOutflowAverage);
+                    console.log("timeSeriesYesterdayDataOutflowAverage:", timeSeriesYesterdayDataOutflowAverage);
+
+                    if (timeSeriesDataGate1 && timeSeriesDataGate1.values && timeSeriesDataGate1.values.length > 0) {
+                        console.log("Data for today found, Calling createTable ...");
+
+                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
+                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
+                            tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
+                            timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
+                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4, timeSeriesYesterdayDataGate4);
+
+                        loadingIndicator.style.display = 'none';
+
+                        loginStateController()
+                        setInterval(async () => {
+                            loginStateController()
+                        }, 10000)
+                    } else if (timeSeriesYesterdayDataGate1 && timeSeriesYesterdayDataGate1.values && timeSeriesYesterdayDataGate1.values.length > 0) {
+                        console.log("Data from previous day found, Calling createDataEntryTable ...");
+
+                        createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
+                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
+                            tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
+                            timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
+                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4, timeSeriesYesterdayDataGate4);
+
+                        loadingIndicator.style.display = 'none';
+
+                        loginStateController()
+                        setInterval(async () => {
+                            loginStateController()
+                        }, 10000)
+                    } else {
+                        console.log("Calling createDataEntryTable ...");
+                        console.log("No data from today or previous day found, Creating Data Entry Table ...");
+                        console.log("Recomedation: Please enter data for the previous day.");
+                        alert("No data from today or previous day found, Please enter data for the previous day.");
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching tsidOutflow data:", error);
@@ -1235,6 +1322,32 @@ document.addEventListener('DOMContentLoaded', async function () {
                     console.log("formattedYesterdayDataGate4:", formattedYesterdayDataGate4);
                     console.log("formattedYesterdayDataGateTotal:", formattedYesterdayDataGateTotal);
                     console.log("formattedYesterdayDataOutflowTotal:", formattedYesterdayDataOutflowTotal);
+                    console.log("formattedYesterdayDataOutflowAverage:", formattedYesterdayDataOutflowAverage);
+                } else if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                    // Today's data
+                    formattedDataGate1 = formatData(timeSeriesDataGate1);
+                    formattedDataGate2 = formatData(timeSeriesDataGate2);
+                    formattedDataGate3 = formatData(timeSeriesDataGate3);
+                    formattedDataGateTotal = formatData(timeSeriesDataGateTotal);
+                    formattedDataOutflowAverage = formatData(timeSeriesDataOutflowAverage);
+
+                    console.log("formattedDataGate1:", formattedDataGate1);
+                    console.log("formattedDataGate2:", formattedDataGate2);
+                    console.log("formattedDataGate3:", formattedDataGate3);
+                    console.log("formattedDataGateTotal:", formattedDataGateTotal);
+                    console.log("formattedDataOutflowAverage:", formattedDataOutflowAverage);
+
+                    // Yesterday's data
+                    formattedYesterdayDataGate1 = formatData(timeSeriesYesterdayDataGate1);
+                    formattedYesterdayDataGate2 = formatData(timeSeriesYesterdayDataGate2);
+                    formattedYesterdayDataGate3 = formatData(timeSeriesYesterdayDataGate3);
+                    formattedYesterdayDataGateTotal = formatData(timeSeriesYesterdayDataGateTotal);
+                    formattedYesterdayDataOutflowAverage = formatData(timeSeriesYesterdayDataOutflowAverage);
+
+                    console.log("formattedYesterdayDataGate1:", formattedYesterdayDataGate1);
+                    console.log("formattedYesterdayDataGate2:", formattedYesterdayDataGate2);
+                    console.log("formattedYesterdayDataGate3:", formattedYesterdayDataGate3);
+                    console.log("formattedYesterdayDataGateTotal:", formattedYesterdayDataGateTotal);
                     console.log("formattedYesterdayDataOutflowAverage:", formattedYesterdayDataOutflowAverage);
                 }
 
@@ -2239,109 +2352,110 @@ document.addEventListener('DOMContentLoaded', async function () {
                             console.log("payloadOutflowTotalAdditional: ", payloadOutflowTotalAdditional);
                         }
 
-                        // Prepare average outflow payload
-                        // 1. Loop through the values in payloadOutflowTotalAdditional and combine to formattedDataOutflowTotal
-                        payloadOutflowTotalAdditional.values.forEach((value) => {
-                            formattedDataOutflowTotal.push({
-                                "0": new Date(value[0]).getTime(),
-                                "1": value[1],
-                                "2": value[2],
-                                "formattedTimestampCST": new Date(value[0]).toLocaleString("en-US", { timeZone: "America/Chicago" })
+                        if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                            // Prepare average outflow payload
+                            payloadOutflowTotalAdditional.values.forEach((value) => {
+                                formattedDataOutflowTotal.push({
+                                    "0": new Date(value[0]).getTime(),
+                                    "1": value[1],
+                                    "2": value[2],
+                                    "formattedTimestampCST": new Date(value[0]).toLocaleString("en-US", { timeZone: "America/Chicago" })
+                                });
                             });
-                        });
-                        console.log("formattedDataOutflowTotal (After Combined with Additional): ", formattedDataOutflowTotal);
+                            console.log("formattedDataOutflowTotal (After Combined with Additional): ", formattedDataOutflowTotal);
+                        }
 
-                        // Step 1: Ensure formattedDataOutflowTotal is not null or undefined
-                        if (!formattedDataOutflowTotal || !Array.isArray(formattedDataOutflowTotal)) {
-                            console.error("Error: formattedDataOutflowTotal is null or invalid.");
+                        if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                            // Prepare average outflow payload
+                            payloadGateTotalAdditional.values.forEach((value) => {
+                                formattedDataGateTotal.push({
+                                    "0": new Date(value[0]).getTime(),
+                                    "1": value[1],
+                                    "2": value[2],
+                                    "formattedTimestampCST": new Date(value[0]).toLocaleString("en-US", { timeZone: "America/Chicago" })
+                                });
+                            });
+                            console.log("formattedDataOutflowTotal (After Combined with Additional): ", formattedDataGateTotal);
+                        }
+
+                        const isOutflowDataInvalid = !Array.isArray(formattedDataOutflowTotal) || formattedDataOutflowTotal.length === 0;
+                        const isGateDataInvalid = !Array.isArray(formattedDataGateTotal) || formattedDataGateTotal.length === 0;
+
+                        const usesOutflowData = ["Lk Shelbyville-Kaskaskia", "Lk Shelbyville", "Carlyle Lk-Kaskaskia", "Carlyle Lk"].includes(lake);
+                        const usesGateData = ["Mark Twain Lk-Salt", "Mark Twain Lk", "Wappapello Lk-St Francis", "Wappapello Lk"].includes(lake);
+
+                        if ((usesOutflowData && isOutflowDataInvalid) || (usesGateData && isGateDataInvalid)) {
+                            if (usesOutflowData && isOutflowDataInvalid) {
+                                console.error("Error: formattedDataOutflowTotal is missing, not an array, or empty.");
+                            }
+                            if (usesGateData && isGateDataInvalid) {
+                                console.error("Error: formattedDataGateTotal is missing, not an array, or empty.");
+                            }
+
                             payloadOutflowAverageAdditional = {
-                                "name": tsidOutflowAverage,
+                                name: tsidOutflowAverage,
                                 "office-id": "MVS",
-                                "units": "cfs",
-                                "values": [[isoDateToday, null, 0]] // Default to null if no valid data
+                                units: "cfs",
+                                values: [[isoDateToday, null, 0]]
                             };
                         } else {
-                            // Step 2: Format the data to include CST timestamps
-                            console.log("formattedDataOutflowTotal: ", formattedDataOutflowTotal);
+                            const relevantData = usesOutflowData ? formattedDataOutflowTotal : formattedDataGateTotal;
 
-                            formattedDataOutflowTotal.forEach(entry => {
-                                const isoDate = new Date(entry["0"]).toISOString();
-                                entry.isoTimestampUTC = isoDate;
+                            // Add ISO timestamps (if needed for debug/logging)
+                            relevantData.forEach(entry => {
+                                entry.isoTimestampUTC = new Date(entry["0"]).toISOString();
                             });
 
-                            console.log("formattedDataOutflowTotal: ", formattedDataOutflowTotal);
-
-                            formattedDataOutflowTotal = formattedDataOutflowTotal.map(entry => ([
+                            // Re-map into payload format
+                            const mappedData = relevantData.map(entry => ([
                                 new Date(entry["0"]).toISOString(),
                                 entry["1"],
                                 entry["2"]
                             ]));
 
-                            console.log("formattedDataOutflowTotal: ", formattedDataOutflowTotal); // This is a payload format now
-
-                            // Step 3: Calculate the weighted average outflow
+                            // Calculate weighted average
                             const totalHours = 24;
                             let weightedSum = 0;
                             let totalDuration = 0;
-                            let averageOutflowPayload = null;
 
-                            if (formattedDataOutflowTotal.length === 0) {
-                                console.error("Error: formattedDataOutflowTotal is empty.");
+                            if (mappedData.length === 1) {
+                                const value = mappedData[0][1] ?? 0;
+                                const hour = new Date(mappedData[0][0]).getHours() || 0;
+                                const duration = totalHours - hour;
+
+                                weightedSum = value * duration;
+                                totalDuration = duration;
                             } else {
-                                let lastHour = new Date(formattedDataOutflowTotal[0][0]).getHours() || 0;
+                                let lastHour = new Date(mappedData[0][0]).getHours() || 0;
 
-                                if (formattedDataOutflowTotal.length === 1) {
-                                    const value = formattedDataOutflowTotal[0][1] ?? 0;
-                                    const duration = totalHours - lastHour;
-                                    weightedSum = value * duration;
-                                    console.log("weightedSum:", weightedSum);
-                                    totalDuration = duration;
-                                } else {
-                                    for (let i = 1; i < formattedDataOutflowTotal.length; i++) {
-                                        const currentHour = new Date(formattedDataOutflowTotal[i][0]).getHours() || 0;
-                                        const prevValue = formattedDataOutflowTotal[i - 1][1] ?? 0;
-                                        const duration = Math.max(currentHour - lastHour, 1); // Avoid zero duration
+                                for (let i = 1; i < mappedData.length; i++) {
+                                    const currentHour = new Date(mappedData[i][0]).getHours() || 0;
+                                    const prevValue = mappedData[i - 1][1] ?? 0;
+                                    const duration = Math.max(currentHour - lastHour, 1); // Ensure minimum duration
 
-                                        weightedSum += prevValue * duration;
-                                        console.log("weightedSum:", weightedSum);
-                                        totalDuration += duration;
-
-                                        lastHour = currentHour;
-                                    }
-
-                                    // Add the final chunk from lastHour to 24
-                                    const lastValue = formattedDataOutflowTotal[formattedDataOutflowTotal.length - 1][1] ?? 0;
-                                    const lastDuration = totalHours - lastHour;
-
-                                    weightedSum += lastValue * lastDuration;
-                                    console.log("weightedSum:", weightedSum);
-                                    totalDuration += lastDuration;
+                                    weightedSum += prevValue * duration;
+                                    totalDuration += duration;
+                                    lastHour = currentHour;
                                 }
 
-                                averageOutflowPayload = weightedSum / totalHours;
-                                averageOutflowPayload = Math.round(averageOutflowPayload / 10) * 10;
-
-                                console.log("weightedSum:", weightedSum);
-                                console.log("totalDuration (should be 24):", totalDuration);
-                                console.log("averageOutflowPayload:", averageOutflowPayload);
+                                // Final chunk
+                                const lastValue = mappedData.at(-1)[1] ?? 0;
+                                const remainingDuration = totalHours - lastHour;
+                                weightedSum += lastValue * remainingDuration;
+                                totalDuration += remainingDuration;
                             }
 
-                            // Step 4: Construct payloadAverageOutflow
+                            const averageOutflowPayload = Math.round((weightedSum / totalHours) / 10) * 10;
+
                             payloadOutflowAverageAdditional = {
-                                "name": tsidOutflowAverage,
+                                name: tsidOutflowAverage,
                                 "office-id": "MVS",
-                                "units": "cfs",
-                                "values": [
-                                    [
-                                        isoDateToday,
-                                        averageOutflowPayload,  // Use the calculated average flow
-                                        0
-                                    ]
-                                ].filter(item => item[0] !== null), // Filters out entries where time1 is null
+                                units: "cfs",
+                                values: [[isoDateToday, averageOutflowPayload, 0]]
                             };
-                            console.log("payloadOutflowAverageAdditional: ", payloadOutflowAverageAdditional);
+
+                            console.log("payloadOutflowAverageAdditional:", payloadOutflowAverageAdditional);
                         }
-                        console.log("payloadOutflowAverageAdditional: ", payloadOutflowAverageAdditional);
                     } else {
                         if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
                             console.log("getAllSelectedTimes: ", getAllSelectedTimes());
@@ -2371,6 +2485,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                             console.log("getAllGate4Values: ", getAllGate4Values());
                             console.log("getAllGateTotalValues: ", getAllGateTotalValues());
                             console.log("getAllOutflowTotalValues: ", getAllOutflowTotalValues());
+                            console.log("getAllOutflowAverageValues: ", getAllOutflowAverageValues());
+                        } else if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                            console.log("getAllSelectedTimes: ", getAllSelectedTimes());
+                            console.log("getAllGate1Values: ", getAllGate1Values());
+                            console.log("getAllGate2Values: ", getAllGate2Values());
+                            console.log("getAllGate3Values: ", getAllGate3Values());
+                            console.log("getAllGateTotalValues: ", getAllGateTotalValues());
                             console.log("getAllOutflowAverageValues: ", getAllOutflowAverageValues());
                         }
 
@@ -2408,6 +2529,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 gateTotal: tsidGateTotal,
                                 outflowTotal: tsidOutflowTotal,
                             };
+                        } else if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                            tsidCategories = {
+                                gate1: tsidGate1,
+                                gate2: tsidGate2,
+                                gate3: tsidGate3,
+                                gateTotal: tsidGateTotal,
+                            };
                         }
 
                         if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
@@ -2438,6 +2566,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 gate4: getAllGate4Values(),
                                 gateTotal: getAllGateTotalValues(),
                                 outflowTotal: getAllOutflowTotalValues(),
+                            };
+                        } else if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                            dataCategories = {
+                                gate1: getAllGate1Values(),
+                                gate2: getAllGate2Values(),
+                                gate3: getAllGate3Values(),
+                                gateTotal: getAllGateTotalValues(),
                             };
                         }
 
@@ -2665,7 +2800,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") { // look for outflowTotal because of sluice and gate
                                     payloadOutflowAverage = payloads.outflowTotal.values;
                                     console.log("payloadOutflowAverage: ", payloadOutflowAverage);
-                                } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") { // look for gateTotal because of no sluice
+                                } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") { // look for gateTotal because of no sluice
                                     payloadOutflowAverage = payloads.gateTotal.values;
                                     console.log("payloadOutflowAverage: ", payloadOutflowAverage);
                                 }
@@ -2917,6 +3052,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     fetchUpdatedData(tsidOutflowTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
                                     fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
                                 ]);
+                            } else if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                                [
+                                    updatedDataGate1,
+                                    updatedDataGate2,
+                                    updatedDataGate3,
+                                    updatedDataGateTotal,
+                                    updatedDataOutflowAverage
+                                ] = await Promise.all([
+                                    fetchUpdatedData(tsidGate1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                    fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
+                                ]);
                             }
 
                             createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
@@ -3092,6 +3241,32 @@ document.addEventListener('DOMContentLoaded', async function () {
                     console.log("formattedYesterdayDataGateTotal:", formattedYesterdayDataGateTotal);
                     console.log("formattedYesterdayDataOutflowTotal:", formattedYesterdayDataOutflowTotal);
                     console.log("formattedYesterdayDataOutflowAverage:", formattedYesterdayDataOutflowAverage);
+                } else if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                    // Today's data
+                    formattedDataGate1 = formatData(timeSeriesDataGate1);
+                    formattedDataGate2 = formatData(timeSeriesDataGate2);
+                    formattedDataGate3 = formatData(timeSeriesDataGate3);
+                    formattedDataGateTotal = formatData(timeSeriesDataGateTotal);
+                    formattedDataOutflowAverage = formatData(timeSeriesDataOutflowAverage);
+
+                    console.log("formattedDataGate1:", formattedDataGate1);
+                    console.log("formattedDataGate2:", formattedDataGate2);
+                    console.log("formattedDataGate3:", formattedDataGate3);
+                    console.log("formattedDataGateTotal:", formattedDataGateTotal);
+                    console.log("formattedDataOutflowAverage:", formattedDataOutflowAverage);
+
+                    // Yesterday's data
+                    formattedYesterdayDataGate1 = formatData(timeSeriesYesterdayDataGate1);
+                    formattedYesterdayDataGate2 = formatData(timeSeriesYesterdayDataGate2);
+                    formattedYesterdayDataGate3 = formatData(timeSeriesYesterdayDataGate3);
+                    formattedYesterdayDataGateTotal = formatData(timeSeriesYesterdayDataGateTotal);
+                    formattedYesterdayDataOutflowAverage = formatData(timeSeriesYesterdayDataOutflowAverage);
+
+                    console.log("formattedYesterdayDataGate1:", formattedYesterdayDataGate1);
+                    console.log("formattedYesterdayDataGate2:", formattedYesterdayDataGate2);
+                    console.log("formattedYesterdayDataGate3:", formattedYesterdayDataGate3);
+                    console.log("formattedYesterdayDataGateTotal:", formattedYesterdayDataGateTotal);
+                    console.log("formattedYesterdayDataOutflowAverage:", formattedYesterdayDataOutflowAverage);
                 }
 
                 const table = document.createElement("table");
@@ -3160,6 +3335,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const outflowTotalHeader = document.createElement("th");
                     outflowTotalHeader.textContent = "Outflow Total (cfs)";
                     headerRow.appendChild(outflowTotalHeader);
+                }
+
+                if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                    const gateTotalHeader = document.createElement("th");
+                    gateTotalHeader.textContent = "Gate Total (cfs)";
+                    headerRow.appendChild(gateTotalHeader);
                 }
 
                 table.appendChild(headerRow);
@@ -3324,7 +3505,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         row.appendChild(gate4Cell);
                     }
 
-                    // Gate Total (calculated)
+                    // Gate Total Flow (editable)
                     const gateTotalCell = document.createElement("td");
                     const gateTotalInput = document.createElement("input");
                     gateTotalInput.type = "number";
@@ -3336,7 +3517,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     gateTotalCell.appendChild(gateTotalInput);
                     row.appendChild(gateTotalCell);
 
-                    // Outflow Total (calculated)
+                    // Outflow Average Total (calculated)
                     if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                         averageOutflowCalculate = (formattedYesterdayDataGateTotal.at(-1)[1] + formattedYesterdayDataSluiceTotal.at(-1)[1]).toFixed(0);
                         const gateOutflowTotalCell = document.createElement("td");
@@ -3378,10 +3559,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const secondCell = document.createElement("td");
                 secondCell.type = "number";
                 secondCell.id = `gateOutflowAverageInput`;
-                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+
+                // if lakes have more then one flow source like sluice/spillway/turbine, use the average of all flows
+                if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk" || lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
                     secondCell.textContent = averageOutflowCalculate;
-                } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                    secondCell.style.backgroundColor = "pink";
+                }
+
+                // Just use yesterday total gate flow for these lakes
+                if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
                     secondCell.textContent = formattedYesterdayDataGateTotal.at(-1)[1].toFixed(0);
+                    secondCell.style.backgroundColor = "pink";
                 }
                 tableRow.appendChild(secondCell);
 
@@ -4424,3 +4612,61 @@ document.addEventListener('DOMContentLoaded', async function () {
 // Carlyle Lk-Kaskaskia.Flow.Inst.~30Minutes.0.lakerep-rev-test (Outflow-Total-Lake-Test)
 
 // Carlyle Lk-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test (Outflow-Average-Lake-Test) use this now: Carlyle Lk-Kaskaskia.Flow.Ave.~1Day.1Day.lakerep-rev-test
+
+// **************************************************************************************************************************************************************************
+
+// Wappapello Lk-St Francis
+// Wappapello Lk-St Francis.Opening.Inst.~30Minutes.0.lakerep-rev-G1-test (Gate-Lake-Test)
+// Wappapello Lk-St Francis.Opening.Inst.~30Minutes.0.lakerep-rev-G2-test (Gate-Lake-Test)
+// Wappapello Lk-St Francis.Opening.Inst.~30Minutes.0.lakerep-rev-G3-test (Gate-Lake-Test)
+
+// Wappapello Lk-St Francis.Flow-Taint.Inst.~30Minutes.0.lakerep-rev-test (Gate-Total-Lake-Test)
+
+// Wappapello Lk-St Francis.Flow.Inst.~30Minutes.0.lakerep-rev-test (Outflow-Total-Lake-Test)
+
+// Wappapello Lk-St Francis.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test (Outflow-Average-Lake-Test)
+
+
+// DECLARE
+//     v_ts_category_id     VARCHAR2(255) := 'Wappapello Lk-St Francis'; --Replace with actual ID
+//     v_ts_group_id        VARCHAR2(255) := 'Outflow-Average-Lake-Test'; --Replace with actual ID
+//     v_ts_group_desc      VARCHAR2(255) := NULL; --Optional description
+//     v_fail_if_exists     VARCHAR2(1) := 'T'; --Optional, defaults to 'F'
+//     v_ignore_nulls       VARCHAR2(1) := 'T'; --Optional, defaults to 'T'
+//     v_shared_alias_id    VARCHAR2(255) := NULL; --Optional
+//     v_shared_ts_ref_id   VARCHAR2(255) := NULL; --Optional
+//     v_db_office_id       VARCHAR2(255) := NULL; --Optional
+// BEGIN
+// CWMS_TS.store_ts_group(
+//     p_ts_category_id => v_ts_category_id,
+//     p_ts_group_id => v_ts_group_id,
+//     p_ts_group_desc => v_ts_group_desc,
+//     p_fail_if_exists => v_fail_if_exists,
+//     p_ignore_nulls => v_ignore_nulls,
+//     p_shared_alias_id => v_shared_alias_id,
+//     p_shared_ts_ref_id => v_shared_ts_ref_id,
+//     p_db_office_id => v_db_office_id
+// );
+// END;
+
+
+
+// DECLARE
+//     v_ts_category_id   VARCHAR2(255) := 'Wappapello Lk-St Francis'; --Replace with actual category ID
+//     v_ts_group_id        VARCHAR2(255) := 'Outflow-Average-Lake-Test'; --Replace with actual ID
+//     v_ts_id            VARCHAR2(255) := 'Wappapello Lk-St Francis.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test'; --Replace with actual TS ID
+//     v_ts_attribute     NUMBER:= 1;
+//     v_ts_alias_id      VARCHAR2(255) := null; --Optional alias ID
+//     v_ref_ts_id        VARCHAR2(255) := NULL; --Optional reference TS ID
+//     v_db_office_id     VARCHAR2(255) := NULL; --Optional office ID
+// BEGIN
+// CWMS_TS.assign_ts_group(
+//     p_ts_category_id => v_ts_category_id,
+//     p_ts_group_id => v_ts_group_id,
+//     p_ts_id => v_ts_id,
+//     p_ts_attribute => v_ts_attribute,
+//     p_ts_alias_id => v_ts_alias_id,
+//     p_ref_ts_id => v_ref_ts_id,
+//     p_db_office_id => v_db_office_id
+// );
+// END;
