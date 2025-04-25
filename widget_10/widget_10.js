@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             const formattedData = timeSeriesDataCrest.values.map(entry => {
                 const timestamp = Number(entry[0]); // Ensure timestamp is a number
-            
+
                 return {
                     ...entry, // Retain other data
                     formattedTimestampUTC: convertUnixTimestamp(timestamp, false),  // UTC time
@@ -234,9 +234,32 @@ document.addEventListener('DOMContentLoaded', async function () {
             statusDiv.appendChild(cdaStatusBtn);
             output10Div.appendChild(statusDiv);
 
+            // Create the buttonRefresh button
+            const buttonRefresh = document.createElement('button');
+            buttonRefresh.textContent = 'Refresh';
+            buttonRefresh.id = 'refresh-crest-forecast-button';
+            buttonRefresh.className = 'fetch-btn';
+            output10Div.appendChild(buttonRefresh);
+
+            buttonRefresh.addEventListener('click', () => {
+                // Remove existing table
+                const existingTable = document.getElementById('crest-forecast');
+                if (existingTable) {
+                    existingTable.remove();
+                }
+
+                const existingRefresh = document.getElementById('cda-btn-crest');
+                if (existingRefresh) {
+                    existingRefresh.remove();
+                }
+
+                // Fetch and create new table
+                fetchTsidData();
+            });
+
             cdaSaveBtn.addEventListener("click", async () => {
                 console.log("Crest Input: ", parseFloat(crestInput.value) || 909);
-                console.log("Option/QualityCode Input: ",parseFloat(optionInput.value) || 0);
+                console.log("Option/QualityCode Input: ", parseFloat(optionInput.value) || 0);
                 console.log("DateTime Input (Not Used): ", dateInput.value);
 
                 // Parse user inputs
@@ -389,7 +412,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const dateCell = document.createElement("td");
             const dateInput = document.createElement("input");
             dateInput.type = "text";
-            dateInput.value =  convertTo6AMCST(isoDateToday); // Set the default value to 6 AM CST
+            dateInput.value = convertTo6AMCST(isoDateToday); // Set the default value to 6 AM CST
             dateInput.id = "dateInput";
             dateCell.appendChild(dateInput);
             row.appendChild(dateCell);
@@ -437,6 +460,29 @@ document.addEventListener('DOMContentLoaded', async function () {
             cdaStatusBtn.disabled = false;
             statusDiv.appendChild(cdaStatusBtn);
             output10Div.appendChild(statusDiv);
+
+            // Create the buttonRefresh button
+            const buttonRefresh = document.createElement('button');
+            buttonRefresh.textContent = 'Refresh';
+            buttonRefresh.id = 'refresh-crest-forecast-button';
+            buttonRefresh.className = 'fetch-btn';
+            output10Div.appendChild(buttonRefresh);
+
+            buttonRefresh.addEventListener('click', () => {
+                // Remove existing table
+                const existingTable = document.getElementById('crest-forecast');
+                if (existingTable) {
+                    existingTable.remove();
+                }
+
+                const existingRefresh = document.getElementById('cda-btn-crest');
+                if (existingRefresh) {
+                    existingRefresh.remove();
+                }
+
+                // Fetch and create new table
+                fetchTsidData();
+            });
 
             // Add event listener to the submit button
             cdaSaveBtn.addEventListener("click", async () => {
@@ -659,22 +705,22 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.error("Invalid timestamp:", timestamp);
             return "Invalid Date";
         }
-    
+
         const dateUTC = new Date(timestamp); // Convert milliseconds to Date object
         if (isNaN(dateUTC.getTime())) {
             console.error("Invalid date conversion:", timestamp);
             return "Invalid Date";
         }
-    
+
         if (!toCST) {
             return dateUTC.toISOString(); // Return UTC time
         }
-    
+
         // Convert to CST/CDT (America/Chicago) while adjusting for daylight saving time
         const options = { timeZone: "America/Chicago", hour12: false };
         const cstDateString = dateUTC.toLocaleString("en-US", options);
         const cstDate = new Date(cstDateString + " UTC"); // Convert back to Date
-    
+
         return cstDate.toISOString();
     }
 
@@ -717,13 +763,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     function convertTo6AMCST(isoDateToday) {
         // Parse the UTC date
         let utcDate = new Date(isoDateToday);
-    
+
         // Convert to CST (America/Chicago)
         let cstDate = new Date(utcDate.toLocaleString("en-US", { timeZone: "America/Chicago" }));
-    
+
         // Set the time to 6 AM CST
         cstDate.setHours(6, 0, 0, 0);
-    
+
         // Convert back to ISO format
         return new Date(cstDate.getTime() - (cstDate.getTimezoneOffset() * 60000)).toISOString();
     }

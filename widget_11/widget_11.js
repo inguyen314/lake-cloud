@@ -231,6 +231,30 @@ document.addEventListener('DOMContentLoaded', async function () {
                 statusDiv.appendChild(cdaStatusBtn);
                 output11Div.appendChild(statusDiv);
 
+                // Create the buttonRefresh button
+                const buttonRefresh = document.createElement('button');
+                buttonRefresh.textContent = 'Refresh';
+                buttonRefresh.id = 'refresh-notes-button';
+                buttonRefresh.className = 'fetch-btn';
+                output11Div.appendChild(buttonRefresh);
+
+                buttonRefresh.addEventListener('click', () => {
+                    // Remove existing data table
+                    const existingTable = document.getElementById('notes');
+                    if (existingTable) {
+                        existingTable.remove();
+                    }
+
+                    // Remove existing save button
+                    const existingRefresh = document.getElementById('cda-btn-note');
+                    if (existingRefresh) {
+                        existingRefresh.remove();
+                    }
+
+                    // Fetch and create new table
+                    fetchTsidData();
+                });
+
                 cdaSaveBtn.addEventListener("click", async () => {
                     let textValues = [];
 
@@ -471,17 +495,17 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.error("Invalid timestamp:", timestamp);
             return "Invalid Date";
         }
-    
+
         const date = new Date(timestamp); // Convert milliseconds to Date object
-    
+
         if (isNaN(date.getTime())) {
             console.error("Invalid date conversion:", timestamp);
             return "Invalid Date";
         }
-    
+
         // Convert UTC time to CST (UTC-6) by subtracting 6 hours
         date.setUTCHours(date.getUTCHours() - dstOffsetHours);
-    
+
         return date.toISOString(); // Return in "YYYY-MM-DDTHH:mm:ss.000Z" format
     }
 

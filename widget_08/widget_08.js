@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
 
                 const table = document.createElement("table");
-                table.id = "lake-office-24-hour-precipitation";
+                table.id = "lake-office-precipitation";
 
                 const headerRow = document.createElement("tr");
                 const dateHeader = document.createElement("th");
@@ -228,6 +228,29 @@ document.addEventListener('DOMContentLoaded', async function () {
                 cdaStatusBtn.disabled = false;
                 statusDiv.appendChild(cdaStatusBtn);
                 output8Div.appendChild(statusDiv);
+
+                // Create the buttonRefresh button
+                const buttonRefresh = document.createElement('button');
+                buttonRefresh.textContent = 'Refresh';
+                buttonRefresh.id = 'refresh-lake-office-precipitation-button';
+                buttonRefresh.className = 'fetch-btn';
+                output8Div.appendChild(buttonRefresh);
+
+                buttonRefresh.addEventListener('click', () => {
+                    // Remove existing table
+                    const existingTable = document.getElementById('lake-office-precipitation');
+                    if (existingTable) {
+                        existingTable.remove();
+                    }
+
+                    const existingRefresh = document.getElementById('cda-btn-precip');
+                    if (existingRefresh) {
+                        existingRefresh.remove();
+                    }
+
+                    // Fetch and create new table
+                    fetchTsidData();
+                });
 
                 cdaSaveBtn.addEventListener("click", async () => {
                     const values = [];
@@ -534,13 +557,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     function convertTo6AMCST(isoDateToday) {
         // Parse the UTC date
         let utcDate = new Date(isoDateToday);
-    
+
         // Convert to CST (America/Chicago)
         let cstDate = new Date(utcDate.toLocaleString("en-US", { timeZone: "America/Chicago" }));
-    
+
         // Set the time to 6 AM CST
         cstDate.setHours(6, 0, 0, 0);
-    
+
         // Convert back to ISO format
         return new Date(cstDate.getTime() - (cstDate.getTimezoneOffset() * 60000)).toISOString();
     }

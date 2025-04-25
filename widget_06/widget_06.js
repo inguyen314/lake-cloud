@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
 
                 async function loginStateController() {
-                    cdaSaveBtn = document.getElementById("cda-btn"); // Get the button by its ID
+                    cdaSaveBtn = document.getElementById("cda-btn-lake-forecast"); // Get the button by its ID
 
                     cdaSaveBtn.disabled = true; // Disable button while checking login state
 
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const outflowCell = document.createElement("td");
                     const outflowInput = document.createElement("input");
                     outflowInput.type = "number";
-                    outflowInput.step = "10.0"; 
+                    outflowInput.step = "10.0";
                     outflowInput.value = entry[1].toFixed(0); // Outflow uses formattedData
                     outflowInput.className = "outflow-input";
                     outflowInput.id = `outflowInput-${entry[0]}`;
@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
-                cdaSaveBtn.id = "cda-btn";
+                cdaSaveBtn.id = "cda-btn-lake-forecast";
                 cdaSaveBtn.disabled = true;
                 output6Div.appendChild(cdaSaveBtn);
 
@@ -280,10 +280,33 @@ document.addEventListener('DOMContentLoaded', async function () {
                 statusDiv.className = "status";
                 const cdaStatusBtn = document.createElement("button");
                 cdaStatusBtn.textContent = "";
-                cdaStatusBtn.id = "cda-btn";
+                cdaStatusBtn.id = "cda-btn-lake-forecast";
                 cdaStatusBtn.disabled = false;
                 statusDiv.appendChild(cdaStatusBtn);
                 output6Div.appendChild(statusDiv);
+
+                // Create the buttonRefresh button
+                const buttonRefresh = document.createElement('button');
+                buttonRefresh.textContent = 'Refresh';
+                buttonRefresh.id = 'refresh-lake-forecast-button';
+                buttonRefresh.className = 'fetch-btn';
+                output6Div.appendChild(buttonRefresh);
+
+                buttonRefresh.addEventListener('click', () => {
+                    // Remove existing table
+                    const existingTable = document.getElementById('lake-forecast');
+                    if (existingTable) {
+                        existingTable.remove();
+                    }
+
+                    const existingRefresh = document.getElementById('cda-btn-lake-forecast');
+                    if (existingRefresh) {
+                        existingRefresh.remove();
+                    }
+
+                    // Fetch and create new table
+                    fetchTsidData();
+                });
 
                 cdaSaveBtn.addEventListener("click", async () => {
                     const payloadOutflow = {
@@ -489,23 +512,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // dates = [isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5]; // convertTo6AMCST(isoDateToday)
                     dates = [convertTo6AMCST(isoDateToday), convertTo6AMCST(isoDateDay1), convertTo6AMCST(isoDateDay2), convertTo6AMCST(isoDateDay3), convertTo6AMCST(isoDateDay4), convertTo6AMCST(isoDateDay5)];
                 }
-
                 console.log("dates (6am cst in utc):", dates);
-
-                // Convert each date from UTC to CST and format it
-                const options = { timeZone: 'America/Chicago', hour12: false };
-
-                // const formattedDates = dates.map(date => {
-                //     const d = new Date(date);
-                //     const cstDate = d.toLocaleString('en-US', options);
-
-                //     // Extract the date and time parts and format as MM-DD-YYYY HH:mm
-                //     const [month, day, year, hour, minute] = cstDate.match(/(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{1,2}):(\d{2})/).slice(1);
-
-                //     return `${month.padStart(2, '0')}-${day.padStart(2, '0')}-${year} ${hour}:${minute}`;
-                // });
-
-                // console.log("formattedDates (CST):", formattedDates);
 
                 dates.forEach((date, index) => {
                     const row = document.createElement("tr");
@@ -547,7 +554,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
-                cdaSaveBtn.id = "cda-btn";
+                cdaSaveBtn.id = "cda-btn-lake-forecast";
                 cdaSaveBtn.disabled = true;
                 output6Div.appendChild(cdaSaveBtn);
 
@@ -555,10 +562,33 @@ document.addEventListener('DOMContentLoaded', async function () {
                 statusDiv.className = "status";
                 const cdaStatusBtn = document.createElement("button");
                 cdaStatusBtn.textContent = "";
-                cdaStatusBtn.id = "cda-btn";
+                cdaStatusBtn.id = "cda-btn-lake-forecast";
                 cdaStatusBtn.disabled = false;
                 statusDiv.appendChild(cdaStatusBtn);
                 output6Div.appendChild(statusDiv);
+
+                // Create the buttonRefresh button
+                const buttonRefresh = document.createElement('button');
+                buttonRefresh.textContent = 'Refresh';
+                buttonRefresh.id = 'refresh-lake-forecast-button';
+                buttonRefresh.className = 'fetch-btn';
+                output6Div.appendChild(buttonRefresh);
+
+                buttonRefresh.addEventListener('click', () => {
+                    // Remove existing table
+                    const existingTable = document.getElementById('lake-forecast');
+                    if (existingTable) {
+                        existingTable.remove();
+                    }
+
+                    const existingRefresh = document.getElementById('cda-btn-lake-forecast');
+                    if (existingRefresh) {
+                        existingRefresh.remove();
+                    }
+
+                    // Fetch and create new table
+                    fetchTsidData();
+                });
 
                 // Add event listener to the submit button
                 cdaSaveBtn.addEventListener("click", async () => {
@@ -933,13 +963,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     // function convertTo6AMCST(isoDateToday) {
     //     // Parse the UTC date
     //     let utcDate = new Date(isoDateToday);
-    
+
     //     // Convert to CST (America/Chicago)
     //     let cstDate = new Date(utcDate.toLocaleString("en-US", { timeZone: "America/Chicago" }));
-    
+
     //     // Set the time to 6 AM CST
     //     cstDate.setHours(6, 0, 0, 0);
-    
+
     //     // Convert back to ISO format
     //     return new Date(cstDate.getTime() - (cstDate.getTimezoneOffset() * 60000)).toISOString();
     // }
@@ -947,10 +977,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     function convertTo6AMCST(isoDateToday) {
         // Parse the input date
         let date = new Date(isoDateToday);
-    
+
         // Add 6 hours (6 * 60 * 60 * 1000 ms)
         date = new Date(date.getTime() + 6 * 60 * 60 * 1000);
-    
+
         // Return the new ISO string
         return date.toISOString();
     }

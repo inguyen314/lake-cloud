@@ -1661,7 +1661,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Create the buttonRefresh button
                 const buttonRefresh = document.createElement('button');
                 buttonRefresh.textContent = 'Refresh';
-                buttonRefresh.id = 'refreshGateSettingsBtn';
+                buttonRefresh.id = 'refresh-gate-settings-button';
                 buttonRefresh.className = 'fetch-btn';
                 output6Div.appendChild(buttonRefresh);
 
@@ -1673,7 +1673,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
 
                     // Remove both buttons
-                    const existingButton = document.getElementById('gateOutflowAverageTable');
+                    const existingButton = document.getElementById('gate-outflow-average-table');
                     if (existingButton) {
                         existingButton.remove();
                     }
@@ -3363,7 +3363,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Create a tableOutflowAvg
                 const tableOutflowAvg = document.createElement("table");
-                tableOutflowAvg.id = "gateOutflowAverageTable";
+                tableOutflowAvg.id = "gate-outflow-average-table";
                 const tableRow = document.createElement("tr");
                 tableOutflowAvg.style.width = "50%";
                 tableOutflowAvg.style.marginTop = "10px";
@@ -3412,7 +3412,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Create the buttonRefresh button
                 const buttonRefresh = document.createElement('button');
                 buttonRefresh.textContent = 'Refresh';
-                buttonRefresh.id = 'refreshGateSettingsBtn';
+                buttonRefresh.id = 'refresh-gate-settings-button';
                 buttonRefresh.className = 'fetch-btn';
                 output6Div.appendChild(buttonRefresh);
 
@@ -3423,12 +3423,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                         existingTable.remove();
                     }
 
-                    // Remove both buttons
-                    const existingButton = document.getElementById('gateOutflowAverageTable');
+                    // Remove existing table
+                    const existingButton = document.getElementById('gate-outflow-average-table');
                     if (existingButton) {
                         existingButton.remove();
                     }
 
+                    // Remove save button
                     const existingRefresh = document.getElementById('cda-btn-gate');
                     if (existingRefresh) {
                         existingRefresh.remove();

@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Create the refresh button
                 const buttonRefresh = document.createElement('button');
                 buttonRefresh.textContent = 'Refresh';
-                buttonRefresh.id = 'refreshBtnGen'; // Unique ID
+                buttonRefresh.id = 'refresh-generation-release-button'; // Unique ID
                 buttonRefresh.className = 'fetch-btn';
                 output6Div.appendChild(buttonRefresh);
 
@@ -324,7 +324,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                         existingTable.remove();
                     }
 
-                    const existingRefresh = document.getElementById('refreshBtnGen');
+                    const existingSaveButton = document.getElementById('cda-btn-generation');
+                    if (existingSaveButton) {
+                        existingSaveButton.remove();
+                    }
+
+                    const existingRefresh = document.getElementById('refresh-generation-release-button');
                     if (existingRefresh) {
                         existingRefresh.remove();
                     }
@@ -588,7 +593,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Create the refresh button
                 const buttonRefresh = document.createElement('button');
                 buttonRefresh.textContent = 'Refresh';
-                buttonRefresh.id = 'refreshBtnGen'; // Unique ID
+                buttonRefresh.id = 'refresh-generation-release-button'; // Unique ID
                 buttonRefresh.className = 'fetch-btn';
                 output6Div.appendChild(buttonRefresh);
 
@@ -600,7 +605,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                         existingTable.remove();
                     }
 
-                    const existingRefresh = document.getElementById('refreshBtnGen');
+                    const existingSaveButton = document.getElementById('cda-btn-generation');
+                    if (existingSaveButton) {
+                        existingSaveButton.remove();
+                    }
+
+                    const existingRefresh = document.getElementById('refresh-generation-release-button');
                     if (existingRefresh) {
                         existingRefresh.remove();
                     }

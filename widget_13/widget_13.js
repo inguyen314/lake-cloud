@@ -301,9 +301,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                     table.appendChild(row);
                 }
 
-                const outputDiv = document.getElementById("output13");
-                outputDiv.innerHTML = "";
-                outputDiv.appendChild(table);
+                const output13Div = document.getElementById("output13");
+                output13Div.innerHTML = "";
+                output13Div.appendChild(table);
 
                 if (Array.isArray(formattedDataInstruction["regular-text-values"]) && formattedDataInstruction["regular-text-values"].length > 0) {
                     formattedDataInstruction["regular-text-values"].forEach((entry) => {
@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         instructionInput.placeholder = "Type your note...";
                         instructionInput.className = "editable-input";
                         instructionDiv.appendChild(instructionInput);
-                        outputDiv.appendChild(instructionDiv);
+                        output13Div.appendChild(instructionDiv);
                     });
                 } else {
                     const fallbackInstructionTextValue =
@@ -331,14 +331,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                     instructionInput.placeholder = "Type your note...";
                     instructionInput.className = "editable-input";
                     instructionDiv.appendChild(instructionInput);
-                    outputDiv.appendChild(instructionDiv);
+                    output13Div.appendChild(instructionDiv);
                 }
 
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
                 cdaSaveBtn.id = "cda-btn-schedule";
                 cdaSaveBtn.disabled = false;
-                outputDiv.appendChild(cdaSaveBtn);
+                output13Div.appendChild(cdaSaveBtn);
 
                 const statusDiv = document.createElement("div");
                 statusDiv.className = "status";
@@ -347,21 +347,62 @@ document.addEventListener('DOMContentLoaded', async function () {
                 cdaStatusBtn.id = "cda-btn-schedule";
                 cdaStatusBtn.disabled = false;
                 statusDiv.appendChild(cdaStatusBtn);
-                outputDiv.appendChild(statusDiv);
+                output13Div.appendChild(statusDiv);
 
                 const sendMvkBtn = document.createElement("button");
                 sendMvkBtn.textContent = "Send MVK Instructions";
                 sendMvkBtn.id = "send-mvk";
                 sendMvkBtn.disabled = false;
                 sendMvkBtn.className = "fetch-btn";
-                outputDiv.appendChild(sendMvkBtn);
+                output13Div.appendChild(sendMvkBtn);
 
                 const sendSwpaBtn = document.createElement("button");
                 sendSwpaBtn.textContent = "Send SWPA Message";
                 sendSwpaBtn.id = "send-swpa";
                 sendSwpaBtn.disabled = false;
                 sendSwpaBtn.className = "fetch-btn";
-                outputDiv.appendChild(sendSwpaBtn);
+                output13Div.appendChild(sendSwpaBtn);
+
+                // Create the buttonRefresh button
+                const buttonRefresh = document.createElement('button');
+                buttonRefresh.textContent = 'Refresh';
+                buttonRefresh.id = 'refreshGateSettingsBtn';
+                buttonRefresh.className = 'fetch-btn';
+                output13Div.appendChild(buttonRefresh);
+
+                buttonRefresh.addEventListener('click', () => {
+                    // Remove existing table
+                    const existingTable = document.getElementById('release-schedule-and-instruction');
+                    if (existingTable) {
+                        existingTable.remove();
+                    }
+
+                    // Remove both buttons
+                    const existingInput = document.getElementById('instruction-input');
+                    if (existingInput) {
+                        existingInput.remove();
+                    }
+
+                    // Remove both buttons
+                    const existingSaveButton = document.getElementById('cda-btn-schedule');
+                    if (existingSaveButton) {
+                        existingSaveButton.remove();
+                    }
+
+                    // Remove both buttons
+                    const existingMvkButton = document.getElementById('send-mvk');
+                    if (existingMvkButton) {
+                        existingMvkButton.remove();
+                    }
+
+                    const existingSwpaButton = document.getElementById('send-swpa');
+                    if (existingSwpaButton) {
+                        existingSwpaButton.remove();
+                    }
+
+                    // Fetch and create new table
+                    fetchTsidData();
+                });
 
                 sendMvkBtn.addEventListener("click", async () => {
                     const recipient = "cemvs-cwms@usace.army.mil; brian.k.bean@usace.army.mil; Bryan.E.Bennett@usace.army.mil; Gregory.S.Kimery@usace.army.mil; Rocky.L.Reed@usace.army.mil; Larry.J.Hurt@usace.army.mil; Michael.D.Tate@usace.army.mil; James.A.McKeon@usace.army.mil; DLL-CEMVS-OD-JP@usace.army.mil";

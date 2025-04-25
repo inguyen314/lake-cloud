@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Create the first button
                 const button = document.createElement('button');
                 button.textContent = 'Balance Inflow Module';
-                button.id = 'balanceInflowBtn'; // Unique ID
+                button.id = 'balance-inflow-button'; // Unique ID
                 button.className = 'fetch-btn';
 
                 // Open link in a new tab when clicked
@@ -189,14 +189,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 outputDiv.appendChild(button);
 
-                // // Add a line break between buttons
-                // const lineBreak = document.createElement('br');
-                // outputDiv.appendChild(lineBreak);
-
                 // Create the refresh button
                 const buttonRefresh = document.createElement('button');
                 buttonRefresh.textContent = 'Refresh';
-                buttonRefresh.id = 'refreshBtnBalanceWindow'; // Unique ID
+                buttonRefresh.id = 'refresh-balance-window-button'; // Unique ID
                 buttonRefresh.className = 'fetch-btn';
                 outputDiv.appendChild(buttonRefresh);
 
@@ -209,12 +205,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
 
                     // Remove both buttons
-                    const existingButton = document.getElementById('balanceInflowBtn');
+                    const existingButton = document.getElementById('balance-inflow-button');
                     if (existingButton) {
                         existingButton.remove();
                     }
 
-                    const existingRefresh = document.getElementById('refreshBtnBalanceWindow');
+                    const existingRefresh = document.getElementById('refresh-balance-window-button');
                     if (existingRefresh) {
                         existingRefresh.remove();
                     }

@@ -375,7 +375,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Create the buttonRefresh button
                 const buttonRefresh = document.createElement('button');
                 buttonRefresh.textContent = 'Refresh';
-                buttonRefresh.id = 'refreshBtn';
+                buttonRefresh.id = 'refresh-inflow-button';
                 buttonRefresh.className = 'fetch-btn';
                 output8Div.appendChild(buttonRefresh);
 
@@ -386,15 +386,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                         existingTable.remove();
                     }
 
-                    // Remove both buttons
+                    // Remove existing save button
                     const existingButton = document.getElementById('cda-btn-inflow');
                     if (existingButton) {
                         existingButton.remove();
-                    }
-
-                    const existingRefresh = document.getElementById('cda-btn-inflow');
-                    if (existingRefresh) {
-                        existingRefresh.remove();
                     }
 
                     const estimatedValueRefresh = document.getElementById('estimated-value');

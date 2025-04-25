@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     let offsetMonths = month === 0 ? 11 : month - 1; // One month behind
     console.log("offsetMonths: ", offsetMonths);
 
-    let offsetMinutes = day * 24 *60;
+    let offsetMinutes = day * 24 * 60;
     console.log("offsetMinutes: ", offsetMinutes);
 
     const fetchTsidData = async () => {
@@ -191,6 +191,29 @@ document.addEventListener('DOMContentLoaded', async function () {
                 cdaStatusBtn.disabled = false;
                 statusDiv.appendChild(cdaStatusBtn);
                 output9Div.appendChild(statusDiv);
+
+                // Create the buttonRefresh button
+                const buttonRefresh = document.createElement('button');
+                buttonRefresh.textContent = 'Refresh';
+                buttonRefresh.id = 'refresh-rule-curve-button';
+                buttonRefresh.className = 'fetch-btn';
+                output9Div.appendChild(buttonRefresh);
+
+                buttonRefresh.addEventListener('click', () => {
+                    // Remove existing table
+                    const existingTable = document.getElementById('rule-curve');
+                    if (existingTable) {
+                        existingTable.remove();
+                    }
+
+                    const existingRefresh = document.getElementById('cda-btn-rule-curve');
+                    if (existingRefresh) {
+                        existingRefresh.remove();
+                    }
+
+                    // Fetch and create new table
+                    fetchTsidData();
+                });
 
                 cdaSaveBtn.addEventListener("click", async () => {
                     const ruleCurveInput = document.getElementById(`ruleCurveInput`).value;
@@ -352,35 +375,35 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     function checkSeasonalValueMatch(data, value, offsetMonths, offsetMinutes) {
         const seasonalValues = data["seasonal-values"];
-    
+
         console.log(`Checking for value: ${value}, offsetMonths: ${offsetMonths}, offsetMinutes: ${offsetMinutes}`);
-    
+
         let bestMatch = null;
-    
+
         for (const seasonalValue of seasonalValues) {
             console.log(`Checking seasonal value:`, seasonalValue);
-    
+
             if (seasonalValue["offset-months"] > offsetMonths) {
                 console.log(`Skipping ${JSON.stringify(seasonalValue)} - offset-months too high`);
                 continue; // Skip months greater than target
             }
-    
+
             if (bestMatch === null) {
                 console.log(`First candidate:`, seasonalValue);
                 bestMatch = seasonalValue;
             } else {
                 const isBetterMonth = seasonalValue["offset-months"] > bestMatch["offset-months"];
                 const isSameMonthBetterMinutes = seasonalValue["offset-months"] === bestMatch["offset-months"] &&
-                                                 seasonalValue["offset-minutes"] <= offsetMinutes &&
-                                                 seasonalValue["offset-minutes"] > bestMatch["offset-minutes"];
-    
+                    seasonalValue["offset-minutes"] <= offsetMinutes &&
+                    seasonalValue["offset-minutes"] > bestMatch["offset-minutes"];
+
                 if (isBetterMonth || isSameMonthBetterMinutes) {
                     console.log(`Updating best match to:`, seasonalValue);
                     bestMatch = seasonalValue;
                 }
             }
         }
-    
+
         if (bestMatch) {
             console.log(`Best match found:`, bestMatch);
             if (bestMatch.value === value) {
@@ -392,7 +415,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         } else {
             console.log(`No suitable match found.`);
         }
-    
+
         return false;
-    }      
+    }
 });
