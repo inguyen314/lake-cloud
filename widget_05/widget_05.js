@@ -263,9 +263,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                         row.appendChild(averageOutflowCell);
 
                         // Storage + Average Outflow + Evaporation
-                        const val = parseFloat(formattedAverageOutflowData[j]?.value);
-                        const deltaVal = parseFloat(delta);
-                        const evapVal = parseFloat(curentMonthEvapValue);
+                        const val = Math.round((parseFloat(formattedAverageOutflowData[j]?.value)) / 10) * 10;
+                        const deltaVal = Math.round(parseFloat(delta));
+                        const evapVal = Math.round(parseFloat(curentMonthEvapValue));
+                        console.log("Storage + Average Outflow + Evaporation: ", deltaVal, val, evapVal)
                         let storageOutflowEvapCell = document.createElement("td");
                         let total = null;
 

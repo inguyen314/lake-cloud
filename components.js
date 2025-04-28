@@ -48,3 +48,6 @@ lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk"
 
 // Optional: small delay to allow backend to process the new data
 await new Promise(resolve => setTimeout(resolve, 1000));
+
+
+Math.round(averageOutflowPayload / 10) * 10;
