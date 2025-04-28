@@ -1099,8 +1099,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                     timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
                     timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4, timeSeriesYesterdayDataGate4, timeSeriesTomorrowDataOutflow) {
 
-                    console.log("timeSeriesYesterdayDataOutflowAverage:", timeSeriesYesterdayDataOutflowAverage);
-
                     const formatData = (data) => {
                         if (!data || !Array.isArray(data.values)) return [];
 
@@ -1356,7 +1354,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                     table.appendChild(headerRow);
 
                     // Determine wheathe to display exising data or new data
-
                     let todayDataExists = false;
 
                     if (formattedDataGate1.length > 0) {
@@ -1364,7 +1361,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
                     console.log("todayDataExists:", todayDataExists);
 
-                    // ********************************************************************************************************************************************** New Entry
+                    // ********************************************************************************************************************************************** New Entry Data
                     if (todayDataExists === false) {
                         let entryDates = [1]; // Single hardcoded entry
 
@@ -1376,13 +1373,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             const timeCell = document.createElement("td");
 
-                            // Hardcode the time to "00:00" instead of a dropdown
+                            // Hardcode the time to "00:00"
                             const timeText = document.createElement("span");
                             timeText.textContent = "00:00";
 
-                            // Assign to selectedHours object
-                            const hourKey = `hour${index + 1}`;
-                            selectedHours[hourKey] = "00:00";
+                            // Set a fixed id since there's only one row
+                            timeText.id = "timeText";
+
+                            selectedHours["hour1"] = "00:00";
 
                             timeCell.appendChild(timeText);
                             row.appendChild(timeCell);
@@ -1516,12 +1514,306 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // ********************************************************************************************************************************************** Existing Data
                     if (todayDataExists === true) {
+                        let entryDates = [];
 
+                        // Generate options for dropdown (24-hour format)
+                        const times = [];
+                        for (let hour = 0; hour < 24; hour++) {
+                            const time = `${hour.toString().padStart(2, '0')}:00`;
+                            times.push(time);
+                        }
+
+                        console.log("times for dropdown:", times);
+
+                        entryDates = [1];
+
+                        const selectedHours = {};
+
+                        // Display existing data
+                        formattedDataGate1.forEach((date, index) => {
+                            const row = document.createElement("tr");
+
+                            const timeCell = document.createElement("td");
+                            const timeSelect = document.createElement("select");
+                            timeSelect.id = `timeSelect${index}`;
+
+                            // Extract only the time part (HH:mm) from formattedTimestampCST
+                            const formattedTime = date.formattedTimestampCST.split(" ")[1].slice(0, 5);
+
+                            // Add "NONE" as the first option
+                            const noneOption = document.createElement("option");
+                            noneOption.value = "23:59";
+                            noneOption.textContent = "NONE";
+                            timeSelect.appendChild(noneOption);
+
+                            // Create options for the dropdown (24 hours)
+                            times.forEach(time => {
+                                const option = document.createElement("option");
+                                option.value = time;
+                                option.textContent = time;
+                                if (time === formattedTime) {
+                                    option.selected = true; // Match the extracted time
+                                }
+                                timeSelect.appendChild(option);
+                            });
+
+                            // Disable selection for the first row
+                            if (index === 0) {
+                                timeSelect.disabled = true;
+                            }
+
+                            // Update the selected time when changed
+                            timeSelect.addEventListener("change", (event) => {
+                                console.log(`Row ${index + 1} selected time:`, event.target.value, "Type:", typeof event.target.value);
+                            });
+
+                            timeCell.appendChild(timeSelect);
+                            row.appendChild(timeCell);
+
+                            // Sluice1 cell (editable)
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                const sluice1Cell = document.createElement("td");
+                                const sluice1Input = document.createElement("input");
+                                sluice1Input.type = "number";
+                                sluice1Input.step = "0.1";
+                                sluice1Input.value = formattedDataSluice1[index] ? formattedDataSluice1[index][1].toFixed(1) : 909; // (date[1]).toFixed(1);
+                                sluice1Input.id = `sluice1Input-${index}`;
+                                sluice1Cell.appendChild(sluice1Input);
+                                row.appendChild(sluice1Cell);
+                                // console.log("sluice1Input: ", `sluice1Input-${index}`)
+
+
+                                // Sluice2 cell (editable)
+                                const sluice2Cell = document.createElement("td");
+                                const sluice2Input = document.createElement("input");
+                                sluice2Input.type = "number";
+                                sluice2Input.step = "0.1";
+                                sluice2Input.value = formattedDataSluice2[index] ? formattedDataSluice2[index][1].toFixed(1) : 909;
+                                sluice2Input.id = `sluice2Input-${index}`;
+                                sluice2Cell.appendChild(sluice2Input);
+                                row.appendChild(sluice2Cell);
+                                // console.log("sluice2Input: ", `sluice2Input-${index}`)
+                            }
+
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                // Sluice Total cell (editable)
+                                const sluiceTotalCell = document.createElement("td");
+                                const sluiceTotalInput = document.createElement("input");
+                                sluiceTotalInput.type = "number";
+                                sluiceTotalInput.step = "10.0";
+                                sluiceTotalInput.value = formattedDataSluiceTotal[index] ? formattedDataSluiceTotal[index][1].toFixed(0) : 909;
+                                sluiceTotalInput.id = `sluiceTotalInput-${index}`;
+                                sluiceTotalCell.appendChild(sluiceTotalInput);
+                                row.appendChild(sluiceTotalCell);
+                            }
+
+                            // Gate 1 (editable)
+                            const gate1Cell = document.createElement("td");
+                            const gate1Input = document.createElement("input");
+                            gate1Input.type = "number";
+                            gate1Input.step = "0.1";
+                            gate1Input.value = formattedDataGate1[index] ? formattedDataGate1[index][1].toFixed(1) : 909;
+                            gate1Input.id = `gate1Input-${index}`;
+                            gate1Cell.appendChild(gate1Input);
+                            row.appendChild(gate1Cell);
+
+                            // Gate 2 (editable)
+                            const gate2Cell = document.createElement("td");
+                            const gate2Input = document.createElement("input");
+                            gate2Input.type = "number";
+                            gate2Input.step = "0.1";
+                            gate2Input.value = formattedDataGate2[index] ? formattedDataGate2[index][1].toFixed(1) : 909;
+                            gate2Input.id = `gate2Input-${index}`;
+                            gate2Cell.appendChild(gate2Input);
+                            row.appendChild(gate2Cell);
+
+                            // Gate 3 (editable)
+                            const gate3Cell = document.createElement("td");
+                            const gate3Input = document.createElement("input");
+                            gate3Input.type = "number";
+                            gate3Input.step = "0.1";
+                            gate3Input.value = formattedDataGate3[index] ? formattedDataGate3[index][1].toFixed(1) : 909;
+                            gate3Input.id = `gate3Input-${index}`;
+                            gate3Cell.appendChild(gate3Input);
+                            row.appendChild(gate3Cell);
+
+                            // Gate 4 (editable)
+                            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                const gate4Cell = document.createElement("td");
+                                const gate4Input = document.createElement("input");
+                                gate4Input.type = "number";
+                                gate4Input.step = "0.1";
+                                gate4Input.value = formattedDataGate4[index] ? formattedDataGate4[index][1].toFixed(1) : 909;
+                                gate4Input.id = `gate4Input-${index}`;
+                                gate4Cell.appendChild(gate4Input);
+                                row.appendChild(gate4Cell);
+                            }
+
+                            // Total Gate Outflow (calculated)
+                            const gateTotalCell = document.createElement("td");
+                            const gateTotalInput = document.createElement("input");
+                            gateTotalInput.type = "number";
+                            gateTotalInput.step = "10.0";
+                            gateTotalInput.value = formattedDataGateTotal[index][1].toFixed(0);
+                            gateTotalInput.id = `gateTotalInput-${index}`;
+                            gateTotalCell.appendChild(gateTotalInput);
+                            row.appendChild(gateTotalCell);
+
+
+                            // Total Outflow (calculated)
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                const gateOutflowTotalCell = document.createElement("td");
+                                const gateOutflowTotalInput = document.createElement("input");
+                                gateOutflowTotalInput.type = "number";
+
+                                const gateValue = formattedDataGateTotal[index]?.[1] || 0;
+                                const sluiceValue = formattedDataSluiceTotal ? (formattedDataSluiceTotal[index]?.[1] || 0) : 0;
+
+                                gateOutflowTotalInput.value = (gateValue + sluiceValue).toFixed(0);
+                                gateOutflowTotalInput.id = `gateOutflowTotalInput-${index}`;
+                                gateOutflowTotalInput.readOnly = true;
+                                gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
+
+                                gateOutflowTotalCell.appendChild(gateOutflowTotalInput);
+                                row.appendChild(gateOutflowTotalCell);
+                            }
+
+                            table.appendChild(row);
+                        });
+
+                        // Display new data entry
+                        entryDates.forEach((date, index) => {
+                            const row = document.createElement("tr");
+                            const timeCell = document.createElement("td");
+                            const timeSelect = document.createElement("select");
+                            timeSelect.id = "timeSelect";
+
+                            const hourKey = "hour1";
+                            selectedHours[hourKey] = "NONE"; // Default value
+
+                            // Add "NONE" option
+                            const noneOption = new Option("NONE", "NONE");
+                            timeSelect.appendChild(noneOption);
+
+                            // Add 24-hour options
+                            times.forEach(time => {
+                                timeSelect.appendChild(new Option(time, time));
+                            });
+
+                            // Set default selection
+                            timeSelect.value = selectedHours[hourKey];
+
+                            // Update selectedHours on change
+                            timeSelect.addEventListener("change", (event) => {
+                                selectedHours[hourKey] = event.target.value;
+                                console.log(`${hourKey} selected:`, selectedHours[hourKey]);
+                            });
+
+                            timeCell.appendChild(timeSelect);
+                            row.appendChild(timeCell);
+
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                // Sluice1 cell (editable)
+                                const sluice1Cell = document.createElement("td");
+                                const sluice1Input = document.createElement("input");
+                                sluice1Input.type = "number";
+                                sluice1Input.value = null;
+                                sluice1Input.id = `sluice1AdditionalInput`;
+                                sluice1Input.style.backgroundColor = "lightgray";
+                                sluice1Cell.appendChild(sluice1Input);
+                                row.appendChild(sluice1Cell);
+
+                                // Sluice2 cell (editable)
+                                const sluice2Cell = document.createElement("td");
+                                const sluice2Input = document.createElement("input");
+                                sluice2Input.type = "number";
+                                sluice2Input.value = null;
+                                sluice2Input.id = `sluice2AdditionalInput`;
+                                sluice2Input.style.backgroundColor = "lightgray";
+                                sluice2Cell.appendChild(sluice2Input);
+                                row.appendChild(sluice2Cell);
+                            }
+
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                // Sluice Total cell (editable)
+                                const sluiceTotalCell = document.createElement("td");
+                                const sluiceTotalInput = document.createElement("input");
+                                sluiceTotalInput.type = "number";
+                                sluiceTotalInput.value = null;
+                                sluiceTotalInput.id = `sluiceTotalAdditionalInput`;
+                                sluiceTotalInput.style.backgroundColor = "lightgray";
+                                sluiceTotalCell.appendChild(sluiceTotalInput);
+                                row.appendChild(sluiceTotalCell);
+                            }
+
+                            // Gate 1 (editable)
+                            const gate1Cell = document.createElement("td");
+                            const gate1Input = document.createElement("input");
+                            gate1Input.type = "number";
+                            gate1Input.value = null;
+                            gate1Input.id = `gate1AdditionalInput`;
+                            gate1Input.style.backgroundColor = "lightgray";
+                            gate1Cell.appendChild(gate1Input);
+                            row.appendChild(gate1Cell);
+
+                            // Gate 2 (editable)
+                            const gate2Cell = document.createElement("td");
+                            const gate2Input = document.createElement("input");
+                            gate2Input.type = "number";
+                            gate2Input.value = null;
+                            gate2Input.id = `gate2AdditionalInput`;
+                            gate2Input.style.backgroundColor = "lightgray";
+                            gate2Cell.appendChild(gate2Input);
+                            row.appendChild(gate2Cell);
+
+                            // Gate 3 (editable)
+                            const gate3Cell = document.createElement("td");
+                            const gate3Input = document.createElement("input");
+                            gate3Input.type = "number";
+                            gate3Input.value = null;
+                            gate3Input.id = `gate3AdditionalInput`;
+                            gate3Input.style.backgroundColor = "lightgray";
+                            gate3Cell.appendChild(gate3Input);
+                            row.appendChild(gate3Cell);
+
+                            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                // Gate 4 (editable)
+                                const gate4Cell = document.createElement("td");
+                                const gate4Input = document.createElement("input");
+                                gate4Input.type = "number";
+                                gate4Input.value = null;
+                                gate4Input.id = `gate4AdditionalInput`;
+                                gate4Input.style.backgroundColor = "lightgray";
+                                gate4Cell.appendChild(gate4Input);
+                                row.appendChild(gate4Cell);
+                            }
+
+                            // Gate Total (calculated)
+                            const gateTotalCell = document.createElement("td");
+                            const gateTotalInput = document.createElement("input");
+                            gateTotalInput.type = "number";
+                            gateTotalInput.value = null;
+                            gateTotalInput.id = `gateTotalAdditionalInput`;
+                            gateTotalInput.style.backgroundColor = "lightgray";
+                            gateTotalCell.appendChild(gateTotalInput);
+                            row.appendChild(gateTotalCell);
+
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                // Total Outflow (calculated)
+                                const gateOutflowTotalCell = document.createElement("td");
+                                const gateOutflowTotalInput = document.createElement("input");
+                                gateOutflowTotalInput.type = "number";
+                                gateOutflowTotalInput.value = null;
+                                gateOutflowTotalInput.id = `gateOutflowTotalAdditionalInput`;
+                                gateOutflowTotalInput.readOnly = true; // Make it read-only
+                                gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
+                                gateOutflowTotalCell.appendChild(gateOutflowTotalInput);
+                                row.appendChild(gateOutflowTotalCell);
+                            }
+
+                            table.appendChild(row);
+                        });
                     }
-
-
-
-
 
                     // Append the table to the specific container (id="output4")
                     const output6Div = document.getElementById("output4");
@@ -1546,11 +1838,25 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Create the second cell with "--"
                     const secondCell = document.createElement("td");
                     secondCell.id = `gateOutflowAverageInput`;
-                    // Check for valid value, default to 909
-                    let outflowValue = (formattedYesterdayDataOutflowAverage?.[0]?.[1] ?? 909);
+
+                    // Determine average outflow value
+                    let outflowValue;
+                    let isYesterdayOrDefault = false;
+                    if (formattedDataOutflowAverage?.[0]?.[1] !== undefined) {
+                        outflowValue = formattedDataOutflowAverage[0][1];
+                    } else if (formattedYesterdayDataOutflowAverage?.[0]?.[1] !== undefined) {
+                        outflowValue = formattedYesterdayDataOutflowAverage[0][1];
+                        isYesterdayOrDefault = true;
+                    } else {
+                        outflowValue = 909;
+                        isYesterdayOrDefault = true;
+                    }
                     secondCell.value = outflowValue;
                     secondCell.innerHTML = outflowValue.toFixed(0);
-                    secondCell.style.backgroundColor = "pink";
+                    // Only color pink if yesterday's data or 909
+                    if (isYesterdayOrDefault) {
+                        secondCell.style.backgroundColor = "pink";
+                    }
                     tableRow.appendChild(secondCell);
 
                     // Append the row to the tableOutflowAvg
@@ -1609,6 +1915,801 @@ document.addEventListener('DOMContentLoaded', async function () {
                     let hasValidNewEntryHour = null;
                     let payloads = null;
                     let payloadAverageOutflow = null;
+
+                    let payloadNewEntrySluice1 = null;
+                    let payloadNewEntrySluice2 = null;
+                    let payloadNewEntrySluiceTotal = null;
+                    let payloadNewEntryGate1 = null;
+                    let payloadNewEntryGate2 = null;
+                    let payloadNewEntryGate3 = null;
+                    let payloadNewEntryGate4 = null;
+                    let payloadNewEntryGateTotal = null;
+                    let payloadNewEntryOutflowTotal = null;
+                    let payloadNewEntryOutflowAverage = null;
+
+                    let isDeleteEntryPayload = null;
+
+                    cdaSaveBtn.addEventListener("click", async () => {
+                        // ********************************************************************************************************************************************** Prepare the payloads for new entry
+                        if (todayDataExists === false) {
+                            console.log("todayDataExists is false, preparing payloads for new entry...");
+
+                            let sluice1Input = null;
+                            let sluice2Input = null;
+                            let sluiceTotalInput = null;
+                            let gate1Input = null;
+                            let gate2Input = null;
+                            let gate3Input = null;
+                            let gate4Input = null;
+                            let gateTotalInput = null;
+                            let gateOutflowTotalInput = null;
+                            let gateOutflowAverageInput = null;
+
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                // Get the sluice1 input element and check if it exists
+                                sluice1Input = document.getElementById(`sluice1Input`);
+                                if (!sluice1Input) {
+                                    console.error("sluice1Input element not found!");
+                                    return; // Exit if input is missing
+                                }
+                                if (!sluice1Input.value) {
+                                    sluice1Input.value = 909;
+                                }
+
+                                // Get the sluice2 input element and check if it exists
+                                sluice2Input = document.getElementById('sluice2Input');
+                                if (!sluice2Input) {
+                                    console.error("sluice2Input element not found!");
+                                    return; // Exit if input is missing
+                                }
+                                if (!sluice2Input.value) {
+                                    sluice2Input.value = 909;
+                                }
+                            }
+
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                // Get the sluiceTotal input element and check if it exists
+                                sluiceTotalInput = document.getElementById('sluiceTotalInput');
+                                if (!sluiceTotalInput) {
+                                    console.error("sluiceTotalInput element not found!");
+                                    return; // Exit if input is missing
+                                }
+                                if (!sluiceTotalInput.value) {
+                                    sluiceTotalInput.value = 909;
+                                }
+                            }
+
+                            // Get the Gate1 input element and check if it exists
+                            gate1Input = document.getElementById('gate1Input');
+                            if (!gate1Input) {
+                                console.error("gate1Input element not found!");
+                                return; // Exit if input is missing
+                            }
+                            if (!gate1Input.value) {
+                                gate1Input.value = 909;
+                            }
+
+                            // Get the Gate2 input element and check if it exists
+                            gate2Input = document.getElementById('gate2Input');
+                            if (!gate2Input) {
+                                console.error("gate2Input element not found!");
+                                return; // Exit if input is missing
+                            }
+                            if (!gate2Input.value) {
+                                gate2Input.value = 909;
+                            }
+
+                            // Get the Gate3 input element and check if it exists
+                            gate3Input = document.getElementById('gate3Input');
+                            if (!gate3Input) {
+                                console.error("gate3Input element not found!");
+                                return; // Exit if input is missing
+                            }
+                            if (!gate3Input.value) {
+                                gate3Input.value = 909;
+                            }
+
+                            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                // Get the Gate4 input element and check if it exists
+                                gate4Input = document.getElementById('gate4Input');
+                                if (!gate4Input) {
+                                    console.error("gate4Input element not found!");
+                                    return; // Exit if input is missing
+                                }
+                                if (!gate4Input.value) {
+                                    gate4Input.value = 909;
+                                }
+                            }
+
+                            // Get the GateTotal input element and check if it exists
+                            gateTotalInput = document.getElementById('gateTotalInput');
+                            if (!gateTotalInput) {
+                                console.error("gateTotalInput element not found!");
+                                return; // Exit if input is missing
+                            }
+                            if (!gateTotalInput.value) {
+                                gateTotalInput.value = 909;
+                            }
+
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                // Get the gateOutflowTotal input element and check if it exists
+                                gateOutflowTotalInput = document.getElementById('gateOutflowTotalInput');
+                                console.log("gateOutflowTotalInput: ", gateOutflowTotalInput);
+                                if (!gateOutflowTotalInput) {
+                                    console.error("gateOutflowTotalInput element not found!");
+                                    return; // Exit if input is missing
+                                }
+                                if (!gateOutflowTotalInput.value) {
+                                    gateOutflowTotalInput.value = 909;
+                                }
+                            }
+
+                            timeInput = document.getElementById('timeText').textContent;
+                            if (!timeInput) {
+                                console.error("timeInput element not found!");
+                                return; // Exit if input is missing
+                            }
+
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                payloadNewEntrySluice1 = {
+                                    "name": tsidSluice1,
+                                    "office-id": office,
+                                    "units": "ft",
+                                    "values": [
+                                        [
+                                            timeInput,
+                                            sluice1Input.value,
+                                            0
+                                        ],
+                                    ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                                };
+                                console.log("payloadNewEntrySluice1: ", payloadNewEntrySluice1);
+
+                                payloadNewEntrySluice2 = {
+                                    "name": tsidSluice2,
+                                    "office-id": office,
+                                    "units": "ft",
+                                    "values": [
+                                        [
+                                            convertToISO(timeInput),
+                                            sluice2Input.value,
+                                            0
+                                        ],
+                                    ].filter(item => item[0] !== null),
+                                };
+                                console.log("payloadNewEntrySluice2: ", payloadNewEntrySluice2);
+                            }
+
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                payloadNewEntrySluiceTotal = {
+                                    "name": tsidSluiceTotal,
+                                    "office-id": office,
+                                    "units": "cfs",
+                                    "values": [
+                                        [
+                                            convertToISO(timeInput),
+                                            sluiceTotalInput.value,
+                                            0
+                                        ],
+                                    ].filter(item => item[0] !== null),
+                                };
+                                console.log("payloadNewEntrySluiceTotal: ", payloadNewEntrySluiceTotal);
+                            }
+
+                            payloadNewEntryGate1 = {
+                                "name": tsidGate1,
+                                "office-id": office,
+                                "units": "ft",
+                                "values": [
+                                    [
+                                        convertToISO(timeInput),
+                                        gate1Input.value,
+                                        0
+                                    ],
+                                ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                            };
+                            console.log("payloadNewEntryGate1: ", payloadNewEntryGate1);
+
+                            payloadNewEntryGate2 = {
+                                "name": tsidGate2,
+                                "office-id": office,
+                                "units": "ft",
+                                "values": [
+                                    [
+                                        convertToISO(timeInput),
+                                        gate2Input.value,
+                                        0
+                                    ],
+                                ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                            };
+                            console.log("payloadNewEntryGate2: ", payloadNewEntryGate2);
+
+                            payloadNewEntryGate3 = {
+                                "name": tsidGate3,
+                                "office-id": office,
+                                "units": "ft",
+                                "values": [
+                                    [
+                                        convertToISO(timeInput),
+                                        gate3Input.value,
+                                        0
+                                    ],
+                                ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                            };
+                            console.log("payloadNewEntryGate3: ", payloadNewEntryGate3);
+
+                            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                payloadNewEntryGate4 = {
+                                    "name": tsidGate4,
+                                    "office-id": office,
+                                    "units": "ft",
+                                    "values": [
+                                        [
+                                            convertToISO(timeInput),
+                                            gate4Input.value,
+                                            0
+                                        ],
+                                    ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                                };
+                                console.log("payloadNewEntryGate4: ", payloadNewEntryGate4);
+                            }
+
+                            payloadNewEntryGateTotal = {
+                                "name": tsidGateTotal,
+                                "office-id": office,
+                                "units": "cfs",
+                                "values": [
+                                    [
+                                        convertToISO(timeInput),
+                                        gateTotalInput.value,
+                                        0
+                                    ],
+                                ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                            };
+                            console.log("payloadNewEntryGateTotal: ", payloadNewEntryGateTotal);
+
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                payloadNewEntryOutflowTotal = {
+                                    "name": tsidOutflowTotal,
+                                    "office-id": office,
+                                    "units": "cfs",
+                                    "values": [
+                                        [
+                                            convertToISO(timeInput),
+                                            gateOutflowTotalInput.value,
+                                            0
+                                        ],
+                                    ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                                };
+                                console.log("payloadNewEntryOutflowTotal: ", payloadNewEntryOutflowTotal);
+                            }
+
+                            if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                                payloadNewEntryOutflowAverage = {
+                                    "name": tsidOutflowAverage,
+                                    "office-id": office,
+                                    "units": "cfs",
+                                    "values": [
+                                        [
+                                            convertToISO(timeInput),
+                                            gateTotalInput.value,
+                                            0
+                                        ],
+                                    ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                                };
+                            }
+                            console.log("payloadNewEntryOutflowAverage: ", payloadNewEntryOutflowAverage);
+                        }
+
+                        // ********************************************************************************************************************************************** Prepare the payloads for existing entry
+                        if (todayDataExists === true) {
+                            console.log("todayDataExists is true, preparing payloads for existing entry...");
+
+                            // Get existing data for the selected times
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                console.log("getAllSelectedTimes: ", getAllSelectedTimes());
+                                console.log("getAllSluice1Values: ", getAllSluice1Values());
+                                console.log("getAllSluice2Values: ", getAllSluice2Values());
+                                console.log("getAllSluiceTotalValues: ", getAllSluiceTotalValues());
+                                console.log("getAllGate1Values: ", getAllGate1Values());
+                                console.log("getAllGate2Values: ", getAllGate2Values());
+                                console.log("getAllGate3Values: ", getAllGate3Values());
+                                console.log("getAllGateTotalValues: ", getAllGateTotalValues());
+                                console.log("getAllOutflowTotalValues: ", getAllOutflowTotalValues());
+                                console.log("getAllOutflowAverageValues: ", getAllOutflowAverageValues());
+                            } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                                console.log("getAllSelectedTimes: ", getAllSelectedTimes());
+                                console.log("getAllGate1Values: ", getAllGate1Values());
+                                console.log("getAllGate2Values: ", getAllGate2Values());
+                                console.log("getAllGate3Values: ", getAllGate3Values());
+                                console.log("getAllGate4Values: ", getAllGate4Values());
+                                console.log("getAllGateTotalValues: ", getAllGateTotalValues());
+                                console.log("getAllOutflowAverageValues: ", getAllOutflowAverageValues());
+                            } else if (lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                console.log("getAllSelectedTimes: ", getAllSelectedTimes());
+                                console.log("getAllSluiceTotalValues: ", getAllSluiceTotalValues());
+                                console.log("getAllGate1Values: ", getAllGate1Values());
+                                console.log("getAllGate2Values: ", getAllGate2Values());
+                                console.log("getAllGate3Values: ", getAllGate3Values());
+                                console.log("getAllGate4Values: ", getAllGate4Values());
+                                console.log("getAllGateTotalValues: ", getAllGateTotalValues());
+                                console.log("getAllOutflowTotalValues: ", getAllOutflowTotalValues());
+                                console.log("getAllOutflowAverageValues: ", getAllOutflowAverageValues());
+                            } else if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                                console.log("getAllSelectedTimes: ", getAllSelectedTimes());
+                                console.log("getAllGate1Values: ", getAllGate1Values());
+                                console.log("getAllGate2Values: ", getAllGate2Values());
+                                console.log("getAllGate3Values: ", getAllGate3Values());
+                                console.log("getAllGateTotalValues: ", getAllGateTotalValues());
+                                console.log("getAllOutflowAverageValues: ", getAllOutflowAverageValues());
+                            }
+
+                            const selectedTimes = getAllSelectedTimes();
+
+                            let tsidCategories = {};
+                            let dataCategories = {};
+
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                tsidCategories = {
+                                    sluice1: tsidSluice1,
+                                    sluice2: tsidSluice2,
+                                    sluiceTotal: tsidSluiceTotal,
+                                    gate1: tsidGate1,
+                                    gate2: tsidGate2,
+                                    gate3: tsidGate3,
+                                    gateTotal: tsidGateTotal,
+                                    outflowTotal: tsidOutflowTotal,
+                                };
+                            } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                                tsidCategories = {
+                                    gate1: tsidGate1,
+                                    gate2: tsidGate2,
+                                    gate3: tsidGate3,
+                                    gate4: tsidGate4,
+                                    gateTotal: tsidGateTotal,
+                                };
+                            } else if (lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                tsidCategories = {
+                                    sluiceTotal: tsidSluiceTotal,
+                                    gate1: tsidGate1,
+                                    gate2: tsidGate2,
+                                    gate3: tsidGate3,
+                                    gate4: tsidGate4,
+                                    gateTotal: tsidGateTotal,
+                                    outflowTotal: tsidOutflowTotal,
+                                };
+                            } else if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                                tsidCategories = {
+                                    gate1: tsidGate1,
+                                    gate2: tsidGate2,
+                                    gate3: tsidGate3,
+                                    gateTotal: tsidGateTotal,
+                                };
+                            }
+
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                dataCategories = {
+                                    sluice1: getAllSluice1Values(),
+                                    sluice2: getAllSluice2Values(),
+                                    sluiceTotal: getAllSluiceTotalValues(),
+                                    gate1: getAllGate1Values(),
+                                    gate2: getAllGate2Values(),
+                                    gate3: getAllGate3Values(),
+                                    gateTotal: getAllGateTotalValues(),
+                                    outflowTotal: getAllOutflowTotalValues(),
+                                };
+                            } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                                dataCategories = {
+                                    gate1: getAllGate1Values(),
+                                    gate2: getAllGate2Values(),
+                                    gate3: getAllGate3Values(),
+                                    gate4: getAllGate4Values(),
+                                    gateTotal: getAllGateTotalValues(),
+                                };
+                            } else if (lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                dataCategories = {
+                                    sluiceTotal: getAllSluiceTotalValues(),
+                                    gate1: getAllGate1Values(),
+                                    gate2: getAllGate2Values(),
+                                    gate3: getAllGate3Values(),
+                                    gate4: getAllGate4Values(),
+                                    gateTotal: getAllGateTotalValues(),
+                                    outflowTotal: getAllOutflowTotalValues(),
+                                };
+                            } else if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                                dataCategories = {
+                                    gate1: getAllGate1Values(),
+                                    gate2: getAllGate2Values(),
+                                    gate3: getAllGate3Values(),
+                                    gateTotal: getAllGateTotalValues(),
+                                };
+                            }
+
+                            console.log("dataCategories: ", dataCategories);
+                            console.log("tsidCategories: ", tsidCategories);
+
+                            if (Array.isArray(formattedTomorrowDataOutflowAverage)) {
+                                formattedTomorrowDataOutflowAverage = formattedTomorrowDataOutflowAverage.map(entry => ({
+                                    ...entry,
+                                    "iso": new Date(entry["0"]).toISOString(),
+                                }));
+                            } else {
+                                console.error('formattedTomorrowDataOutflowAverage is not an array:', formattedTomorrowDataOutflowAverage);
+                            }
+
+                            payloads = {};
+                            if (Array.isArray(selectedTimes) && Object.values(dataCategories).every(Array.isArray)) {
+
+                                Object.entries(dataCategories).forEach(([key, values]) => {
+                                    const updatedValues = selectedTimes.map((time, index) => [
+                                        convertToISO(time), // Convert time to ISO format // time,
+                                        values[index] ?? 0, // Default to 0 if undefined
+                                        0
+                                    ]);
+
+                                    // Determine the units based on the key
+                                    const units = key === "sluiceTotal" || key === "gateTotal" || key === "outflowTotal" ? "cfs" : "ft";
+
+                                    payloads[key] = {
+                                        "name": tsidCategories[key],
+                                        "office-id": office,
+                                        "units": units,
+                                        "values": updatedValues.filter(item => item[0] !== null),
+                                    };
+                                });
+
+                                console.log("Payloads: ", payloads);
+                            } else {
+                                console.error("One or more arrays are not valid", selectedTimes, dataCategories);
+                            }
+
+                        }
+
+                        function getAllSelectedTimes() {
+                            let selectedTimes = [];
+                            formattedDataGate1.forEach((_, index) => {
+                                const selectedTime = document.getElementById(`timeSelect${index}`).value;
+                                selectedTimes.push(selectedTime);
+                            });
+                    
+                            // // Append selectedHours['hour1'] if it exists
+                            // if (selectedHours && selectedHours['hour1'] !== undefined) {
+                            //     selectedTimes.push(selectedHours['hour1']);
+                            // }
+                    
+                            console.log("Selected Times:", selectedTimes); // Log the selected times
+                            return selectedTimes;
+                        }
+                    
+                        function getAllSluice1Values() {
+                            return formattedDataSluice1.map((_, index) =>
+                                parseFloat(document.getElementById(`sluice1Input-${index}`).value)
+                            );
+                        }
+                    
+                        function getAllSluice2Values() {
+                            return formattedDataSluice2.map((_, index) =>
+                                parseFloat(document.getElementById(`sluice2Input-${index}`).value)
+                            );
+                        }
+                    
+                        function getAllSluiceTotalValues() {
+                            return formattedDataSluiceTotal.map((_, index) =>
+                                parseFloat(document.getElementById(`sluiceTotalInput-${index}`).value)
+                            );
+                        }
+                    
+                        function getAllGate1Values() {
+                            let values = formattedDataGate1.map((_, index) =>
+                                parseFloat(document.getElementById(`gate1Input-${index}`).value)
+                            );
+                    
+                            // Check if 'gate1AdditionalInput' exists and add its value if present
+                            const additionalInput = document.getElementById('gate1AdditionalInput');
+                            if (additionalInput) {
+                                values.push(parseFloat(additionalInput.value));
+                            }
+                    
+                            return values;
+                        }
+                    
+                        function getAllGate2Values() {
+                            let values = formattedDataGate2.map((_, index) =>
+                                parseFloat(document.getElementById(`gate2Input-${index}`).value)
+                            );
+                    
+                            // Check if 'gate2AdditionalInput' exists and add its value if present
+                            const additionalInput = document.getElementById('gate2AdditionalInput');
+                            if (additionalInput) {
+                                values.push(parseFloat(additionalInput.value));
+                            }
+                    
+                            return values;
+                        }
+                    
+                        function getAllGate3Values() {
+                            let values = formattedDataGate3.map((_, index) =>
+                                parseFloat(document.getElementById(`gate3Input-${index}`).value)
+                            );
+                    
+                            const additionalInput = document.getElementById('gate3AdditionalInput');
+                            if (additionalInput) {
+                                values.push(parseFloat(additionalInput.value));
+                            }
+                    
+                            return values;
+                        }
+                    
+                        function getAllGate4Values() {
+                            let values = formattedDataGate4.map((_, index) =>
+                                parseFloat(document.getElementById(`gate4Input-${index}`).value)
+                            );
+                    
+                            const additionalInput = document.getElementById('gate4AdditionalInput');
+                            if (additionalInput) {
+                                values.push(parseFloat(additionalInput.value));
+                            }
+                    
+                            return values;
+                        }
+                    
+                        function getAllGateTotalValues() {
+                            let values = formattedDataGateTotal.map((_, index) =>
+                                parseFloat(document.getElementById(`gateTotalInput-${index}`).value)
+                            );
+                    
+                            const additionalInput = document.getElementById('gateTotalAdditionalInput');
+                            if (additionalInput) {
+                                values.push(parseFloat(additionalInput.value));
+                            }
+                    
+                            return values;
+                        }
+                    
+                        function getAllOutflowTotalValues() {
+                            return formattedDataSluiceTotal.map((_, index) =>
+                                parseFloat(document.getElementById(`sluiceTotalInput-${index}`).value) +
+                                parseFloat(document.getElementById(`gateTotalInput-${index}`).value)
+                            );
+                        }
+                    
+                        function getAllOutflowAverageValues() {
+                            return formattedDataOutflowAverage.map((_, index) =>
+                                parseFloat(document.getElementById(`gateOutflowAverageInput`).value)
+                            );
+                        }
+
+                        async function loginCDA() {
+                            console.log("page");
+                            if (await isLoggedIn()) return true;
+                            console.log('is false');
+
+                            // Redirect to login page
+                            window.location.href = `https://wm.mvs.ds.usace.army.mil:8243/CWMSLogin/login?OriginalLocation=${encodeURIComponent(window.location.href)}`;
+                        }
+
+                        async function isLoggedIn() {
+                            try {
+                                const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", {
+                                    method: "GET"
+                                });
+
+                                if (response.status === 401) return false;
+
+                                console.log('status', response.status);
+                                return true;
+
+                            } catch (error) {
+                                console.error('Error checking login status:', error);
+                                return false;
+                            }
+                        }
+
+                        async function createTS(payload) {
+                            if (!payload) throw new Error("You must specify a payload!");
+                            const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?store-rule=REPLACE%20ALL", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json;version=2" },
+                                body: JSON.stringify(payload)
+                            });
+
+                            if (!response.ok) {
+                                const errorText = await response.text();
+                                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                            }
+                        }
+
+                        async function fetchUpdatedData(name, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1) {
+                            // Convert to Date object
+                            const date = new Date(isoDateDay1);
+
+                            // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
+                            date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
+
+                            // Convert back to ISO string (preserve UTC format)
+                            const end = date.toISOString();
+
+                            const tsidData = `${setBaseUrl}timeseries?name=${name}&begin=${isoDateToday}&end=${end}&office=${office}`;
+                            // console.log('tsidData:', tsidData);
+                            try {
+                                const response = await fetch(tsidData, {
+                                    headers: {
+                                        "Accept": "application/json;version=2", // Ensuring the correct version is used
+                                        "cache-control": "no-cache"
+                                    }
+                                });
+
+                                const data = await response.json();
+                                return data;
+                            } catch (error) {
+                                console.error("Error fetching time series data:", error);
+                            }
+                        }
+
+                        function showSpinner() {
+                            const spinner = document.createElement('img');
+                            spinner.src = 'images/loading4.gif';
+                            spinner.id = 'loadingSpinner';
+                            spinner.style.width = '40px';  // Set the width to 40px
+                            spinner.style.height = '40px'; // Set the height to 40px
+                            document.body.appendChild(spinner);
+                        }
+
+                        function hideSpinner() {
+                            const spinner = document.getElementById('loadingSpinner');
+                            if (spinner) {
+                                spinner.remove();
+                            }
+                        }
+
+                        if (cdaSaveBtn.innerText === "Login") {
+                            showSpinner();
+                            const loginResult = await loginCDA();
+                            hideSpinner();
+
+                            cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
+                            cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
+                        } else {
+                            try {
+                                // ******************************************************************************************************************************************* Save payloads for new entry
+                                if (todayDataExists === false) {
+                                    showSpinner();
+                                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                        await createTS(payloadNewEntrySluice1);
+                                        cdaStatusBtn.innerText = "Write payloadNewEntrySluice1 successful!";
+                                        await createTS(payloadNewEntrySluice2);
+                                        cdaStatusBtn.innerText = "Write payloadNewEntrySluice2 successful!";
+                                    }
+                                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                        await createTS(payloadNewEntrySluiceTotal);
+                                        cdaStatusBtn.innerText = "Write payloadNewEntrySluiceTotal successful!";
+                                    }
+                                    await createTS(payloadNewEntryGate1);
+                                    cdaStatusBtn.innerText = "Write payloadNewEntryGate1 successful!";
+                                    await createTS(payloadNewEntryGate2);
+                                    cdaStatusBtn.innerText = "Write payloadNewEntryGate2 successful!";
+                                    await createTS(payloadNewEntryGate3);
+                                    cdaStatusBtn.innerText = "Write payloadNewEntryGate3 successful!";
+                                    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                        await createTS(payloadNewEntryGate4);
+                                        cdaStatusBtn.innerText = "Write payloadNewEntryGate4 successful!";
+                                    }
+                                    await createTS(payloadNewEntryGateTotal);
+                                    cdaStatusBtn.innerText = "Write payloadNewEntryGateTotal successful!";
+                                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                        await createTS(payloadNewEntryOutflowTotal);
+                                        cdaStatusBtn.innerText = "Write payloadNewEntryOutflowTotal successful!";
+                                    }
+                                    await createTS(payloadNewEntryOutflowAverage);
+                                    cdaStatusBtn.innerText = "Write payloadNewEntryOutflowAverage successful!";
+
+                                    // Initialize variables to prevent reference errors
+                                    let updatedDataSluice1 = null;
+                                    let updatedDataSluice2 = null;
+                                    let updatedDataSluiceTotal = null;
+                                    let updatedDataGate1 = null;
+                                    let updatedDataGate2 = null;
+                                    let updatedDataGate3 = null;
+                                    let updatedDataGate4 = null;
+                                    let updatedDataGateTotal = null;
+                                    let updatedDataOutflowTotal = null;
+                                    let updatedDataOutflowAverage = null;
+
+                                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                        [
+                                            updatedDataSluice1,
+                                            updatedDataSluice2,
+                                            updatedDataSluiceTotal,
+                                            updatedDataGate1,
+                                            updatedDataGate2,
+                                            updatedDataGate3,
+                                            updatedDataGateTotal,
+                                            updatedDataOutflowTotal,
+                                            updatedDataOutflowAverage
+                                        ] = await Promise.all([
+                                            fetchUpdatedData(tsidSluice1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidSluice2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidSluiceTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidOutflowTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
+                                        ]);
+                                    } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                                        [
+                                            updatedDataGate1,
+                                            updatedDataGate2,
+                                            updatedDataGate3,
+                                            updatedDataGate4,
+                                            updatedDataGateTotal,
+                                            updatedDataOutflowAverage
+                                        ] = await Promise.all([
+                                            fetchUpdatedData(tsidGate1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate4, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
+                                        ]);
+                                    } else if (lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                        [
+                                            updatedDataSluiceTotal,
+                                            updatedDataGate1,
+                                            updatedDataGate2,
+                                            updatedDataGate3,
+                                            updatedDataGate4,
+                                            updatedDataGateTotal,
+                                            updatedDataOutflowTotal,
+                                            updatedDataOutflowAverage
+                                        ] = await Promise.all([
+                                            fetchUpdatedData(tsidSluiceTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate4, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidOutflowTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
+                                        ]);
+                                    } else if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                                        [
+                                            updatedDataGate1,
+                                            updatedDataGate2,
+                                            updatedDataGate3,
+                                            updatedDataGateTotal,
+                                            updatedDataOutflowAverage
+                                        ] = await Promise.all([
+                                            fetchUpdatedData(tsidGate1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
+                                        ]);
+                                    }
+
+                                    createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                                        tsidSluice1, updatedDataSluice1, tsidSluice2, updatedDataSluice2, tsidSluiceTotal, updatedDataSluiceTotal,
+                                        tsidGate1, updatedDataGate1, tsidGate2, updatedDataGate2, tsidGate3, updatedDataGate3, tsidGateTotal, updatedDataGateTotal,
+                                        tsidOutflowTotal, updatedDataOutflowTotal, tsidOutflowAverage, updatedDataOutflowAverage,
+                                        timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal,
+                                        timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2, timeSeriesYesterdayDataGate3,
+                                        timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, updatedDataGate4, null); // null is for yesterday data
+                                }
+
+                                // ******************************************************************************************************************************************* Save payloads for existing entry
+                                if (todayDataExists === false) {
+                                }
+                            } catch (error) {
+                                hideSpinner(); // Hide the spinner if an error occurs
+                                cdaStatusBtn.innerText = "Failed to write data!";
+                                console.error(error);
+                            }
+
+                            hideSpinner(); // Hide the spinner after the operation completes
+                        }
+                    });
 
                 }
             } catch (error) {
