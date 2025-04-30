@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // Use "date-time-iso" for the date
                         const dateCell = document.createElement("td");
-                        dateCell.textContent = formatIsoToDate(entry["date-time-iso"]);
+                        dateCell.textContent = (entry["date-time-iso-cst"]);
                         row.appendChild(dateCell);
 
                         // Make the "text-value" editable
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // Use "isoDateToday" as a fallback for the date
                     const dateCell = document.createElement("td");
-                    dateCell.textContent = formatIsoToDate(isoDateToday);
+                    dateCell.textContent = new Date(new Date(isoDateToday).getTime() - (dstOffsetHours) * 60 * 60 * 1000).toISOString();
                     row.appendChild(dateCell);
 
                     // Make the "text-value" editable
@@ -545,14 +545,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         const dstOffsetHours = currentOffset / 60;
 
         return dstOffsetHours; // Returns the offset in hours (e.g., -5 or -6)
-    }
-
-    function formatIsoToDate(isoString) {
-        const date = new Date(isoString);
-        const mm = String(date.getMonth() + 1).padStart(2, '0');
-        const dd = String(date.getDate()).padStart(2, '0');
-        const yyyy = date.getFullYear();
-        return `${mm}-${dd}-${yyyy}`;
     }
 });
 
