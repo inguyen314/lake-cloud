@@ -85,38 +85,42 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("tsidConsensus:", tsidConsensus);
             console.log("tsidComputedInflow:", tsidComputedInflow);
 
-            const timeSeriesData3 = await fetchTimeSeriesData(tsidConsensus);
-            const timeSeriesData4 = await fetchTimeSeriesData(tsidComputedInflow);
+            const timeSeriesData1 = await fetchTimeSeriesData(tsidConsensus);
+            const timeSeriesData2 = await fetchTimeSeriesData(tsidComputedInflow);
 
-            console.log("timeSeriesData3:", timeSeriesData3);
-            console.log("timeSeriesData4:", timeSeriesData4);
+            console.log("timeSeriesData1:", timeSeriesData1);
+            console.log("timeSeriesData2:", timeSeriesData2);
 
-            const hourlyConsensusData = getMidnightData(timeSeriesData3, tsidConsensus);
-            const hourlyComputedInflowData = getMidnightData(timeSeriesData4, tsidComputedInflow);
+            const hourlyConsensusData = getMidnightData(timeSeriesData1, tsidConsensus);
+            const hourlyComputedInflowData = getMidnightData(timeSeriesData2, tsidComputedInflow);
 
             console.log("hourlyConsensusData:", hourlyConsensusData);
             console.log("hourlyComputedInflowData:", hourlyComputedInflowData);
 
             let formattedConsensusData = hourlyConsensusData.map(entry => {
                 const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
+                const formattedTimestampUtc =  (new Date(entry.timestamp)).toISOString();
                 return {
                     ...entry,
-                    formattedTimestamp
+                    formattedTimestamp,
+                    formattedTimestampUtc
                 };
             });
 
             let formattedComputedInflowData = hourlyComputedInflowData.map(entry => {
                 const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
+                const formattedTimestampUtc =  (new Date(entry.timestamp)).toISOString();
                 return {
                     ...entry,
-                    formattedTimestamp
+                    formattedTimestamp,
+                    formattedTimestampUtc
                 };
             });
 
             console.log("formattedConsensusData:", formattedConsensusData);
             console.log("formattedComputedInflowData:", formattedComputedInflowData);
 
-            function createTableAvg(formattedConsensusData, formattedComputedInflowData) {
+            function createTable(formattedConsensusData, formattedComputedInflowData) {
                 // Find the most recent consensus data point with qualityCode === 5
                 const latestEntry = formattedConsensusData
                     .filter(d => d.qualityCode === 5)
@@ -220,7 +224,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 });
             }
 
-            createTableAvg(formattedConsensusData, formattedComputedInflowData);
+            createTable(formattedConsensusData, formattedComputedInflowData);
         } catch (error) {
             console.error("Error fetching tsid data:", error);
         }
@@ -247,38 +251,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         const min = String(date.getMinutes()).padStart(2, '0'); // Minutes
         return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
     }
-
-    function getHourlyDataOnTopOfHour(data, tsid) {
-        const hourlyData = [];
-
-        data.values.forEach(entry => {
-            const [timestamp, value, qualityCode] = entry;
-
-            // Normalize the timestamp
-            let date;
-            if (typeof timestamp === "string") {
-                date = new Date(timestamp.replace(/-/g, '/')); // Replace hyphens with slashes for iOS
-            } else if (typeof timestamp === "number") {
-                date = new Date(timestamp); // Assume it's a UNIX timestamp
-            } else {
-                console.warn("Unrecognized timestamp format:", timestamp);
-                return; // Skip invalid entries
-            }
-
-            // Validate date
-            if (isNaN(date.getTime())) {
-                console.warn("Invalid date:", timestamp);
-                return; // Skip invalid dates
-            }
-
-            // Check if the time is exactly at the top of the hour
-            if (date.getMinutes() === 0 && date.getSeconds() === 0) {
-                hourlyData.push({ timestamp, value, qualityCode, tsid });
-            }
-        });
-
-        return hourlyData;
-    };
 
     function getMidnightData(data, tsid) {
         const midnightData = [];
@@ -312,55 +284,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         return midnightData;
     };
 
-    function subtractHoursFromDate(date, hoursToSubtract) {
-        return new Date(date.getTime() - (hoursToSubtract * 60 * 60 * 1000));
-    }
-
-    function formatISODateToUTCString(timestamp) {
-        if (typeof timestamp !== "number") {
-            console.error("Invalid timestamp:", timestamp);
-            return "Invalid Date";
-        }
-
-        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
-        if (isNaN(date.getTime())) {
-            console.error("Invalid date conversion:", timestamp);
-            return "Invalid Date";
-        }
-
-        return date.toISOString().replace(/\.\d{3}Z$/, 'Z'); // Removes milliseconds
-    }
-
-    function formatISODateToCSTString(timestamp) {
-        if (typeof timestamp !== "number") {
-            console.error("Invalid timestamp:", timestamp);
-            return "Invalid Date";
-        }
-
-        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
-        if (isNaN(date.getTime())) {
-            console.error("Invalid date conversion:", timestamp);
-            return "Invalid Date";
-        }
-
-        // Convert to CST (Central Standard Time)
-        const options = {
-            timeZone: 'America/Chicago',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-
-        const formatter = new Intl.DateTimeFormat('en-US', options);
-        const formattedDate = formatter.format(date);
-
-        return formattedDate.replace(',', ''); // Removes the comma between date and time
-    }
-
     function getIsoDateWithOffsetDynamic(year, month, day, offset) {
         // Create a date object at 6 AM UTC
         const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0));
@@ -382,93 +305,5 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Return the ISO string
         return date.toISOString();
-    }
-
-    function getDSTOffsetInHours() {
-        // Get the current date
-        const now = new Date();
-
-        // Get the current time zone offset in minutes (with DST, if applicable)
-        const currentOffset = now.getTimezoneOffset();
-
-        // Convert the offset from minutes to hours
-        const dstOffsetHours = currentOffset / 60;
-
-        return dstOffsetHours; // Returns the offset in hours (e.g., -5 or -6)
-    }
-
-    function filterPayloads(payloads) {
-        let filteredPayloads = {};
-
-        for (const key in payloads) {
-            if (payloads.hasOwnProperty(key)) {
-                let filteredValues = payloads[key].values.filter(entry => !entry[0].includes("T04:59:00.000Z"));
-
-                if (filteredValues.length > 0) {
-                    filteredPayloads[key] = {
-                        ...payloads[key],
-                        values: filteredValues
-                    };
-                }
-            }
-        }
-
-        return filteredPayloads;
-    }
-
-    function convertUnixTimestamp(timestamp, toCST = false) {
-        if (typeof timestamp !== "number") {
-            console.error("Invalid timestamp:", timestamp);
-            return "Invalid Date";
-        }
-
-        const dateUTC = new Date(timestamp); // Convert milliseconds to Date object
-        if (isNaN(dateUTC.getTime())) {
-            console.error("Invalid date conversion:", timestamp);
-            return "Invalid Date";
-        }
-
-        if (!toCST) {
-            return dateUTC.toISOString(); // Return UTC time
-        }
-
-        // Convert to CST/CDT (America/Chicago) while adjusting for daylight saving time
-        const options = { timeZone: "America/Chicago", hour12: false };
-        const cstDateString = dateUTC.toLocaleString("en-US", options);
-        const cstDate = new Date(cstDateString + " UTC"); // Convert back to Date
-
-        return cstDate.toISOString();
-    }
-
-    function addDeltaAsDsfToData(data) {
-        return data.map((entry, index) => {
-            if (index === 0) {
-                return { ...entry, delta: null };
-            }
-            const delta = (entry.value - data[index - 1].value) / 1.9834591996927;
-            return { ...entry, delta };
-        });
-    }
-
-    function shiftDeltaUp(data) {
-        for (let i = 0; i < data.length - 1; i++) {
-            data[i].delta = data[i + 1].delta;
-        }
-        // Optional: set the last delta to null since there's no next value
-        data[data.length - 1].delta = null;
-        return data;
-    }
-
-    function getEvapValueForMonth(data, month) {
-        // Convert string or number month to integer and adjust for 0-based offset
-        const offset = parseInt(month, 10) - 1;
-        console.log("offset: ", offset)
-
-        const matchingValue = data[`seasonal-values`].find(
-            (entry) => entry[`offset-months`] === offset
-        );
-        console.log("matchingValue: ", matchingValue)
-
-        return matchingValue ? matchingValue.value : null;
     }
 });
