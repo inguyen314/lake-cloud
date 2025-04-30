@@ -2389,16 +2389,24 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 }
                             }
 
-                            if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                            if (
+                                (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") &&
+                                formattedTomorrowDataOutflowAverage != null &&
+                                Array.isArray(formattedTomorrowDataOutflowAverage) &&
+                                formattedTomorrowDataOutflowAverage.length > 0
+                            ) {
                                 formattedTomorrowDataOutflowAverage.forEach(entry => {
-                                    payloads.gateTotal.values.push([
-                                        entry.iso,
-                                        entry["1"],
-                                        entry["2"]
-                                    ]);
+                                    // Handle if there is no data for tomorrow.
+                                    if (entry && entry.iso !== undefined) {
+                                        payloads.gateTotal.values.push([
+                                            entry.iso,
+                                            entry["1"],
+                                            entry["2"]
+                                        ]);
+                                    }
                                 });
                             }
-
+                                                                                 
                             console.log("payloads after append tomorrow outflowTotal/gateTotal data:", payloads);
 
                         }
