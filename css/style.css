@@ -230,19 +230,46 @@ table {
 
 #reportIssueBtn {
     display: block;
-    margin: 0 auto; /* This will center the button horizontally */
+    margin: 0 auto;
+    /* This will center the button horizontally */
     text-align: center;
 }
+
+/*** ===================================================================================== ***/
+/*** WIDGET 5 ***/
+/*** ===================================================================================== ***/
+#estimated-value {
+    padding: 6px 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 30%;
+    height: auto;
+}
+
 /*** ===================================================================================== ***/
 /*** WIDGET 7 ***/
 /*** ===================================================================================== ***/
-#balanceInflowBtn, #refreshBtn, #estimated-value, #cda-btn-inflow, #cda-btn-gate, #send-mvk, #send-swpa, #refresh-button, #balance-inflow-button, #refresh-balance-window-button {
+#balanceInflowBtn,
+#refreshBtn,
+#estimated-value,
+#cda-btn-inflow,
+#cda-btn-gate,
+#send-mvk,
+#send-swpa,
+#refresh-button,
+#balance-inflow-button,
+#refresh-balance-window-button {
     display: block;
-    margin: 0 auto; /* This will center the button horizontally */
+    margin: 0 auto;
+    /* This will center the button horizontally */
     text-align: center;
     margin-top: 5px;
     margin-bottom: 5px;
 }
+
 /*** ===================================================================================== ***/
 /*** WIDGET 13 ***/
 /*** ===================================================================================== ***/
@@ -255,4 +282,4 @@ table {
     border: 1px solid #ccc;
     width: 50%;
     height: auto;
-  }
+}

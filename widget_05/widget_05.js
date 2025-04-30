@@ -197,6 +197,13 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("formattedStorageData:", formattedStorageData);
             console.log("formattedAverageOutflowData:", formattedAverageOutflowData);
 
+            createTable(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData);
+
+            loginStateController()
+            setInterval(async () => {
+                loginStateController()
+            }, 10000);
+
             function createTable(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData) {
                 // Create the table element
                 const table = document.createElement("table");
@@ -351,43 +358,36 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
                 }
 
-                // Append the table to the specific container (id="output5")
-                const output8Div = document.getElementById("output5");
-                output8Div.innerHTML = "";
-                output8Div.appendChild(table);
+                // Append the table to the specific container
+                const output5Div = document.getElementById("output5");
+                output5Div.innerHTML = "";
+                output5Div.appendChild(table);
 
+                // Save Button
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
                 cdaSaveBtn.id = "cda-btn-inflow";
                 cdaSaveBtn.disabled = true;
-                output8Div.appendChild(cdaSaveBtn);
+                output5Div.appendChild(cdaSaveBtn);
 
+                // Status Button
                 const statusDiv = document.createElement("div");
-                statusDiv.className = "status";
-                const cdaStatusBtn = document.createElement("button");
-                cdaStatusBtn.textContent = "";
-                cdaStatusBtn.id = "cda-btn-inflow";
-                cdaStatusBtn.disabled = false;
-                statusDiv.appendChild(cdaStatusBtn);
-                output8Div.appendChild(statusDiv);
+                statusDiv.className = "status-inflow";
+                output5Div.appendChild(statusDiv);
 
-                // Create a button element
-                const buttonEstimatedValue = document.createElement('button');
-
-                // Set the buttonEstimatedValue text
+                // Estimated Value Div
+                const buttonEstimatedValue = document.createElement('div');
                 buttonEstimatedValue.textContent = 'Signifies estimated value';
                 buttonEstimatedValue.id = 'estimated-value';
                 buttonEstimatedValue.style.backgroundColor = 'pink';
+                output5Div.appendChild(buttonEstimatedValue);
 
-                // Append the buttonEstimatedValue to the same container
-                output8Div.appendChild(buttonEstimatedValue);
-
-                // Create the buttonRefresh button
+                // Refresh Button
                 const buttonRefresh = document.createElement('button');
                 buttonRefresh.textContent = 'Refresh';
                 buttonRefresh.id = 'refresh-inflow-button';
                 buttonRefresh.className = 'fetch-btn';
-                output8Div.appendChild(buttonRefresh);
+                output5Div.appendChild(buttonRefresh);
 
                 buttonRefresh.addEventListener('click', () => {
                     // Remove existing table
@@ -547,7 +547,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             showSpinner(); // Show the spinner before creating the version
                             await createTS(payloadConsensus);
                             await createTS(payloadStorageOutflowEvap);
-                            cdaStatusBtn.innerText = "Write successful!";
+                            statusDiv.innerText = "Write successful!";
 
                             // Optional: small delay to allow backend to process the new data
                             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -558,7 +558,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             createTable(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
-                            cdaStatusBtn.innerText = "Failed to write data!";
+                            statusDiv.innerText = "Failed to write data!";
                             console.error(error);
                         }
 
@@ -566,13 +566,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
                 });
             }
-
-            createTable(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData);
-
-            loginStateController()
-            setInterval(async () => {
-                loginStateController()
-            }, 10000)
 
         } catch (error) {
             console.error("Error fetching tsid data:", error);
