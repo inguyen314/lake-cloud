@@ -190,6 +190,19 @@ document.addEventListener('DOMContentLoaded', async function () {
             dateInput.type = "text";
             dateInput.value = formattedData.at(-1).formattedTimestampCST;
             dateInput.id = "dateInput";
+            dateInput.style.textAlign = "center";
+            dateInput.style.verticalAlign = "middle";
+            // Validate the input when the value changes
+            dateInput.addEventListener('change', () => {
+                const validation = validateDateInput(dateInput.value);
+
+                if (!validation.isValid) {
+                    alert(validation.message);
+                    dateInput.setCustomValidity(validation.message); // Show error
+                } else {
+                    dateInput.setCustomValidity(""); // Clear error if valid
+                }
+            });
             dateCell.appendChild(dateInput);
             row.appendChild(dateCell);
 
@@ -199,7 +212,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             crestInput.type = "number";
             crestInput.value = formattedData.at(-1)[1].toFixed(2); // Crest uses formattedData
             crestInput.step = "0.01";  // Ensure the step increment is 0.01
-            crestInput.id = "crestInput";
+            crestInput.style.textAlign = "center";
+            crestInput.style.verticalAlign = "middle";
+            // crestInput.id = "crestInput";
             crestCell.appendChild(crestInput);
             row.appendChild(crestCell);
 
@@ -208,7 +223,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             const optionInput = document.createElement("input");
             optionInput.type = "number";
             optionInput.value = formattedData.at(-1)[2].toFixed(0); // Crest uses formattedData
-            optionInput.id = "optionInput";
+            // optionInput.id = "optionInput";
+            optionInput.style.textAlign = "center";
+            optionInput.style.verticalAlign = "middle";
             optionCell.appendChild(optionInput);
             row.appendChild(optionCell);
 
@@ -226,12 +243,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             output10Div.appendChild(cdaSaveBtn);
 
             const statusDiv = document.createElement("div");
-            statusDiv.className = "status";
-            const cdaStatusBtn = document.createElement("button");
-            cdaStatusBtn.textContent = "";
-            cdaStatusBtn.id = "cda-btn-crest";
-            cdaStatusBtn.disabled = false;
-            statusDiv.appendChild(cdaStatusBtn);
+            statusDiv.id = "status-crest";
             output10Div.appendChild(statusDiv);
 
             // Create the buttonRefresh button
@@ -258,24 +270,35 @@ document.addEventListener('DOMContentLoaded', async function () {
             });
 
             cdaSaveBtn.addEventListener("click", async () => {
-                console.log("Crest Input: ", parseFloat(crestInput.value) || 909);
-                console.log("Option/QualityCode Input: ", parseFloat(optionInput.value) || 0);
-                console.log("DateTime Input (Not Used): ", dateInput.value);
+                const crestRaw = parseFloat(crestInput.value);
+                const optionRaw = parseInt(optionInput.value);
 
-                // Parse user inputs
-                const crestValue = parseFloat(crestInput.value) || 909; // Convert to float, default to 909 if empty
-                const optionValue = parseInt(optionInput.value) || 0; // Convert to integer, default to 909
+                const crestValue = isNaN(crestRaw) ? 909 : crestRaw;
+                const optionValue = isNaN(optionRaw) ? 0 : optionRaw;
+
+                console.log("Crest Input: ", crestValue);
+                console.log("Option/QualityCode Input: ", optionValue);
+                console.log("DateTime Input: ", dateInput.value);
+                console.log(addDSTOffsetToUTC(dateInput.value, dstOffsetHours));
+
                 const timestampUnix = new Date(formattedData.at(-1).formattedTimestampUTC).getTime();
-
                 console.log("timestampUnix: ", timestampUnix);
+
+                let timestampUTC = null;
+                if (crestValue === 909) {
+                    timestampUTC = addDSTOffsetToUTC(convertTo6AMCST(isoDateToday), dstOffsetHours);
+                } else {
+                    timestampUTC = addDSTOffsetToUTC(dateInput.value, dstOffsetHours);
+                }
+                console.log("timestampUTC: ", timestampUTC);
 
                 const payload = {
                     "date-version-type": "MAX_AGGREGATE",
                     "name": tsid,
                     "office-id": "MVS",
                     "units": "ft",
-                    "values": [[timestampUnix, crestValue, optionValue]], // Three-item array
-                    "version-date": convertTo6AMCST(isoDateToday), // Ensure this is the correct ISO formatted date
+                    "values": [[timestampUTC, crestValue, optionValue]],
+                    "version-date": convertTo6AMCST(isoDateToday),
                 };
 
                 console.log("payload: ", payload);
@@ -299,6 +322,23 @@ document.addEventListener('DOMContentLoaded', async function () {
                     if (!payload) throw new Error("You must specify a payload!");
                     const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?store-rule=REPLACE%20ALL", {
                         method: "POST",
+                        headers: { "Content-Type": "application/json;version=2" },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                    }
+                }
+
+                async function deleteVersionTS(payload) {
+                    const begin = convertTo6AMCST(isoDateToday);
+                    const end = convertTo6AMCST(isoDateDay7);
+
+                    if (!payload) throw new Error("You must specify a payload!");
+                    const response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries/${tsid}?office=${office}&begin=${begin}&end=${end}&version-date=${convertTo6AMCST(isoDateToday)}&start-time-inclusive=true&end-time-inclusive=true&override-protection=true`, {
+                        method: "DELETE",
                         headers: { "Content-Type": "application/json;version=2" },
                         body: JSON.stringify(payload)
                     });
@@ -355,13 +395,21 @@ document.addEventListener('DOMContentLoaded', async function () {
                     hideSpinner(); // Hide the spinner after login is complete
 
                     cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
-                    cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
+                    statusDiv.innerText = loginResult ? "" : "Failed to Login!";
                 } else {
                     try {
-                        showSpinner(); // Show the spinner before creating the version
+                        showSpinner();
+
+                        // TODO: Dont have data entry date yet, so need to delete.
+                        await deleteVersionTS(payload);
+                        console.log("Delete successful!");
+
+                        // Optional: small delay to allow backend to process the new data
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+
                         await createVersionTS(payload);
                         console.log("Write successful!");
-                        cdaStatusBtn.innerText = "Write successful!";
+                        statusDiv.innerText = "Write successful!";
 
                         // Optional: small delay to allow backend to process the new data
                         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -374,7 +422,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, updatedData);
                     } catch (error) {
                         hideSpinner(); // Hide the spinner if an error occurs
-                        cdaStatusBtn.innerText = "Failed to write data!";
+                        statusDiv.innerText = "Failed to write data!";
                         console.error(error);
                     }
 
@@ -456,12 +504,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             output10Div.appendChild(cdaSaveBtn);
 
             const statusDiv = document.createElement("div");
-            statusDiv.className = "status";
-            const cdaStatusBtn = document.createElement("button");
-            cdaStatusBtn.textContent = "";
-            cdaStatusBtn.id = "cda-btn-crest";
-            cdaStatusBtn.disabled = false;
-            statusDiv.appendChild(cdaStatusBtn);
+            statusDiv.id = "status-crest";
             output10Div.appendChild(statusDiv);
 
             // Create the buttonRefresh button
@@ -499,8 +542,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     "name": tsid,
                     "office-id": "MVS",
                     "units": "ft",
-                    "values": [[timestampUnix, crestValue, optionValue]], // Three-item array
-                    "version-date": convertTo6AMCST(isoDateToday), // Ensure this is the correct ISO formatted date
+                    "values": [[timestampUnix, crestValue, optionValue]],
+                    "version-date": convertTo6AMCST(isoDateToday),
                 };
 
                 console.log("payload: ", payload);
@@ -561,7 +604,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 async function fetchUpdatedData(tsid, isoDateDay5, isoDateToday, isoDateMinus1Day) {
                     let response = null;
-                    response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=MVS&version-date=${convertTo6AMCST(isoDateToday)}`, {
+                    response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=${office}&version-date=${convertTo6AMCST(isoDateToday)}`, {
                         headers: {
                             "Accept": "application/json;version=2", // Ensuring the correct version is used
                             "cache-control": "no-cache"
@@ -605,13 +648,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                     hideSpinner(); // Hide the spinner after login is complete
 
                     cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
-                    cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
+                    statusDiv.innerText = loginResult ? "" : "Failed to Login!";
                 } else {
                     try {
                         showSpinner(); // Show the spinner before creating the version
                         await createVersionTS(payload);
                         console.log("Write successful!");
-                        cdaStatusBtn.innerText = "Write successful!";
+                        statusDiv.innerText = "Write successful!";
 
                         // Optional: small delay to allow backend to process the new data
                         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -624,7 +667,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, updatedData);
                     } catch (error) {
                         hideSpinner(); // Hide the spinner if an error occurs
-                        cdaStatusBtn.innerText = "Failed to write data!";
+                        statusDiv.innerText = "Failed to write data!";
                         console.error(error);
                     }
 
@@ -779,9 +822,56 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Convert back to ISO format
         return new Date(cstDate.getTime() - (cstDate.getTimezoneOffset() * 60000)).toISOString();
     }
-});
 
-// TODO: Need Data Entry Date to determine which crest to use if entered multiple times..., Night now, it uses the last one entered
+    function addDSTOffsetToUTC(isoDate, dstOffsetHours) {
+        // Parse the input UTC time into a Date object
+        const utcDate = new Date(isoDate);
+
+        // Add the DST offset (in hours) to the UTC date
+        utcDate.setHours(utcDate.getHours() + dstOffsetHours);
+
+        // Return the updated time as an ISO string
+        return utcDate.toISOString();
+    }
+
+    function validateDateInput(inputValue) {
+        // Check if the input is in ISO format (matches the pattern)
+        const isoFormatRegex = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z)$/;
+        if (!isoFormatRegex.test(inputValue)) {
+            return {
+                isValid: false,
+                message: "The date must be in ISO format (e.g., 2025-05-03T06:00:00.000Z)."
+            };
+        }
+
+        const inputDate = new Date(inputValue);
+        const now = new Date();
+        const fourteenDaysFromNow = new Date(now);
+        fourteenDaysFromNow.setDate(now.getDate() + 14);
+
+        // Check if the date is in the future
+        if (inputDate <= now) {
+            return {
+                isValid: false,
+                message: "The date must be in the future."
+            };
+        }
+
+        // Check if the date is within the next 14 days
+        if (inputDate > fourteenDaysFromNow) {
+            return {
+                isValid: false,
+                message: "The date must be within the next 14 days."
+            };
+        }
+
+        // If valid
+        return {
+            isValid: true,
+            message: ""
+        };
+    }
+});
 
 // [
 //     {
