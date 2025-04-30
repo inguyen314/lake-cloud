@@ -2070,7 +2070,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     "units": "ft",
                                     "values": [
                                         [
-                                            timeInput,
+                                            convertToISO(timeInput),
                                             sluice1Input.value,
                                             0
                                         ],
@@ -2206,6 +2206,21 @@ document.addEventListener('DOMContentLoaded', async function () {
                                         [
                                             convertToISO(timeInput),
                                             gateTotalInput.value,
+                                            0
+                                        ],
+                                    ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                                };
+                            }
+
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                payloadNewEntryOutflowAverage = {
+                                    "name": tsidOutflowAverage,
+                                    "office-id": office,
+                                    "units": "cfs",
+                                    "values": [
+                                        [
+                                            convertToISO(timeInput),
+                                            gateOutflowTotalInput.value,
                                             0
                                         ],
                                     ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
@@ -2352,13 +2367,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                             }
                             console.log("formattedTomorrowDataOutflowAverage: ", formattedTomorrowDataOutflowAverage);
 
+                            // Prepare the paylods object to be save.
                             payloads = {};
                             if (Array.isArray(selectedTimes) && Object.values(dataCategories).every(Array.isArray)) {
 
                                 Object.entries(dataCategories).forEach(([key, values]) => {
                                     const updatedValues = selectedTimes.map((time, index) => [
-                                        convertToISO(time), // Convert time to ISO format // time,
-                                        values[index] ?? 0, // Default to 0 if undefined
+                                        convertToISO(time),
+                                        values[index] ?? 909,
                                         0
                                     ]);
 
@@ -2378,19 +2394,24 @@ document.addEventListener('DOMContentLoaded', async function () {
                             console.log("Payloads: ", payloads);
 
                             // Append tomorrow average outflow to either payloads.gateTotal.values or payloads.outflowTotal.values
-                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                            if (
+                                (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") &&
+                                formattedTomorrowDataOutflowAverage != null &&
+                                Array.isArray(formattedTomorrowDataOutflowAverage) &&
+                                formattedTomorrowDataOutflowAverage.length > 0
+                            ) {
                                 const firstEntry = formattedTomorrowDataOutflowAverage[0];
-                                if (firstEntry) {
+                                if (firstEntry && firstEntry.iso !== undefined) {
                                     payloads.outflowTotal.values.push([
                                         firstEntry.iso,
                                         firstEntry["1"],
                                         firstEntry["2"]
                                     ]);
                                 }
-                            }
+                            }                            
 
                             if (
-                                (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") &&
+                                (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk" || lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") &&
                                 formattedTomorrowDataOutflowAverage != null &&
                                 Array.isArray(formattedTomorrowDataOutflowAverage) &&
                                 formattedTomorrowDataOutflowAverage.length > 0
@@ -2441,21 +2462,72 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
 
                         function getAllSluice1Values() {
-                            return formattedDataSluice1.map((_, index) =>
-                                parseFloat(document.getElementById(`sluice1Input-${index}`).value)
-                            );
+                            let values = [];
+
+                            // Step 1: Collect all sluice1Input values
+                            for (let index = 0; index < formattedDataSluice1.length; index++) {
+                                const input = document.getElementById(`sluice1Input-${index}`);
+                                if (input) {
+                                    values.push(parseFloat(input.value));
+                                }
+                            }
+
+                            // Step 2: Collect all sluice1AdditionalInput values (if any)
+                            for (let index = 0; index < entryDates.length; index++) {
+                                const additionalInput = document.getElementById(`sluice1AdditionalInput-${index}`);
+                                if (additionalInput) {
+                                    const parsed = parseFloat(additionalInput.value);
+                                    values.push(isNaN(parsed) ? 909 : parsed);
+                                }
+                            }
+
+                            return values;
                         }
 
                         function getAllSluice2Values() {
-                            return formattedDataSluice2.map((_, index) =>
-                                parseFloat(document.getElementById(`sluice2Input-${index}`).value)
-                            );
+                            let values = [];
+
+                            // Step 1: Collect all sluice2Input values
+                            for (let index = 0; index < formattedDataSluice2.length; index++) {
+                                const input = document.getElementById(`sluice2Input-${index}`);
+                                if (input) {
+                                    values.push(parseFloat(input.value));
+                                }
+                            }
+
+                            // Step 2: Collect all sluice2AdditionalInput values (if any)
+                            for (let index = 0; index < entryDates.length; index++) {
+                                const additionalInput = document.getElementById(`sluice2AdditionalInput-${index}`);
+                                if (additionalInput) {
+                                    const parsed = parseFloat(additionalInput.value);
+                                    values.push(isNaN(parsed) ? 909 : parsed);
+                                }
+                            }
+
+                            return values;
                         }
 
                         function getAllSluiceTotalValues() {
-                            return formattedDataSluiceTotal.map((_, index) =>
-                                parseFloat(document.getElementById(`sluiceTotalInput-${index}`).value)
-                            );
+                            let values = [];
+
+                            // Step 1: Collect all sluiceTotalInput values
+                            for (let index = 0; index < formattedDataSluiceTotal.length; index++) {
+                                const input = document.getElementById(`sluiceTotalInput-${index}`);
+                                if (input) {
+                                    values.push(parseFloat(input.value));
+                                }
+                            }
+
+                            // Step 2: Collect all sluiceTotalAdditionalInput values (if any)
+                            for (let index = 0; index < entryDates.length; index++) {
+                                const additionalInput = document.getElementById(`sluiceTotalAdditionalInput-${index}`);
+                                if (additionalInput) {
+                                    const parsed = parseFloat(additionalInput.value);
+                                    values.push(isNaN(parsed) ? 909 : parsed);
+                                }
+                            }
+
+                            return values;
                         }
 
                         function getAllGate1Values() {
@@ -2574,10 +2646,27 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
 
                         function getAllOutflowTotalValues() {
-                            return formattedDataSluiceTotal.map((_, index) =>
-                                parseFloat(document.getElementById(`sluiceTotalInput-${index}`).value) +
-                                parseFloat(document.getElementById(`gateTotalInput-${index}`).value)
-                            );
+                            let values = [];
+
+                            // Step 1: Collect all sluiceTotalInput and gateTotalInput values
+                            for (let index = 0; index < formattedDataGateTotal.length; index++) {
+                                const input = document.getElementById(`sluiceTotalInput-${index}`);
+                                const input2 = document.getElementById(`gateTotalInput-${index}`);
+                                if (input && input2) {
+                                    values.push(parseFloat(input.value + input2.value));
+                                }
+                            }
+
+                            // Step 2: Collect all gateOutflowTotalAdditionalInput values (if any)
+                            for (let index = 0; index < entryDates.length; index++) {
+                                const additionalInput = document.getElementById(`gateOutflowTotalAdditionalInput-${index}`);
+                                if (additionalInput) {
+                                    const parsed = parseFloat(additionalInput.value);
+                                    values.push(isNaN(parsed) ? 909 : parsed);
+                                }
+                            }
+
+                            return values;
                         }
 
                         function getAllOutflowAverageValues() {
@@ -2706,26 +2795,34 @@ document.addEventListener('DOMContentLoaded', async function () {
                                         await createTS(payloadNewEntrySluice2);
                                         cdaStatusBtn.innerText = "Write payloadNewEntrySluice2 successful!";
                                     }
+
                                     if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                                         await createTS(payloadNewEntrySluiceTotal);
                                         cdaStatusBtn.innerText = "Write payloadNewEntrySluiceTotal successful!";
                                     }
+
                                     await createTS(payloadNewEntryGate1);
                                     cdaStatusBtn.innerText = "Write payloadNewEntryGate1 successful!";
+
                                     await createTS(payloadNewEntryGate2);
                                     cdaStatusBtn.innerText = "Write payloadNewEntryGate2 successful!";
+
                                     await createTS(payloadNewEntryGate3);
                                     cdaStatusBtn.innerText = "Write payloadNewEntryGate3 successful!";
+
                                     if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                                         await createTS(payloadNewEntryGate4);
                                         cdaStatusBtn.innerText = "Write payloadNewEntryGate4 successful!";
                                     }
+
                                     await createTS(payloadNewEntryGateTotal);
                                     cdaStatusBtn.innerText = "Write payloadNewEntryGateTotal successful!";
+
                                     if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                                         await createTS(payloadNewEntryOutflowTotal);
                                         cdaStatusBtn.innerText = "Write payloadNewEntryOutflowTotal successful!";
                                     }
+
                                     await createTS(payloadNewEntryOutflowAverage);
                                     cdaStatusBtn.innerText = "Write payloadNewEntryOutflowAverage successful!";
 
