@@ -50,10 +50,19 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("isoDateDay6:", isoDateDay6);
     console.log("isoDateDay7:", isoDateDay7);
 
-    const urlTsidStorage = `${setBaseUrl}timeseries/group/Storage?office=${office}&category-id=${lake}`;
-    const urlTsidAverageOutflow = `${setBaseUrl}timeseries/group/Outflow-Average-Lake-Test?office=${office}&category-id=${lake}`;
-    const urlTsidConsensus = `${setBaseUrl}timeseries/group/Consensus-Test?office=${office}&category-id=${lake}`;
-    const urlTsidComputedInflow = `${setBaseUrl}timeseries/group/Computed-Inflow?office=${office}&category-id=${lake}`;
+    let urlTsidStorage = null;
+    let urlTsidAverageOutflow = null;
+    let urlTsidConsensus = null;
+    let urlTsidComputedInflow = null;
+
+    urlTsidStorage = `${setBaseUrl}timeseries/group/Storage?office=${office}&category-id=${lake}`;
+    if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+        urlTsidAverageOutflow = `${setBaseUrl}timeseries/group/Outflow-Generation-Release-Lake-Test?office=${office}&category-id=${lake}`;
+    } else {
+        urlTsidAverageOutflow = `${setBaseUrl}timeseries/group/Outflow-Average-Lake-Test?office=${office}&category-id=${lake}`;
+    }
+    urlTsidConsensus = `${setBaseUrl}timeseries/group/Consensus-Test?office=${office}&category-id=${lake}`;
+    urlTsidComputedInflow = `${setBaseUrl}timeseries/group/Computed-Inflow?office=${office}&category-id=${lake}`;
 
     const levelId = `${lake}.Evap.Inst.0.Evaporation`;
     console.log("levelId:", levelId);
@@ -687,7 +696,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 // tsidConsensus: Lk Shelbyville-Kaskaskia.Flow-In.Ave.~1Day.1Day.lakerep-rev-test (Consensus-Test)
 // tsidComputedInflow: Lk Shelbyville-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed (Computed-Inflow)
 
-//*******************************************************************************************************************************/ 
+//*******************************************************************************************************************************/
 
 // Rend Lk-Big Muddy
 // tsidStorage: Rend Lk-Big Muddy.Stor.Inst.30Minutes.0.RatingCOE (Storage)
@@ -696,7 +705,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 // tsidConsensus: Rend Lk-Big Muddy.Flow-In.Ave.~1Day.1Day.lakerep-rev-test (Consensus-Test)
 // tsidComputedInflow: Rend Lk-Big Muddy.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed (Computed-Inflow)
 
-//*******************************************************************************************************************************/ 
+//*******************************************************************************************************************************/
 
 // Mark Twain Lk-Salt
 // tsidStorage: Mark Twain Lk-Salt.Stor.Inst.30Minutes.0.RatingCOE (Storage)
@@ -705,7 +714,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 // tsidConsensus: Mark Twain Lk-Salt.Flow-In.Ave.~1Day.1Day.lakerep-rev-test (Consensus-Test)
 // tsidComputedInflow: Mark Twain Lk-Salt.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed (Computed-Inflow)
 
-//*******************************************************************************************************************************/ 
+//*******************************************************************************************************************************/
 
 // Carlyle Lk-Kaskaskia
 // tsidStorage: Carlyle Lk-Kaskaskia.Stor.Inst.30Minutes.0.RatingCOE (Storage)
@@ -714,7 +723,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 // tsidConsensus: Carlyle Lk-Kaskaskia.Flow-In.Ave.~1Day.1Day.lakerep-rev-test (Consensus-Test)
 // tsidComputedInflow: Carlyle Lk-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-computed (Computed-Inflow)
 
-//*******************************************************************************************************************************/ 
+//*******************************************************************************************************************************/
 
 // Wappapello Lk-St Francis
 // tsidStorage: Wappapello Lk-St Francis.Stor.Inst.30Minutes.0.RatingCOE (Storage)

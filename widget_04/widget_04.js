@@ -56,7 +56,16 @@ document.addEventListener('DOMContentLoaded', async function () {
         const urltsid3 = `${setBaseUrl}timeseries/group/Outflow-Average-Lake-Test?office=${office}&category-id=${lake}`;
 
         const fetchTimeSeriesData = async (tsid) => {
-            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus7Days}&end=${isoDateToday}&office=${office}`;
+            // Convert to Date object
+            const date = new Date(isoDateToday);
+
+            // Minus 1 minute (1 minutes * 60 seconds * 1000 milliseconds)
+            date.setTime(date.getTime() - (1 * 1 * 60 * 1000));
+
+            // Convert back to ISO string (preserve UTC format)
+            const end = date.toISOString();
+
+            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus7Days}&end=${end}&office=${office}`;
             console.log('tsidData:', tsidData);
             try {
                 const response = await fetch(tsidData, {
@@ -200,7 +209,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const averagesOutflow = calculateDailyAverages(formattedData2);
                     console.log("averagesOutflow: ", averagesOutflow);
 
-                    const averageOutflowYesterday = averagesOutflow[averagesOutflow.length - 2];
+                    const averageOutflowYesterday = averagesOutflow[averagesOutflow.length - 1];
                     console.log("averageOutflowYesterday: ", averageOutflowYesterday);
 
                     const table = document.createElement("table");
@@ -357,8 +366,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
 
                         async function fetchUpdatedData(isoDateMinus8Days, isoDateToday, tsid) {
+                            // Convert to Date object
+                            const date = new Date(isoDateToday);
+
+                            // Minus 1 minute (1 minutes * 60 seconds * 1000 milliseconds)
+                            date.setTime(date.getTime() - (1 * 1 * 60 * 1000));
+
+                            // Convert back to ISO string (preserve UTC format)
+                            const end = date.toISOString();
+
                             let response = null;
-                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid}&begin=${isoDateMinus7Days}&end=${isoDateToday}&office=${office}`, {
+                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid}&begin=${isoDateMinus7Days}&end=${end}&office=${office}`, {
                                 headers: {
                                     "Accept": "application/json;version=2", // Ensuring the correct version is used
                                     "cache-control": "no-cache"
@@ -518,8 +536,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 dailyData[date].values.push(value);
 
                 // Log the value and the current sum and count for this day
-                // console.log(`Date: ${date}, Timestamp: ${timestamp}, Value: ${value}`);
-                // console.log(`Current Sum: ${dailyData[date].sum}, Current Count: ${dailyData[date].count}`);
+                console.log(`Date: ${date}, Timestamp: ${timestamp}, Value: ${value}`);
+                console.log(`Current Sum: ${dailyData[date].sum}, Current Count: ${dailyData[date].count}`);
             });
 
             // Now calculate the average for each day
@@ -527,10 +545,10 @@ document.addEventListener('DOMContentLoaded', async function () {
             for (const date in dailyData) {
                 const avg = dailyData[date].sum / dailyData[date].count;
 
-                // Log the final average for the day
-                // console.log(`Final Average for ${date}: ${avg}`);
+                // Log the final average and count for the day
+                console.log(`Final Average for ${date}: ${avg}, Count: ${dailyData[date].count}`);
 
-                dailyAverages.push({ date, average: avg });
+                dailyAverages.push({ date, average: avg, count: dailyData[date].count });
             }
 
             return dailyAverages;
@@ -2408,7 +2426,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                         firstEntry["2"]
                                     ]);
                                 }
-                            }                            
+                            }
 
                             if (
                                 (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk" || lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") &&
@@ -2427,7 +2445,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     }
                                 });
                             }
-                                                                                 
+
                             console.log("payloads after append tomorrow outflowTotal/gateTotal data:", payloads);
 
                         }
