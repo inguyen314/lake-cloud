@@ -3807,3 +3807,260 @@ const fetchTsidData = async () => {
 
     }
 };
+
+
+
+
+
+                            // If there is new entry
+                            // if (newDataEntryUsed === true) {
+                            //     console.log("newDataEntryUsed is true, preparing payloads for new data entry...");
+
+                            //     Object.keys(selectedHours).forEach(hour => {
+                            //         console.log(`${hour} selected:`, selectedHours[hour]);
+                            //     });
+
+                            //     if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                            //         sluice1AdditionalInput = document.getElementById(`sluice1AdditionalInput`);
+                            //         if (!sluice1AdditionalInput) {
+                            //             console.error("sluice1AdditionalInput element not found!");
+                            //             return;
+                            //         }
+                            //         if (!sluice1AdditionalInput.value) {
+                            //             sluice1AdditionalInput.value = 909;
+                            //         }
+
+                            //         sluice2AdditionalInput = document.getElementById(`sluice2AdditionalInput`);
+                            //         if (!sluice2AdditionalInput) {
+                            //             console.error("sluice2AdditionalInput element not found!");
+                            //             return;
+                            //         }
+                            //         if (!sluice2AdditionalInput.value) {
+                            //             sluice2AdditionalInput.value = 909;
+                            //         }
+                            //     }
+
+                            //     if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                            //         sluiceTotalAdditionalInput = document.getElementById(`sluiceTotalAdditionalInput`);
+                            //         if (!sluiceTotalAdditionalInput) {
+                            //             console.error("sluiceTotalAdditionalInput element not found!");
+                            //             return;
+                            //         }
+                            //         if (!sluiceTotalAdditionalInput.value) {
+                            //             sluiceTotalAdditionalInput.value = 909;
+                            //         }
+                            //     }
+
+                            //     gate1AdditionalInput = document.getElementById(`gate1AdditionalInput`);
+                            //     if (!gate1AdditionalInput) {
+                            //         console.error("gate1AdditionalInput element not found!");
+                            //         return;
+                            //     }
+                            //     if (!gate1AdditionalInput.value) {
+                            //         gate1AdditionalInput.value = 909;
+                            //     }
+
+                            //     gate2AdditionalInput = document.getElementById(`gate2AdditionalInput`);
+                            //     if (!gate2AdditionalInput) {
+                            //         console.error("gate2AdditionalInput element not found!");
+                            //         return;
+                            //     }
+                            //     if (!gate2AdditionalInput.value) {
+                            //         gate2AdditionalInput.value = 909;
+                            //     }
+
+                            //     gate3AdditionalInput = document.getElementById(`gate3AdditionalInput`);
+                            //     if (!gate3AdditionalInput) {
+                            //         console.error("gate3AdditionalInput element not found!");
+                            //         return;
+                            //     }
+                            //     if (!gate3AdditionalInput.value) {
+                            //         gate3AdditionalInput.value = 909;
+                            //     }
+
+                            //     if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                            //         gate4AdditionalInput = document.getElementById(`gate4AdditionalInput`);
+                            //         if (!gate4AdditionalInput) {
+                            //             console.error("gate4AdditionalInput element not found!");
+                            //             return;
+                            //         }
+                            //         if (!gate4AdditionalInput.value) {
+                            //             gate4AdditionalInput.value = 909;
+                            //         }
+                            //     }
+                            //     gateTotalAdditionalInput = document.getElementById(`gateTotalAdditionalInput`);
+                            //     if (!gateTotalAdditionalInput) {
+                            //         console.error("gateTotalAdditionalInput element not found!");
+                            //         return;
+                            //     }
+                            //     if (!gateTotalAdditionalInput.value) {
+                            //         gateTotalAdditionalInput.value = 909;
+                            //     }
+
+                            //     if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                            //         gateOutflowTotalInput = document.getElementById('gateOutflowTotalAdditionalInput');
+                            //         if (!gateOutflowTotalInput) {
+                            //             console.error("gateOutflowTotalInput element not found!");
+                            //             return;
+                            //         }
+                            //         const gateTotal = gateTotalAdditionalInput ? Number(gateTotalAdditionalInput.value) || 0 : 0;
+                            //         const sluiceTotal = sluiceTotalAdditionalInput ? Number(sluiceTotalAdditionalInput.value) || 0 : 0;
+                            //         const calculatedValue = gateTotal + sluiceTotal;
+
+                            //         gateOutflowTotalInput.value = calculatedValue > 0 ? calculatedValue : 909;
+                            //     }
+
+                            //     gateOutflowAverageInput = document.getElementById(`gateOutflowAverageInput`);
+                            //     if (!gateOutflowAverageInput) {
+                            //         console.error("gateOutflowAverageInput element not found!");
+                            //         return;
+                            //     }
+                            //     if (!gateOutflowAverageInput.value) {
+                            //         gateOutflowAverageInput.value = 909;
+                            //     }
+
+                            //     console.log("selectedHours['hour1']: ", selectedHours['hour1'], typeof (selectedHours['hour1']));
+
+                            //     let time1 = null;
+                            //     if (selectedHours['hour1'] !== "NONE") {
+                            //         // Extract hours and minutes
+                            //         let [hour, minute] = selectedHours['hour1'].split(':').map(Number);
+
+                            //         // Create a Date object (using an arbitrary date)
+                            //         let date = new Date();
+                            //         date.setUTCHours(hour + dstOffsetHours, minute, 0, 0); // Add offset
+
+                            //         // Format back to "HH:mm"
+                            //         let adjustedHour = String(date.getUTCHours()).padStart(2, '0');
+                            //         let adjustedMinute = String(date.getUTCMinutes()).padStart(2, '0');
+                            //         let adjustedTime = `${adjustedHour}:${adjustedMinute}`;
+
+                            //         // Construct the final time string
+                            //         time1 = `${isoDateToday.slice(0, 10)}T${adjustedTime}:00Z`;
+                            //     }
+                            //     console.log("Adjusted time1:", time1);
+
+                            //     if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                            //         payloadSluice1Additional = {
+                            //             "name": tsidSluice1,
+                            //             "office-id": office,
+                            //             "units": "ft",
+                            //             "values": [
+                            //                 [
+                            //                     time1,
+                            //                     sluice1AdditionalInput.value,
+                            //                     0
+                            //                 ],
+                            //             ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                            //         };
+                            //         console.log("payloadSluice1Additional: ", payloadSluice1Additional);
+                
+                            //         payloadSluice2Additional = {
+                            //             "name": tsidSluice2,
+                            //             "office-id": office,
+                            //             "units": "ft",
+                            //             "values": [
+                            //                 [
+                            //                     time1,
+                            //                     sluice2AdditionalInput.value,
+                            //                     0
+                            //                 ],
+                            //             ].filter(item => item[0] !== null),
+                            //         };
+                            //         console.log("payloadSluice2Additional: ", payloadSluice2Additional);
+                            //     }
+                
+                            //     if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                            //         payloadSluiceTotalAdditional = {
+                            //             "name": tsidSluiceTotal,
+                            //             "office-id": office,
+                            //             "units": "cfs",
+                            //             "values": [
+                            //                 [
+                            //                     time1,
+                            //                     sluiceTotalAdditionalInput.value,
+                            //                     0
+                            //                 ],
+                            //             ].filter(item => item[0] !== null),
+                            //         };
+                            //         console.log("payloadSluiceTotalAdditional: ", payloadSluiceTotalAdditional);
+                            //     }
+                            //     payloadGate1Additional = {
+                            //         "name": tsidGate1,
+                            //         "office-id": office,
+                            //         "units": "ft",
+                            //         "values": [
+                            //             [
+                            //                 time1,
+                            //                 gate1AdditionalInput.value,
+                            //                 0
+                            //             ],
+                            //         ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                            //     };
+                            //     console.log("payloadGate1Additional: ", payloadGate1Additional);
+                
+                            //     payloadGate2Additional = {
+                            //         "name": tsidGate2,
+                            //         "office-id": office,
+                            //         "units": "ft",
+                            //         "values": [
+                            //             [
+                            //                 time1,
+                            //                 gate2AdditionalInput.value,
+                            //                 0
+                            //             ],
+                            //         ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                            //     };
+                            //     console.log("payloadGate2Additional: ", payloadGate2Additional);
+                
+                            //     payloadGate3Additional = {
+                            //         "name": tsidGate3,
+                            //         "office-id": office,
+                            //         "units": "ft",
+                            //         "values": [
+                            //             [
+                            //                 time1,
+                            //                 gate3AdditionalInput.value,
+                            //                 0
+                            //             ],
+                            //         ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                            //     };
+                            //     console.log("payloadGate3Additional: ", payloadGate3Additional);
+                
+                            //     if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                            //         payloadGate4Additional = {
+                            //             "name": tsidGate4,
+                            //             "office-id": office,
+                            //             "units": "ft",
+                            //             "values": [
+                            //                 [
+                            //                     time1,
+                            //                     gate4AdditionalInput.value,
+                            //                     0
+                            //                 ],
+                            //             ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                            //         };
+                            //         console.log("payloadGate4Additional: ", payloadGate4Additional);
+                            //     }
+                
+                            //     payloadGateTotalAdditional = {
+                            //         "name": tsidGateTotal,
+                            //         "office-id": office,
+                            //         "units": "cfs",
+                            //         "values": [
+                            //             [
+                            //                 time1,
+                            //                 gateTotalAdditionalInput.value,
+                            //                 0
+                            //             ],
+                            //         ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
+                            //     };
+                            //     console.log("payloadGateTotalAdditional: ", payloadGateTotalAdditional);
+                            // }
+
+
+                            // Add "NONE" as the first option
+                            const noneOption = document.createElement("option");
+                            noneOption.value = "23:59";
+                            noneOption.textContent = "NONE";
+                            timeSelectExisting.appendChild(noneOption);

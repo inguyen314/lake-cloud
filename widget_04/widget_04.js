@@ -1068,7 +1068,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     console.log("timeSeriesYesterdayDataOutflowAverage:", timeSeriesYesterdayDataOutflowAverage);
 
                     // Fetch tomorrow time series data
-                    timeSeriesTomorrowDataOutflow = await fetchTimeSeriesTomorrowData(tsidOutflowAverage);
+                    timeSeriesTomorrowDataOutflow = await fetchTimeSeriesTomorrowData(tsidGateTotal);
                     console.log("timeSeriesTomorrowDataOutflow:", timeSeriesTomorrowDataOutflow);
 
                     if ((timeSeriesDataGate1 && timeSeriesDataGate1.values && timeSeriesDataGate1.values.length > 0) || (timeSeriesYesterdayDataGate1 && timeSeriesYesterdayDataGate1.values && timeSeriesYesterdayDataGate1.values.length > 0)) {
@@ -1353,13 +1353,17 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     table.appendChild(headerRow);
 
-                    // Determine wheathe to display exising data or new data
+                    // Determine wheather to display existing data or new data
                     let todayDataExists = false;
+                    let newDataEntryUsed = false;
+                    let selectedHours = {};
 
                     if (formattedDataGate1.length > 0) {
                         todayDataExists = true;
                     }
                     console.log("todayDataExists:", todayDataExists);
+
+                    let entryDates = [];
 
                     // ********************************************************************************************************************************************** New Entry Data
                     if (todayDataExists === false) {
@@ -1512,39 +1516,31 @@ document.addEventListener('DOMContentLoaded', async function () {
                         });
                     }
 
-                    // ********************************************************************************************************************************************** Existing Data
+                    // ********************************************************************************************************************************************** Display Existing Data and New Entry Data Box 
                     if (todayDataExists === true) {
-                        let entryDates = [];
-
                         // Generate options for dropdown (24-hour format)
                         const times = [];
                         for (let hour = 0; hour < 24; hour++) {
                             const time = `${hour.toString().padStart(2, '0')}:00`;
                             times.push(time);
                         }
-
                         console.log("times for dropdown:", times);
 
-                        entryDates = [1];
-
-                        const selectedHours = {};
+                        entryDates = [1, 2, 3, 4]; // Blank entries for dropdown
 
                         // Display existing data
                         formattedDataGate1.forEach((date, index) => {
                             const row = document.createElement("tr");
 
                             const timeCell = document.createElement("td");
-                            const timeSelect = document.createElement("select");
-                            timeSelect.id = `timeSelect${index}`;
+                            const timeSelectExisting = document.createElement("select");
+                            timeSelectExisting.id = `timeSelectExisting-${index}`;
 
-                            // Extract only the time part (HH:mm) from formattedTimestampCST
+                            // Extract only the time part (HH:mm)
                             const formattedTime = date.formattedTimestampCST.split(" ")[1].slice(0, 5);
 
-                            // Add "NONE" as the first option
-                            const noneOption = document.createElement("option");
-                            noneOption.value = "23:59";
-                            noneOption.textContent = "NONE";
-                            timeSelect.appendChild(noneOption);
+                            // Flag to prevent adding "NONE" multiple times
+                            let noneOptionAdded = false;
 
                             // Create options for the dropdown (24 hours)
                             times.forEach(time => {
@@ -1552,22 +1548,33 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 option.value = time;
                                 option.textContent = time;
                                 if (time === formattedTime) {
-                                    option.selected = true; // Match the extracted time
+                                    option.selected = true;
                                 }
-                                timeSelect.appendChild(option);
+                                timeSelectExisting.appendChild(option);
                             });
 
                             // Disable selection for the first row
                             if (index === 0) {
-                                timeSelect.disabled = true;
+                                timeSelectExisting.disabled = true;
                             }
 
-                            // Update the selected time when changed
-                            timeSelect.addEventListener("change", (event) => {
+                            // Add "NONE" option on first click
+                            timeSelectExisting.addEventListener("click", () => {
+                                if (!noneOptionAdded) {
+                                    const noneOption = document.createElement("option");
+                                    noneOption.value = "23:59";
+                                    noneOption.textContent = "NONE";
+                                    timeSelectExisting.insertBefore(noneOption, timeSelectExisting.firstChild);
+                                    noneOptionAdded = true;
+                                }
+                            });
+
+                            // Log selection change
+                            timeSelectExisting.addEventListener("change", (event) => {
                                 console.log(`Row ${index + 1} selected time:`, event.target.value, "Type:", typeof event.target.value);
                             });
 
-                            timeCell.appendChild(timeSelect);
+                            timeCell.appendChild(timeSelectExisting);
                             row.appendChild(timeCell);
 
                             // Sluice1 cell (editable)
@@ -1686,10 +1693,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                             const row = document.createElement("tr");
                             const timeCell = document.createElement("td");
                             const timeSelect = document.createElement("select");
-                            timeSelect.id = "timeSelect";
+                            timeSelect.id = `timeSelect-${index}`;
 
-                            const hourKey = "hour1";
-                            selectedHours[hourKey] = "NONE"; // Default value
+                            const hourKey = `hour${index + 1}`;
+                            selectedHours[hourKey] = "NONE";
+
+                            console.log("index: ", index);
+                            console.log("date: ", date);
 
                             // Add "NONE" option
                             const noneOption = new Option("NONE", "NONE");
@@ -1707,6 +1717,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                             timeSelect.addEventListener("change", (event) => {
                                 selectedHours[hourKey] = event.target.value;
                                 console.log(`${hourKey} selected:`, selectedHours[hourKey]);
+                                newDataEntryUsed = true;
+                                console.log("newDataEntryUsed: ", newDataEntryUsed);
                             });
 
                             timeCell.appendChild(timeSelect);
@@ -1718,7 +1730,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 const sluice1Input = document.createElement("input");
                                 sluice1Input.type = "number";
                                 sluice1Input.value = null;
-                                sluice1Input.id = `sluice1AdditionalInput`;
+                                sluice1Input.id = `sluice1AdditionalInput-${index}`;
                                 sluice1Input.style.backgroundColor = "lightgray";
                                 sluice1Cell.appendChild(sluice1Input);
                                 row.appendChild(sluice1Cell);
@@ -1728,7 +1740,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 const sluice2Input = document.createElement("input");
                                 sluice2Input.type = "number";
                                 sluice2Input.value = null;
-                                sluice2Input.id = `sluice2AdditionalInput`;
+                                sluice2Input.id = `sluice2AdditionalInput-${index}`;
                                 sluice2Input.style.backgroundColor = "lightgray";
                                 sluice2Cell.appendChild(sluice2Input);
                                 row.appendChild(sluice2Cell);
@@ -1740,7 +1752,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 const sluiceTotalInput = document.createElement("input");
                                 sluiceTotalInput.type = "number";
                                 sluiceTotalInput.value = null;
-                                sluiceTotalInput.id = `sluiceTotalAdditionalInput`;
+                                sluiceTotalInput.id = `sluiceTotalAdditionalInput-${index}`;
                                 sluiceTotalInput.style.backgroundColor = "lightgray";
                                 sluiceTotalCell.appendChild(sluiceTotalInput);
                                 row.appendChild(sluiceTotalCell);
@@ -1751,7 +1763,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             const gate1Input = document.createElement("input");
                             gate1Input.type = "number";
                             gate1Input.value = null;
-                            gate1Input.id = `gate1AdditionalInput`;
+                            gate1Input.id = `gate1AdditionalInput-${index}`;
                             gate1Input.style.backgroundColor = "lightgray";
                             gate1Cell.appendChild(gate1Input);
                             row.appendChild(gate1Cell);
@@ -1761,7 +1773,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             const gate2Input = document.createElement("input");
                             gate2Input.type = "number";
                             gate2Input.value = null;
-                            gate2Input.id = `gate2AdditionalInput`;
+                            gate2Input.id = `gate2AdditionalInput-${index}`;
                             gate2Input.style.backgroundColor = "lightgray";
                             gate2Cell.appendChild(gate2Input);
                             row.appendChild(gate2Cell);
@@ -1771,7 +1783,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             const gate3Input = document.createElement("input");
                             gate3Input.type = "number";
                             gate3Input.value = null;
-                            gate3Input.id = `gate3AdditionalInput`;
+                            gate3Input.id = `gate3AdditionalInput-${index}`;
                             gate3Input.style.backgroundColor = "lightgray";
                             gate3Cell.appendChild(gate3Input);
                             row.appendChild(gate3Cell);
@@ -1782,7 +1794,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 const gate4Input = document.createElement("input");
                                 gate4Input.type = "number";
                                 gate4Input.value = null;
-                                gate4Input.id = `gate4AdditionalInput`;
+                                gate4Input.id = `gate4AdditionalInput-${index}`;
                                 gate4Input.style.backgroundColor = "lightgray";
                                 gate4Cell.appendChild(gate4Input);
                                 row.appendChild(gate4Cell);
@@ -1793,7 +1805,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             const gateTotalInput = document.createElement("input");
                             gateTotalInput.type = "number";
                             gateTotalInput.value = null;
-                            gateTotalInput.id = `gateTotalAdditionalInput`;
+                            gateTotalInput.id = `gateTotalAdditionalInput-${index}`;
                             gateTotalInput.style.backgroundColor = "lightgray";
                             gateTotalCell.appendChild(gateTotalInput);
                             row.appendChild(gateTotalCell);
@@ -1804,8 +1816,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 const gateOutflowTotalInput = document.createElement("input");
                                 gateOutflowTotalInput.type = "number";
                                 gateOutflowTotalInput.value = null;
-                                gateOutflowTotalInput.id = `gateOutflowTotalAdditionalInput`;
-                                gateOutflowTotalInput.readOnly = true; // Make it read-only
+                                gateOutflowTotalInput.id = `gateOutflowTotalAdditionalInput-${index}`;
+                                gateOutflowTotalInput.readOnly = true;
                                 gateOutflowTotalInput.style.backgroundColor = "#f0f0f0";
                                 gateOutflowTotalCell.appendChild(gateOutflowTotalInput);
                                 row.appendChild(gateOutflowTotalCell);
@@ -1813,7 +1825,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             table.appendChild(row);
                         });
-                    }
+                    };
 
                     // Append the table to the specific container (id="output4")
                     const output6Div = document.getElementById("output4");
@@ -1928,9 +1940,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                     let payloadNewEntryOutflowAverage = null;
 
                     let isDeleteEntryPayload = null;
+                    let isThereNewEntry = null;
 
                     cdaSaveBtn.addEventListener("click", async () => {
-                        // ********************************************************************************************************************************************** Prepare the payloads for new entry
+                        // ************************************************************************************** Prepare the payloads for new entry
                         if (todayDataExists === false) {
                             console.log("todayDataExists is false, preparing payloads for new entry...");
 
@@ -2201,7 +2214,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             console.log("payloadNewEntryOutflowAverage: ", payloadNewEntryOutflowAverage);
                         }
 
-                        // ********************************************************************************************************************************************** Prepare the payloads for existing entry
+                        // ************************************************************************************** Prepare the payloads for existing entry and new entry
                         if (todayDataExists === true) {
                             console.log("todayDataExists is true, preparing payloads for existing entry...");
 
@@ -2333,9 +2346,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     ...entry,
                                     "iso": new Date(entry["0"]).toISOString(),
                                 }));
+                                formattedTomorrowDataOutflowAverage = [formattedTomorrowDataOutflowAverage[0]];
                             } else {
                                 console.error('formattedTomorrowDataOutflowAverage is not an array:', formattedTomorrowDataOutflowAverage);
                             }
+                            console.log("formattedTomorrowDataOutflowAverage: ", formattedTomorrowDataOutflowAverage);
 
                             payloads = {};
                             if (Array.isArray(selectedTimes) && Object.values(dataCategories).every(Array.isArray)) {
@@ -2357,122 +2372,206 @@ document.addEventListener('DOMContentLoaded', async function () {
                                         "values": updatedValues.filter(item => item[0] !== null),
                                     };
                                 });
-
-                                console.log("Payloads: ", payloads);
                             } else {
                                 console.error("One or more arrays are not valid", selectedTimes, dataCategories);
                             }
+                            console.log("Payloads: ", payloads);
+
+                            // Append tomorrow average outflow to either payloads.gateTotal.values or payloads.outflowTotal.values
+                            if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                const firstEntry = formattedTomorrowDataOutflowAverage[0];
+                                if (firstEntry) {
+                                    payloads.outflowTotal.values.push([
+                                        firstEntry.iso,
+                                        firstEntry["1"],
+                                        firstEntry["2"]
+                                    ]);
+                                }
+                            }
+
+                            if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                                formattedTomorrowDataOutflowAverage.forEach(entry => {
+                                    payloads.gateTotal.values.push([
+                                        entry.iso,
+                                        entry["1"],
+                                        entry["2"]
+                                    ]);
+                                });
+                            }
+
+                            console.log("payloads after append tomorrow outflowTotal/gateTotal data:", payloads);
 
                         }
 
                         function getAllSelectedTimes() {
                             let selectedTimes = [];
+
                             formattedDataGate1.forEach((_, index) => {
-                                const selectedTime = document.getElementById(`timeSelect${index}`).value;
-                                selectedTimes.push(selectedTime);
+                                const selectElement = document.getElementById(`timeSelectExisting-${index}`);
+                                if (selectElement && selectElement.value) {
+                                    selectedTimes.push(selectElement.value);
+                                } else {
+                                    console.warn(`Missing or empty timeSelectExisting-${index}`);
+                                }
                             });
-                    
-                            // // Append selectedHours['hour1'] if it exists
-                            // if (selectedHours && selectedHours['hour1'] !== undefined) {
-                            //     selectedTimes.push(selectedHours['hour1']);
-                            // }
-                    
-                            console.log("Selected Times:", selectedTimes); // Log the selected times
+
+                            entryDates.forEach((_, index) => {
+                                const selectElement = document.getElementById(`timeSelect-${index}`);
+                                if (selectElement) {
+                                    let value = selectElement.value;
+                                    if (value === "NONE") {
+                                        value = "23:59";
+                                    }
+                                    selectedTimes.push(value);
+                                } else {
+                                    console.warn(`Missing timeSelect-${index}`);
+                                }
+                            });
+
+                            // console.log("Selected Times:", selectedTimes); // Log the selected times
                             return selectedTimes;
                         }
-                    
+
                         function getAllSluice1Values() {
                             return formattedDataSluice1.map((_, index) =>
                                 parseFloat(document.getElementById(`sluice1Input-${index}`).value)
                             );
                         }
-                    
+
                         function getAllSluice2Values() {
                             return formattedDataSluice2.map((_, index) =>
                                 parseFloat(document.getElementById(`sluice2Input-${index}`).value)
                             );
                         }
-                    
+
                         function getAllSluiceTotalValues() {
                             return formattedDataSluiceTotal.map((_, index) =>
                                 parseFloat(document.getElementById(`sluiceTotalInput-${index}`).value)
                             );
                         }
-                    
+
                         function getAllGate1Values() {
-                            let values = formattedDataGate1.map((_, index) =>
-                                parseFloat(document.getElementById(`gate1Input-${index}`).value)
-                            );
-                    
-                            // Check if 'gate1AdditionalInput' exists and add its value if present
-                            const additionalInput = document.getElementById('gate1AdditionalInput');
-                            if (additionalInput) {
-                                values.push(parseFloat(additionalInput.value));
+                            let values = [];
+
+                            // Step 1: Collect all gate1Input values
+                            for (let index = 0; index < formattedDataGate1.length; index++) {
+                                const input = document.getElementById(`gate1Input-${index}`);
+                                if (input) {
+                                    values.push(parseFloat(input.value));
+                                }
                             }
-                    
+
+                            // Step 2: Collect all gate1AdditionalInput values (if any)
+                            for (let index = 0; index < entryDates.length; index++) {
+                                const additionalInput = document.getElementById(`gate1AdditionalInput-${index}`);
+                                if (additionalInput) {
+                                    const parsed = parseFloat(additionalInput.value);
+                                    values.push(isNaN(parsed) ? 909 : parsed);
+                                }
+                            }
+
                             return values;
                         }
-                    
+
                         function getAllGate2Values() {
-                            let values = formattedDataGate2.map((_, index) =>
-                                parseFloat(document.getElementById(`gate2Input-${index}`).value)
-                            );
-                    
-                            // Check if 'gate2AdditionalInput' exists and add its value if present
-                            const additionalInput = document.getElementById('gate2AdditionalInput');
-                            if (additionalInput) {
-                                values.push(parseFloat(additionalInput.value));
+                            let values = [];
+
+                            // Step 1: Collect all gate2Input values
+                            for (let index = 0; index < formattedDataGate2.length; index++) {
+                                const input = document.getElementById(`gate2Input-${index}`);
+                                if (input) {
+                                    values.push(parseFloat(input.value));
+                                }
                             }
-                    
+
+                            // Step 2: Collect all gate2AdditionalInput values (if any)
+                            for (let index = 0; index < entryDates.length; index++) {
+                                const additionalInput = document.getElementById(`gate2AdditionalInput-${index}`);
+                                if (additionalInput) {
+                                    const parsed = parseFloat(additionalInput.value);
+                                    values.push(isNaN(parsed) ? 909 : parsed);
+                                }
+                            }
+
                             return values;
                         }
-                    
+
                         function getAllGate3Values() {
-                            let values = formattedDataGate3.map((_, index) =>
-                                parseFloat(document.getElementById(`gate3Input-${index}`).value)
-                            );
-                    
-                            const additionalInput = document.getElementById('gate3AdditionalInput');
-                            if (additionalInput) {
-                                values.push(parseFloat(additionalInput.value));
+                            let values = [];
+
+                            // Step 1: Collect all gate3Input values
+                            for (let index = 0; index < formattedDataGate3.length; index++) {
+                                const input = document.getElementById(`gate3Input-${index}`);
+                                if (input) {
+                                    values.push(parseFloat(input.value));
+                                }
                             }
-                    
+
+                            // Step 2: Collect all gate3AdditionalInput values (if any)
+                            for (let index = 0; index < entryDates.length; index++) {
+                                const additionalInput = document.getElementById(`gate3AdditionalInput-${index}`);
+                                if (additionalInput) {
+                                    const parsed = parseFloat(additionalInput.value);
+                                    values.push(isNaN(parsed) ? 909 : parsed);
+                                }
+                            }
+
                             return values;
                         }
-                    
+
                         function getAllGate4Values() {
-                            let values = formattedDataGate4.map((_, index) =>
-                                parseFloat(document.getElementById(`gate4Input-${index}`).value)
-                            );
-                    
-                            const additionalInput = document.getElementById('gate4AdditionalInput');
-                            if (additionalInput) {
-                                values.push(parseFloat(additionalInput.value));
+                            let values = [];
+
+                            // Step 1: Collect all gate4Input values
+                            for (let index = 0; index < formattedDataGate4.length; index++) {
+                                const input = document.getElementById(`gate4Input-${index}`);
+                                if (input) {
+                                    values.push(parseFloat(input.value));
+                                }
                             }
-                    
+
+                            // Step 2: Collect all gate4AdditionalInput values (if any)
+                            for (let index = 0; index < entryDates.length; index++) {
+                                const additionalInput = document.getElementById(`gate4AdditionalInput-${index}`);
+                                if (additionalInput) {
+                                    const parsed = parseFloat(additionalInput.value);
+                                    values.push(isNaN(parsed) ? 909 : parsed);
+                                }
+                            }
+
                             return values;
                         }
-                    
+
                         function getAllGateTotalValues() {
-                            let values = formattedDataGateTotal.map((_, index) =>
-                                parseFloat(document.getElementById(`gateTotalInput-${index}`).value)
-                            );
-                    
-                            const additionalInput = document.getElementById('gateTotalAdditionalInput');
-                            if (additionalInput) {
-                                values.push(parseFloat(additionalInput.value));
+                            let values = [];
+
+                            // Step 1: Collect all gateTotalInput values
+                            for (let index = 0; index < formattedDataGateTotal.length; index++) {
+                                const input = document.getElementById(`gateTotalInput-${index}`);
+                                if (input) {
+                                    values.push(parseFloat(input.value));
+                                }
                             }
-                    
+
+                            // Step 2: Collect all gateTotalAdditionalInput values (if any)
+                            for (let index = 0; index < entryDates.length; index++) {
+                                const additionalInput = document.getElementById(`gateTotalAdditionalInput-${index}`);
+                                if (additionalInput) {
+                                    const parsed = parseFloat(additionalInput.value);
+                                    values.push(isNaN(parsed) ? 909 : parsed);
+                                }
+                            }
+
                             return values;
                         }
-                    
+
                         function getAllOutflowTotalValues() {
                             return formattedDataSluiceTotal.map((_, index) =>
                                 parseFloat(document.getElementById(`sluiceTotalInput-${index}`).value) +
                                 parseFloat(document.getElementById(`gateTotalInput-${index}`).value)
                             );
                         }
-                    
+
                         function getAllOutflowAverageValues() {
                             return formattedDataOutflowAverage.map((_, index) =>
                                 parseFloat(document.getElementById(`gateOutflowAverageInput`).value)
@@ -2509,6 +2608,25 @@ document.addEventListener('DOMContentLoaded', async function () {
                             if (!payload) throw new Error("You must specify a payload!");
                             const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?store-rule=REPLACE%20ALL", {
                                 method: "POST",
+                                headers: { "Content-Type": "application/json;version=2" },
+                                body: JSON.stringify(payload)
+                            });
+
+                            if (!response.ok) {
+                                const errorText = await response.text();
+                                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                            }
+                        }
+
+                        async function deleteTS(payload) {
+                            const begin = payload.values[0][0];
+                            const end = new Date(begin);
+                            end.setHours(end.getHours() + 23);
+                            const tsid = payload.name;
+
+                            if (!payload) throw new Error("You must specify a payload!");
+                            const response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries/${tsid}?office=${office}&begin=${begin}&end=${end.toISOString()}&start-time-inclusive=true&end-time-inclusive=true&override-protection=true`, {
+                                method: "DELETE",
                                 headers: { "Content-Type": "application/json;version=2" },
                                 body: JSON.stringify(payload)
                             });
@@ -2699,7 +2817,371 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 }
 
                                 // ******************************************************************************************************************************************* Save payloads for existing entry
-                                if (todayDataExists === false) {
+                                if (todayDataExists === true) {
+                                    console.log("Payloads: ", payloads);
+                                    console.log("hasValidNewEntryHour:", hasValidNewEntryHour);
+
+                                    payloads = filterPayloads(payloads); // Remove dataset from payload that have a time of "23:59", this associated to "NONE"
+                                    console.log("Payloads after filterPayloads: ", payloads);
+
+                                    let isTomorrowGateExist = null;
+                                    let isThereGateChangeToday = null;
+                                    isThereGateChangeToday = formattedDataGateTotal.length > 1 || hasValidNewEntryHour === true;
+
+                                    if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk" || lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                                        isTomorrowGateExist = payloads.gateTotal.values.some(
+                                            value => value[0] === isoDateDay1
+                                        ) || false; // Set to false if tomorrow value null or undefined
+                                    };
+
+                                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                        isTomorrowGateExist = payloads.outflowTotal?.values?.some(
+                                            value => value[0] === isoDateDay1
+                                        ) || false; // Set to false if tomorrow value null or undefined
+                                    }
+
+                                    console.log("isTomorrowGateExist:", isTomorrowGateExist);
+                                    console.log("isThereGateChangeToday:", isThereGateChangeToday);
+
+                                    // Prepare payloadAverageOutflow
+                                    if (!payloads || !payloads.gateTotal || !Array.isArray(payloads.gateTotal.values)) {
+                                        console.log("No payloads or payloads.outflowTotal.values is null or invalid. This mean were adding new entries.");
+                                        payloadAverageOutflow = {
+                                            "name": tsidOutflowAverage,
+                                            "office-id": office,
+                                            "units": "cfs",
+                                            "values": [[isoDateToday, null, 0]]
+                                        };
+                                        console.log("payloadAverageOutflow: ", payloadAverageOutflow);
+                                    } else {
+                                        let payloadOutflowAverage = null;
+
+                                        // Look for outflowTotal because of sluice and gate
+                                        if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                            payloadOutflowAverage = payloads.outflowTotal.values;
+                                            console.log("payloadOutflowAverage: ", payloadOutflowAverage);
+                                        }
+
+                                        // Look for gateTotal because of no sluice
+                                        if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                                            payloadOutflowAverage = payloads.gateTotal.values;
+                                            console.log("payloadOutflowAverage: ", payloadOutflowAverage);
+                                        }
+
+                                        let totalHours = 24;
+                                        let weightedSum = 0;
+                                        let totalDuration = 0;
+                                        let averageOutflowPayload = null;
+
+                                        // Calculate today average outflow where tommorow gate value does exist and there is no gate change today.
+                                        if (isTomorrowGateExist === true && isThereGateChangeToday === false) {
+                                            console.log("Calculating weighted average outflow payload option 1...");
+                                            averageOutflowPayload = (payloadOutflowAverage[0][1] + payloadOutflowAverage[1][1]) / 2;
+                                            averageOutflowPayload = Math.round(averageOutflowPayload / 10) * 10;
+                                            console.log("averageOutflowPayload: ", averageOutflowPayload);
+                                        }
+
+                                        // Calculate today average outflow where tommorow gate value is exist and there is gate change today.
+                                        if (isTomorrowGateExist === true && isThereGateChangeToday === true) {
+                                            console.log("Calculating weighted average outflow payload option 2...");
+                                            if (payloadOutflowAverage.length === 0) {
+                                                console.error("Error: payloadOutflowAverage is empty.");
+                                            } else {
+                                                let lastTime = new Date(payloadOutflowAverage[0][0]);
+
+                                                // Process all but the final segment
+                                                for (let i = 1; i < payloadOutflowAverage.length - 1; i++) {
+                                                    const currentTime = new Date(payloadOutflowAverage[i][0]);
+                                                    const prevValue = payloadOutflowAverage[i - 1][1] ?? 0;
+
+                                                    let duration = (currentTime - lastTime) / (1000 * 60 * 60); // milliseconds to hours
+
+                                                    // Adjust for cross midnight scenario
+                                                    if (duration <= 0) {
+                                                        duration += 24; // cross midnight case
+                                                    }
+
+                                                    // Calculate the weighted sum for this segment
+                                                    weightedSum += prevValue * duration;
+                                                    totalDuration += duration;
+
+                                                    // Log intermediate values for debugging
+                                                    console.log(`Prev Time: ${lastTime}, Current Time: ${currentTime}`);
+                                                    console.log(`Prev Value: ${prevValue}, Duration: ${duration}`);
+                                                    console.log(`Current Weighted Sum: ${weightedSum}, Total Duration: ${totalDuration}`);
+
+                                                    lastTime = currentTime;
+                                                }
+
+                                                // Handle the final segment (between the last two time points)
+                                                const secondLastValue = payloadOutflowAverage[payloadOutflowAverage.length - 2][1] ?? 0;
+                                                const lastValue = payloadOutflowAverage[payloadOutflowAverage.length - 1][1] ?? 0;
+
+                                                const secondLastTimePoint = new Date(payloadOutflowAverage[payloadOutflowAverage.length - 2][0]);
+                                                const lastTimePoint = new Date(payloadOutflowAverage[payloadOutflowAverage.length - 1][0]);
+
+                                                // Calculate the duration between the last two entries (final segment)
+                                                let finalDuration = (lastTimePoint - secondLastTimePoint) / (1000 * 60 * 60); // in hours
+
+                                                if (finalDuration <= 0) {
+                                                    finalDuration += 24; // cross midnight case
+                                                }
+
+                                                // Log final segment values
+                                                console.log(`Second Last Value: ${secondLastValue}, Last Value: ${lastValue}`);
+                                                console.log(`Averaged Last Value: ${(secondLastValue + lastValue) / 2}, Final Duration: ${finalDuration}`);
+
+                                                // Calculate the weighted sum for the final segment (averaged value)
+                                                const averagedLastValue = (secondLastValue + lastValue) / 2;
+                                                weightedSum += averagedLastValue * finalDuration;
+
+                                                // Ensure totalDuration is exactly 24 hours
+                                                totalDuration = totalHours;
+
+                                                // Log final weighted sum and duration
+                                                console.log(`Final Weighted Sum: ${weightedSum}, Total Duration: ${totalDuration}`);
+
+                                                // Calculate the final average outflow payload
+                                                averageOutflowPayload = weightedSum / totalHours;
+                                                averageOutflowPayload = Math.round(averageOutflowPayload / 10) * 10; // Round to nearest 10
+
+                                                // Final output for debugging
+                                                console.log("Final averageOutflowPayload:", averageOutflowPayload);
+                                            }
+                                        }
+
+                                        // Calculate today average outflow where tommorow gate value is not exist.
+                                        if (isTomorrowGateExist === false && (isThereGateChangeToday === true || isThereGateChangeToday === false)) {
+                                            console.log("Calculating weighted average outflow payload option 3...");
+                                            if (payloadOutflowAverage.length === 0) {
+                                                console.error("Error: payloadOutflowAverage is empty.");
+                                            } else {
+                                                let lastHour = new Date(payloadOutflowAverage[0][0]).getHours() || 0;
+
+                                                if (payloadOutflowAverage.length === 1) {
+                                                    const value = payloadOutflowAverage[0][1] ?? 0;
+                                                    const duration = totalHours - lastHour;
+                                                    weightedSum = value * duration;
+                                                    console.log("weightedSum:", weightedSum);
+                                                    totalDuration = duration;
+                                                } else {
+                                                    for (let i = 1; i < payloadOutflowAverage.length; i++) {
+                                                        const currentHour = new Date(payloadOutflowAverage[i][0]).getHours() || 0;
+                                                        const prevValue = payloadOutflowAverage[i - 1][1] ?? 0;
+                                                        const duration = Math.max(currentHour - lastHour, 1); // Avoid zero duration
+
+                                                        weightedSum += prevValue * duration;
+                                                        console.log("weightedSum:", weightedSum);
+                                                        totalDuration += duration;
+
+                                                        lastHour = currentHour;
+                                                    }
+
+                                                    // Add the final chunk from lastHour to 24
+                                                    const lastValue = payloadOutflowAverage[payloadOutflowAverage.length - 1][1] ?? 0;
+                                                    const lastDuration = totalHours - lastHour;
+
+                                                    weightedSum += lastValue * lastDuration;
+                                                    console.log("weightedSum:", weightedSum);
+                                                    totalDuration += lastDuration;
+                                                }
+
+                                                averageOutflowPayload = weightedSum / totalHours;
+                                                averageOutflowPayload = Math.round(averageOutflowPayload / 10) * 10;
+
+                                                console.log("weightedSum:", weightedSum);
+                                                console.log("totalDuration (should be 24):", totalDuration);
+                                                console.log("averageOutflowPayload:", averageOutflowPayload);
+                                            }
+                                        }
+
+                                        payloadAverageOutflow = {
+                                            "name": tsidOutflowAverage,
+                                            "office-id": office,
+                                            "units": "cfs",
+                                            "values": [
+                                                [
+                                                    isoDateToday,
+                                                    averageOutflowPayload,
+                                                    0
+                                                ]
+                                            ].filter(item => item[0] !== null), // Filters out entries where time1 is null
+                                        };
+                                        console.log("payloadAverageOutflow: ", payloadAverageOutflow);
+                                    }
+
+                                    // Function to send the payload to createTS
+                                    function sendPayloadToCreateTS(payload) {
+                                        // Check if payload is an object
+                                        if (typeof payload === 'object' && payload !== null) {
+                                            // Create a function to send each individual data object with a delay
+                                            async function sendWithDelay() {
+                                                for (const [key, value] of Object.entries(payload)) {
+                                                    console.log("Sending value for key: ", key, value);
+
+                                                    // Add timeout with delay
+                                                    await new Promise(resolve => {
+                                                        setTimeout(() => {
+                                                            createTS(value);  // Send each individual data object (like "sluice1", "sluice2", etc.)
+
+                                                            // Update the status text after sending
+                                                            cdaStatusBtn.innerText = `Write payload${key.charAt(0).toUpperCase() + key.slice(1)} successful!`;
+
+                                                            resolve();  // Resolve after the timeout to proceed to the next item
+                                                        }, 250); // 1000ms delay (1 second)
+                                                    });
+                                                }
+                                            }
+
+                                            sendWithDelay();  // Call the function to start the process
+                                        } else {
+                                            console.error("Invalid payload format!");
+                                        }
+                                    }
+
+                                    // Function to send the payload to deleteTS
+                                    function sendPayloadToDeleteTS(payload) {
+                                        // Check if payload is an object
+                                        if (typeof payload === 'object' && payload !== null) {
+                                            // Create a function to send each individual data object with a delay
+                                            async function sendWithDelay() {
+                                                for (const [key, value] of Object.entries(payload)) {
+                                                    console.log("Sending value for key: ", key, value);
+
+                                                    // Add timeout with delay
+                                                    await new Promise(resolve => {
+                                                        setTimeout(() => {
+                                                            deleteTS(value);  // Send each individual data object (like "sluice1", "sluice2", etc.)
+
+                                                            // Update the status text after sending
+                                                            cdaStatusBtn.innerText = `Delete payload${key.charAt(0).toUpperCase() + key.slice(1)} successful!`;
+
+                                                            resolve();  // Resolve after the timeout to proceed to the next item
+                                                        }, 250); // 1000ms delay (1 second)
+                                                    });
+                                                }
+                                            }
+
+                                            sendWithDelay();  // Call the function to start the process
+                                        } else {
+                                            console.error("Invalid payload format!");
+                                        }
+                                    }
+
+                                    // Saving existing entry data
+                                    if (payloads && Object.keys(payloads).length > 0 && payloadAverageOutflow) {
+                                        console.log("Editing existing entries...");
+
+                                        console.log("Deleting today's entries...");
+                                        sendPayloadToDeleteTS(payloads);
+                                        cdaStatusBtn.innerText = "Delete payloads successful!";
+
+                                        await new Promise(resolve => setTimeout(resolve, 4000)); // Small delay for safety
+
+                                        console.log("Creating today's entries...");
+                                        await createTS(payloadAverageOutflow);
+                                        cdaStatusBtn.innerText = "Write payloadAverageOutflow successful!";
+
+                                        sendPayloadToCreateTS(payloads);
+                                        cdaStatusBtn.innerText = "Write payloads successful!";
+                                    }
+
+                                    // Ensure data is saved before creating the table
+                                    await new Promise(resolve => setTimeout(resolve, 4000)); // Small delay for safety
+
+                                    // Initialize variables to prevent reference errors
+                                    let updatedDataSluice1 = null;
+                                    let updatedDataSluice2 = null;
+                                    let updatedDataSluiceTotal = null;
+                                    let updatedDataGate1 = null;
+                                    let updatedDataGate2 = null;
+                                    let updatedDataGate3 = null;
+                                    let updatedDataGate4 = null;
+                                    let updatedDataGateTotal = null;
+                                    let updatedDataOutflowTotal = null;
+                                    let updatedDataOutflowAverage = null;
+
+                                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                        [
+                                            updatedDataSluice1,
+                                            updatedDataSluice2,
+                                            updatedDataSluiceTotal,
+                                            updatedDataGate1,
+                                            updatedDataGate2,
+                                            updatedDataGate3,
+                                            updatedDataGateTotal,
+                                            updatedDataOutflowTotal,
+                                            updatedDataOutflowAverage
+                                        ] = await Promise.all([
+                                            fetchUpdatedData(tsidSluice1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidSluice2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidSluiceTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidOutflowTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
+                                        ]);
+                                    } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+                                        [
+                                            updatedDataGate1,
+                                            updatedDataGate2,
+                                            updatedDataGate3,
+                                            updatedDataGate4,
+                                            updatedDataGateTotal,
+                                            updatedDataOutflowAverage
+                                        ] = await Promise.all([
+                                            fetchUpdatedData(tsidGate1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate4, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
+                                        ]);
+                                    } else if (lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+                                        [
+                                            updatedDataSluiceTotal,
+                                            updatedDataGate1,
+                                            updatedDataGate2,
+                                            updatedDataGate3,
+                                            updatedDataGate4,
+                                            updatedDataGateTotal,
+                                            updatedDataOutflowTotal,
+                                            updatedDataOutflowAverage
+                                        ] = await Promise.all([
+                                            fetchUpdatedData(tsidSluiceTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate4, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidOutflowTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
+                                        ]);
+                                    } else if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+                                        [
+                                            updatedDataGate1,
+                                            updatedDataGate2,
+                                            updatedDataGate3,
+                                            updatedDataGateTotal,
+                                            updatedDataOutflowAverage
+                                        ] = await Promise.all([
+                                            fetchUpdatedData(tsidGate1, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate2, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGate3, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidGateTotal, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1),
+                                            fetchUpdatedData(tsidOutflowAverage, isoDateDay5, isoDateToday, isoDateMinus1Day, isoDateDay1)
+                                        ]);
+                                    }
+
+                                    createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                                        tsidSluice1, updatedDataSluice1, tsidSluice2, updatedDataSluice2, tsidSluiceTotal, updatedDataSluiceTotal,
+                                        tsidGate1, updatedDataGate1, tsidGate2, updatedDataGate2, tsidGate3, updatedDataGate3, tsidGateTotal, updatedDataGateTotal,
+                                        tsidOutflowTotal, updatedDataOutflowTotal, tsidOutflowAverage, updatedDataOutflowAverage,
+                                        timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal,
+                                        timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2, timeSeriesYesterdayDataGate3,
+                                        timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, updatedDataGate4, null, timeSeriesTomorrowDataOutflow); // null is for yesterday data
                                 }
                             } catch (error) {
                                 hideSpinner(); // Hide the spinner if an error occurs
