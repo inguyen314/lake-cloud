@@ -248,6 +248,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         inflowInput.value = formattedDataInflow[index][1].toFixed(0); // Use inflow data if available
                         inflowInput.className = "inflow-input";
                         inflowInput.id = `inflowInput-${entry[0]}`;
+                        inflowInput.style.textAlign = "center";
+                        inflowInput.style.verticalAlign = "middle";
                         inflowCell.appendChild(inflowInput);
                         row.appendChild(inflowCell);
                     }
@@ -260,6 +262,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     outflowInput.value = entry[1].toFixed(0); // Outflow uses formattedData
                     outflowInput.className = "outflow-input";
                     outflowInput.id = `outflowInput-${entry[0]}`;
+                    outflowInput.style.textAlign = "center";
+                    outflowInput.style.verticalAlign = "middle";
                     outflowCell.appendChild(outflowInput);
                     row.appendChild(outflowCell);
 

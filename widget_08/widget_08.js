@@ -171,11 +171,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Dont have existing data, so create a new row with today's date and default value
                 if (formattedData.length === 0) {
                     const row = document.createElement("tr");
-
                     const dateCell = document.createElement("td");
                     dateCell.textContent = convertTo6AMCST(isoDateToday);
                     row.appendChild(dateCell);
-
                     const precipCell = document.createElement("td");
                     const precipInput = document.createElement("input");
                     precipInput.type = "number";
@@ -184,6 +182,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     precipInput.className = "outflow-input";
                     precipInput.id = `precipInput-${isoDateToday}`;
                     precipInput.style.backgroundColor = "pink";
+                    precipInput.style.textAlign = "center";
+                    precipInput.style.verticalAlign = "middle";
                     precipCell.appendChild(precipInput);
                     row.appendChild(precipCell);
 
@@ -191,11 +191,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 } else {
                     formattedData.forEach((entry) => {
                         const row = document.createElement("tr");
-
                         const dateCell = document.createElement("td");
                         dateCell.textContent = entry.formattedTimestampCST ? entry.formattedTimestampCST : entry.timestamp;
                         row.appendChild(dateCell);
-
                         const precipCell = document.createElement("td");
                         const precipInput = document.createElement("input");
                         precipInput.type = "number";
@@ -203,9 +201,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                         precipInput.step = "0.01";
                         precipInput.className = "outflow-input";
                         precipInput.id = `precipInput-${isoDateToday}`;
+                        precipInput.style.textAlign = "center";
+                        precipInput.style.verticalAlign = "middle";
                         precipCell.appendChild(precipInput);
                         row.appendChild(precipCell);
-
                         table.appendChild(row);
                     });
                 }

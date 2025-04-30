@@ -271,6 +271,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         textValueScheduleInput.value = entry["text-value"] || "No Text";
                         textValueScheduleInput.className = "text-value-input";
                         textValueScheduleInput.id = `textValueScheduleInput-${entry["date-time-iso"]}`;
+                        textValueScheduleInput.style.textAlign = "center";
+                        textValueScheduleInput.style.verticalAlign = "middle";
                         textValueCell.appendChild(textValueScheduleInput);
                         row.appendChild(textValueCell);
 
@@ -295,6 +297,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     textValueScheduleInput.style.backgroundColor = "pink";
                     textValueScheduleInput.className = "text-value-input";
                     textValueScheduleInput.id = `textValueScheduleInput-${isoDateToday}`;
+                    textValueScheduleInput.style.textAlign = "center";
+                    textValueScheduleInput.style.verticalAlign = "middle";
                     textValueCell.appendChild(textValueScheduleInput);
                     row.appendChild(textValueCell);
 
@@ -315,13 +319,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                         instructionInput.id = "instruction-input";
                         instructionInput.placeholder = "Type your note...";
                         instructionInput.className = "editable-input";
+                        instructionInput.style.textAlign = "center";
+                        instructionInput.style.verticalAlign = "middle";
                         instructionDiv.appendChild(instructionInput);
                         output13Div.appendChild(instructionDiv);
                     });
                 } else {
-                    const fallbackInstructionTextValue =
-                        formattedDataInstructionYesterday?.["regular-text-values"]?.[0]?.["text-value"];
-
+                    const fallbackInstructionTextValue = formattedDataInstructionYesterday?.["regular-text-values"]?.[0]?.["text-value"];
                     const instructionDiv = document.createElement("div");
                     instructionDiv.className = "status";
                     const instructionInput = document.createElement("input");
@@ -330,6 +334,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     instructionInput.id = "instruction-input";
                     instructionInput.placeholder = "Type your note...";
                     instructionInput.className = "editable-input";
+                    instructionInput.style.textAlign = "center";
+                    instructionInput.style.verticalAlign = "middle";
                     instructionDiv.appendChild(instructionInput);
                     output13Div.appendChild(instructionDiv);
                 }

@@ -158,6 +158,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 ruleCurveInput.step = "0.01";  // Ensure the step increment is 0.01
                 ruleCurveInput.className = "outflow-input";
                 ruleCurveInput.id = `ruleCurveInput`;
+                ruleCurveInput.style.textAlign = "center";
+                ruleCurveInput.style.verticalAlign = "middle";
 
                 if (!checkSeasonalValueMatch(data1, data2['constant-value'], offsetMonths, offsetMinutes)) {
                     console.log(checkSeasonalValueMatch(data1, data2['constant-value'], offsetMonths, offsetMinutes));  // true - all match
