@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             async function loginStateController() {
-                cdaSaveBtn = document.getElementById("cda-btn-note"); // Get the button by its ID
+                cdaSaveBtn = document.getElementById("cda-btn-notes"); // Get the button by its ID
 
                 cdaSaveBtn.disabled = true; // Disable button while checking login state
 
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 headerRow.appendChild(dateHeader);
 
                 const textValueHeader = document.createElement("th");
-                textValueHeader.textContent = "Text Value";
+                textValueHeader.textContent = "Note";
                 headerRow.appendChild(textValueHeader);
 
                 table.appendChild(headerRow);
@@ -174,16 +174,18 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // Use "date-time-iso" for the date
                         const dateCell = document.createElement("td");
-                        dateCell.textContent = entry["date-time-iso-cst"] || "No Date"; // Fallback if "date-time-iso" is not available
+                        dateCell.textContent = formatIsoToDate(entry["date-time-iso"]);
                         row.appendChild(dateCell);
 
                         // Make the "text-value" editable
                         const textValueCell = document.createElement("td");
                         const textValueInput = document.createElement("input");
                         textValueInput.type = "text";
-                        textValueInput.value = entry["text-value"] || "No Text"; // Fallback if "text-value" is not available
-                        textValueInput.className = "text-value-input"; // Add a class for styling (optional)
-                        textValueInput.id = `textValueInput-${entry["date-time-iso"]}`; // Add ID for easier access
+                        textValueInput.value = entry["text-value"] || "No Text";
+                        textValueInput.className = "text-value-input";
+                        textValueInput.id = `textValueInput-${entry["date-time-iso"]}`;
+                        textValueInput.style.textAlign = "center";
+                        textValueInput.style.verticalAlign = "middle";
                         textValueCell.appendChild(textValueInput);
                         row.appendChild(textValueCell);
 
@@ -195,17 +197,19 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // Use "isoDateToday" as a fallback for the date
                     const dateCell = document.createElement("td");
-                    dateCell.textContent = new Date(new Date(isoDateToday).getTime() - (6 - dstOffsetHours) * 60 * 60 * 1000).toISOString(); // Convert to CST time
+                    dateCell.textContent = formatIsoToDate(isoDateToday);
                     row.appendChild(dateCell);
 
                     // Make the "text-value" editable
                     const textValueCell = document.createElement("td");
                     const textValueInput = document.createElement("input");
                     textValueInput.type = "text";
-                    textValueInput.value = "--"; // Fallback if "text-value" is not available
-                    textValueInput.style.backgroundColor = "pink";  // Set pink background
-                    textValueInput.className = "text-value-input"; // Add a class for styling (optional)
-                    textValueInput.id = `textValueInput-${isoDateToday}`; // Use today's date as ID
+                    textValueInput.value = "--";
+                    textValueInput.style.backgroundColor = "pink";
+                    textValueInput.className = "text-value-input";
+                    textValueInput.id = `textValueInput-${isoDateToday}`;
+                    textValueInput.style.textAlign = "center";
+                    textValueInput.style.verticalAlign = "middle";
                     textValueCell.appendChild(textValueInput);
                     row.appendChild(textValueCell);
 
@@ -216,22 +220,19 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output11Div.innerHTML = "";
                 output11Div.appendChild(table);
 
+                // Save Button
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
-                cdaSaveBtn.id = "cda-btn-note";
+                cdaSaveBtn.id = "cda-btn-notes";
                 cdaSaveBtn.disabled = false;
                 output11Div.appendChild(cdaSaveBtn);
 
+                // Status Div
                 const statusDiv = document.createElement("div");
-                statusDiv.className = "status";
-                const cdaStatusBtn = document.createElement("button");
-                cdaStatusBtn.textContent = "";
-                cdaStatusBtn.id = "cda-btn-note";
-                cdaStatusBtn.disabled = false;
-                statusDiv.appendChild(cdaStatusBtn);
+                statusDiv.className = "status-notes";
                 output11Div.appendChild(statusDiv);
 
-                // Create the buttonRefresh button
+                // Refresh Button
                 const buttonRefresh = document.createElement('button');
                 buttonRefresh.textContent = 'Refresh';
                 buttonRefresh.id = 'refresh-notes-button';
@@ -246,7 +247,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
 
                     // Remove existing save button
-                    const existingRefresh = document.getElementById('cda-btn-note');
+                    const existingRefresh = document.getElementById('cda-btn-notes');
                     if (existingRefresh) {
                         existingRefresh.remove();
                     }
@@ -280,7 +281,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                             });
                         }
                     }
-
                     console.log("Updated Text Values:", textValues);
                     console.log("Value: ", textValues[0]['text-value']);
 
@@ -304,8 +304,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                             }
                         ]
                     }
-
-                    console.log("Preparing payload...");
                     console.log("payload:", payload);
 
                     async function loginCDA() {
@@ -403,12 +401,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                         hideSpinner(); // Hide the spinner after login is complete
 
                         cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
-                        cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
+                        statusDiv.innerText = loginResult ? "" : "Failed to Login!";
                     } else {
                         try {
                             showSpinner(); // Show the spinner before creating the version
                             await writeTSText(payload);
-                            cdaStatusBtn.innerText = "Write successful!";
+                            statusDiv.innerText = "Write successful!";
 
                             // Optional: small delay to allow backend to process the new data
                             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -418,7 +416,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidNote, updatedData);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
-                            cdaStatusBtn.innerText = "Failed to write data!";
+                            statusDiv.innerText = "Failed to write data!";
                             console.error(error);
                         }
 
@@ -547,6 +545,14 @@ document.addEventListener('DOMContentLoaded', async function () {
         const dstOffsetHours = currentOffset / 60;
 
         return dstOffsetHours; // Returns the offset in hours (e.g., -5 or -6)
+    }
+
+    function formatIsoToDate(isoString) {
+        const date = new Date(isoString);
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        const yyyy = date.getFullYear();
+        return `${mm}-${dd}-${yyyy}`;
     }
 });
 
