@@ -311,12 +311,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     outputDiv.appendChild(cdaSaveBtn);
 
                     const statusDiv = document.createElement("div");
-                    statusDiv.className = "status";
-                    const cdaStatusBtn = document.createElement("button");
-                    cdaStatusBtn.textContent = "";
-                    cdaStatusBtn.id = "cda-btn-gate";
-                    cdaStatusBtn.disabled = false;
-                    statusDiv.appendChild(cdaStatusBtn);
+                    statusDiv.className = "status-gate";
                     outputDiv.appendChild(statusDiv);
 
                     cdaSaveBtn.addEventListener("click", async () => {
@@ -419,12 +414,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                             hideSpinner(); // Hide the spinner after login is complete
 
                             cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
-                            cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
+                            statusDiv.innerText = loginResult ? "" : "Failed to Login!";
                         } else {
                             try {
                                 showSpinner(); // Show the spinner before creating the version
                                 await createTS(payload);
-                                cdaStatusBtn.innerText = "Write successful!";
+                                statusDiv.innerText = "Write successful!";
 
                                 // Fetch updated data and refresh the table
                                 const timeSeriesData1 = await fetchUpdatedData(isoDateMinus8Days, isoDateToday, tsid1);
@@ -434,7 +429,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 createTable(timeSeriesData1, timeSeriesData2, timeSeriesData3);
                             } catch (error) {
                                 hideSpinner(); // Hide the spinner if an error occurs
-                                cdaStatusBtn.innerText = "Failed to write data!";
+                                statusDiv.innerText = "Failed to write data!";
                                 console.error(error);
                             }
 
@@ -1862,11 +1857,13 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // Create the first cell for "Average Outflow (cfs)"
                     const firstCell = document.createElement("td");
+                    firstCell.style.width = "75%";
                     firstCell.textContent = "Average Outflow (cfs)";
                     tableRow.appendChild(firstCell);
 
                     // Create the second cell with "--"
                     const secondCell = document.createElement("td");
+                    secondCell.style.width = "25%";
                     secondCell.id = `gateOutflowAverageInput`;
 
                     // Determine average outflow value
@@ -1905,12 +1902,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     output6Div.appendChild(cdaSaveBtn);
 
                     const statusDiv = document.createElement("div");
-                    statusDiv.className = "status";
-                    const cdaStatusBtn = document.createElement("button");
-                    cdaStatusBtn.textContent = "";
-                    cdaStatusBtn.id = "cda-btn-gate";
-                    cdaStatusBtn.disabled = false;
-                    statusDiv.appendChild(cdaStatusBtn);
+                    statusDiv.className = "status-gate";
                     output6Div.appendChild(statusDiv);
 
                     // Create the buttonRefresh button
@@ -2801,7 +2793,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             hideSpinner();
 
                             cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
-                            cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
+                            statusDiv.innerText = loginResult ? "" : "Failed to Login!";
                         } else {
                             try {
                                 // ******************************************************************************************************************************************* Save payloads for new entry
@@ -2809,40 +2801,40 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     showSpinner();
                                     if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
                                         await createTS(payloadNewEntrySluice1);
-                                        cdaStatusBtn.innerText = "Write payloadNewEntrySluice1 successful!";
+                                        statusDiv.innerText = "Write payloadNewEntrySluice1 successful!";
                                         await createTS(payloadNewEntrySluice2);
-                                        cdaStatusBtn.innerText = "Write payloadNewEntrySluice2 successful!";
+                                        statusDiv.innerText = "Write payloadNewEntrySluice2 successful!";
                                     }
 
                                     if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                                         await createTS(payloadNewEntrySluiceTotal);
-                                        cdaStatusBtn.innerText = "Write payloadNewEntrySluiceTotal successful!";
+                                        statusDiv.innerText = "Write payloadNewEntrySluiceTotal successful!";
                                     }
 
                                     await createTS(payloadNewEntryGate1);
-                                    cdaStatusBtn.innerText = "Write payloadNewEntryGate1 successful!";
+                                    statusDiv.innerText = "Write payloadNewEntryGate1 successful!";
 
                                     await createTS(payloadNewEntryGate2);
-                                    cdaStatusBtn.innerText = "Write payloadNewEntryGate2 successful!";
+                                    statusDiv.innerText = "Write payloadNewEntryGate2 successful!";
 
                                     await createTS(payloadNewEntryGate3);
-                                    cdaStatusBtn.innerText = "Write payloadNewEntryGate3 successful!";
+                                    statusDiv.innerText = "Write payloadNewEntryGate3 successful!";
 
                                     if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                                         await createTS(payloadNewEntryGate4);
-                                        cdaStatusBtn.innerText = "Write payloadNewEntryGate4 successful!";
+                                        statusDiv.innerText = "Write payloadNewEntryGate4 successful!";
                                     }
 
                                     await createTS(payloadNewEntryGateTotal);
-                                    cdaStatusBtn.innerText = "Write payloadNewEntryGateTotal successful!";
+                                    statusDiv.innerText = "Write payloadNewEntryGateTotal successful!";
 
                                     if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                                         await createTS(payloadNewEntryOutflowTotal);
-                                        cdaStatusBtn.innerText = "Write payloadNewEntryOutflowTotal successful!";
+                                        statusDiv.innerText = "Write payloadNewEntryOutflowTotal successful!";
                                     }
 
                                     await createTS(payloadNewEntryOutflowAverage);
-                                    cdaStatusBtn.innerText = "Write payloadNewEntryOutflowAverage successful!";
+                                    statusDiv.innerText = "Write payloadNewEntryOutflowAverage successful!";
 
                                     // Initialize variables to prevent reference errors
                                     let updatedDataSluice1 = null;
@@ -3148,7 +3140,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                                             createTS(value);  // Send each individual data object (like "sluice1", "sluice2", etc.)
 
                                                             // Update the status text after sending
-                                                            cdaStatusBtn.innerText = `Write payload${key.charAt(0).toUpperCase() + key.slice(1)} successful!`;
+                                                            statusDiv.innerText = `Write payload${key.charAt(0).toUpperCase() + key.slice(1)} successful!`;
 
                                                             resolve();  // Resolve after the timeout to proceed to the next item
                                                         }, 250); // 1000ms delay (1 second)
@@ -3177,7 +3169,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                                             deleteTS(value);  // Send each individual data object (like "sluice1", "sluice2", etc.)
 
                                                             // Update the status text after sending
-                                                            cdaStatusBtn.innerText = `Delete payload${key.charAt(0).toUpperCase() + key.slice(1)} successful!`;
+                                                            statusDiv.innerText = `Delete payload${key.charAt(0).toUpperCase() + key.slice(1)} successful!`;
 
                                                             resolve();  // Resolve after the timeout to proceed to the next item
                                                         }, 250); // 1000ms delay (1 second)
@@ -3197,16 +3189,16 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                                         console.log("Deleting today's entries...");
                                         sendPayloadToDeleteTS(payloads);
-                                        cdaStatusBtn.innerText = "Delete payloads successful!";
+                                        statusDiv.innerText = "Delete payloads successful!";
 
                                         await new Promise(resolve => setTimeout(resolve, 4000)); // Small delay for safety
 
                                         console.log("Creating today's entries...");
                                         await createTS(payloadAverageOutflow);
-                                        cdaStatusBtn.innerText = "Write payloadAverageOutflow successful!";
+                                        statusDiv.innerText = "Write payloadAverageOutflow successful!";
 
                                         sendPayloadToCreateTS(payloads);
-                                        cdaStatusBtn.innerText = "Write payloads successful!";
+                                        statusDiv.innerText = "Write payloads successful!";
                                     }
 
                                     // Ensure data is saved before creating the table
@@ -3308,7 +3300,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 }
                             } catch (error) {
                                 hideSpinner(); // Hide the spinner if an error occurs
-                                cdaStatusBtn.innerText = "Failed to write data!";
+                                statusDiv.innerText = "Failed to write data!";
                                 console.error(error);
                             }
 

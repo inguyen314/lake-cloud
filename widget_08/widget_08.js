@@ -110,19 +110,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                 createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, timeSeriesDataPrecip, timeSeriesDataPrecipYesterday);
 
                 loginStateController()
-                // Setup timers
                 setInterval(async () => {
                     loginStateController()
-                }, 10000) // time is in millis
+                }, 10000)
             } else {
                 console.log("Calling createTable ...");
                 createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, timeSeriesDataPrecip, timeSeriesDataPrecipYesterday);
 
                 loginStateController()
-                // Setup timers
                 setInterval(async () => {
                     loginStateController()
-                }, 10000) // time is in millis
+                }, 10000)
             }
 
             function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, timeSeriesDataPrecip, timeSeriesDataPrecipYesterday) {
@@ -159,11 +157,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const headerRow = document.createElement("tr");
                 const dateHeader = document.createElement("th");
-                dateHeader.textContent = "Date";
+                dateHeader.textContent = "Date Time (CST)";
                 headerRow.appendChild(dateHeader);
 
                 const outflowHeader = document.createElement("th");
-                outflowHeader.textContent = "Forecast Outflow (cfs)";
+                outflowHeader.textContent = "Precipitation (in)";
                 headerRow.appendChild(outflowHeader);
 
                 table.appendChild(headerRow);
@@ -220,12 +218,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output8Div.appendChild(cdaSaveBtn);
 
                 const statusDiv = document.createElement("div");
-                statusDiv.className = "status";
-                const cdaStatusBtn = document.createElement("button");
-                cdaStatusBtn.textContent = "";
-                cdaStatusBtn.id = "cda-btn-precip";
-                cdaStatusBtn.disabled = false;
-                statusDiv.appendChild(cdaStatusBtn);
+                statusDiv.className = "status-precip";
                 output8Div.appendChild(statusDiv);
 
                 // Create the buttonRefresh button
@@ -365,12 +358,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                         hideSpinner(); // Hide the spinner after login is complete
 
                         cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
-                        cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
+                        statusDiv.innerText = loginResult ? "" : "Failed to Login!";
                     } else {
                         try {
                             showSpinner(); // Show the spinner before creating the version
                             await createTS(payload);
-                            cdaStatusBtn.innerText = "Write successful!";
+                            statusDiv.innerText = "Write successful!";
 
                             // Optional: small delay to allow backend to process the new data
                             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -380,7 +373,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, updatedData);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
-                            cdaStatusBtn.innerText = "Failed to write data!";
+                            statusDiv.innerText = "Failed to write data!";
                             console.error(error);
                         }
 

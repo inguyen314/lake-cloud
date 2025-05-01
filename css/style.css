@@ -9,12 +9,12 @@
 }
 
 .widget {
-    border: 2px solid darkblue;
+    border: 1px solid darkblue;
     border-radius: 0px;
-    padding: 20px;
+    padding: 10px;
     text-align: center;
     background-color: #f9f9f9;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
 }
 
 .widget.full-width {
@@ -27,8 +27,8 @@
 }
 
 button {
-    margin: 10px 0;
-    padding: 10px 20px;
+    margin: 5px 0;
+    padding: 7px 15px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -58,7 +58,6 @@ button {
 /*** ===================================================================================== ***/
 /*** LAKE SELECTION CONTAINER ***/
 /*** ===================================================================================== ***/
-/* Container styles */
 /* Container styles */
 #container,
 #container_date_selection {
@@ -102,7 +101,7 @@ th {
 td {
     border: 1px solid #e0e0e0;
     /* Light gray border for cells */
-    padding: 12px 12px;
+    padding: 5px 5px;
     font-family: 'Arial', sans-serif;
     color: #333;
     /* Dark text for readability */
@@ -188,6 +187,154 @@ table {
     }
 }
 
+#inflow,
+#balance-window,
+#gate-settings,
+#generation-release,
+#lake-forecast,
+#lake-office-24-hour-precipitation,
+#rule-curve,
+#notes,
+#release-schedule-instruction,
+#crest-forecast {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+#inflow th,
+#balance-window th,
+#gate-settings th,
+#generation-release th,
+#lake-forecast th,
+#lake-office-24-hour-precipitation th,
+#rule-curve th,
+#notes th,
+#release-schedule-instruction th,
+#crest-forecast th,
+#inflow td,
+#balance-window td,
+#gate-settings td,
+#generation-release td,
+#lake-forecast td,
+#lake-office-24-hour-precipitation td,
+#rule-curve td,
+#notes td,
+#release-schedule-instruction td,
+#crest-forecast td {
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+#inflow th,
+#balance-window th,
+#gate-settings th,
+#generation-release th,
+#lake-forecast th,
+#lake-office-24-hour-precipitation th,
+#rule-curve th,
+#notes th,
+#release-schedule-instruction th,
+#crest-forecast th {
+    background-color: darkblue;
+    font-weight: bold;
+}
+
+#inflow input,
+#balance-window input,
+#gate-settings input,
+#generation-release input,
+#lake-forecast input,
+#lake-office-24-hour-precipitation input,
+#rule-curve input,
+#notes input,
+#release-schedule-instruction input,
+#crest-forecast input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#inflow tr:nth-child(even),
+#balance-window tr:nth-child(even),
+#gate-settings tr:nth-child(even),
+#generation-release tr:nth-child(even),
+#lake-forecast tr:nth-child(even),
+#lake-office-24-hour-precipitation tr:nth-child(even),
+#rule-curve tr:nth-child(even),
+#notes tr:nth-child(even),
+#release-schedule-instruction tr:nth-child(even),
+#crest-forecast tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#inflow tr:hover,
+#balance-window tr:hover,
+#gate-settings tr:hover,
+#generation-release tr:hover,
+#lake-forecast tr:hover,
+#lake-office-24-hour-precipitation tr:hover,
+#rule-curve tr:hover,
+#notes tr:hover,
+#release-schedule-instruction tr:hover,
+#crest-forecast tr:hover {
+    background-color: #f1f1f1;
+}
+
+#inflow td,
+#balance-window td,
+#gate-settings td,
+#generation-release td,
+#lake-forecast td,
+#lake-office-24-hour-precipitation td,
+#rule-curve td,
+#notes td,
+#release-schedule-instruction td,
+#crest-forecast td {
+    font-size: 14px;
+}
+
+#inflow td a,
+#balance-window td a,
+#gate-settings td a,
+#generation-release td a,
+#lake-forecast td a,
+#lake-office-24-hour-precipitation td a,
+#rule-curve td a,
+#notes td a,
+#release-schedule-instruction td a,
+#crest-forecast td a {
+    color: darkblue;
+    text-decoration: none;
+}
+
+#inflow td a:hover,
+#balance-window td a:hover,
+#gate-settings td a:hover,
+#generation-release td a:hover,
+#lake-forecast td a:hover,
+#lake-office-24-hour-precipitation td a:hover,
+#rule-curve td a:hover,
+#notes td a:hover,
+#release-schedule-instruction td a:hover,
+#crest-forecast td a:hover {
+    text-decoration: underline;
+}
+
+#inflow caption,
+#balance-window caption,
+#gate-settings caption,
+#generation-release caption,
+#lake-forecast caption,
+#lake-office-24-hour-precipitation caption,
+#rule-curve caption,
+#notes caption,
+#release-schedule-instruction caption,
+#crest-forecast caption {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
 /*** ===================================================================================== ***/
 /*** BUTTON ***/
 /*** ===================================================================================== ***/
@@ -249,6 +396,61 @@ table {
     height: auto;
 }
 
+#inflow {
+    width: 100%;
+    table-layout: fixed;
+    /* Ensures equal width for each column */
+    border-collapse: collapse;
+    /* Ensures cells are neatly aligned */
+}
+
+#inflow th,
+#inflow td {
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #ddd;
+    /* Light border for better visibility */
+}
+
+#inflow th {
+    background-color: darkblue;
+    /* Light gray for headers */
+    font-weight: bold;
+}
+
+#inflow input {
+    width: 100%;
+    /* Ensures input fields take full width of the cells */
+    box-sizing: border-box;
+    /* Makes sure padding does not affect width */
+}
+
+#inflow tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#inflow tr:hover {
+    background-color: #f1f1f1;
+}
+
+#inflow td {
+    font-size: 14px;
+}
+
+#inflow td a {
+    color: darkblue;
+    text-decoration: none;
+}
+
+#inflow td a:hover {
+    text-decoration: underline;
+}
+
+#inflow caption {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
 /*** ===================================================================================== ***/
 /*** WIDGET 7 ***/
 /*** ===================================================================================== ***/

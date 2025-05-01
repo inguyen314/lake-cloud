@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const turbCell = document.createElement("td");
                     const turbInput = document.createElement("input");
                     turbInput.type = "number";
-                    turbInput.step = "10.0"; 
+                    turbInput.step = "10.0";
                     const value = (formattedDataTurb[index] && formattedDataTurb[index][1] !== undefined)
                         ? formattedDataTurb[index][1].toFixed(0)
                         : 909;
@@ -301,12 +301,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output6Div.appendChild(cdaSaveBtn);
 
                 const statusDiv = document.createElement("div");
-                statusDiv.className = "status";
-                const cdaStatusBtn = document.createElement("button");
-                cdaStatusBtn.textContent = "";
-                cdaStatusBtn.id = "cda-btn-generation";
-                cdaStatusBtn.disabled = false;
-                statusDiv.appendChild(cdaStatusBtn);
+                statusDiv.className = "status-generation";
                 output6Div.appendChild(statusDiv);
 
                 // Create the refresh button
@@ -512,18 +507,21 @@ document.addEventListener('DOMContentLoaded', async function () {
                         hideSpinner(); // Hide the spinner after login is complete
 
                         cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
-                        cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
+                        statusDiv.innerText = loginResult ? "" : "Failed to Login!";
                     } else {
                         try {
                             showSpinner(); // Show the spinner before creating the version
                             await createTS(payloadTurb);
-                            cdaStatusBtn.innerText = "Write payloadTurb successful!";
+                            statusDiv.innerText = "Write payloadTurb successful!";
 
                             await createTS(payloadSpillway);
-                            cdaStatusBtn.innerText = "Write payloadSpillway successful!";
+                            statusDiv.innerText = "Write payloadSpillway successful!";
 
                             await createTS(payloadTotal);
-                            cdaStatusBtn.innerText = "Write payloadTotal successful!";
+                            statusDiv.innerText = "Write payloadTotal successful!";
+
+                            // Optional: small delay to allow backend to process the new data
+                            await new Promise(resolve => setTimeout(resolve, 1000));
 
                             // Fetch updated data and refresh the table
                             const updatedTurbData = await fetchUpdatedData(tsidTurb, isoDateMinus2Days, isoDateMinus1Day, isoDateToday);
@@ -535,7 +533,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             createTable(isoDateMinus3Days, isoDateMinus2Days, isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidTurb, updatedTurbData, tsidSpillway, updatedSpillwayData, tsidTotal, updatedTotalData);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
-                            cdaStatusBtn.innerText = "Failed to write data!";
+                            statusDiv.innerText = "Failed to write data!";
                             console.error(error);
                         }
 

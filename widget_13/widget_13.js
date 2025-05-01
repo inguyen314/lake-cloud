@@ -347,12 +347,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output13Div.appendChild(cdaSaveBtn);
 
                 const statusDiv = document.createElement("div");
-                statusDiv.className = "status";
-                const cdaStatusBtn = document.createElement("button");
-                cdaStatusBtn.textContent = "";
-                cdaStatusBtn.id = "cda-btn-schedule-instruction ";
-                cdaStatusBtn.disabled = false;
-                statusDiv.appendChild(cdaStatusBtn);
+                statusDiv.className = "status-schedule-instruction";
                 output13Div.appendChild(statusDiv);
 
                 const sendMvkBtn = document.createElement("button");
@@ -864,14 +859,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                         hideSpinner(); // Hide the spinner after login is complete
 
                         cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
-                        cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
+                        statusDiv.innerText = loginResult ? "" : "Failed to Login!";
                     } else {
                         try {
                             showSpinner(); // Show the spinner before creating the version
                             await writeTSText(payloadSchedule);
-                            cdaStatusBtn.innerText = "Write payloadSchedule successful!";
+                            statusDiv.innerText = "Write payloadSchedule successful!";
                             await writeTSText(payloadInstruction);
-                            cdaStatusBtn.innerText = "Write payloadInstruction successful!";
+                            statusDiv.innerText = "Write payloadInstruction successful!";
 
                             // Optional: small delay to allow backend to process the new data
                             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -884,7 +879,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidSchedule, updatedData, updatedDataYesterday, tsidInstruction, updatedDataInstruction, updatedDataYesterdayInstruction);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
-                            cdaStatusBtn.innerText = "Failed to write data!";
+                            statusDiv.innerText = "Failed to write data!";
                             console.error(error);
                         }
 
@@ -1031,51 +1026,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     };
 
     fetchTsidData();
-
-    function getIsoDateWithOffset(year, month, day, offset) {
-        // Create a date object in UTC (midnight UTC)
-        const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0)); // Set the initial time at 6 AM UTC
-
-        // Convert the date to CST (UTC -6)
-        const cstOffset = 0 * 60; // CST is UTC -6 hours, in minutes
-        date.setMinutes(date.getMinutes() + cstOffset); // Adjust to CST
-
-        // Add the offset in days (if positive, it moves forward, if negative, backward)
-        date.setUTCDate(date.getUTCDate() + offset);
-
-        // Return the ISO string
-        return date.toISOString();
-    }
-
-    function formatISODateToCSTString(timestamp) {
-        if (typeof timestamp !== "number") {
-            console.error("Invalid timestamp:", timestamp);
-            return "Invalid Date";
-        }
-
-        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
-        if (isNaN(date.getTime())) {
-            console.error("Invalid date conversion:", timestamp);
-            return "Invalid Date";
-        }
-
-        // Convert to CST (Central Standard Time)
-        const options = {
-            timeZone: 'America/Chicago',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-
-        const formatter = new Intl.DateTimeFormat('en-US', options);
-        const formattedDate = formatter.format(date);
-
-        return formattedDate.replace(',', ''); // Removes the comma between date and time
-    }
 
     function convertUnixTimestampToISO(timestamp) {
         if (typeof timestamp !== "number") {
