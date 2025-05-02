@@ -98,6 +98,14 @@ button {
 .test-btn {
     background-color: darkorange;
     color: white;
+    text-align: center;
+}
+
+.prev-btn,
+.next-btn {
+    /* background-color: darkorange; */
+    /* color: white; */
+    text-align: center;
 }
 
 #refresh-gate-settings-button,
