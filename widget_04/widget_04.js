@@ -271,30 +271,24 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // Create the table structure
                     const tableOutflow = document.createElement("table");
-
-                    // Apply the ID "gate-settings" to the table
-                    tableOutflow.id = "gate-settings";
-                    tableOutflow.style.width = "50%";
-                    tableOutflow.style.marginTop = "10px";
-                    tableOutflow.style.marginBottom = "10px";
+                    tableOutflow.id = "gate-outflow-average-table";
 
                     // Create the header row
                     const headerOutflowRow = tableOutflow.insertRow();
                     const col1 = headerOutflowRow.insertCell();
                     const col2 = headerOutflowRow.insertCell();
 
-                    col1.textContent = "Average Outflow for Yesterday:";
+                    col1.textContent = "Yesterday Average Outflow:";
                     col2.textContent = (Math.round(averageOutflowYesterdayValue / 10) * 10).toFixed(0);
                     col2.value = averageOutflowYesterdayValue;
-                    col2.style.fontWeight = "bold";
                     if (isSaved === false) {
                         col2.style.backgroundColor = "pink";
                     }
                     col2.id = 'averageOutflowYesterdayValue';
 
                     // Set column widths: 2/3 for col1 and 1/3 for col2
-                    col1.style.width = "66%";  // 2/3 width
-                    col2.style.width = "33%";  // 1/3 width
+                    col1.style.width = "66%";
+                    col2.style.width = "33%";
 
                     // Add a title for the tooltip when hovering over col2
                     col2.title = `The average outflow value for yesterday is: ${averageOutflowYesterdayValue.toFixed(0)}`;
@@ -1845,14 +1839,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                     output6Div.innerHTML = ""; // Clear any existing content
                     output6Div.appendChild(table);
 
-                    const gateAverageDiv = document.createElement("div");
-                    gateAverageDiv.className = "status";
-
                     // Create a tableOutflowAvg
                     const tableOutflowAvg = document.createElement("table");
                     const tableRow = document.createElement("tr");
                     tableOutflowAvg.style.width = "50%";
-                    tableOutflowAvg.style.marginTop = "10px";
                     tableOutflowAvg.id = "gate-outflow-average-table";
 
                     // Create the first cell for "Average Outflow (cfs)"
@@ -1889,11 +1879,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Append the row to the tableOutflowAvg
                     tableOutflowAvg.appendChild(tableRow);
 
-                    // Append the tableOutflowAvg to the div
-                    gateAverageDiv.appendChild(tableOutflowAvg);
-
-                    // Append the div to output6Div
-                    output6Div.appendChild(gateAverageDiv);
+                    // Directly append the tableOutflowAvg to output6Div
+                    output6Div.appendChild(tableOutflowAvg);
 
                     const cdaSaveBtn = document.createElement("button");
                     cdaSaveBtn.textContent = "Submit";
@@ -2949,7 +2936,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                         ) || false; // Set to false if tomorrow value null or undefined
                                     };
 
-                                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+                                    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                                         isTomorrowGateExist = payloads.outflowTotal?.values?.some(
                                             value => value[0] === isoDateDay1
                                         ) || false; // Set to false if tomorrow value null or undefined
@@ -3310,19 +3297,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 }
             } catch (error) {
-                console.error("Error fetching tsidOutflow data:", error);
-
-                // Show the "Report Issue" button
-                document.getElementById('reportIssueBtn').style.display = "block";
-
-                // Ensure sendEmail is globally accessible
-                window.sendEmail = function () {
-                    const subject = encodeURIComponent("Cloud Database Down");
-                    const body = encodeURIComponent("Hello,\n\nIt appears that the cloud database is down. Please investigate the issue." + setBaseUrl);
-                    const email = "DLL-CEMVS-WM-SysAdmins@usace.army.mil"; // Replace with actual support email
-
-                    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-                };
+                console.error("Error fetching data:", error);
             }
         };
 

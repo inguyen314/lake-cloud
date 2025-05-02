@@ -1,0 +1,74 @@
+#inflow {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+#inflow th,
+#inflow td {
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+#inflow th {
+    background-color: darkblue;
+    font-weight: bold;
+}
+
+#inflow input {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+#inflow tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#inflow tr:hover {
+    background-color: #f1f1f1;
+}
+
+#inflow td {
+    text-align: center;
+}
+
+#inflow td a {
+    color: darkblue;
+    text-decoration: none;
+}
+
+#inflow td a:hover {
+    text-decoration: underline;
+}
+
+#inflow caption {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#estimated-value {
+    padding: 6px 10px;
+    margin: 10px auto;
+    max-width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#estimated-value:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+#estimated-value:active {
+    background-color: #e6e6e6;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    transform: scale(0.98);
+}

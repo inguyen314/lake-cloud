@@ -1,0 +1,51 @@
+#lake-office-precipitation {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+#lake-office-precipitation th,
+#lake-office-precipitation td {
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+#lake-office-precipitation th {
+    background-color: darkblue;
+    font-weight: bold;
+}
+
+#lake-office-precipitation input {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+#lake-office-precipitation tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#lake-office-precipitation tr:hover {
+    background-color: #f1f1f1;
+}
+
+#lake-office-precipitation td {
+    text-align: center;
+}
+
+#lake-office-precipitation td a {
+    color: darkblue;
+    text-decoration: none;
+}
+
+#lake-office-precipitation td a:hover {
+    text-decoration: underline;
+}
+
+#lake-office-precipitation caption {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+

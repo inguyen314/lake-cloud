@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 headerRow.appendChild(chgStorageHeader);
 
                 const stageHeader = document.createElement("th");
-                stageHeader.textContent = "Chg Storage (dsf)";
+                stageHeader.textContent = "Change Storage (dsf)";
                 headerRow.appendChild(stageHeader);
 
                 const averageOutflowHeader = document.createElement("th");
@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // Set background color to pink if original value was null/undefined
                         if (isMissingValue) {
-                            input.style.backgroundColor = "pink";
+                            input.style.backgroundColor = '#e6ccff';
                         }
 
 
@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const buttonEstimatedValue = document.createElement('div');
                 buttonEstimatedValue.textContent = 'Signifies estimated value';
                 buttonEstimatedValue.id = 'estimated-value';
-                buttonEstimatedValue.style.backgroundColor = 'pink';
+                buttonEstimatedValue.style.backgroundColor = '#e6ccff';
                 output5Div.appendChild(buttonEstimatedValue);
 
                 // Refresh Button

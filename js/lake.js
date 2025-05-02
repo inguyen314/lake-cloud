@@ -37,7 +37,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let setLocationCategory = "Lakes";
 
-    // const basinCategoryApiUrl = `${setBaseUrl}location/group?office=${office}&include-assigned=false&location-category-like=${setLocationCategory}`;
     const basinCategoryApiUrl = setBaseUrl + `location/group?office=${office}&group-office-id=${office}&category-office-id=${office}&category-id=${setLocationCategory}`;
     console.log("basinCategoryApiUrl: ", basinCategoryApiUrl);
 
@@ -126,7 +125,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!container) return;
 
         const table = document.createElement("table");
-        table.border = "1";
 
         const row = document.createElement("tr");
 
@@ -141,6 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Loop through each location in locationOrder and add it as a column in the single row
         locationOrder.forEach(locationId => {
             const cell = document.createElement("td");
+            cell.style.width = "20%";
 
             // Find the location in the data
             let locationFound = false;
@@ -237,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Create and append the submit link cell (instead of button)
         const submitCell = document.createElement('td');
-        submitCell.setAttribute('width', '9%');
+        submitCell.setAttribute('width', '20%');
         submitCell.setAttribute('align', 'center');
 
         const submitLink = document.createElement('a');
@@ -264,7 +263,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Create and append the "previous day" button cell
         const previousDayCell = document.createElement('td');
-        previousDayCell.setAttribute('width', '16%');
+        previousDayCell.setAttribute('width', '20%');
         previousDayCell.setAttribute('align', 'center');
         const previousDayButton = document.createElement('input');
         previousDayButton.setAttribute('name', 'op');
@@ -281,7 +280,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Create and append the "next day" button cell
         const nextDayCell = document.createElement('td');
-        nextDayCell.setAttribute('width', '12%');
+        nextDayCell.setAttribute('width', '20%');
         nextDayCell.setAttribute('align', 'center');
         const nextDayButton = document.createElement('input');
         nextDayButton.setAttribute('name', 'op');
@@ -298,7 +297,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Create and append the "print page large" button cell
         const printCell = document.createElement('td');
-        printCell.setAttribute('width', '17%');
+        printCell.setAttribute('width', '20%');
         printCell.setAttribute('align', 'center');
         const printButton = document.createElement('input');
         printButton.setAttribute('name', 'op');
@@ -341,7 +340,8 @@ function fetchData(widgetId) {
 
 function testData(widgetId, lake, datetime) {
     // Define the URL to open in a new tab
-    const url = `https://wm.mvs.ds.usace.army.mil/mvs/lake/widget_${widgetId}_test.html?office=MVS&lake=${lake}&datetime=${datetime}`;  // Replace with the desired URL
+    const url = `https://wm.mvs.ds.usace.army.mil/mvs/lake/widget_${widgetId}_test.html?office=MVS&lake=${lake}&datetime=${datetime}`;
     // Open the URL in a new tab
     window.open(url, '_blank');
 }
+

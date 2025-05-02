@@ -1,0 +1,51 @@
+#notes {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+#notes th,
+#notes td {
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+#notes th {
+    background-color: darkblue;
+    font-weight: bold;
+}
+
+#notes input {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+#notes tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#notes tr:hover {
+    background-color: #f1f1f1;
+}
+
+#notes td {
+    text-align: center;
+}
+
+#notes td a {
+    color: darkblue;
+    text-decoration: none;
+}
+
+#notes td a:hover {
+    text-decoration: underline;
+}
+
+#notes caption {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+

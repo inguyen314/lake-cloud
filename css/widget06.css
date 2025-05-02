@@ -1,0 +1,51 @@
+#lake-forecast {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+#lake-forecast th,
+#lake-forecast td {
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+#lake-forecast th {
+    background-color: darkblue;
+    font-weight: bold;
+}
+
+#lake-forecast input {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+#lake-forecast tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#lake-forecast tr:hover {
+    background-color: #f1f1f1;
+}
+
+#lake-forecast td {
+    text-align: center;
+}
+
+#lake-forecast td a {
+    color: darkblue;
+    text-decoration: none;
+}
+
+#lake-forecast td a:hover {
+    text-decoration: underline;
+}
+
+#lake-forecast caption {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+

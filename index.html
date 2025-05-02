@@ -26,6 +26,19 @@
     }
     console.log("cda: ", cda);
 
+    function formatDate(date) {
+        let month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure two-digit month
+        let day = String(date.getDate()).padStart(2, '0'); // Ensure two-digit day
+        let year = date.getFullYear();
+        return `${month}-${day}-${year}`;
+    }
+
+    function parseDate(str) {
+        // Assumes format MM-DD-YYYY
+        let [month, day, year] = str.split('-');
+        return new Date(Number(year), Number(month) - 1, Number(day)); // Local time, no ambiguity
+    }
+
     var type = urlParams.get('type') || null;
     console.log('type: ', type);
 
@@ -35,15 +48,16 @@
     var datetime = urlParams.get('datetime') || formatDate(new Date());
     console.log('datetime: ', datetime);
 
+    var baseDate = parseDate(datetime);
+
+    var nextDay = urlParams.get('nextDay') || formatDate(new Date(baseDate.getTime() + 86400000));
+    console.log('nextDay:', nextDay);
+
+    var prevDay = urlParams.get('prevDay') || formatDate(new Date(baseDate.getTime() - 86400000));
+    console.log('prevDay:', prevDay);
+
     var lookback = urlParams.get('lookback');
     console.log('lookback: ', lookback);
-
-    function formatDate(date) {
-        let month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure two-digit month
-        let day = String(date.getDate()).padStart(2, '0'); // Ensure two-digit day
-        let year = date.getFullYear();
-        return `${month}-${day}-${year}`;
-    }
 </script>
 
 <head>
@@ -57,6 +71,19 @@
     <link rel="stylesheet" href="css/jumpMenu.css" />
     <link rel="stylesheet" href="css/sidebar.css" />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/widget01.css" />
+    <link rel="stylesheet" href="css/widget02.css" />
+    <link rel="stylesheet" href="css/widget03.css" />
+    <link rel="stylesheet" href="css/widget04.css" />
+    <link rel="stylesheet" href="css/widget05.css" />
+    <link rel="stylesheet" href="css/widget06.css" />
+    <link rel="stylesheet" href="css/widget07.css" />
+    <link rel="stylesheet" href="css/widget08.css" />
+    <link rel="stylesheet" href="css/widget09.css" />
+    <link rel="stylesheet" href="css/widget10.css" />
+    <link rel="stylesheet" href="css/widget11.css" />
+    <link rel="stylesheet" href="css/widget12.css" />
+    <link rel="stylesheet" href="css/widget13.css" />
     <script src="js/main.js"></script>
     <script src="js/libraries/moment.min.js"></script>
     <script src="js/libraries/moment-timezone-with-data.js"></script>
@@ -93,43 +120,49 @@
                                     <div id="container_date_selection"></div>
                                     <div class="widgets-container">
                                         <div class="widget full-width" id="widget1">
-                                            <h4>Widget 1: Upstream</h4>
-                                            <button class="save-btn" onclick="saveData(1)">Save</button>
-                                            <button class="fetch-btn" onclick="fetchData(1)">Fetch Data</button>
+                                            <h3>Widget 1: Upstream</h3>
+                                            <!-- <button class="save-btn" onclick="saveData(1)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(1)">Fetch Data</button> -->
                                             <button class="test-btn" onclick="testData(1, lake, datetime)">Test</button>
                                             <div class="output" id="output1"></div>
                                         </div>
 
                                         <div class="widget full-width" id="widget2">
-                                            <h4>Widget 2: Pool</h4>
-                                            <button class="save-btn" onclick="saveData(2)">Save</button>
-                                            <button class="fetch-btn" onclick="fetchData(2)">Fetch Data</button>
+                                            <h3>Widget 2: Pool</h3>
+                                            <!-- <button class="save-btn" onclick="saveData(2)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(2)">Fetch Data</button> -->
                                             <button class="test-btn" onclick="testData(2, lake, datetime)">Test</button>
                                             <div class="output" id="output2"></div>
                                         </div>
 
                                         <div class="widget full-width" id="widget3">
-                                            <h4>Widget 3: Regulation Pool (Optional)</h4>
-                                            <button class="save-btn" onclick="saveData(3)">Save</button>
-                                            <button class="fetch-btn" onclick="fetchData(3)">Fetch Data</button>
+                                            <h3>Widget 3: Regulation Pool (Optional)</h3>
+                                            <!-- <button class="save-btn" onclick="saveData(3)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(3)">Fetch Data</button> -->
                                             <button class="test-btn" onclick="testData(3, lake, datetime)">Test</button>
                                             <div class="output" id="output3"></div>
                                         </div>
 
                                         <div class="widget half-width" id="widget4">
-                                            <h4>Widget 4: Gate Settings</h4>
+                                            <h3>Widget 4: Gate Settings</h3>
                                             <!-- <button class="save-btn" onclick="saveData(4)">Save</button>
                                             <button class="fetch-btn" onclick="fetchData(4)">Fetch Data</button> -->
+                                            <button class="test-btn"
+                                                onclick="testData(4, lake, prevDay)">PrevDay</button>
                                             <button class="test-btn" onclick="testData(4, lake, datetime)">Test</button>
-                                            <div id="loading_json" style="display: none; align-items: center; text-align: center;">
-                                                <img src="images/loading4.gif" style='height: 50px; width: 50px;' alt="Loading..." />
-                                            </div>                            
+                                            <button class="test-btn"
+                                                onclick="testData(4, lake, nextDay)">NextDay</button>
+                                            <div id="loading_json"
+                                                style="display: none; align-items: center; text-align: center;">
+                                                <img src="images/loading4.gif" style='height: 50px; width: 50px;'
+                                                    alt="Loading..." />
+                                            </div>
                                             <div class="output" id="output4"></div>
                                             <!-- <button id="reportIssueBtn" style="display: none;" onclick="sendEmail()">Report Issue</button> -->
                                         </div>
 
                                         <div class="widget half-width" id="widget5">
-                                            <h4>Widget 5: Inflow</h4>
+                                            <h3>Widget 5: Inflow</h3>
                                             <!-- <button class="save-btn" onclick="saveData(5)">Save</button>
                                             <button class="fetch-btn" onclick="fetchData(5)">Fetch Data</button> -->
                                             <button class="test-btn" onclick="testData(5, lake, datetime)">Test</button>
@@ -137,7 +170,7 @@
                                         </div>
 
                                         <div class="widget half-width" id="widget6">
-                                            <h4>Widget 6: Lake Forecast</h4>
+                                            <h3>Widget 6: Lake Forecast</h3>
                                             <!-- <button class="save-btn" onclick="saveData(6)">Save</button>
                                             <button class="fetch-btn" onclick="fetchData(6)">Fetch Data</button> -->
                                             <button class="test-btn" onclick="testData(6, lake, datetime)">Test</button>
@@ -145,7 +178,7 @@
                                         </div>
 
                                         <div class="widget half-width" id="widget7">
-                                            <h4>Widget 7: Balance Window</h4>
+                                            <h3>Widget 7: Balance Window</h3>
                                             <!-- <button class="save-btn" onclick="saveData(7)">Save</button>
                                             <button class="fetch-btn" onclick="fetchData(7)">Fetch Data</button> -->
                                             <button class="test-btn" onclick="testData(7, lake, datetime)">Test</button>
@@ -153,7 +186,7 @@
                                         </div>
 
                                         <div class="widget half-width" id="widget8">
-                                            <h4>Widget 8: Lake Office 24-hour Precipitation</h4>
+                                            <h3>Widget 8: Lake Office 24-hour Precipitation</h3>
                                             <!-- <button class="save-btn" onclick="saveData(8)">Save</button>
                                             <button class="fetch-btn" onclick="fetchData(8)">Fetch Data</button> -->
                                             <button class="test-btn" onclick="testData(8, lake, datetime)">Test</button>
@@ -161,7 +194,7 @@
                                         </div>
 
                                         <div class="widget half-width" id="widget9">
-                                            <h4>Widget 9: Rule Curve</h4>
+                                            <h3>Widget 9: Rule Curve</h3>
                                             <!-- <button class="save-btn" onclick="saveData(9)">Save</button>
                                             <button class="fetch-btn" onclick="fetchData(9)">Fetch Data</button> -->
                                             <button class="test-btn" onclick="testData(9, lake, datetime)">Test</button>
@@ -169,50 +202,56 @@
                                         </div>
 
                                         <div class="widget half-width" id="widget10">
-                                            <h4>Widget 10: Crest Forecast</h4>
+                                            <h3>Widget 10: Crest Forecast</h3>
                                             <!-- <button class="save-btn" onclick="saveData(10)">Save</button>
                                             <button class="fetch-btn" onclick="fetchData(10)">Fetch Data</button> -->
-                                            <button class="test-btn" onclick="testData(10, lake, datetime)">Test</button>
+                                            <button class="test-btn"
+                                                onclick="testData(10, lake, datetime)">Test</button>
                                             <div class="output" id="output10"></div>
                                         </div>
 
                                         <div class="widget half-width" id="widget11">
-                                            <h4>Widget 11: Notes</h4>
+                                            <h3>Widget 11: Notes</h3>
                                             <!-- <button class="save-btn" onclick="saveData(11)">Save</button>
                                             <button class="fetch-btn" onclick="fetchData(11)">Fetch Data</button> -->
-                                            <button class="test-btn" onclick="testData(11, lake, datetime)">Test</button>
+                                            <button class="test-btn"
+                                                onclick="testData(11, lake, datetime)">Test</button>
                                             <div class="output" id="output11"></div>
                                         </div>
 
                                         <div class="widget half-width" id="widget12">
-                                            <h4>Widget 12: Generation and Release (Mark Twain Only)</h4>
+                                            <h3>Widget 12: Generation and Release (Mark Twain Only)</h3>
                                             <!-- <button class="save-btn" onclick="saveData(12)">Save</button>
                                             <button class="fetch-btn" onclick="fetchData(12)">Fetch Data</button> -->
-                                            <button class="test-btn" onclick="testData(12, lake, datetime)">Test</button>
+                                            <button class="test-btn"
+                                                onclick="testData(12, lake, datetime)">Test</button>
                                             <div class="output" id="output12"></div>
                                         </div>
 
                                         <div class="widget half-width" id="widget13">
-                                            <h4>Widget 13: Release Schedule and Instruction (Mark Twain Only)</h4>
+                                            <h3>Widget 13: Release Schedule and Instruction (Mark Twain Only)</h3>
                                             <!-- <button class="save-btn" onclick="saveData(13)">Save</button>
                                             <button class="fetch-btn" onclick="fetchData(13)">Fetch Data</button> -->
-                                            <button class="test-btn" onclick="testData(13, lake, datetime)">Test</button>
+                                            <button class="test-btn"
+                                                onclick="testData(13, lake, datetime)">Test</button>
                                             <div class="output" id="output13"></div>
                                         </div>
 
                                         <div class="widget full-width" id="widget14">
-                                            <h4>Widget 14: TW</h4>
-                                            <button class="save-btn" onclick="saveData(14)">Save</button>
-                                            <button class="fetch-btn" onclick="fetchData(14)">Fetch Data</button>
-                                            <button class="test-btn" onclick="testData(14, lake, datetime)">Test</button>
+                                            <h3>Widget 14: TW</h3>
+                                            <!-- <button class="save-btn" onclick="saveData(14)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(14)">Fetch Data</button> -->
+                                            <button class="test-btn"
+                                                onclick="testData(14, lake, datetime)">Test</button>
                                             <div class="output" id="output14"></div>
                                         </div>
 
                                         <div class="widget full-width" id="widget15">
-                                            <h4>Widget 15: Downstream</h4>
-                                            <button class="save-btn" onclick="saveData(15)">Save</button>
-                                            <button class="fetch-btn" onclick="fetchData(15)">Fetch Data</button>
-                                            <button class="test-btn" onclick="testData(15, lake, datetime)">Test</button>
+                                            <h3>Widget 15: Downstream</h3>
+                                            <!-- <button class="save-btn" onclick="saveData(15)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(15)">Fetch Data</button> -->
+                                            <button class="test-btn"
+                                                onclick="testData(15, lake, datetime)">Test</button>
                                             <div class="output" id="output15"></div>
                                         </div>
                                     </div>

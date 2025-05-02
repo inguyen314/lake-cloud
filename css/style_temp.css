@@ -1,0 +1,487 @@
+/*** ===================================================================================== ***/
+/*** YOUR REPORT STYLE GOES HERE ***/
+/*** ===================================================================================== ***/
+.widgets-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+}
+
+.widget {
+    border: 1px solid darkblue;
+    border-radius: 0px;
+    padding: 10px;
+    text-align: center;
+    background-color: #f9f9f9;
+    /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+}
+
+.widget.full-width {
+    width: 100%;
+}
+
+.widget.half-width {
+    width: calc(50% - 10px);
+    /* Adjusted for the gap */
+}
+
+button {
+    margin: 5px 0;
+    padding: 7px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.save-btn {
+    background-color: darkgreen;
+    color: white;
+}
+
+.fetch-btn {
+    background-color: darkblue;
+    color: white;
+}
+
+.test-btn {
+    background-color: darkorange;
+    color: white;
+}
+
+.output {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
+}
+
+/*** ===================================================================================== ***/
+/*** LAKE SELECTION CONTAINER ***/
+/*** ===================================================================================== ***/
+/* Container styles */
+#container,
+#container_date_selection {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    background-color: #ffffff;
+    /* Light blue background */
+    padding: 5px;
+}
+
+/* Table styles */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    /* Full width on smaller screens */
+    background-color: #ffffff;
+    /* White background for the table */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    /* Soft shadow for modern look */
+    border-radius: 8px;
+    /* Rounded corners */
+    overflow: hidden;
+    margin: 0 auto;
+    /* Center the table */
+}
+
+/* Table header styles */
+th {
+    background-color: darkblue;
+    /* Blue color for the header */
+    color: #ffffff;
+    /* White text */
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+    padding: 12px 12px;
+}
+
+/* Table cell styles */
+td {
+    border: 1px solid #e0e0e0;
+    /* Light gray border for cells */
+    padding: 5px 5px;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    /* Dark text for readability */
+}
+
+/* Hover effect for table rows */
+tr:hover {
+    background-color: #f1faff;
+    /* Light blue background on hover */
+}
+
+/* Cell alignment for a modern feel */
+td,
+th {
+    text-align: center;
+}
+
+/* Add alternating row colors for readability */
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+    /* Slightly different background for even rows */
+}
+
+tr:nth-child(odd) {
+    background-color: #ffffff;
+    /* Standard white background for odd rows */
+}
+
+/* Add a subtle border for the table */
+table {
+    border: 1px solid #d1d1d1;
+}
+
+/* Mobile responsiveness: stack the table on small screens */
+@media (max-width: 768px) {
+    #container {
+        padding: 10px;
+        /* Less padding on small screens */
+    }
+
+    table {
+        width: 100%;
+        /* Make the table take full width on smaller screens */
+    }
+
+    th,
+    td {
+        padding: 10px 15px;
+        /* Reduce padding for better fit */
+    }
+
+    /* Stack header content for better readability on mobile */
+    th {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+
+    td {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+
+    tr:hover {
+        background-color: #f1faff;
+        /* Light blue background on hover */
+    }
+}
+
+/* Mobile-first: ensure the table has enough space */
+@media (max-width: 480px) {
+
+    th,
+    td {
+        font-size: 12px;
+        /* Slightly smaller text on very small screens */
+        padding: 8px 10px;
+        /* Adjust padding for tighter fit */
+    }
+
+    /* Reduce spacing between the table and container */
+    #container {
+        padding: 10px;
+    }
+}
+
+#inflow,
+#balance-window,
+#gate-settings,
+#generation-release,
+#lake-forecast,
+#lake-office-24-hour-precipitation,
+#rule-curve,
+#notes,
+#release-schedule-instruction,
+#crest-forecast {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+#inflow th,
+#balance-window th,
+#gate-settings th,
+#generation-release th,
+#lake-forecast th,
+#lake-office-24-hour-precipitation th,
+#rule-curve th,
+#notes th,
+#release-schedule-instruction th,
+#crest-forecast th,
+#inflow td,
+#balance-window td,
+#gate-settings td,
+#generation-release td,
+#lake-forecast td,
+#lake-office-24-hour-precipitation td,
+#rule-curve td,
+#notes td,
+#release-schedule-instruction td,
+#crest-forecast td {
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+#inflow th,
+#balance-window th,
+#gate-settings th,
+#generation-release th,
+#lake-forecast th,
+#lake-office-24-hour-precipitation th,
+#rule-curve th,
+#notes th,
+#release-schedule-instruction th,
+#crest-forecast th {
+    background-color: darkblue;
+    font-weight: bold;
+}
+
+#inflow input,
+#balance-window input,
+#gate-settings input,
+#generation-release input,
+#lake-forecast input,
+#lake-office-24-hour-precipitation input,
+#rule-curve input,
+#notes input,
+#release-schedule-instruction input,
+#crest-forecast input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#inflow tr:nth-child(even),
+#balance-window tr:nth-child(even),
+#gate-settings tr:nth-child(even),
+#generation-release tr:nth-child(even),
+#lake-forecast tr:nth-child(even),
+#lake-office-24-hour-precipitation tr:nth-child(even),
+#rule-curve tr:nth-child(even),
+#notes tr:nth-child(even),
+#release-schedule-instruction tr:nth-child(even),
+#crest-forecast tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#inflow tr:hover,
+#balance-window tr:hover,
+#gate-settings tr:hover,
+#generation-release tr:hover,
+#lake-forecast tr:hover,
+#lake-office-24-hour-precipitation tr:hover,
+#rule-curve tr:hover,
+#notes tr:hover,
+#release-schedule-instruction tr:hover,
+#crest-forecast tr:hover {
+    background-color: #f1f1f1;
+}
+
+#inflow td,
+#balance-window td,
+#gate-settings td,
+#generation-release td,
+#lake-forecast td,
+#lake-office-24-hour-precipitation td,
+#rule-curve td,
+#notes td,
+#release-schedule-instruction td,
+#crest-forecast td {
+    font-size: 14px;
+}
+
+#inflow td a,
+#balance-window td a,
+#gate-settings td a,
+#generation-release td a,
+#lake-forecast td a,
+#lake-office-24-hour-precipitation td a,
+#rule-curve td a,
+#notes td a,
+#release-schedule-instruction td a,
+#crest-forecast td a {
+    color: darkblue;
+    text-decoration: none;
+}
+
+#inflow td a:hover,
+#balance-window td a:hover,
+#gate-settings td a:hover,
+#generation-release td a:hover,
+#lake-forecast td a:hover,
+#lake-office-24-hour-precipitation td a:hover,
+#rule-curve td a:hover,
+#notes td a:hover,
+#release-schedule-instruction td a:hover,
+#crest-forecast td a:hover {
+    text-decoration: underline;
+}
+
+#inflow caption,
+#balance-window caption,
+#gate-settings caption,
+#generation-release caption,
+#lake-forecast caption,
+#lake-office-24-hour-precipitation caption,
+#rule-curve caption,
+#notes caption,
+#release-schedule-instruction caption,
+#crest-forecast caption {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+/*** ===================================================================================== ***/
+/*** BUTTON ***/
+/*** ===================================================================================== ***/
+/* General button styles */
+.modern-button {
+    background-color: darkblue;
+    /* Blue background */
+    color: white;
+    /* White text */
+    border: none;
+    /* Remove border */
+    padding: 10px 20px;
+    /* Padding */
+    font-size: 14px;
+    /* Font size */
+    border-radius: 5px;
+    /* Rounded corners */
+    cursor: pointer;
+    /* Pointer on hover */
+    transition: all 0.3s ease;
+    /* Smooth transition */
+}
+
+/* Button hover effect */
+.modern-button:hover {
+    background-color: #0056b3;
+    /* Darker blue on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow */
+}
+
+/* Active button effect */
+.modern-button:active {
+    background-color: #004085;
+    /* Even darker blue on click */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(2px);
+    /* Slightly move button down on click */
+}
+
+#reportIssueBtn {
+    display: block;
+    margin: 0 auto;
+    /* This will center the button horizontally */
+    text-align: center;
+}
+
+/*** ===================================================================================== ***/
+/*** WIDGET 5 ***/
+/*** ===================================================================================== ***/
+#estimated-value {
+    padding: 6px 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 30%;
+    height: auto;
+}
+
+#inflow {
+    width: 100%;
+    table-layout: fixed;
+    /* Ensures equal width for each column */
+    border-collapse: collapse;
+    /* Ensures cells are neatly aligned */
+}
+
+#inflow th,
+#inflow td {
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #ddd;
+    /* Light border for better visibility */
+}
+
+#inflow th {
+    background-color: darkblue;
+    /* Light gray for headers */
+    font-weight: bold;
+}
+
+#inflow input {
+    width: 100%;
+    /* Ensures input fields take full width of the cells */
+    box-sizing: border-box;
+    /* Makes sure padding does not affect width */
+}
+
+#inflow tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#inflow tr:hover {
+    background-color: #f1f1f1;
+}
+
+#inflow td {
+    font-size: 14px;
+}
+
+#inflow td a {
+    color: darkblue;
+    text-decoration: none;
+}
+
+#inflow td a:hover {
+    text-decoration: underline;
+}
+
+#inflow caption {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+/*** ===================================================================================== ***/
+/*** WIDGET 7 ***/
+/*** ===================================================================================== ***/
+#balanceInflowBtn,
+#refreshBtn,
+#estimated-value,
+#cda-btn-inflow,
+#cda-btn-gate,
+#send-mvk,
+#send-swpa,
+#refresh-button,
+#balance-inflow-button,
+#refresh-balance-window-button {
+    display: block;
+    margin: 0 auto;
+    /* This will center the button horizontally */
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/*** ===================================================================================== ***/
+/*** WIDGET 13 ***/
+/*** ===================================================================================== ***/
+.editable-input {
+    padding: 6px 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 50%;
+    height: auto;
+}

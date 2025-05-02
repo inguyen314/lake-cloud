@@ -185,12 +185,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output9Div.appendChild(cdaSaveBtn);
 
                 const statusDiv = document.createElement("div");
-                statusDiv.className = "status";
-                const cdaStatusBtn = document.createElement("button");
-                cdaStatusBtn.textContent = "";
-                cdaStatusBtn.id = "cda-btn-rule-curve";
-                cdaStatusBtn.disabled = false;
-                statusDiv.appendChild(cdaStatusBtn);
+                statusDiv.className = "status-rule-curve";
                 output9Div.appendChild(statusDiv);
 
                 // Create the buttonRefresh button
@@ -320,12 +315,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                         hideSpinner(); // Hide the spinner after login is complete
 
                         cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
-                        cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
+                        statusDiv.innerText = loginResult ? "" : "Failed to Login!";
                     } else {
                         try {
                             showSpinner(); // Show the spinner before creating the version
                             await writeLocationLevel(payload);
-                            cdaStatusBtn.innerText = "Write successful!";
+                            statusDiv.innerText = "Write successful!";
 
                             // Optional: small delay to allow backend to process the new data
                             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -335,7 +330,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, levelId2, updatedData);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
-                            cdaStatusBtn.innerText = "Failed to write data!";
+                            statusDiv.innerText = "Failed to write data!";
                             console.error(error);
                         }
 

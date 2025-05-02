@@ -155,8 +155,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const titleRow = table.insertRow();
                 const titleCell = document.createElement("th");
                 titleCell.colSpan = 3;
-                titleCell.style.fontWeight = "bold";
-                titleCell.style.fontSize = "1.2em";
                 titleCell.textContent = "Balance Window";
                 titleRow.appendChild(titleCell);
 
@@ -165,7 +163,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 ["Date of Last Balance", "Sum of Computed Inflow", "Sum of Consensus Inflow"].forEach(text => {
                     const cell = headerRow.insertCell();
                     cell.textContent = text;
-                    cell.style.fontWeight = "bold";
                 });
 
                 // Add data row
@@ -180,23 +177,23 @@ document.addEventListener('DOMContentLoaded', async function () {
                 outputDiv.appendChild(table);
 
                 // Create the first button
-                const button = document.createElement('button');
-                button.textContent = 'Balance Inflow Module';
-                button.id = 'balance-inflow-button'; // Unique ID
-                button.className = 'fetch-btn';
+                const div = document.createElement('div');
+                div.textContent = 'Balance Inflow Module';
+                div.id = 'balance-inflow-div';
+                div.className = 'fetch-btn';
 
                 // Open link in a new tab when clicked
                 const isoDateLastBalance = new Date(latestTimestamp).toISOString();;
-                button.addEventListener('click', () => {
+                div.addEventListener('click', () => {
                     window.open(`widget_5_Inflow.html?office=${office}&lake=${lake}&datetime=${datetime}&lookback=${isoDateLastBalance}`, '_blank');
                 });
 
-                outputDiv.appendChild(button);
+                outputDiv.appendChild(div);
 
                 // Create the refresh button
                 const buttonRefresh = document.createElement('button');
                 buttonRefresh.textContent = 'Refresh';
-                buttonRefresh.id = 'refresh-balance-window-button'; // Unique ID
+                buttonRefresh.id = 'refresh-balance-window-button';
                 buttonRefresh.className = 'fetch-btn';
                 outputDiv.appendChild(buttonRefresh);
 
@@ -209,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
 
                     // Remove both buttons
-                    const existingButton = document.getElementById('balance-inflow-button');
+                    const existingButton = document.getElementById('balance-inflow-div');
                     if (existingButton) {
                         existingButton.remove();
                     }
