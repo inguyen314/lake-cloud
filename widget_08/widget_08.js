@@ -57,19 +57,30 @@ document.addEventListener('DOMContentLoaded', async function () {
     const tsid = `${setBaseUrl}timeseries/group/Precip-Lake-Test?office=${office}&category-id=${lake}`;
     console.log("tsid:", tsid);
 
+    const tsid2 = `${setBaseUrl}timeseries/group/Precip-Raw-Lake?office=${office}&category-id=${lake}`;
+    console.log("tsid2:", tsid2);
+
     const fetchTsidData = async () => {
         try {
             const response1 = await fetch(tsid);
+            const response2 = await fetch(tsid2);
 
             const tsidDataPrecip = await response1.json();
+            const tsidDataRawPrecip = await response2.json();
 
             // Extract the timeseries-id from the response
             const tsidPrecip = tsidDataPrecip['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
             console.log("tsidPrecip:", tsidPrecip);
 
+            const tsidRawPrecip = tsidDataRawPrecip['assigned-time-series'][0]['timeseries-id']; // Grab the first timeseries-id
+            console.log("tsidRawPrecip:", tsidRawPrecip);
+
             // Fetch time series data using tsid values
             const timeSeriesDataPrecip = await fetchTimeSeriesData(tsidPrecip);
             const timeSeriesDataPrecipYesterday = await fetchTimeSeriesDataYesterday(tsidPrecip);
+
+            const timeSeriesDataRawPrecip = await fetchTimeSeriesRawPrecipData(tsidRawPrecip);
+            console.log("timeSeriesDataRawPrecip:", timeSeriesDataRawPrecip);
 
             let cdaSaveBtn;
 
@@ -107,7 +118,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             if (timeSeriesDataPrecip && timeSeriesDataPrecip.values && timeSeriesDataPrecip.values.length > 0) {
                 console.log("Calling createTable ...");
-                createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, timeSeriesDataPrecip, timeSeriesDataPrecipYesterday);
+                createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, timeSeriesDataPrecip, timeSeriesDataPrecipYesterday, timeSeriesDataRawPrecip);
 
                 loginStateController()
                 setInterval(async () => {
@@ -115,7 +126,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }, 10000)
             } else {
                 console.log("Calling createTable ...");
-                createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, timeSeriesDataPrecip, timeSeriesDataPrecipYesterday);
+                createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, timeSeriesDataPrecip, timeSeriesDataPrecipYesterday, timeSeriesDataRawPrecip);
 
                 loginStateController()
                 setInterval(async () => {
@@ -123,7 +134,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }, 10000)
             }
 
-            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, timeSeriesDataPrecip, timeSeriesDataPrecipYesterday) {
+            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, timeSeriesDataPrecip, timeSeriesDataPrecipYesterday, timeSeriesDataRawPrecip) {
                 console.log("timeSeriesDataPrecip:", timeSeriesDataPrecip);
                 console.log("timeSeriesDataPrecipYesterday:", timeSeriesDataPrecipYesterday);
 
@@ -136,7 +147,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         formattedTimestampCST: convertUnixTimestamp(timestamp, true),    // CST/CDT adjusted time
                     };
                 });
-                console.log("Formatted timeSeriesDataPrecip:", formattedData);
+                console.log("formattedData:", formattedData);
 
                 let formattedDataYesterday = null;
                 if (timeSeriesDataPrecipYesterday && timeSeriesDataPrecipYesterday.values) {
@@ -149,8 +160,28 @@ document.addEventListener('DOMContentLoaded', async function () {
                             formattedTimestampCST: convertUnixTimestamp(timestamp, true),    // CST/CDT adjusted time
                         };
                     });
-                    console.log("Formatted timeSeriesDataPrecipYesterday:", formattedDataYesterday);
+                    console.log("formattedDataYesterday:", formattedDataYesterday);
                 }
+
+                const formattedRawData = timeSeriesDataRawPrecip.values.map(entry => {
+                    const timestamp = Number(entry[0]); // Ensure timestamp is a number
+
+                    return {
+                        ...entry, // Retain other data
+                        formattedTimestampUTC: convertUnixTimestamp(timestamp, false),  // UTC time
+                        formattedTimestampCST: convertUnixTimestamp(timestamp, true),    // CST/CDT adjusted time
+                    };
+                });
+                console.log("formattedRawData:", formattedRawData);
+
+                const yesterday6amPrecipValue = formattedRawData[0][1];
+                console.log("yesterday6amPrecipValue:", yesterday6amPrecipValue);
+
+                const today6amPrecipValue = formattedRawData[formattedRawData.length - 1][1];
+                console.log("today6amPrecipValue:", today6amPrecipValue);
+
+                const totalRawRainfall = (parseFloat(today6amPrecipValue) - parseFloat(yesterday6amPrecipValue)).toFixed(2);
+                console.log("totalRawRainfall:", totalRawRainfall);
 
                 const table = document.createElement("table");
                 table.id = "lake-office-precipitation";
@@ -175,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const precipCell = document.createElement("td");
                     const precipInput = document.createElement("input");
                     precipInput.type = "number";
-                    precipInput.value = 0.00.toFixed(2);
+                    precipInput.value = totalRawRainfall;
                     precipInput.step = "0.01";
                     precipInput.className = "outflow-input";
                     precipInput.id = `precipInput-${isoDateToday}`;
@@ -383,18 +414,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         } catch (error) {
             console.error("Error fetching tsid data:", error);
-
-            // Show the "Report Issue" button
-            document.getElementById('reportIssueBtn').style.display = "block";
-
-            // Ensure sendEmail is globally accessible
-            window.sendEmail = function () {
-                const subject = encodeURIComponent("Cloud Database Down");
-                const body = encodeURIComponent("Hello,\n\nIt appears that the cloud database is down. Please investigate the issue." + setBaseUrl);
-                const email = "DLL-CEMVS-WM-SysAdmins@usace.army.mil"; // Replace with actual support email
-
-                window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-            };
         }
     };
 
@@ -439,6 +458,38 @@ document.addEventListener('DOMContentLoaded', async function () {
             return data;
         } catch (error) {
             console.error("Error fetching time series data:", error);
+        }
+    };
+
+    const getCentralTimeISOString = (isoDate, dstOffsetHours) => {
+        const date = new Date(isoDate);
+        date.setUTCHours(6 + dstOffsetHours, 0, 0, 0); // 6 AM CT (adjusted for DST)
+        return date.toISOString();
+    };
+
+    const fetchTimeSeriesRawPrecipData = async (tsid) => {
+        const begin = getCentralTimeISOString(isoDateMinus1Day, dstOffsetHours);
+        const end = getCentralTimeISOString(isoDateToday, dstOffsetHours);
+
+        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${begin}&end=${end}&office=${office}`;
+        console.log('tsidData:', tsidData);
+
+        try {
+            const response = await fetch(tsidData, {
+                headers: {
+                    "Accept": "application/json;version=2",
+                    "Cache-Control": "no-cache"
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Error fetching time series data:", error);
+            return null;
         }
     };
 
@@ -570,3 +621,5 @@ document.addEventListener('DOMContentLoaded', async function () {
 // Mark Twain Lk-Salt.Precip.Total.~1Day.1Day.lakerep-rev-test
 // Wappapello Lk-St Francis.Precip.Total.~1Day.1Day.lakerep-rev-test
 // Rend Lk-Big Muddy.Precip.Total.~1Day.1Day.lakerep-rev-test
+
+// (Precip-Raw-Lake) raw stage to caculate the 6am to 6am precip to prepopulate the input. If lake office have a value otherwise, it lake value. 
