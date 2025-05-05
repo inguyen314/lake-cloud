@@ -525,8 +525,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 dailyData[date].values.push(value);
 
                 // Log the value and the current sum and count for this day
-                console.log(`Date: ${date}, Timestamp: ${timestamp}, Value: ${value}`);
-                console.log(`Current Sum: ${dailyData[date].sum}, Current Count: ${dailyData[date].count}`);
+                // console.log(`Date: ${date}, Timestamp: ${timestamp}, Value: ${value}`);
+                // console.log(`Current Sum: ${dailyData[date].sum}, Current Count: ${dailyData[date].count}`);
             });
 
             // Now calculate the average for each day
@@ -940,6 +940,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }, 10000)
                     } else {
                         alert("No data from today or previous day found, Please enter data for the previous day.");
+
+                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
+                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
+                            tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
+                            timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
+                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4, timeSeriesYesterdayDataGate4, timeSeriesTomorrowDataOutflow);
+
+                        loadingIndicator.style.display = 'none';
+
+                        loginStateController()
+                        setInterval(async () => {
+                            loginStateController()
+                        }, 10000)
                     }
                 } else if (lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                     tsidGate1 = tsidGateData['assigned-time-series'][0]['timeseries-id'];
@@ -1039,6 +1053,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }, 10000)
                     } else {
                         alert("No data from today or previous day found, Please enter data for the previous day.");
+
+                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
+                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
+                            tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
+                            timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
+                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4, timeSeriesYesterdayDataGate4, timeSeriesTomorrowDataOutflow);
+
+                        loadingIndicator.style.display = 'none';
+
+                        loginStateController()
+                        setInterval(async () => {
+                            loginStateController()
+                        }, 10000)
                     }
                 } else if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
                     tsidGate1 = tsidGateData['assigned-time-series'][0]['timeseries-id'];
@@ -1110,6 +1138,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }, 10000)
                     } else {
                         alert("No data from today or previous day found, Please enter data for the previous day.");
+
+                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
+                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
+                            tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
+                            timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
+                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4, timeSeriesYesterdayDataGate4, timeSeriesTomorrowDataOutflow);
+
+                        loadingIndicator.style.display = 'none';
+
+                        loginStateController()
+                        setInterval(async () => {
+                            loginStateController()
+                        }, 10000)
                     }
                 }
 
@@ -1498,7 +1540,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 const gate4Cell = document.createElement("td");
                                 const gate4Input = document.createElement("input");
                                 gate4Input.type = "number";
-                                gate4Input.value = formattedYesterdayDataGate4.at(-1)[1].toFixed(1);
+                                gate4Input.value = (formattedYesterdayDataGate4.at(-1)?.[1] ?? 909).toFixed(1);
                                 gate4Input.id = `gate4Input`;
                                 if (index === 0) {
                                     gate4Input.style.backgroundColor = "pink";

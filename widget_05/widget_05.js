@@ -283,15 +283,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const currentMonth = datePart.split('-')[0]; // "04"
 
                         // You can now use `currentMonth` inside your loop
-                        console.log("currentMonth: ", currentMonth);
+                        // console.log("currentMonth: ", currentMonth);
 
                         const curentDayEvapValue = getEvapValueForMonth(tsidEvapLevelData, currentMonth);
-                        console.log("curentDayEvapValue:", curentDayEvapValue);
+                        // console.log("curentDayEvapValue:", curentDayEvapValue);
 
                         const val = Math.round((parseFloat(formattedAverageOutflowData[j]?.value)) / 10) * 10;
                         const deltaVal = Math.round(parseFloat(delta));
                         const evapVal = Math.round(parseFloat(curentDayEvapValue));
-                        console.log("Storage + Average Outflow + Evaporation: ", deltaVal, val, evapVal, " = " , (deltaVal + val + evapVal))
+                        console.log("Storage + Average Outflow + Evaporation: ", deltaVal, val, evapVal, " = " , (deltaVal + val + evapVal));
                         let storageOutflowEvapCell = document.createElement("td");
                         let total = null;
 
@@ -300,12 +300,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                             storageOutflowEvapCell.textContent = 'N/A';
                             storageOutflowEvapCell.type = "text";
                             storageOutflowEvapCell.value = 'N/A';
+                            storageOutflowEvapCell.title = ''; // Clear title when not applicable
                         } else {
                             total = (val + deltaVal + evapVal).toFixed(0);
                             storageOutflowEvapCell.textContent = total;
                             storageOutflowEvapCell.type = "number";
                             storageOutflowEvapCell.value = total;
-                        }
+                            storageOutflowEvapCell.title = `Val: ${val}, ΔVal: ${deltaVal}, Evap: ${evapVal}`;
+                        }                        
 
                         storageOutflowEvapCell.id = `storage-outflow-evap-${formattedStorageData[i].formattedTimestamp}`;
                         row.appendChild(storageOutflowEvapCell);
@@ -680,12 +682,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     function getEvapValueForMonth(data, month) {
         // Convert string or number month to integer and adjust for 0-based offset
         const offset = parseInt(month, 10) - 1;
-        console.log("offset: ", offset)
+        // console.log("offset: ", offset)
 
         const matchingValue = data[`seasonal-values`].find(
             (entry) => entry[`offset-months`] === offset
         );
-        console.log("matchingValue: ", matchingValue)
+        // console.log("matchingValue: ", matchingValue)
 
         return matchingValue ? matchingValue.value : null;
     }
