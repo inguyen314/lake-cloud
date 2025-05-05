@@ -249,6 +249,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 crestInput.value = '909';
             }
 
+            // If optionInput is 0, override the dateSelect to isoDateToday
+            if (optionInput.value === '0') {
+                dateSelect.value = isoDateToday;
+            }
+
             // Add event listener to update crestInput if "No Crest" is selected
             optionInput.addEventListener('change', () => {
                 if (parseInt(optionInput.value) === 0) {
