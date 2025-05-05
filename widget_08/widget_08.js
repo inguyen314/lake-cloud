@@ -365,6 +365,32 @@ document.addEventListener('DOMContentLoaded', async function () {
                         return data;
                     }
 
+                    const fetchUndatedRawData = async (tsid) => {
+                        const begin = getCentralTimeISOString(isoDateMinus1Day, dstOffsetHours);
+                        const end = getCentralTimeISOString(isoDateToday, dstOffsetHours);
+                
+                        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${begin}&end=${end}&office=${office}`;
+                        console.log('tsidData:', tsidData);
+                
+                        try {
+                            const response = await fetch(tsidData, {
+                                headers: {
+                                    "Accept": "application/json;version=2",
+                                    "Cache-Control": "no-cache"
+                                }
+                            });
+                
+                            if (!response.ok) {
+                                throw new Error(`HTTP error ${response.status}`);
+                            }
+                
+                            return await response.json();
+                        } catch (error) {
+                            console.error("Error fetching time series data:", error);
+                            return null;
+                        }
+                    };
+
                     // Function to show the spinner while waiting
                     function showSpinner() {
                         const spinner = document.createElement('img');
@@ -401,7 +427,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             // Fetch updated data and refresh the table
                             const updatedData = await fetchUpdatedData(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip);
-                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, updatedData);
+                            const undatedRawData =  await fetchUndatedRawData(tsidPrecip);
+                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, updatedData, null, undatedRawData);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             statusDiv.innerText = "Failed to write data!";
