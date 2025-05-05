@@ -107,42 +107,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                 cdaSaveBtn.disabled = false; // Re-enable button
             }
 
-            if (timeSeriesDataCrest && timeSeriesDataCrest.values && timeSeriesDataCrest.values.length > 0) {
-                console.log("Calling createTable ...");
+            console.log("Calling createTable ...");
 
-                createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, timeSeriesDataCrest);
+            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, timeSeriesDataCrest);
 
+            loginStateController()
+            // Setup timers
+            setInterval(async () => {
                 loginStateController()
-                // Setup timers
-                setInterval(async () => {
-                    loginStateController()
-                }, 10000) // time is in millis
-            } else {
-                console.log("Calling createDataEntryTable ...");
-                createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid);
+            }, 10000) // time is in millis
 
-                loginStateController()
-                // Setup timers
-                setInterval(async () => {
-                    loginStateController()
-                }, 10000) // time is in millis
-            }
 
 
         } catch (error) {
             console.error("Error fetching tsid data:", error);
-
-            // Show the "Report Issue" button
-            document.getElementById('reportIssueBtn').style.display = "block";
-
-            // Ensure sendEmail is globally accessible
-            window.sendEmail = function () {
-                const subject = encodeURIComponent("Cloud Database Down");
-                const body = encodeURIComponent("Hello,\n\nIt appears that the cloud database is down. Please investigate the issue." + setBaseUrl);
-                const email = "DLL-CEMVS-WM-SysAdmins@usace.army.mil"; // Replace with actual support email
-
-                window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-            };
         }
 
         function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, timeSeriesDataCrest) {
@@ -188,7 +166,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const dateCell = document.createElement("td");
             const dateInput = document.createElement("input");
             dateInput.type = "text";
-            dateInput.value = formattedData.at(-1).formattedTimestampCST;
+            dateInput.value = formattedData.at(-1)?.formattedTimestampCST || new Date(new Date(isoDateToday).getTime() + 6 * 60 * 60 * 1000).toISOString();
             dateInput.id = "dateInput";
             dateInput.style.textAlign = "center";
             dateInput.style.verticalAlign = "middle";
@@ -210,7 +188,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const crestCell = document.createElement("td");
             const crestInput = document.createElement("input");
             crestInput.type = "number";
-            crestInput.value = formattedData.at(-1)[1].toFixed(2); // Crest uses formattedData
+            crestInput.value = formattedData.at(-1)?.[1]?.toFixed(2) || ''; // Crest uses formattedData
             crestInput.step = "0.01";  // Ensure the step increment is 0.01
             crestInput.style.textAlign = "center";
             crestInput.style.verticalAlign = "middle";
@@ -222,7 +200,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const optionCell = document.createElement("td");
             const optionInput = document.createElement("input");
             optionInput.type = "number";
-            optionInput.value = formattedData.at(-1)[2].toFixed(0); // Crest uses formattedData
+            optionInput.value = formattedData.at(-1)?.[2]?.toFixed(0) || '0'; // Crest uses formattedData
             // optionInput.id = "optionInput";
             optionInput.style.textAlign = "center";
             optionInput.style.verticalAlign = "middle";
@@ -407,251 +385,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         // Optional: small delay to allow backend to process the new data
                         await new Promise(resolve => setTimeout(resolve, 1000));
 
-                        await createVersionTS(payload);
-                        console.log("Write successful!");
-                        statusDiv.innerText = "Write successful!";
-
-                        // Optional: small delay to allow backend to process the new data
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-
-                        // Fetch updated data and refresh the table
-                        console.log("Calling updatedData!");
-                        const updatedData = await fetchUpdatedData(tsid, isoDateDay5, isoDateToday, isoDateMinus1Day);
-
-                        console.log("Calling createTable!");
-                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, updatedData);
-                    } catch (error) {
-                        hideSpinner(); // Hide the spinner if an error occurs
-                        statusDiv.innerText = "Failed to write data!";
-                        console.error(error);
-                    }
-
-                    hideSpinner(); // Hide the spinner after the operation completes
-                }
-            });
-
-        }
-
-        function createDataEntryTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid) {
-            // Create the empty table element
-            const table = document.createElement("table");
-
-            // Apply the ID "crest-forecast" to the table
-            table.id = "crest-forecast";
-
-            // Create the table header row
-            const headerRow = document.createElement("tr");
-
-            const dateHeader = document.createElement("th");
-            dateHeader.textContent = "Date";
-            headerRow.appendChild(dateHeader);
-
-            const crestHeader = document.createElement("th");
-            crestHeader.textContent = "Forecast Crest (ft)";
-            headerRow.appendChild(crestHeader);
-
-            const optionHeader = document.createElement("th");
-            optionHeader.textContent = "Option";
-            headerRow.appendChild(optionHeader);
-
-            table.appendChild(headerRow);
-
-            // Create a single data row
-            const row = document.createElement("tr");
-
-            // Editable "Date" cell
-            const dateCell = document.createElement("td");
-            const dateInput = document.createElement("input");
-            dateInput.type = "text";
-            dateInput.value = convertTo6AMCST(isoDateToday); // Set the default value to 6 AM CST
-            dateInput.id = "dateInput";
-            dateCell.appendChild(dateInput);
-            row.appendChild(dateCell);
-
-            // Forecast Crest cell (editable)
-            const crestCell = document.createElement("td");
-            const crestInput = document.createElement("input");
-            crestInput.type = "number";
-            crestInput.value = null;
-            crestInput.step = "0.01";  // Ensure the step increment is 0.01
-            crestInput.id = "crestInput";
-            crestInput.style.backgroundColor = "pink";  // Set pink background
-            crestCell.appendChild(crestInput);
-            row.appendChild(crestCell);
-
-            // Option cell (editable)
-            const optionCell = document.createElement("td");
-            const optionInput = document.createElement("input");
-            optionInput.type = "number";
-            optionInput.value = null; // Empty by default
-            optionInput.id = "optionInput";
-            optionInput.style.backgroundColor = "pink";  // Set pink background
-            optionCell.appendChild(optionInput);
-            row.appendChild(optionCell);
-
-            // Append the single row to the table
-            table.appendChild(row);
-
-            // Append the table to the specific container (id="output10")
-            const output10Div = document.getElementById("output10");
-            output10Div.innerHTML = ""; // Clear any existing content
-            output10Div.appendChild(table);
-
-            const cdaSaveBtn = document.createElement("button");
-            cdaSaveBtn.textContent = "Submit";
-            cdaSaveBtn.id = "cda-btn-crest";
-            cdaSaveBtn.disabled = true;
-            output10Div.appendChild(cdaSaveBtn);
-
-            const statusDiv = document.createElement("div");
-            statusDiv.id = "status-crest";
-            output10Div.appendChild(statusDiv);
-
-            // Create the buttonRefresh button
-            const buttonRefresh = document.createElement('button');
-            buttonRefresh.textContent = 'Refresh';
-            buttonRefresh.id = 'refresh-crest-forecast-button';
-            buttonRefresh.className = 'fetch-btn';
-            output10Div.appendChild(buttonRefresh);
-
-            buttonRefresh.addEventListener('click', () => {
-                // Remove existing table
-                const existingTable = document.getElementById('crest-forecast');
-                if (existingTable) {
-                    existingTable.remove();
-                }
-
-                const existingRefresh = document.getElementById('cda-btn-crest');
-                if (existingRefresh) {
-                    existingRefresh.remove();
-                }
-
-                // Fetch and create new table
-                fetchTsidData();
-            });
-
-            // Add event listener to the submit button
-            cdaSaveBtn.addEventListener("click", async () => {
-                // Parse user inputs
-                const crestValue = parseFloat(crestInput.value) || 909;
-                const optionValue = parseInt(optionInput.value) || 0;
-                const timestampUnix = new Date(dateInput.value).getTime() + dstOffsetHours * 60 * 60 * 1000; // Convert back to UTC time for saving to the database
-
-                const payload = {
-                    "date-version-type": "MAX_AGGREGATE",
-                    "name": tsid,
-                    "office-id": "MVS",
-                    "units": "ft",
-                    "values": [[timestampUnix, crestValue, optionValue]],
-                    "version-date": convertTo6AMCST(isoDateToday),
-                };
-
-                console.log("payload: ", payload);
-
-                async function loginCDA() {
-                    console.log("page");
-                    if (await isLoggedIn()) return true;
-                    console.log('is false');
-
-                    // Redirect to login page
-                    window.location.href = `https://wm.mvs.ds.usace.army.mil:8243/CWMSLogin/login?OriginalLocation=${encodeURIComponent(window.location.href)}`;
-                }
-
-                async function isLoggedIn() {
-                    try {
-                        const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", {
-                            method: "GET"
-                        });
-
-                        if (response.status === 401) return false;
-
-                        console.log('status', response.status);
-                        return true;
-
-                    } catch (error) {
-                        console.error('Error checking login status:', error);
-                        return false;
-                    }
-                }
-
-                async function createVersionTS(payload) {
-                    if (!payload) throw new Error("You must specify a payload!");
-                    try {
-                        const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?store-rule=REPLACE%20ALL", {
-                            method: "POST",
-                            headers: {
-                                // "accept": "*/*",
-                                "Content-Type": "application/json;version=2",
-                            },
-
-
-                            body: JSON.stringify(payload)
-                        });
-
-                        if (!response.ok) {
-                            const errorText = await response.text();
-                            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-                        }
-
-                        return true;
-
-                    } catch (error) {
-                        console.error('Error writing timeseries:', error);
-                        throw error;
-                    }
-
-                }
-
-                async function fetchUpdatedData(tsid, isoDateDay5, isoDateToday, isoDateMinus1Day) {
-                    let response = null;
-                    response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=${office}&version-date=${convertTo6AMCST(isoDateToday)}`, {
-                        headers: {
-                            "Accept": "application/json;version=2", // Ensuring the correct version is used
-                            "cache-control": "no-cache"
-                        }
-                    });
-
-
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch updated data: ${response.status}`);
-                    }
-
-                    const data = await response.json();
-
-                    // Log the raw data received
-                    console.log('Fetched Data:', data);
-
-                    return data;
-                }
-
-                // Function to show the spinner while waiting
-                function showSpinner() {
-                    const spinner = document.createElement('img');
-                    spinner.src = 'images/loading4.gif';
-                    spinner.id = 'loadingSpinner';
-                    spinner.style.width = '40px';  // Set the width to 40px
-                    spinner.style.height = '40px'; // Set the height to 40px
-                    document.body.appendChild(spinner);
-                }
-
-                // Function to hide the spinner once the operation is complete
-                function hideSpinner() {
-                    const spinner = document.getElementById('loadingSpinner');
-                    if (spinner) {
-                        spinner.remove();
-                    }
-                }
-
-                if (cdaSaveBtn.innerText === "Login") {
-                    showSpinner(); // Show the spinner before the login
-                    const loginResult = await loginCDA();
-                    hideSpinner(); // Hide the spinner after login is complete
-
-                    cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
-                    statusDiv.innerText = loginResult ? "" : "Failed to Login!";
-                } else {
-                    try {
-                        showSpinner(); // Show the spinner before creating the version
                         await createVersionTS(payload);
                         console.log("Write successful!");
                         statusDiv.innerText = "Write successful!";
