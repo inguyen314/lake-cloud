@@ -845,6 +845,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }, 10000)
                     } else {
                         alert("No data from today or previous day found, Please enter data for the previous day.");
+
+                        createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7,
+                            tsidSluice1, timeSeriesDataSluice1, tsidSluice2, timeSeriesDataSluice2, tsidSluiceTotal, timeSeriesDataSluiceTotal,
+                            tsidGate1, timeSeriesDataGate1, tsidGate2, timeSeriesDataGate2, tsidGate3, timeSeriesDataGate3, tsidGateTotal, timeSeriesDataGateTotal,
+                            tsidOutflowTotal, timeSeriesDataOutflowTotal, tsidOutflowAverage, timeSeriesDataOutflowAverage,
+                            timeSeriesYesterdayDataSluice1, timeSeriesYesterdayDataSluice2, timeSeriesYesterdayDataSluiceTotal, timeSeriesYesterdayDataGate1, timeSeriesYesterdayDataGate2,
+                            timeSeriesYesterdayDataGate3, timeSeriesYesterdayDataGateTotal, timeSeriesYesterdayDataOutflowTotal, timeSeriesYesterdayDataOutflowAverage, tsidGate4, timeSeriesDataGate4, timeSeriesYesterdayDataGate4, timeSeriesTomorrowDataOutflow);
+
+                        loadingIndicator.style.display = 'none';
+
+                        loginStateController()
+                        setInterval(async () => {
+                            loginStateController()
+                        }, 10000)
                     }
                 } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
                     tsidGate1 = tsidGateData['assigned-time-series'][0]['timeseries-id'];
@@ -1401,7 +1415,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 const sluice1Cell = document.createElement("td");
                                 const sluice1Input = document.createElement("input");
                                 sluice1Input.type = "number";
-                                sluice1Input.value = formattedYesterdayDataSluice1.at(-1)[1].toFixed(1);
+                                sluice1Input.value = (formattedYesterdayDataSluice1.at(-1)?.[1] ?? 909).toFixed(1);
                                 sluice1Input.id = `sluice1Input`;
 
                                 if (index === 0) {
@@ -1416,7 +1430,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 const sluice2Cell = document.createElement("td");
                                 const sluice2Input = document.createElement("input");
                                 sluice2Input.type = "number";
-                                sluice2Input.value = formattedYesterdayDataSluice2.at(-1)[1].toFixed(1);
+                                sluice2Input.value = (formattedYesterdayDataSluice2.at(-1)?.[1] ?? 909).toFixed(1);
                                 sluice2Input.id = `sluice2Input`;
 
                                 if (index === 0) {
@@ -1432,7 +1446,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 const sluiceTotalCell = document.createElement("td");
                                 const sluiceTotalInput = document.createElement("input");
                                 sluiceTotalInput.type = "number";
-                                sluiceTotalInput.value = formattedYesterdayDataSluiceTotal.at(-1)[1].toFixed(0);
+                                sluiceTotalInput.value = (formattedYesterdayDataSluiceTotal.at(-1)?.[1] ?? 909).toFixed(0);
                                 sluiceTotalInput.id = `sluiceTotalInput`;
 
                                 if (index === 0) {
@@ -1447,7 +1461,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             const gate1Cell = document.createElement("td");
                             const gate1Input = document.createElement("input");
                             gate1Input.type = "number";
-                            gate1Input.value = formattedYesterdayDataGate1.at(-1)[1].toFixed(1);
+                            gate1Input.value = (formattedYesterdayDataGate1.at(-1)?.[1] ?? 909).toFixed(1);
                             gate1Input.id = `gate1Input`;
                             if (index === 0) {
                                 gate1Input.style.backgroundColor = "pink";
@@ -1459,7 +1473,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             const gate2Cell = document.createElement("td");
                             const gate2Input = document.createElement("input");
                             gate2Input.type = "number";
-                            gate2Input.value = formattedYesterdayDataGate2.at(-1)[1].toFixed(1);
+                            gate2Input.value = (formattedYesterdayDataGate2.at(-1)?.[1] ?? 909).toFixed(1);
                             gate2Input.id = `gate2Input`;
                             if (index === 0) {
                                 gate2Input.style.backgroundColor = "pink";
@@ -1471,7 +1485,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             const gate3Cell = document.createElement("td");
                             const gate3Input = document.createElement("input");
                             gate3Input.type = "number";
-                            gate3Input.value = formattedYesterdayDataGate3.at(-1)[1].toFixed(1);
+                            gate3Input.value = (formattedYesterdayDataGate3.at(-1)?.[1] ?? 909).toFixed(1);
                             gate3Input.id = `gate3Input`;
                             if (index === 0) {
                                 gate3Input.style.backgroundColor = "pink";
@@ -1497,7 +1511,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             const gateTotalCell = document.createElement("td");
                             const gateTotalInput = document.createElement("input");
                             gateTotalInput.type = "number";
-                            gateTotalInput.value = formattedYesterdayDataGateTotal.at(-1)[1].toFixed(0);
+                            gateTotalInput.value = (formattedYesterdayDataGateTotal.at(-1)?.[1] ?? 909).toFixed(0);
                             gateTotalInput.id = `gateTotalInput`;
                             if (index === 0) {
                                 gateTotalInput.style.backgroundColor = "pink";
@@ -1507,7 +1521,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             // Outflow Average Total (calculated)
                             if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
-                                averageOutflowCalculate = (formattedYesterdayDataGateTotal.at(-1)[1] + formattedYesterdayDataSluiceTotal.at(-1)[1]).toFixed(0);
+                                averageOutflowCalculate = ((formattedYesterdayDataGateTotal.at(-1)?.[1] ?? 909) + (formattedYesterdayDataSluiceTotal.at(-1)?.[1] ?? 909)).toFixed(0);
                                 const gateOutflowTotalCell = document.createElement("td");
                                 const gateOutflowTotalInput = document.createElement("input");
                                 gateOutflowTotalInput.type = "number";
@@ -1857,19 +1871,19 @@ document.addEventListener('DOMContentLoaded', async function () {
                     secondCell.id = `gateOutflowAverageInput`;
 
                     // Determine average outflow value
-                    let outflowValue;
+                    let outflowAverageValue;
                     let isYesterdayOrDefault = false;
                     if (formattedDataOutflowAverage?.[0]?.[1] !== undefined) {
-                        outflowValue = formattedDataOutflowAverage[0][1];
+                        outflowAverageValue = formattedDataOutflowAverage[0][1];
                     } else if (formattedYesterdayDataOutflowAverage?.[0]?.[1] !== undefined) {
-                        outflowValue = formattedYesterdayDataOutflowAverage[0][1];
+                        outflowAverageValue = formattedYesterdayDataOutflowAverage[0][1];
                         isYesterdayOrDefault = true;
                     } else {
-                        outflowValue = 909;
+                        outflowAverageValue = 909;
                         isYesterdayOrDefault = true;
                     }
-                    secondCell.value = outflowValue;
-                    secondCell.innerHTML = outflowValue.toFixed(0);
+                    secondCell.value = outflowAverageValue;
+                    secondCell.innerHTML = outflowAverageValue.toFixed(0);
                     // Only color pink if yesterday's data or 909
                     if (isYesterdayOrDefault) {
                         secondCell.style.backgroundColor = "pink";

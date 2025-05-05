@@ -279,10 +279,19 @@ document.addEventListener('DOMContentLoaded', async function () {
                         row.appendChild(averageOutflowCell);
 
                         // Storage + Average Outflow + Evaporation
+                        const datePart = formattedStorageData[i].formattedTimestamp.split(' ')[0]; // "04-30-2025"
+                        const currentMonth = datePart.split('-')[0]; // "04"
+
+                        // You can now use `currentMonth` inside your loop
+                        console.log("currentMonth: ", currentMonth);
+
+                        const curentDayEvapValue = getEvapValueForMonth(tsidEvapLevelData, currentMonth);
+                        console.log("curentDayEvapValue:", curentDayEvapValue);
+
                         const val = Math.round((parseFloat(formattedAverageOutflowData[j]?.value)) / 10) * 10;
                         const deltaVal = Math.round(parseFloat(delta));
-                        const evapVal = Math.round(parseFloat(curentMonthEvapValue));
-                        console.log("Storage + Average Outflow + Evaporation: ", deltaVal, val, evapVal)
+                        const evapVal = Math.round(parseFloat(curentDayEvapValue));
+                        console.log("Storage + Average Outflow + Evaporation: ", deltaVal, val, evapVal, " = " , (deltaVal + val + evapVal))
                         let storageOutflowEvapCell = document.createElement("td");
                         let total = null;
 
@@ -755,3 +764,64 @@ document.addEventListener('DOMContentLoaded', async function () {
 //     FETCH FIRST 150 ROWS ONLY
 //     )
 // ORDER BY date_time ASC;
+
+// 1	5	WAPPAPELLO
+// 2	8	WAPPAPELLO
+// 3	14	WAPPAPELLO
+// 4	32	WAPPAPELLO
+// 5	51	WAPPAPELLO
+// 6	57	WAPPAPELLO
+// 7	53	WAPPAPELLO
+// 8	51	WAPPAPELLO
+// 9	41	WAPPAPELLO
+// 10	25	WAPPAPELLO
+// 11	10	WAPPAPELLO
+// 12	8	WAPPAPELLO
+// 2	37	REND
+// 3	59	REND
+// 4	89	REND
+// 5	110	REND
+// 6	136	REND
+// 7	141	REND
+// 8	125	REND
+// 9	103	REND
+// 10	73	REND
+// 11	48	REND
+// 12	24	REND
+// 1	17	REND
+// 1	19	MT
+// 2	36	MT
+// 3	62	MT
+// 4	101	MT
+// 5	116	MT
+// 6	140	MT
+// 7	151	MT
+// 8	132	MT
+// 9	110	MT
+// 10	71	MT
+// 11	49	MT
+// 12	27	MT
+// 1	20	CARLYLE
+// 2	27	CARLYLE
+// 3	68	CARLYLE
+// 4	115	CARLYLE
+// 5	159	CARLYLE
+// 6	186	CARLYLE
+// 7	195	CARLYLE
+// 8	171	CARLYLE
+// 9	144	CARLYLE
+// 10	92	CARLYLE
+// 11	59	CARLYLE
+// 12	29	CARLYLE
+// 1	9	SHELBYVILLE
+// 2	12	SHELBYVILLE
+// 3	28	SHELBYVILLE
+// 4	52	SHELBYVILLE
+// 5	75	SHELBYVILLE
+// 6	88	SHELBYVILLE
+// 7	90	SHELBYVILLE
+// 8	80	SHELBYVILLE
+// 9	68	SHELBYVILLE
+// 10	39	SHELBYVILLE
+// 11	25	SHELBYVILLE
+// 12	15	SHELBYVILLE
