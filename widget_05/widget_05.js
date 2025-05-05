@@ -240,132 +240,146 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 table.appendChild(headerRow);
 
-                // Combine the data based on matching timestamps
-                let i = 0;
-                let j = 0;
+                if (formattedAverageOutflowData.length <= 6) {
+                    const messageRow = document.createElement("tr");
+                    const messageCell = document.createElement("td");
+                    messageCell.colSpan = 6; // adjust depending on how many columns your table has
+                    messageCell.style.textAlign = "center";
+                    messageCell.style.padding = "10px";
+                    messageCell.style.fontWeight = "bold";
+                    messageCell.style.color = "red";
+                    messageCell.textContent = `Save "Gate Settings" and/or "Generation and Release" data first then click the refresh button.`;
 
-                while (i < formattedStorageData.length - 1 && j < formattedAverageOutflowData.length - 1) {
-                    if (formattedStorageData[i].formattedTimestamp === formattedAverageOutflowData[j].formattedTimestamp) {
-                        const row = document.createElement("tr");
+                    messageRow.appendChild(messageCell);
+                    table.appendChild(messageRow);
+                } else {
+                    // Combine the data based on matching timestamps
+                    let i = 0;
+                    let j = 0;
 
-                        // Date Time
-                        const dateCell = document.createElement("td");
-                        dateCell.textContent = formattedStorageData[i].formattedTimestamp.split(' ')[0]; // Display formattedTimestamp as Date
-                        row.appendChild(dateCell);
+                    while (i < formattedStorageData.length - 1 && j < formattedAverageOutflowData.length - 1) {
+                        if (formattedStorageData[i].formattedTimestamp === formattedAverageOutflowData[j].formattedTimestamp) {
+                            const row = document.createElement("tr");
 
-                        // Change in Storage
-                        const chgStorageCell = document.createElement("td");
-                        const delta = formattedStorageData[i].delta;
+                            // Date Time
+                            const dateCell = document.createElement("td");
+                            dateCell.textContent = formattedStorageData[i].formattedTimestamp.split(' ')[0]; // Display formattedTimestamp as Date
+                            row.appendChild(dateCell);
 
-                        if (delta == null) {
-                            chgStorageCell.textContent = '—'; // or 'N/A'
-                        } else if (delta < 0) {
-                            chgStorageCell.textContent = `-${Math.abs(delta).toFixed(0)}`;
+                            // Change in Storage
+                            const chgStorageCell = document.createElement("td");
+                            const delta = formattedStorageData[i].delta;
+
+                            if (delta == null) {
+                                chgStorageCell.textContent = '—'; // or 'N/A'
+                            } else if (delta < 0) {
+                                chgStorageCell.textContent = `-${Math.abs(delta).toFixed(0)}`;
+                            } else {
+                                chgStorageCell.textContent = `+${(delta).toFixed(0)}`;
+                            }
+
+                            row.appendChild(chgStorageCell);
+
+                            // Average Outflow
+                            const averageOutflowCell = document.createElement("td");
+                            if (formattedAverageOutflowData[j].value !== null && formattedAverageOutflowData[j].value !== undefined) {
+                                averageOutflowCell.textContent = formattedAverageOutflowData[j].value.toFixed(0);
+                            } else {
+                                // Handle the case where the value is null or undefined
+                                averageOutflowCell.textContent = 'N/A'; // Or any default value you'd prefer
+                            }
+
+                            row.appendChild(averageOutflowCell);
+
+                            // Storage + Average Outflow + Evaporation
+                            const datePart = formattedStorageData[i].formattedTimestamp.split(' ')[0]; // "04-30-2025"
+                            const currentMonth = datePart.split('-')[0]; // "04"
+
+                            // You can now use `currentMonth` inside your loop
+                            // console.log("currentMonth: ", currentMonth);
+
+                            const curentDayEvapValue = getEvapValueForMonth(tsidEvapLevelData, currentMonth);
+                            // console.log("curentDayEvapValue:", curentDayEvapValue);
+
+                            const val = Math.round((parseFloat(formattedAverageOutflowData[j]?.value)) / 10) * 10;
+                            const deltaVal = Math.round(parseFloat(delta));
+                            const evapVal = Math.round(parseFloat(curentDayEvapValue));
+                            console.log("Storage + Average Outflow + Evaporation: ", deltaVal, val, evapVal, " = ", (deltaVal + val + evapVal));
+                            let storageOutflowEvapCell = document.createElement("td");
+                            let total = null;
+
+                            // Check if any of the values are NaN (which means they were null, undefined, or not numeric)
+                            if (isNaN(val) || isNaN(deltaVal) || isNaN(evapVal)) {
+                                storageOutflowEvapCell.textContent = 'N/A';
+                                storageOutflowEvapCell.type = "text";
+                                storageOutflowEvapCell.value = 'N/A';
+                                storageOutflowEvapCell.title = ''; // Clear title when not applicable
+                            } else {
+                                total = (val + deltaVal + evapVal).toFixed(0);
+                                storageOutflowEvapCell.textContent = total;
+                                storageOutflowEvapCell.type = "number";
+                                storageOutflowEvapCell.value = total;
+                                storageOutflowEvapCell.title = `Val: ${val}, ΔVal: ${deltaVal}, Evap: ${evapVal}`;
+                            }
+
+                            storageOutflowEvapCell.id = `storage-outflow-evap-${formattedStorageData[i].formattedTimestamp}`;
+                            row.appendChild(storageOutflowEvapCell);
+
+                            // Consensus
+                            const consensusCell = document.createElement("td");
+                            consensusCell.style.textAlign = "center"; // Horizontally center the cell content
+                            consensusCell.style.verticalAlign = "middle"; // Vertically center the content
+
+                            const input = document.createElement("input");
+                            input.type = "number";
+
+                            const consensusEntry = hourlyConsensusData[i];
+                            const isMissingValue = !consensusEntry || consensusEntry.value == null;
+
+                            const consensusValue = isMissingValue ? Math.round(total / 10) * 10 : consensusEntry.value;
+                            input.value = Number(consensusValue).toFixed(0);
+
+                            // Set background color to pink if original value was null/undefined
+                            if (isMissingValue) {
+                                input.style.backgroundColor = '#e6ccff';
+                            }
+
+
+                            input.style.width = "60px";
+                            input.style.textAlign = "center"; // Horizontally center text inside the input
+
+                            input.id = `consensus-${formattedStorageData[i].formattedTimestamp}`;
+                            consensusCell.appendChild(input);
+                            row.appendChild(consensusCell);
+
+                            // Quality Code
+                            const qualityCodeCell = document.createElement("td");
+                            qualityCodeCell.style.textAlign = "center"; // Horizontally center the cell content
+                            qualityCodeCell.style.verticalAlign = "middle"; // Vertically center the content
+
+                            const qualityInput = document.createElement("input");
+                            qualityInput.type = "text";
+                            qualityInput.value = consensusEntry && consensusEntry.qualityCode != null ? consensusEntry.qualityCode : '';
+
+                            qualityInput.style.width = "60px";
+                            qualityInput.style.textAlign = "center"; // Center text inside input
+                            qualityInput.id = `quality-code-${formattedStorageData[i].formattedTimestamp}`;
+
+                            qualityCodeCell.appendChild(qualityInput);
+                            row.appendChild(qualityCodeCell);
+
+                            table.appendChild(row);
+
+                            // Move to next entry in both datasets
+                            i++;
+                            j++;
+                        } else if (formattedStorageData[i].formattedTimestamp < formattedAverageOutflowData[j].formattedTimestamp) {
+                            // If the timestamp in formattedStorageData is earlier, just move to the next entry in formattedStorageData
+                            i++;
                         } else {
-                            chgStorageCell.textContent = `+${(delta).toFixed(0)}`;
+                            // If the timestamp in formattedAverageOutflowData is earlier, just move to the next entry in formattedAverageOutflowData
+                            j++;
                         }
-
-                        row.appendChild(chgStorageCell);
-
-                        // Average Outflow
-                        const averageOutflowCell = document.createElement("td");
-                        if (formattedAverageOutflowData[j].value !== null && formattedAverageOutflowData[j].value !== undefined) {
-                            averageOutflowCell.textContent = formattedAverageOutflowData[j].value.toFixed(0);
-                        } else {
-                            // Handle the case where the value is null or undefined
-                            averageOutflowCell.textContent = 'N/A'; // Or any default value you'd prefer
-                        }
-
-                        row.appendChild(averageOutflowCell);
-
-                        // Storage + Average Outflow + Evaporation
-                        const datePart = formattedStorageData[i].formattedTimestamp.split(' ')[0]; // "04-30-2025"
-                        const currentMonth = datePart.split('-')[0]; // "04"
-
-                        // You can now use `currentMonth` inside your loop
-                        // console.log("currentMonth: ", currentMonth);
-
-                        const curentDayEvapValue = getEvapValueForMonth(tsidEvapLevelData, currentMonth);
-                        // console.log("curentDayEvapValue:", curentDayEvapValue);
-
-                        const val = Math.round((parseFloat(formattedAverageOutflowData[j]?.value)) / 10) * 10;
-                        const deltaVal = Math.round(parseFloat(delta));
-                        const evapVal = Math.round(parseFloat(curentDayEvapValue));
-                        console.log("Storage + Average Outflow + Evaporation: ", deltaVal, val, evapVal, " = " , (deltaVal + val + evapVal));
-                        let storageOutflowEvapCell = document.createElement("td");
-                        let total = null;
-
-                        // Check if any of the values are NaN (which means they were null, undefined, or not numeric)
-                        if (isNaN(val) || isNaN(deltaVal) || isNaN(evapVal)) {
-                            storageOutflowEvapCell.textContent = 'N/A';
-                            storageOutflowEvapCell.type = "text";
-                            storageOutflowEvapCell.value = 'N/A';
-                            storageOutflowEvapCell.title = ''; // Clear title when not applicable
-                        } else {
-                            total = (val + deltaVal + evapVal).toFixed(0);
-                            storageOutflowEvapCell.textContent = total;
-                            storageOutflowEvapCell.type = "number";
-                            storageOutflowEvapCell.value = total;
-                            storageOutflowEvapCell.title = `Val: ${val}, ΔVal: ${deltaVal}, Evap: ${evapVal}`;
-                        }                        
-
-                        storageOutflowEvapCell.id = `storage-outflow-evap-${formattedStorageData[i].formattedTimestamp}`;
-                        row.appendChild(storageOutflowEvapCell);
-
-                        // Consensus
-                        const consensusCell = document.createElement("td");
-                        consensusCell.style.textAlign = "center"; // Horizontally center the cell content
-                        consensusCell.style.verticalAlign = "middle"; // Vertically center the content
-
-                        const input = document.createElement("input");
-                        input.type = "number";
-
-                        const consensusEntry = hourlyConsensusData[i];
-                        const isMissingValue = !consensusEntry || consensusEntry.value == null;
-
-                        const consensusValue = isMissingValue ? Math.round(total / 10) * 10 : consensusEntry.value;
-                        input.value = Number(consensusValue).toFixed(0);
-
-                        // Set background color to pink if original value was null/undefined
-                        if (isMissingValue) {
-                            input.style.backgroundColor = '#e6ccff';
-                        }
-
-
-                        input.style.width = "60px";
-                        input.style.textAlign = "center"; // Horizontally center text inside the input
-
-                        input.id = `consensus-${formattedStorageData[i].formattedTimestamp}`;
-                        consensusCell.appendChild(input);
-                        row.appendChild(consensusCell);
-
-                        // Quality Code
-                        const qualityCodeCell = document.createElement("td");
-                        qualityCodeCell.style.textAlign = "center"; // Horizontally center the cell content
-                        qualityCodeCell.style.verticalAlign = "middle"; // Vertically center the content
-
-                        const qualityInput = document.createElement("input");
-                        qualityInput.type = "text";
-                        qualityInput.value = consensusEntry && consensusEntry.qualityCode != null ? consensusEntry.qualityCode : '';
-
-                        qualityInput.style.width = "60px";
-                        qualityInput.style.textAlign = "center"; // Center text inside input
-                        qualityInput.id = `quality-code-${formattedStorageData[i].formattedTimestamp}`;
-
-                        qualityCodeCell.appendChild(qualityInput);
-                        row.appendChild(qualityCodeCell);
-
-                        table.appendChild(row);
-
-                        // Move to next entry in both datasets
-                        i++;
-                        j++;
-                    } else if (formattedStorageData[i].formattedTimestamp < formattedAverageOutflowData[j].formattedTimestamp) {
-                        // If the timestamp in formattedStorageData is earlier, just move to the next entry in formattedStorageData
-                        i++;
-                    } else {
-                        // If the timestamp in formattedAverageOutflowData is earlier, just move to the next entry in formattedAverageOutflowData
-                        j++;
                     }
                 }
 
