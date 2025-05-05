@@ -162,48 +162,100 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Create a single data row
             const row = document.createElement("tr");
 
-            // Editable "Day" cell
+            // Editable "Day" cell using dropdown
             const dateCell = document.createElement("td");
-            const dateInput = document.createElement("input");
-            dateInput.type = "text";
-            dateInput.value = formattedData.at(-1)?.formattedTimestampCST || new Date(new Date(isoDateToday).getTime() + 6 * 60 * 60 * 1000).toISOString();
-            dateInput.id = "dateInput";
-            dateInput.style.textAlign = "center";
-            dateInput.style.verticalAlign = "middle";
-            // Validate the input when the value changes
-            dateInput.addEventListener('change', () => {
-                const validation = validateDateInput(dateInput.value);
+            const dateSelect = document.createElement("select");
+            dateSelect.id = "dateInput";
+            dateSelect.style.textAlign = "center";
+            dateSelect.style.verticalAlign = "middle";
+            dateSelect.style.width = "100%";
 
-                if (!validation.isValid) {
-                    alert(validation.message);
-                    dateInput.setCustomValidity(validation.message); // Show error
-                } else {
-                    dateInput.setCustomValidity(""); // Clear error if valid
-                }
+            // Build the list of date options
+            const dateOptions = [
+                isoDateToday,
+                isoDateDay1,
+                isoDateDay2,
+                isoDateDay3,
+                isoDateDay4,
+                isoDateDay5,
+                isoDateDay6
+            ];
+
+            // Add options to the dropdown
+            dateOptions.forEach(dateStr => {
+                const option = document.createElement("option");
+                option.value = dateStr;
+
+                // Extract and reformat date to MM-DD-YYYY
+                const [year, month, day] = dateStr.split("T")[0].split("-");
+                const displayDate = `${month}-${day}-${year}`;
+                option.textContent = displayDate;
+
+                dateSelect.appendChild(option);
             });
-            dateCell.appendChild(dateInput);
+
+            // Set the default selected value from formattedData or fallback
+            const defaultDate = formattedData.at(-1)?.formattedTimestampCST || isoDateDay1;
+            dateSelect.value = dateOptions.includes(defaultDate) ? defaultDate : isoDateDay1;
+
+            dateCell.appendChild(dateSelect);
             row.appendChild(dateCell);
 
             // Forecast Crest cell (editable)
             const crestCell = document.createElement("td");
             const crestInput = document.createElement("input");
             crestInput.type = "number";
-            crestInput.value = formattedData.at(-1)?.[1]?.toFixed(2) || ''; // Crest uses formattedData
+            crestInput.value = formattedData.at(-1)?.[1]?.toFixed(2) || '';
             crestInput.step = "0.01";  // Ensure the step increment is 0.01
             crestInput.style.textAlign = "center";
             crestInput.style.verticalAlign = "middle";
-            // crestInput.id = "crestInput";
             crestCell.appendChild(crestInput);
             row.appendChild(crestCell);
 
-            // Option cell (editable)
+            // Option cell (dropdown editable)
             const optionCell = document.createElement("td");
-            const optionInput = document.createElement("input");
-            optionInput.type = "number";
-            optionInput.value = formattedData.at(-1)?.[2]?.toFixed(0) || '0'; // Crest uses formattedData
-            // optionInput.id = "optionInput";
+            const optionInput = document.createElement("select");
             optionInput.style.textAlign = "center";
             optionInput.style.verticalAlign = "middle";
+            optionInput.style.width = "100%";
+
+            // Define the quality code options
+            const qualityOptions = [
+                { value: 0, label: 'No Crest' },
+                { value: 1, label: '=' },
+                { value: 3, label: '<' },
+                { value: 5, label: 'Cresting' },
+                { value: 9, label: 'Crested' }
+            ];
+
+            // Populate the dropdown
+            qualityOptions.forEach(opt => {
+                const option = document.createElement("option");
+                option.value = opt.value.toString(); // Ensure string for dropdown
+                option.textContent = opt.label;
+                optionInput.appendChild(option);
+            });
+
+            // Get the last quality code and ensure it's a whole number string
+            const lastQuality = Math.round(Number(formattedData.at(-1)?.[2] ?? 0)).toString();
+            if (['0', '1', '3', '5', '9'].includes(lastQuality)) {
+                optionInput.value = lastQuality;
+            } else {
+                optionInput.value = '0'; // Default to "No Crest"
+            }
+
+            // Set crestInput to 909 if "No Crest" is selected initially
+            if (parseInt(optionInput.value) === 0) {
+                crestInput.value = '909';
+            }
+
+            // Add event listener to update crestInput if "No Crest" is selected
+            optionInput.addEventListener('change', () => {
+                if (parseInt(optionInput.value) === 0) {
+                    crestInput.value = '909';
+                }
+            });
+
             optionCell.appendChild(optionInput);
             row.appendChild(optionCell);
 
@@ -259,11 +311,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log("DateTime Input: ", dateInput.value);
                 console.log(addDSTOffsetToUTC(dateInput.value, dstOffsetHours));
 
-                const timestampUnix = new Date(formattedData.at(-1).formattedTimestampUTC).getTime();
-                console.log("timestampUnix: ", timestampUnix);
+                // const timestampUnix = new Date(formattedData.at(-1).formattedTimestampUTC).getTime();
+                // console.log("timestampUnix: ", timestampUnix);
 
                 let timestampUTC = null;
-                if (crestValue === 909) {
+                if (crestValue === 909 || crestValue === '') {
                     timestampUTC = addDSTOffsetToUTC(convertTo6AMCST(isoDateToday), dstOffsetHours);
                 } else {
                     timestampUTC = addDSTOffsetToUTC(dateInput.value, dstOffsetHours);
@@ -327,9 +379,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
                 }
 
-                async function fetchUpdatedData(tsid, isoDateDay5, isoDateToday, isoDateMinus1Day) {
+                async function fetchUpdatedData(tsid, isoDateDay7, isoDateToday, isoDateMinus1Day) {
                     let response = null;
-                    response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay5}&office=MVS&version-date=${convertTo6AMCST(isoDateToday)}`, {
+                    response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateDay7}&office=${office}&version-date=${convertTo6AMCST(isoDateToday)}`, {
                         headers: {
                             "Accept": "application/json;version=2", // Ensuring the correct version is used
                             "cache-control": "no-cache"
@@ -381,6 +433,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         // TODO: Dont have data entry date yet, so need to delete.
                         await deleteVersionTS(payload);
                         console.log("Delete successful!");
+                        statusDiv.innerText = "Delete successful!";
 
                         // Optional: small delay to allow backend to process the new data
                         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -394,7 +447,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // Fetch updated data and refresh the table
                         console.log("Calling updatedData!");
-                        const updatedData = await fetchUpdatedData(tsid, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                        statusDiv.innerText = "Calling createTable!";
+                        const updatedData = await fetchUpdatedData(tsid, isoDateDay7, isoDateToday, isoDateMinus1Day);
 
                         console.log("Calling createTable!");
                         createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsid, updatedData);
@@ -653,3 +707,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 // Mark Twain Lk-Salt.Stage.Inst.~1Day.0.lakerep-rev-crest-forecast	MVS	Mark Twain Lk-Salt	Stage	Inst	~1Day	0	lakerep-rev-crest-forecast	N/A	Aggregate	2025-03-05 06:16	1111-11-17 18:09	2025-03-11 06:00	39.5248701	-91.6443126
 // Rend Lk-Big Muddy.Stage.Inst.~1Day.0.lakerep-rev-crest-forecast	MVS	Rend Lk-Big Muddy	Stage	Inst	~1Day	0	lakerep-rev-crest-forecast	N/A	Aggregate	2025-03-05 06:16	1111-11-17 18:09	2025-03-11 06:00	38.037619	-88.961594
 // Wappapello Lk-St Francis.Stage.Inst.~1Day.0.lakerep-rev-crest-forecast	MVS	Wappapello Lk-St Francis	Stage	Inst	~1Day	0	lakerep-rev-crest-forecast	N/A	Aggregate	2025-03-05 06:16	1111-11-17 18:09	2025-03-11 06:00	36.9277	-90.284361
+
+
+// 0 = No Crest
+// 1 = "="
+// 3 = "<"
+// 5 = "Cresting"
+// 9 = "Crested"

@@ -204,8 +204,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const textValueCell = document.createElement("td");
                     const textValueInput = document.createElement("input");
                     textValueInput.type = "text";
-                    textValueInput.value = "--";
-                    textValueInput.style.backgroundColor = "pink";
+                    textValueInput.value = "";
+                    // textValueInput.style.backgroundColor = "pink";
                     textValueInput.className = "text-value-input";
                     textValueInput.id = `textValueInput-${isoDateToday}`;
                     textValueInput.style.textAlign = "center";
