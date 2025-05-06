@@ -81,6 +81,32 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         };
 
+        const fetchTimeSeriesDataAverage = async (tsid) => {
+            // Convert to Date object
+            const date = new Date(isoDateDay1);
+
+            // Minus 1 minute (1 minutes * 60 seconds * 1000 milliseconds)
+            date.setTime(date.getTime() - (1 * 1 * 60 * 1000));
+
+            // Convert back to ISO string (preserve UTC format)
+            const end = date.toISOString();
+
+            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus7Days}&end=${end}&office=${office}`;
+            console.log('tsidData:', tsidData);
+            try {
+                const response = await fetch(tsidData, {
+                    headers: {
+                        "Accept": "application/json;version=2", // Ensuring the correct version is used
+                        "cache-control": "no-cache"
+                    }
+                });
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error fetching time series data:", error);
+            }
+        };
+
         const fetchTsidData = async () => {
             try {
                 const response1 = await fetch(urltsid1);
@@ -103,7 +129,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Fetch time series data using tsid values
                 const timeSeriesData1 = await fetchTimeSeriesData(tsid1);
                 const timeSeriesData2 = await fetchTimeSeriesData(tsid2);
-                const timeSeriesData3 = await fetchTimeSeriesData(tsid3);
+                const timeSeriesData3 = await fetchTimeSeriesDataAverage(tsid3);
 
                 console.log("timeSeriesData1:", timeSeriesData1);
                 console.log("timeSeriesData2:", timeSeriesData2);
@@ -265,7 +291,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     let averageOutflowYesterdayValue = averageOutflowYesterday.average;
 
                     let isSaved = false; // Flag to track if the data has been saved
-                    if (formattedData1.midnight.length === formattedData3.midnight.length) {
+                    if (formattedData3.midnight.length > formattedData1.midnight.length) {
                         isSaved = true; // Set to true if the lengths match
                     }
 
@@ -384,6 +410,36 @@ document.addEventListener('DOMContentLoaded', async function () {
                             return data;
                         }
 
+                        async function fetchUpdatedDataAverage(isoDateMinus8Days, isoDateDay1, tsid) {
+                            // Convert to Date object
+                            const date = new Date(isoDateDay1);
+
+                            // Minus 1 minute (1 minutes * 60 seconds * 1000 milliseconds)
+                            date.setTime(date.getTime() - (1 * 1 * 60 * 1000));
+
+                            // Convert back to ISO string (preserve UTC format)
+                            const end = date.toISOString();
+
+                            let response = null;
+                            response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsid}&begin=${isoDateMinus7Days}&end=${end}&office=${office}`, {
+                                headers: {
+                                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                                    "cache-control": "no-cache"
+                                }
+                            });
+
+                            if (!response.ok) {
+                                throw new Error(`Failed to fetch updated data: ${response.status}`);
+                            }
+
+                            const data = await response.json();
+
+                            // Log the raw data received
+                            console.log('Fetched Data:', data);
+
+                            return data;
+                        }
+
                         // Function to show the spinner while waiting
                         function showSpinner() {
                             const spinner = document.createElement('img');
@@ -418,7 +474,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 // Fetch updated data and refresh the table
                                 const timeSeriesData1 = await fetchUpdatedData(isoDateMinus8Days, isoDateToday, tsid1);
                                 const timeSeriesData2 = await fetchUpdatedData(isoDateMinus8Days, isoDateToday, tsid2);
-                                const timeSeriesData3 = await fetchUpdatedData(isoDateMinus8Days, isoDateToday, tsid3);
+                                const timeSeriesData3 = await fetchUpdatedDataAverage(isoDateMinus8Days, isoDateDay1, tsid3);
 
                                 createTable(timeSeriesData1, timeSeriesData2, timeSeriesData3);
                             } catch (error) {
