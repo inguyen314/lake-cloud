@@ -71,6 +71,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             const timeSeriesDataNote = await fetchTimeSeriesData(tsidNote);
             console.log("timeSeriesDataNote:", timeSeriesDataNote);
 
+            const timeSeriesDataNoteYesterday = await fetchTimeSeriesDataYesterday(tsidNote);
+            console.log("timeSeriesDataNoteYesterday:", timeSeriesDataNoteYesterday);
+
             let cdaSaveBtn;
 
             async function isLoggedIn() {
@@ -106,7 +109,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             console.log("Calling createTable ...");
-            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidNote, timeSeriesDataNote);
+            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidNote, timeSeriesDataNote, timeSeriesDataNoteYesterday);
 
             loginStateController()
             // Setup timers
@@ -115,9 +118,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }, 10000) // time is in millis
 
 
-            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidNote, timeSeriesDataNote) {
-                console.log("timeSeriesDataNote:", timeSeriesDataNote);
-
+            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidNote, timeSeriesDataNote, timeSeriesDataNoteYesterday) {
                 // Convert timestamps in "regular-text-values" array
                 timeSeriesDataNote["regular-text-values"].forEach(item => {
                     // Check if "date-time" exists and is a valid Unix timestamp (number)
@@ -147,10 +148,43 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
                 });
 
-                console.log("Formatted timeSeriesDataNote:", timeSeriesDataNote);
+                console.log("timeSeriesDataNote:", timeSeriesDataNote);
+
+                timeSeriesDataNoteYesterday["regular-text-values"].forEach(item => {
+                    // Check if "date-time" exists and is a valid Unix timestamp (number)
+                    if (item["date-time"] && typeof item["date-time"] === "number") {
+                        item["date-time-iso"] = convertUnixTimestampToISO(item["date-time"]);
+                    } else {
+                        console.error("Invalid timestamp for date-time:", item["date-time"]);
+                    }
+
+                    if (item["date-time"] && typeof item["date-time"] === "number") {
+                        item["date-time-iso-cst"] = convertUnixTimestampToISO_CST(item["date-time"], dstOffsetHours);
+                    } else {
+                        console.error("Invalid timestamp for date-time:", item["date-time"]);
+                    }
+
+                    // Check if "data-entry-date" exists and is a valid Unix timestamp (number)
+                    if (item["data-entry-date"] && typeof item["data-entry-date"] === "number") {
+                        // Add the ISO format for "data-entry-date" without overwriting the existing "data-entry-date-iso" field
+                        if (!item["data-entry-date-iso"]) {
+                            item["data-entry-date-iso"] = convertUnixTimestampToISO(item["data-entry-date"]);
+                        }
+                    } else if (item["data-entry-date"] && typeof item["data-entry-date"] === "string" && !isNaN(Date.parse(item["data-entry-date"]))) {
+                        // If "data-entry-date" is already an ISO string, just add a new field with the same value
+                        item["data-entry-date-iso"] = item["data-entry-date"];
+                    } else {
+                        console.error("Invalid date format for data-entry-date:", item["data-entry-date"]);
+                    }
+                });
+
+                console.log("timeSeriesDataNoteYesterday:", timeSeriesDataNoteYesterday);
 
                 const formattedData = timeSeriesDataNote;
                 console.log("formattedData:", formattedData);
+
+                const formattedDataYesterday = timeSeriesDataNoteYesterday;
+                console.log("formattedDataYesterday:", formattedDataYesterday);
 
                 const table = document.createElement("table");
                 table.id = "notes";
@@ -174,48 +208,89 @@ document.addEventListener('DOMContentLoaded', async function () {
                     formattedData["regular-text-values"].forEach((entry) => {
                         const row = document.createElement("tr");
 
-                        // Use "date-time-iso" for the date
+                        // Format date
                         const dateCell = document.createElement("td");
-                        // dateCell.textContent = (entry["date-time-iso-cst"]);
-                        dateCell.textContent = new Date(entry["date-time-iso-cst"]).toISOString().slice(5, 7) + '-' + new Date(entry["date-time-iso-cst"]).toISOString().slice(8, 10) + '-' + new Date(entry["date-time-iso-cst"]).toISOString().slice(0, 4);
+                        const date = new Date(entry["date-time-iso-cst"]);
+                        dateCell.textContent = date.toISOString().slice(5, 7) + '-' + date.toISOString().slice(8, 10) + '-' + date.toISOString().slice(0, 4);
                         row.appendChild(dateCell);
 
-                        // Make the "text-value" editable
+                        // Create dynamic textarea
                         const textValueCell = document.createElement("td");
-                        const textValueInput = document.createElement("input");
-                        textValueInput.type = "text";
-                        textValueInput.value = entry["text-value"] || "No Text";
-                        textValueInput.className = "text-value-input";
-                        textValueInput.id = `textValueInput-${entry["date-time-iso"]}`;
-                        textValueInput.style.textAlign = "center";
-                        textValueInput.style.verticalAlign = "middle";
-                        textValueCell.appendChild(textValueInput);
-                        row.appendChild(textValueCell);
+                        const textarea = document.createElement("textarea");
+                        textarea.value = entry["text-value"] || "--";
+                        textarea.className = "text-value-input";
+                        textarea.id = `textValueInput-${entry["date-time-iso"]}`;
 
+                        // Required styles for dynamic height
+                        textarea.style.width = "100%";
+                        textarea.style.minHeight = "40px";
+                        textarea.style.boxSizing = "border-box";
+                        textarea.style.overflow = "hidden";
+                        textarea.style.resize = "none";
+                        textarea.style.fontSize = "14px";
+                        textarea.style.lineHeight = "1.4";
+                        textarea.style.padding = "6px";
+                        textarea.style.textAlign = "center";
+                        textarea.style.border = "1px solid #ccc";
+                        textarea.style.borderRadius = "4px";
+
+                        // Adjust height automatically
+                        const autoResize = () => {
+                            textarea.style.height = "auto";
+                            textarea.style.height = textarea.scrollHeight + "px";
+                        };
+
+                        textarea.addEventListener("input", autoResize);
+                        textarea.addEventListener("focus", autoResize);
+                        setTimeout(autoResize, 0); // Initial adjustment after DOM insert
+
+                        textValueCell.appendChild(textarea);
+                        row.appendChild(textValueCell);
                         table.appendChild(row);
                     });
                 } else {
                     console.log("No existing data.");
-                    // If no data or "regular-text-values" is not an array, display a message
+
                     const row = document.createElement("tr");
 
                     // Use "isoDateToday" as a fallback for the date
                     const dateCell = document.createElement("td");
-                    // dateCell.textContent = new Date(new Date(isoDateToday).getTime() - (dstOffsetHours) * 60 * 60 * 1000).toISOString();
-                    dateCell.textContent = new Date(isoDateToday).toISOString().slice(5, 7) + '-' + new Date(isoDateToday).toISOString().slice(8, 10) + '-' + new Date(isoDateToday).toISOString().slice(0, 4);
+                    const date = new Date(isoDateToday);
+                    dateCell.textContent = date.toISOString().slice(5, 7) + '-' + date.toISOString().slice(8, 10) + '-' + date.toISOString().slice(0, 4);
                     row.appendChild(dateCell);
 
-                    // Make the "text-value" editable
+                    // Create dynamic textarea
                     const textValueCell = document.createElement("td");
-                    const textValueInput = document.createElement("input");
-                    textValueInput.type = "text";
-                    textValueInput.value = "";
-                    // textValueInput.style.backgroundColor = "pink";
-                    textValueInput.className = "text-value-input";
-                    textValueInput.id = `textValueInput-${isoDateToday}`;
-                    textValueInput.style.textAlign = "center";
-                    textValueInput.style.verticalAlign = "middle";
-                    textValueCell.appendChild(textValueInput);
+                    const textarea = document.createElement("textarea");
+                    textarea.value = timeSeriesDataNoteYesterday["regular-text-values"]?.[0]?.["text-value"] || "--";
+                    textarea.className = "text-value-input";
+                    textarea.id = `textValueInput-${isoDateToday}`;
+
+                    // Required styles for dynamic height
+                    textarea.style.width = "100%";
+                    textarea.style.minHeight = "40px";
+                    textarea.style.boxSizing = "border-box";
+                    textarea.style.overflow = "hidden";
+                    textarea.style.resize = "none";
+                    textarea.style.fontSize = "14px";
+                    textarea.style.lineHeight = "1.4";
+                    textarea.style.padding = "6px";
+                    textarea.style.textAlign = "center";
+                    textarea.style.border = "1px solid #ccc";
+                    textarea.style.borderRadius = "4px";
+                    textarea.style.backgroundColor = "pink";
+
+                    // Auto-resize logic
+                    const autoResize = () => {
+                        textarea.style.height = "auto";
+                        textarea.style.height = textarea.scrollHeight + "px";
+                    };
+
+                    textarea.addEventListener("input", autoResize);
+                    textarea.addEventListener("focus", autoResize);
+                    setTimeout(autoResize, 0); // Initial adjustment after DOM insert
+
+                    textValueCell.appendChild(textarea);
                     row.appendChild(textValueCell);
 
                     table.appendChild(row);
@@ -429,23 +504,29 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         } catch (error) {
             console.error("Error fetching tsid data:", error);
-
-            // Show the "Report Issue" button
-            document.getElementById('reportIssueBtn').style.display = "block";
-
-            // Ensure sendEmail is globally accessible
-            window.sendEmail = function () {
-                const subject = encodeURIComponent("Cloud Database Down");
-                const body = encodeURIComponent("Hello,\n\nIt appears that the cloud database is down. Please investigate the issue." + setBaseUrl);
-                const email = "DLL-CEMVS-WM-SysAdmins@usace.army.mil"; // Replace with actual support email
-
-                window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-            };
         }
     };
 
     const fetchTimeSeriesData = async (tsid) => {
         const tsidData = `${setBaseUrl}timeseries/text?name=${tsid}&begin=${isoDateToday}&end=${isoDateToday}&office=${office}`;
+        console.log('tsidData:', tsidData);
+        try {
+            const response = await fetch(tsidData, {
+                headers: {
+                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                    "cache-control": "no-cache"
+                }
+            });
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error fetching time series data:", error);
+        }
+    };
+
+    const fetchTimeSeriesDataYesterday = async (tsid) => {
+        const tsidData = `${setBaseUrl}timeseries/text?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateMinus1Day}&office=${office}`;
         console.log('tsidData:', tsidData);
         try {
             const response = await fetch(tsidData, {
