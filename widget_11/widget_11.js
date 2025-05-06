@@ -457,6 +457,29 @@ document.addEventListener('DOMContentLoaded', async function () {
                         return data;
                     }
 
+                    async function fetchUpdatedDataYesterday(tsidNote, isoDateDay5, isoDateToday, isoDateMinus1Day) {
+                        let response = null;
+
+                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries/text?office=MVS&name=${tsidNote}&begin=${isoDateMinus1Day}&end=${isoDateMinus1Day}`, {
+                            method: "GET",
+                            headers: {
+                                "Accept": "application/json;version=2", // Ensuring the correct version is used
+                                "cache-control": "no-cache"
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch updated data: ${response.status}`);
+                        }
+
+                        const data = await response.json();
+
+                        // Log the raw data received
+                        console.log('Fetched Data:', data);
+
+                        return data;
+                    }
+
                     function showSpinner() {
                         const spinner = document.createElement('img');
                         spinner.src = 'images/loading4.gif';
@@ -491,7 +514,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             // Fetch updated data and refresh the table
                             const updatedData = await fetchUpdatedData(tsidNote, isoDateDay5, isoDateToday, isoDateMinus1Day);
-                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidNote, updatedData);
+                            const updatedDataYesterday = await fetchUpdatedDataYesterday(tsidNote, isoDateDay5, isoDateToday, isoDateMinus1Day);
+                            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidNote, updatedData, updatedDataYesterday);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs
                             statusDiv.innerText = "Failed to write data!";
