@@ -168,13 +168,16 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Check if "regular-text-values" exists and is an array
                 if (Array.isArray(formattedData["regular-text-values"]) && formattedData["regular-text-values"].length > 0) {
+                    console.log("Existing data found.");
+
                     // Render rows from "regular-text-values"
                     formattedData["regular-text-values"].forEach((entry) => {
                         const row = document.createElement("tr");
 
                         // Use "date-time-iso" for the date
                         const dateCell = document.createElement("td");
-                        dateCell.textContent = (entry["date-time-iso-cst"]);
+                        // dateCell.textContent = (entry["date-time-iso-cst"]);
+                        dateCell.textContent = new Date(entry["date-time-iso-cst"]).toISOString().slice(5, 7) + '-' + new Date(entry["date-time-iso-cst"]).toISOString().slice(8, 10) + '-' + new Date(entry["date-time-iso-cst"]).toISOString().slice(0, 4);
                         row.appendChild(dateCell);
 
                         // Make the "text-value" editable
@@ -192,12 +195,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                         table.appendChild(row);
                     });
                 } else {
+                    console.log("No existing data.");
                     // If no data or "regular-text-values" is not an array, display a message
                     const row = document.createElement("tr");
 
                     // Use "isoDateToday" as a fallback for the date
                     const dateCell = document.createElement("td");
-                    dateCell.textContent = new Date(new Date(isoDateToday).getTime() - (dstOffsetHours) * 60 * 60 * 1000).toISOString();
+                    // dateCell.textContent = new Date(new Date(isoDateToday).getTime() - (dstOffsetHours) * 60 * 60 * 1000).toISOString();
+                    dateCell.textContent = new Date(isoDateToday).toISOString().slice(5, 7) + '-' + new Date(isoDateToday).toISOString().slice(8, 10) + '-' + new Date(isoDateToday).toISOString().slice(0, 4);
                     row.appendChild(dateCell);
 
                     // Make the "text-value" editable
@@ -377,7 +382,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         return data;
                     }
 
-                    // Function to show the spinner while waiting
                     function showSpinner() {
                         const spinner = document.createElement('img');
                         spinner.src = 'images/loading4.gif';
@@ -387,7 +391,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         document.body.appendChild(spinner);
                     }
 
-                    // Function to hide the spinner once the operation is complete
                     function hideSpinner() {
                         const spinner = document.getElementById('loadingSpinner');
                         if (spinner) {
@@ -554,3 +557,5 @@ document.addEventListener('DOMContentLoaded', async function () {
 // Mark Twain Lk-Salt.Stage.Inst.~1Day.0.lakerep-rev-crest-note
 // Wappapello Lk-St Francis.Stage.Inst.~1Day.0.lakerep-rev-crest-note
 // Rend Lk-Big Muddy.Stage.Inst.~1Day.0.lakerep-rev-crest-note
+
+// time series are save at midnight

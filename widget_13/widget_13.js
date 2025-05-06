@@ -261,7 +261,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // Use "date-time-iso" for the date
                         const dateCell = document.createElement("td");
-                        dateCell.textContent = entry["date-time-iso"] || "No Date";
+                        // dateCell.textContent = entry["date-time-iso"] || "No Date";
+                        dateCell.textContent = new Date(entry["date-time-iso"]).toISOString().slice(5, 7) + '-' + new Date(entry["date-time-iso"]).toISOString().slice(8, 10) + '-' + new Date(entry["date-time-iso"]).toISOString().slice(0, 4);
                         row.appendChild(dateCell);
 
                         // Make the "text-value" editable
@@ -286,7 +287,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // Use "isoDateToday" as a fallback for the date
                     const dateCell = document.createElement("td");
-                    dateCell.textContent = isoDateToday;
+                    // dateCell.textContent = isoDateToday;
+                    dateCell.textContent = new Date(isoDateToday).toISOString().slice(5, 7) + '-' + new Date(isoDateToday).toISOString().slice(8, 10) + '-' + new Date(isoDateToday).toISOString().slice(0, 4);
                     row.appendChild(dateCell);
 
                     // Editable "text-value" with fallback from yesterday's data

@@ -148,7 +148,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const row = document.createElement("tr");
 
                 const dateCell = document.createElement("td");
-                dateCell.textContent = isoDateToday;
+                // dateCell.textContent = isoDateToday;
+                dateCell.textContent = new Date(isoDateToday).toISOString().slice(5, 7) + '-' + new Date(isoDateToday).toISOString().slice(8, 10) + '-' + new Date(isoDateToday).toISOString().slice(0, 4);
                 row.appendChild(dateCell);
 
                 const ruleCurveCell = document.createElement("td");

@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     messageCell.style.fontWeight = "bold";
                     messageCell.style.color = "red";
                     if (lake === "Mark Twain Lk-Salt") {
-                        messageCell.textContent = `Save "Gate Settings" and/or "Generation and Release" data first then click the refresh button.`;
+                        messageCell.textContent = `Save "Gate Settings" and "Generation and Release" data first then click the refresh button.`;
                     } else {
                         messageCell.textContent = `Save "Gate Settings" data first then click the refresh button.`;
                     }
