@@ -201,7 +201,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 if (formattedData.length === 0) {
                     const row = document.createElement("tr");
                     const dateCell = document.createElement("td");
-                    dateCell.textContent = convertTo6AMCST(isoDateToday);
+                    // dateCell.textContent = convertTo6AMCST(isoDateToday);
+                    dateCell.textContent = new Date(isoDateToday).toISOString().slice(5, 7) + '-' + new Date(isoDateToday).toISOString().slice(8, 10) + '-' + new Date(isoDateToday).toISOString().slice(0, 4);
                     row.appendChild(dateCell);
                     const precipCell = document.createElement("td");
                     const precipInput = document.createElement("input");
@@ -221,7 +222,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     formattedData.forEach((entry) => {
                         const row = document.createElement("tr");
                         const dateCell = document.createElement("td");
-                        dateCell.textContent = entry.formattedTimestampCST ? entry.formattedTimestampCST : entry.timestamp;
+                        // dateCell.textContent = entry.formattedTimestampCST ? entry.formattedTimestampCST : entry.timestamp;
+                        dateCell.textContent = new Date(entry.formattedTimestampCST).toISOString().slice(5, 7) + '-' + new Date(entry.formattedTimestampCST).toISOString().slice(8, 10) + '-' + new Date(entry.formattedTimestampCST).toISOString().slice(0, 4);
                         row.appendChild(dateCell);
                         const precipCell = document.createElement("td");
                         const precipInput = document.createElement("input");

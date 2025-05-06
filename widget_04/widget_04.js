@@ -918,7 +918,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     console.log("timeSeriesYesterdayDataOutflowAverage:", timeSeriesYesterdayDataOutflowAverage);
 
                     // Fetch tomorrow time series data
-                    timeSeriesTomorrowDataOutflow = await fetchTimeSeriesTomorrowData(tsidOutflowTotal);
+                    timeSeriesTomorrowDataOutflow = await fetchTimeSeriesTomorrowData(tsidGateTotal);
                     console.log("timeSeriesTomorrowDataOutflow:", timeSeriesTomorrowDataOutflow);
 
                     if ((timeSeriesDataGate1 && timeSeriesDataGate1.values && timeSeriesDataGate1.values.length > 0) || (timeSeriesYesterdayDataGate1 && timeSeriesYesterdayDataGate1.values && timeSeriesYesterdayDataGate1.values.length > 0)) {
