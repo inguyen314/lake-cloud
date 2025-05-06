@@ -352,6 +352,19 @@ document.addEventListener('DOMContentLoaded', async function () {
                 statusDiv.className = "status-schedule-instruction";
                 output13Div.appendChild(statusDiv);
 
+                const sendCannonBtn = document.createElement("button");
+                sendCannonBtn.textContent = "Send Cannon Requirements";
+                sendCannonBtn.id = "send-cannon";
+                sendCannonBtn.disabled = false;
+                sendCannonBtn.className = "fetch-btn";
+                // Set the URL you want to open
+                const cannonUrl = "https://wm.mvs.ds.usace.army.mil/mvs/cannon_requirements/index.html";
+
+                sendCannonBtn.addEventListener("click", () => {
+                    window.open(cannonUrl, "_blank");
+                });
+                output13Div.appendChild(sendCannonBtn);
+
                 const sendMvkBtn = document.createElement("button");
                 sendMvkBtn.textContent = "Send MVK Instructions";
                 sendMvkBtn.id = "send-mvk";
