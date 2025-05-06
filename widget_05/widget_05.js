@@ -248,7 +248,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                     messageCell.style.padding = "10px";
                     messageCell.style.fontWeight = "bold";
                     messageCell.style.color = "red";
-                    messageCell.textContent = `Save "Gate Settings" and/or "Generation and Release" data first then click the refresh button.`;
+                    if (lake === "Mark Twain Lk-Salt") {
+                        messageCell.textContent = `Save "Gate Settings" and/or "Generation and Release" data first then click the refresh button.`;
+                    } else {
+                        messageCell.textContent = `Save "Gate Settings" data first then click the refresh button.`;
+                    }
 
                     messageRow.appendChild(messageCell);
                     table.appendChild(messageRow);
