@@ -1617,7 +1617,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             gateTotalCell.appendChild(gateTotalInput);
                             row.appendChild(gateTotalCell);
 
-                            // Outflow Average Total (calculated)
+                            // Outflow Total (calculated)
                             if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                                 averageOutflowCalculate = ((formattedYesterdayDataGateTotal.at(-1)?.[1] ?? 909) + (formattedYesterdayDataSluiceTotal.at(-1)?.[1] ?? 909)).toFixed(0);
                                 const gateOutflowTotalCell = document.createElement("td");
@@ -2155,14 +2155,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville" || lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
                                 // Get the gateOutflowTotal input element and check if it exists
-                                gateOutflowTotalInput = document.getElementById('gateOutflowTotalInput');
+                                gateOutflowTotalInput = parseFloat(gateTotalInput.value) + parseFloat(sluiceTotalInput.value);
                                 console.log("gateOutflowTotalInput: ", gateOutflowTotalInput);
                                 if (!gateOutflowTotalInput) {
                                     console.error("gateOutflowTotalInput element not found!");
                                     return; // Exit if input is missing
                                 }
-                                if (!gateOutflowTotalInput.value) {
-                                    gateOutflowTotalInput.value = 909;
+                                if (!gateOutflowTotalInput) {
+                                    gateOutflowTotalInput = 909;
                                 }
                             }
 
@@ -2298,7 +2298,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     "values": [
                                         [
                                             convertToISO(timeInput),
-                                            gateOutflowTotalInput.value,
+                                            gateOutflowTotalInput,
                                             0
                                         ],
                                     ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
@@ -2329,7 +2329,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     "values": [
                                         [
                                             convertToISO(timeInput),
-                                            gateOutflowTotalInput.value,
+                                            gateOutflowTotalInput,
                                             0
                                         ],
                                     ].filter(item => item[0] !== null), // Filters out entries where time1 is null,
