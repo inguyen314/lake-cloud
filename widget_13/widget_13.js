@@ -315,14 +315,25 @@ document.addEventListener('DOMContentLoaded', async function () {
                     formattedDataInstruction["regular-text-values"].forEach((entry) => {
                         const instructionDiv = document.createElement("div");
                         instructionDiv.className = "status";
-                        const instructionInput = document.createElement("input");
+
+                        const instructionInput = document.createElement("textarea");
                         instructionInput.type = "text";
                         instructionInput.value = entry["text-value"] || "No Text";
                         instructionInput.id = "instruction-input";
                         instructionInput.placeholder = "Type your note...";
                         instructionInput.className = "editable-input";
+                        // Styling
                         instructionInput.style.textAlign = "center";
                         instructionInput.style.verticalAlign = "middle";
+                        instructionInput.style.padding = "8px";
+                        instructionInput.style.border = "1px solid #ccc";
+                        instructionInput.style.borderRadius = "6px";
+                        instructionInput.style.fontSize = "14px";
+                        instructionInput.style.width = "50%";
+                        instructionInput.style.boxSizing = "border-box";
+                        instructionInput.style.height = "auto";
+                        instructionInput.style.minHeight = "100px";
+                        instructionInput.style.resize = "vertical";
                         instructionDiv.appendChild(instructionInput);
                         output13Div.appendChild(instructionDiv);
                     });
@@ -330,14 +341,26 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const fallbackInstructionTextValue = formattedDataInstructionYesterday?.["regular-text-values"]?.[0]?.["text-value"];
                     const instructionDiv = document.createElement("div");
                     instructionDiv.className = "status";
-                    const instructionInput = document.createElement("input");
+
+                    const instructionInput = document.createElement("textarea");
                     instructionInput.type = "text";
+                    instructionInput.style.backgroundColor = "pink";
                     instructionInput.value = fallbackInstructionTextValue;
                     instructionInput.id = "instruction-input";
                     instructionInput.placeholder = "Type your note...";
                     instructionInput.className = "editable-input";
-                    instructionInput.style.textAlign = "center";
-                    instructionInput.style.verticalAlign = "middle";
+                     // Styling
+                     instructionInput.style.textAlign = "center";
+                     instructionInput.style.verticalAlign = "middle";
+                     instructionInput.style.padding = "8px";
+                     instructionInput.style.border = "1px solid #ccc";
+                     instructionInput.style.borderRadius = "6px";
+                     instructionInput.style.fontSize = "14px";
+                     instructionInput.style.width = "50%";
+                     instructionInput.style.boxSizing = "border-box";
+                     instructionInput.style.height = "auto";
+                     instructionInput.style.minHeight = "100px";
+                     instructionInput.style.resize = "vertical";
                     instructionDiv.appendChild(instructionInput);
                     output13Div.appendChild(instructionDiv);
                 }

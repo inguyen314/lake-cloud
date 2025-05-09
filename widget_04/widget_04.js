@@ -1483,6 +1483,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     console.log("todayDataExists:", todayDataExists);
 
                     let entryDates = [];
+                    let errorSpan = null;
 
                     // ********************************************************************************************************************************************** New Entry Data
                     if (todayDataExists === false) {
@@ -1632,6 +1633,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                             }
 
                             table.appendChild(row);
+
+                            // Create the span element
+                            errorSpan = document.createElement('span');
+                            errorSpan.id = 'error-message';
+                            errorSpan.style.color = 'red';
+                            errorSpan.style.display = 'block'; // Ensures it breaks onto a new line
+                            errorSpan.setAttribute('role', 'alert'); // For accessibility
+
+                            errorSpan.textContent = 'If "Total Gate" or "Outflow Total" differs from yesterday\'s input, please return to the previous day and recalculate the average outflow.';
                         });
                     }
 
@@ -1950,6 +1960,18 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const output6Div = document.getElementById("output4");
                     output6Div.innerHTML = ""; // Clear any existing content
                     output6Div.appendChild(table);
+
+                    if (todayDataExists === false) {
+                        // Error Span
+                        output6Div.appendChild(errorSpan);
+
+                        // Estimated Value Div
+                        const buttonEstimatedValue = document.createElement('div');
+                        buttonEstimatedValue.textContent = 'Yesterday Values';
+                        buttonEstimatedValue.id = 'estimated-value';
+                        buttonEstimatedValue.style.backgroundColor = 'pink';
+                        output6Div.appendChild(buttonEstimatedValue);
+                    }
 
                     // Create a tableOutflowAvg
                     const tableOutflowAvg = document.createElement("table");
