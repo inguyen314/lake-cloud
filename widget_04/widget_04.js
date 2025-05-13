@@ -3718,3 +3718,5 @@ document.addEventListener('DOMContentLoaded', async function () {
 //     p_db_office_id => v_db_office_id
 // );
 // END;
+
+// TODO: Check Average Outflow when add the first gate change for yesterday/today...
