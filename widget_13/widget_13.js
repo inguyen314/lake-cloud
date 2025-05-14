@@ -689,6 +689,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     console.log("Updated Schedule Text Values:", textScheduleValues);
                     console.log("Value Schedule: ", textScheduleValues[0]['text-value']);
 
+                    const fallbackTextValue = (textScheduleValues[0]?.['text-value']?.trim() || "909");
+
                     const payloadSchedule = {
                         "office-id": "MVS",
                         "name": tsidSchedule,
@@ -698,7 +700,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             {
                                 "date-time": isoDateToday,
                                 "data-entry-date": isoDateToday,
-                                "text-value": textScheduleValues[0]['text-value'],
+                                "text-value": fallbackTextValue,
                                 "filename": "test.txt",
                                 "media-type": "text/plain",
                                 "quality-code": 0,
