@@ -2364,7 +2364,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         if (todayDataExists === true) {
                             console.log("todayDataExists is true, preparing payloads for existing entry...");
 
-                            // Get existing data for the selected times
+                            // Log the existing gate settings and new user inputs
                             if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
                                 console.log("getAllSelectedTimes: ", getAllSelectedTimes());
                                 console.log("getAllSluice1Values: ", getAllSluice1Values());
@@ -2408,6 +2408,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             let tsidCategories = {};
                             let dataCategories = {};
 
+                            // Get the existing gate settings and new user inputs
                             if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
                                 tsidCategories = {
                                     sluice1: tsidSluice1,
@@ -2500,6 +2501,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             // Prepare the paylods object to be save.
                             payloads = {};
+
                             if (Array.isArray(selectedTimes) && Object.values(dataCategories).every(Array.isArray)) {
 
                                 Object.entries(dataCategories).forEach(([key, values]) => {
