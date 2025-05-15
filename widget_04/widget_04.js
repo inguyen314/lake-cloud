@@ -2790,10 +2790,16 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             // Step 2: Collect all gateOutflowTotalAdditionalInput values (if any)
                             for (let index = 0; index < entryDates.length; index++) {
-                                const additionalInput = document.getElementById(`gateOutflowTotalAdditionalInput-${index}`);
-                                if (additionalInput) {
-                                    const parsed = parseFloat(additionalInput.value);
-                                    values.push(isNaN(parsed) ? 909 : parsed);
+                                // const additionalInput = document.getElementById(`gateOutflowTotalAdditionalInput-${index}`);
+                                const gateInput = document.getElementById(`gateTotalAdditionalInput-${index}`);
+                                const sluiceInput = document.getElementById(`sluiceTotalAdditionalInput-${index}`);
+
+                                const additionalInput = (parseFloat(gateInput?.value) || 909) + (parseFloat(sluiceInput?.value) || 909);
+
+                                if (!isNaN(additionalInput)) {
+                                    values.push(additionalInput);
+                                } else {
+                                    values.push(909);  // fallback if invalid
                                 }
                             }
 
