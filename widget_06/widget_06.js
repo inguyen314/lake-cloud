@@ -263,12 +263,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output6Div.innerHTML = "";
                 output6Div.appendChild(table);
 
+                // Create the buttonRefresh button
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
                 cdaSaveBtn.id = "cda-btn-lake-forecast";
                 cdaSaveBtn.disabled = true;
                 output6Div.appendChild(cdaSaveBtn);
 
+                // Create the statusDiv
                 const statusDiv = document.createElement("div");
                 statusDiv.className = "status-lake-forecast";
                 output6Div.appendChild(statusDiv);

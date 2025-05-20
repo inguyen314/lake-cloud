@@ -345,3 +345,35 @@ function testData(widgetId, lake, datetime) {
     window.open(url, '_blank');
 }
 
+function morningShef(datetime) {
+    // Define the URL to open in a new tab
+    const url = `https://wm.mvs.ds.usace.army.mil/mvs/morning_shef/index.html?office=MVS&datetime=${datetime}`;
+    // Open the URL in a new tab
+    window.open(url, '_blank');
+}
+
+function morningShefExisting(datetime) {
+    // Define the URL to open in a new tab
+    const url = `https://wm.mvs.ds.usace.army.mil/mvs/morning_shef/index.php`;
+    // Open the URL in a new tab
+    window.open(url, '_blank');
+}
+
+function plotMacro(lake, datetime) {
+    // Define the URL to open in a new tab
+    let url = null;
+    if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
+        url = `https://wm.mvs.ds.usace.army.mil/mvs/chart/index.html?basin=Shelbyville&office=MVS&cwms_ts_id=Shelbyville+TW-Kaskaskia.Flow.Inst.30Minutes.0.RatingUSGS&cda=internal`;
+    } else if (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk") {
+        url = `https://wm.mvs.ds.usace.army.mil/mvs/chart/index.html?office=MVS&basin=Mark%20Twain&cwms_ts_id=Norton%20Bridge-Salt.Flow.Inst.15Minutes.0.RatingUSGS`;
+    } else if (lake === "Carlyle Lk-Kaskaskia" || lake === "Carlyle Lk") {
+        url = `https://wm.mvs.ds.usace.army.mil/mvs/chart/index.html?office=MVS&basin=Carlyle&cwms_ts_id=Carlyle-Kaskaskia.Flow.Inst.15Minutes.0.RatingUSGS`;
+    } else if (lake === "Wappapello Lk-St Francis" || lake === "Wappapello Lk") {
+        url = `https://wm.mvs.ds.usace.army.mil/mvs/chart/index.html?office=MVS&basin=Wappapello&cwms_ts_id=Iron%20Bridge-St%20Francis.Flow.Inst.30Minutes.0.RatingUSGS`;
+    } else if (lake === "Rend Lk-Big Muddy" || lake === "Rend Lk") {
+        url = `https://wm.mvs.ds.usace.army.mil/mvs/chart/index.html?office=MVS&basin=Rend&cwms_ts_id=Rend%20Lk-Big%20Muddy.Flow.Inst.30Minutes.0.RatingCOE`;
+    }
+
+    // Open the URL in a new tab
+    window.open(url, '_blank');
+}

@@ -121,6 +121,7 @@ button {
     /* background-color: green; */
     /* color: white; */
     text-align: center;
+    margin-right: 5px;
 }
 
 .modern-button {
