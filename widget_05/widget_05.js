@@ -276,10 +276,15 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             if (delta == null) {
                                 chgStorageCell.textContent = '—'; // or 'N/A'
-                            } else if (delta < 0) {
-                                chgStorageCell.textContent = `-${Math.abs(delta).toFixed(0)}`;
                             } else {
-                                chgStorageCell.textContent = `+${(delta).toFixed(0)}`;
+                                // Round to 2 decimal places first, then to whole number
+                                const roundedToTwo = Math.round(delta * 100) / 100;
+                                const deltaFinalRounded = Math.round(roundedToTwo);
+
+                                // Add sign accordingly
+                                chgStorageCell.textContent =
+                                    deltaFinalRounded > 0 ? `+${deltaFinalRounded}` :
+                                        deltaFinalRounded < 0 ? `${deltaFinalRounded}` : '0';
                             }
 
                             row.appendChild(chgStorageCell);
@@ -306,7 +311,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // console.log("curentDayEvapValue:", curentDayEvapValue);
 
                             const val = Math.round((parseFloat(formattedAverageOutflowData[j]?.value)) / 10) * 10;
-                            const deltaVal = Math.round(parseFloat(delta));
+                            const deltaVal = Math.round(Math.round(delta * 100) / 100);
                             const evapVal = Math.round(parseFloat(curentDayEvapValue));
                             console.log("Storage + Average Outflow + Evaporation: ", deltaVal, val, evapVal, " = ", (deltaVal + val + evapVal));
                             let storageOutflowEvapCell = document.createElement("td");

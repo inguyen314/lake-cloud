@@ -3727,4 +3727,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 // );
 // END;
 
+// BEGIN
+//   cwms_loc.assign_loc_group(
+//     p_loc_category_id => 'MVS',
+//     p_loc_group_id    => 'Board',
+//     p_location_id     => 'Thebes-Mississippi',
+//     p_loc_alias_id    => NULL,      -- Optional alias, provide if needed
+//     p_db_office_id    => 'MVS'      -- Replace with appropriate office ID
+//   );
+// END;
+
 // TODO: Check Average Outflow when add the first gate change for yesterday/today...
