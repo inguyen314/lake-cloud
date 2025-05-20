@@ -377,3 +377,17 @@ function plotMacro(lake, datetime) {
     // Open the URL in a new tab
     window.open(url, '_blank');
 }
+
+function netmissShef(datetime) {
+    // Define the URL to open in a new tab
+    const url = `https://wm.mvs.ds.usace.army.mil/mvs/netmiss_shef/index.html?office=MVS&datetime=${datetime}`;
+    // Open the URL in a new tab
+    window.open(url, '_blank');
+}
+
+function melPriceDrawdown(datetime) {
+    // Define the URL to open in a new tab
+    const url = `https://wm.mvs.ds.usace.army.mil/mvs/mel_price_drawdown/index.html?office=MVS&datetime=${datetime}`;
+    // Open the URL in a new tab
+    window.open(url, '_blank');
+}
