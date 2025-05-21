@@ -191,6 +191,18 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const output166Div = document.getElementById("output166");
                 output166Div.innerHTML = "";
 
+                const forecastDateTitle = document.createElement("h2");
+                forecastDateTitle.textContent = `Forecast Date: ${datetime}`;
+                forecastDateTitle.style.marginBottom = "10px";
+                forecastDateTitle.style.color = "red";
+                output166Div.appendChild(forecastDateTitle);
+
+                const forecastEvapTitle = document.createElement("h3");
+                forecastEvapTitle.textContent = `OBS 24hr Precip ~ 0.1" // OBS 7-Day Precip ~ 1.5" // Total QPF ~ 1.8" // Percent Runoff ~ 16%`;
+                forecastEvapTitle.style.marginBottom = "20px";
+                forecastEvapTitle.style.color = "red";
+                output166Div.appendChild(forecastEvapTitle);
+
                 // Create the table
                 const table = document.createElement("table");
                 table.id = "inflow";
@@ -289,12 +301,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Precip
                     const precipCell = document.createElement("td");
                     precipCell.textContent = "--"; // Placeholder
+                    precipCell.style.color = "red";
                     row.appendChild(precipCell);
 
                     // Append row
                     table.appendChild(row);
                 });
-
             }
 
             loadingIndicator.style.display = 'none';
