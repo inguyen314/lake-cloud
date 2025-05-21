@@ -3727,6 +3727,18 @@ document.addEventListener('DOMContentLoaded', async function () {
 // );
 // END;
 
+
+// BEGIN
+//   CWMS_TS.unassign_ts_group(
+//     p_ts_category_id => 'Carlyle Lk-Kaskaskia',
+//     p_ts_group_id    => 'CWMS-Forecast-Flow-Out-QPF',
+//     p_ts_id          => 'Carlyle Lk-Kaskaskia.Flow-Out.Inst.1Hour.0.CWMS-Forecast-QPF',
+//     p_unassign_all   => 'T',
+//     p_db_office_id   => 'MVS'
+//   );
+// END;
+
+
 // BEGIN
 //   cwms_loc.assign_loc_group(
 //     p_loc_category_id => 'MVS',
@@ -3734,6 +3746,15 @@ document.addEventListener('DOMContentLoaded', async function () {
 //     p_location_id     => 'Thebes-Mississippi',
 //     p_loc_alias_id    => NULL,      -- Optional alias, provide if needed
 //     p_db_office_id    => 'MVS'      -- Replace with appropriate office ID
+//   );
+// END;
+
+
+// BEGIN
+//   CWMS_TS.delete_ts_group(
+//     p_ts_category_id => 'Lk Shelbyville-Kaskaskia',
+//     p_ts_group_id    => 'CWMS-Forecast-Flow-Out-NoQPF',
+//     p_db_office_id   => 'MVS'  -- optional; omit or pass NULL if not needed
 //   );
 // END;
 

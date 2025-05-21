@@ -2,6 +2,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("lake: ", lake);
     console.log('datetime: ', datetime);
 
+    const loadingIndicator = document.getElementById('loading_cwms_model');
+    loadingIndicator.style.display = 'block';
+
     let setBaseUrl = null;
     if (cda === "internal") {
         setBaseUrl = `https://wm.${office.toLowerCase()}.ds.usace.army.mil/${office.toLowerCase()}-data/`;
@@ -33,6 +36,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const isoDateDay5 = getIsoDateWithOffsetDynamic(year, month, day, 5);
     const isoDateDay6 = getIsoDateWithOffsetDynamic(year, month, day, 6);
     const isoDateDay7 = getIsoDateWithOffsetDynamic(year, month, day, 7);
+    const isoDateDay14 = getIsoDateWithOffsetDynamic(year, month, day, 14);
 
     console.log("isoDateMinus8Days:", isoDateMinus8Days);
     console.log("isoDateMinus7Days:", isoDateMinus7Days);
@@ -63,7 +67,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     urlTsidStageNoQpf = `${setBaseUrl}timeseries/group/CWMS-Forecast-Stage-NoQPF?office=${office}&category-id=${lake}`;
     console.log("urlTsidStageNoQpf:", urlTsidStageNoQpf);
     console.log("urlTsidStageQpf:", urlTsidStageQpf);
-    
+
     urlTsidInflowQpf = `${setBaseUrl}timeseries/group/CWMS-Forecast-Flow-In-QPF?office=${office}&category-id=${lake}`;
     urlTsidInflowNoQpf = `${setBaseUrl}timeseries/group/CWMS-Forecast-Flow-In-NoQPF?office=${office}&category-id=${lake}`;
     console.log("urlTsidInflowQpf:", urlTsidInflowQpf);
@@ -81,8 +85,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("levelIdUrl:", levelIdUrl);
 
     const fetchTimeSeriesData = async (tsid) => {
-        const beginDate = lookback !== null ? lookback : isoDateMinus6Days;
-        const tsidData = `${setBaseUrl}timeseries?page-size=1000000&name=${tsid}&begin=${beginDate}&end=${isoDateToday}&office=${office}`;
+        const tsidData = `${setBaseUrl}timeseries?page-size=1000000&name=${tsid}&begin=${isoDateToday}&end=${isoDateDay14}&office=${office}`;
         console.log('tsidData:', tsidData);
         try {
             const response = await fetch(tsidData, {
@@ -100,520 +103,201 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     const fetchTsidData = async () => {
         try {
-            const response1 = await fetch(urlTsidStageNoQpf);
-            const response2 = await fetch(urlTsidStageQpf);
-            const response3 = await fetch(levelIdUrl);
-            const response4 = await fetch(urlTsidInflowQpf);
-            const response5 = await fetch(urlTsidInflowNoQpf);
-            const response6 = await fetch(urlTsidOutflowQpf);
-            const response7 = await fetch(urlTsidOutflowNoQpf);
+            const response1 = await fetch(urlTsidStageQpf);
+            const response2 = await fetch(urlTsidStageNoQpf);
+            const response3 = await fetch(urlTsidInflowQpf);
+            const response4 = await fetch(urlTsidInflowNoQpf);
+            const response5 = await fetch(urlTsidOutflowQpf);
+            const response6 = await fetch(urlTsidOutflowNoQpf);
+            const response7 = await fetch(levelIdUrl);
 
-            const tsidStageNoQpfData = await response1.json();
-            const tsidStageQpfData = await response2.json();
-            const tsidEvapLevelData = await response3.json();
-            const tsidInflowQpfData = await response4.json();
-            const tsidInflowNoQpfData = await response5.json();
-            const tsidOutflowQpfData = await response6.json();
-            const tsidOutflowNoQpfData = await response7.json();
+            const tsidStageQpfData = await response1.json();
+            const tsidStageNoQpfData = await response2.json();
+            const tsidInflowQpfData = await response3.json();
+            const tsidInflowNoQpfData = await response4.json();
+            const tsidOutflowQpfData = await response5.json();
+            const tsidOutflowNoQpfData = await response6.json();
+            const tsidEvapLevelData = await response7.json();
 
-            console.log("tsidEvapLevelData:", tsidEvapLevelData);
-
-            const tsidStageNoQpf = tsidStageNoQpfData['assigned-time-series'][0]['timeseries-id'];
             const tsidStageQpf = tsidStageQpfData['assigned-time-series'][0]['timeseries-id'];
-            const tsidEvaporation = tsidEvapLevelData['location-level-id'];
+            const tsidStageNoQpf = tsidStageNoQpfData['assigned-time-series'][0]['timeseries-id'];
             const tsidInflowQpf = tsidInflowQpfData['assigned-time-series'][0]['timeseries-id'];
-            const tsidComputedInflow = tsidInflowNoQpfData['assigned-time-series'][0]['timeseries-id'];
+            const tsidInflowNoQpf = tsidInflowNoQpfData['assigned-time-series'][0]['timeseries-id'];
             const tsidOutflowQpf = tsidOutflowQpfData['assigned-time-series'][0]['timeseries-id'];
             const tsidOutflowNoQpf = tsidOutflowNoQpfData['assigned-time-series'][0]['timeseries-id'];
+            const tsidEvaporation = tsidEvapLevelData['location-level-id'];
 
             const curentMonthEvapValue = getEvapValueForMonth(tsidEvapLevelData, month);
             console.log("curentMonthEvapValue:", curentMonthEvapValue);
 
-            console.log("tsidStageNoQpf:", tsidStageNoQpf);
             console.log("tsidStageQpf:", tsidStageQpf);
-            console.log("tsidEvaporation:", tsidEvaporation);
+            console.log("tsidStageNoQpf:", tsidStageNoQpf);
             console.log("tsidInflowQpf:", tsidInflowQpf);
-            console.log("tsidComputedInflow:", tsidComputedInflow);
+            console.log("tsidInflowNoQpf:", tsidInflowNoQpf);
             console.log("tsidOutflowQpf:", tsidOutflowQpf);
             console.log("tsidOutflowNoQpf:", tsidOutflowNoQpf);
+            console.log("tsidEvaporation:", tsidEvaporation);
 
-            const timeSeriesData1 = await fetchTimeSeriesData(tsidStageNoQpf);
-            const timeSeriesData2 = await fetchTimeSeriesData(tsidStageQpf);
-            const timeSeriesData3 = await fetchTimeSeriesData(tsidInflowQpf);
-            const timeSeriesData4 = await fetchTimeSeriesData(tsidComputedInflow);
+            const timeSeriesStageQpfData = await fetchTimeSeriesData(tsidStageQpf);
+            const timeSeriesStageNoQpfData = await fetchTimeSeriesData(tsidStageNoQpf);
+            const timeSeriesInflowQpfData = await fetchTimeSeriesData(tsidInflowQpf);
+            const timeSeriesInflowNoQpfData = await fetchTimeSeriesData(tsidInflowNoQpf);
+            const timeSeriesOutflowQpfData = await fetchTimeSeriesData(tsidOutflowQpf);
+            const timeSeriesOutflowNoQpfData = await fetchTimeSeriesData(tsidOutflowNoQpf);
 
-            console.log("timeSeriesData1:", timeSeriesData1);
-            console.log("timeSeriesData2:", timeSeriesData2);
-            console.log("timeSeriesData3:", timeSeriesData3);
-            console.log("timeSeriesData4:", timeSeriesData4);
+            console.log("timeSeriesStageQpfData:", timeSeriesStageQpfData);
+            console.log("timeSeriesStageNoQpfData:", timeSeriesStageNoQpfData);
+            console.log("timeSeriesInflowQpfData:", timeSeriesInflowQpfData);
+            console.log("timeSeriesInflowNoQpfData:", timeSeriesInflowNoQpfData);
+            console.log("timeSeriesOutflowQpfData:", timeSeriesOutflowQpfData);
+            console.log("timeSeriesOutflowNoQpfData:", timeSeriesOutflowNoQpfData);
 
-            const hourlyData1 = getMidnightData(timeSeriesData1, tsidStageNoQpf);
-            const hourlyData2 = getMidnightData(timeSeriesData2, tsidStageQpf);
-            const hourlyConsensusData = getMidnightData(timeSeriesData3, tsidInflowQpf);
-            const hourlyComputedInflowData = getMidnightData(timeSeriesData4, tsidComputedInflow);
+            createTable(timeSeriesStageQpfData, timeSeriesStageNoQpfData, timeSeriesInflowQpfData, timeSeriesInflowNoQpfData, timeSeriesOutflowQpfData, timeSeriesOutflowNoQpfData);
 
-            console.log("hourlyData1:", hourlyData1);
-            console.log("hourlyData2:", hourlyData2);
-            console.log("hourlyConsensusData:", hourlyConsensusData);
-            console.log("hourlyComputedInflowData:", hourlyComputedInflowData);
+            function createTable(timeSeriesStageQpfData, timeSeriesStageNoQpfData, timeSeriesInflowQpfData, timeSeriesInflowNoQpfData, timeSeriesOutflowQpfData, timeSeriesOutflowNoQpfData) {
+                const amStageQpf = get6amData(timeSeriesStageQpfData, tsidStageQpf);
+                const amStageNoQpf = get6amData(timeSeriesStageNoQpfData, tsidStageNoQpf);
+                const amInflowQpf = get6amData(timeSeriesInflowQpfData, tsidInflowQpf);
+                const amInflowNoQpf = get6amData(timeSeriesInflowNoQpfData, tsidInflowNoQpf);
+                const amOutflowQpf = get6amData(timeSeriesOutflowQpfData, tsidOutflowQpf);
+                const amOutflowNoQpf = get6amData(timeSeriesOutflowNoQpfData, tsidOutflowNoQpf);
 
-            let cdaSaveBtn;
-
-            async function isLoggedIn() {
-                try {
-                    const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", {
-                        method: "GET"
+                // Helper to format any 6AM data array
+                const formatTimeSeries = (dataArray) => {
+                    return dataArray.map(entry => {
+                        const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp));
+                        return {
+                            ...entry,
+                            formattedTimestamp
+                        };
                     });
+                };
 
-                    if (response.status === 401) return false;
+                const timeSeriesStageQpfDataFormatted = formatTimeSeries(amStageQpf);
+                const timeSeriesStageNoQpfDataFormatted = formatTimeSeries(amStageNoQpf);
+                const timeSeriesInflowQpfDataFormatted = formatTimeSeries(amInflowQpf);
+                const timeSeriesInflowNoQpfDataFormatted = formatTimeSeries(amInflowNoQpf);
+                const timeSeriesOutflowQpfDataFormatted = formatTimeSeries(amOutflowQpf);
+                const timeSeriesOutflowNoQpfDataFormatted = formatTimeSeries(amOutflowNoQpf);
 
-                    console.log('status', response.status);
-                    return true;
+                console.log("Stage QPF:", timeSeriesStageQpfDataFormatted);
+                console.log("Stage No QPF:", timeSeriesStageNoQpfDataFormatted);
+                console.log("Inflow QPF:", timeSeriesInflowQpfDataFormatted);
+                console.log("Inflow No QPF:", timeSeriesInflowNoQpfDataFormatted);
+                console.log("Outflow QPF:", timeSeriesOutflowQpfDataFormatted);
+                console.log("Outflow No QPF:", timeSeriesOutflowNoQpfDataFormatted);
 
-                } catch (error) {
-                    console.error('Error checking login status:', error);
-                    return false;
-                }
+
+                const output166Div = document.getElementById("output166");
+                output166Div.innerHTML = "";
+
+                // Create the table
+                const table = document.createElement("table");
+                table.id = "inflow";
+
+                // First header row
+                const headerRow1 = document.createElement("tr");
+
+                const dateHeader = document.createElement("th");
+                dateHeader.textContent = "Date";
+                dateHeader.rowSpan = 2;
+                headerRow1.appendChild(dateHeader);
+
+                const poolStageHeader = document.createElement("th");
+                poolStageHeader.textContent = "Pool Stage (ft)";
+                poolStageHeader.colSpan = 2;
+                headerRow1.appendChild(poolStageHeader);
+
+                const inflowHeader = document.createElement("th");
+                inflowHeader.textContent = "Inflow (DSF)";
+                inflowHeader.colSpan = 2;
+                headerRow1.appendChild(inflowHeader);
+
+                const outflowHeader = document.createElement("th");
+                outflowHeader.textContent = "Outflow (DSF)";
+                outflowHeader.colSpan = 2;
+                headerRow1.appendChild(outflowHeader);
+
+                const precipHeader = document.createElement("th");
+                precipHeader.textContent = "Precip (in)";
+                precipHeader.rowSpan = 2;
+                headerRow1.appendChild(precipHeader);
+
+                table.appendChild(headerRow1);
+
+                // Second header row
+                const headerRow2 = document.createElement("tr");
+                ["No QPF", "QPF", "No QPF", "QPF", "No QPF", "QPF"].forEach(label => {
+                    const th = document.createElement("th");
+                    th.textContent = label;
+                    headerRow2.appendChild(th);
+                });
+
+                table.appendChild(headerRow2);
+
+                // Append the complete table to the container div
+                output166Div.appendChild(table);
+
+                timeSeriesStageQpfDataFormatted.forEach((dataPoint, index) => {
+                    const row = document.createElement("tr");
+
+                    // Date
+                    const dateCell = document.createElement("td");
+                    dateCell.textContent = dataPoint.formattedTimestamp;
+                    row.appendChild(dateCell);
+
+                    // Pool No QPF
+                    const poolNoQpfCell = document.createElement("td");
+                    poolNoQpfCell.innerHTML = timeSeriesStageNoQpfDataFormatted?.[index]?.value != null
+                        ? "<span title='" + timeSeriesStageNoQpfDataFormatted[index]['tsid'] + "'>" + doubleRoundToOneDecimal(timeSeriesStageNoQpfDataFormatted[index].value) + "</span>"
+                        : "";
+                    row.appendChild(poolNoQpfCell);
+
+                    // Pool QPF
+                    const poolQpfCell = document.createElement("td");
+                    poolQpfCell.textContent = doubleRoundToOneDecimal(dataPoint.value); // from QPF array
+                    row.appendChild(poolQpfCell);
+
+                    // Inflow No QPF
+                    const inflowNoQpfCell = document.createElement("td");
+                    inflowNoQpfCell.textContent = timeSeriesInflowNoQpfDataFormatted?.[index]?.value != null
+                        ? Math.round((timeSeriesInflowNoQpfDataFormatted[index].value) / 10) * 10
+                        : "";
+                    row.appendChild(inflowNoQpfCell);
+
+                    // Inflow QPF
+                    const inflowQpfCell = document.createElement("td");
+                    inflowQpfCell.textContent = timeSeriesInflowQpfDataFormatted?.[index]?.value != null
+                        ? Math.round((timeSeriesInflowQpfDataFormatted[index].value) / 10) * 10
+                        : "";
+                    row.appendChild(inflowQpfCell);
+
+                    // Outflow No QPF
+                    const outflowNoQpfCell = document.createElement("td");
+                    outflowNoQpfCell.textContent = timeSeriesOutflowNoQpfDataFormatted?.[index]?.value != null
+                        ? Math.round((timeSeriesOutflowNoQpfDataFormatted[index].value) / 10) * 10
+                        : "";
+                    row.appendChild(outflowNoQpfCell);
+
+                    // Outflow QPF
+                    const outflowQpfCell = document.createElement("td");
+                    outflowQpfCell.textContent = timeSeriesOutflowQpfDataFormatted?.[index]?.value != null
+                        ? Math.round((timeSeriesOutflowQpfDataFormatted[index].value) / 10) * 10
+                        : "";
+                    row.appendChild(outflowQpfCell);
+
+                    // Precip
+                    const precipCell = document.createElement("td");
+                    precipCell.textContent = "--"; // Placeholder
+                    row.appendChild(precipCell);
+
+                    // Append row
+                    table.appendChild(row);
+                });
+
             }
 
-            async function loginStateController() {
-                cdaSaveBtn = document.getElementById("cda-btn-inflow"); // Get the button by its ID
-
-                cdaSaveBtn.disabled = true; // Disable button while checking login state
-
-                // Update button text based on login status
-                if (await isLoggedIn()) {
-                    cdaSaveBtn.innerText = "Save";
-                } else {
-                    cdaSaveBtn.innerText = "Login";
-                }
-
-                cdaSaveBtn.disabled = false; // Re-enable button
-            }
-
-            let formattedStorageData = hourlyData1.map(entry => {
-                const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
-                // console.log("Original (hourlyData1):", entry.timestamp, "Formatted:", formattedTimestamp);
-                return {
-                    ...entry,
-                    formattedTimestamp
-                };
-            });
-
-            let formattedAverageOutflowData = hourlyData2.map(entry => {
-                const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
-                // console.log("Original (hourlyData2):", entry.timestamp, "Formatted:", formattedTimestamp);
-                return {
-                    ...entry,
-                    formattedTimestamp
-                };
-            });
-
-            formattedStorageData = addDeltaAsDsfToData(formattedStorageData);
-            formattedStorageData = shiftDeltaUp(formattedStorageData);
-
-            console.log("formattedStorageData:", formattedStorageData);
-            console.log("formattedAverageOutflowData:", formattedAverageOutflowData);
-
-            // createTable(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData);
-
-            // loginStateController()
-            // setInterval(async () => {
-            //     loginStateController()
-            // }, 10000);
-
-            // function createTable(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData) {
-            //     // Create the table element
-            //     const table = document.createElement("table");
-
-            //     // Apply the ID "inflow" to the table
-            //     table.id = "inflow";
-
-            //     // Create the table header row
-            //     const headerRow = document.createElement("tr");
-
-            //     const chgStorageHeader = document.createElement("th");
-            //     chgStorageHeader.textContent = "Date";
-            //     headerRow.appendChild(chgStorageHeader);
-
-            //     const stageHeader = document.createElement("th");
-            //     stageHeader.textContent = "Change Storage (dsf)";
-            //     headerRow.appendChild(stageHeader);
-
-            //     const averageOutflowHeader = document.createElement("th");
-            //     averageOutflowHeader.textContent = "Average Outflow (dsf)";
-            //     headerRow.appendChild(averageOutflowHeader);
-
-            //     const storageOutflowEvapHeader = document.createElement("th");
-            //     storageOutflowEvapHeader.textContent = "Inflow Storage w/ Evap (dsf)";
-            //     headerRow.appendChild(storageOutflowEvapHeader);
-
-            //     const consensusHeader = document.createElement("th");
-            //     consensusHeader.textContent = "Consensus (dsf)";
-            //     headerRow.appendChild(consensusHeader);
-
-            //     const balanceFlagHeader = document.createElement("th");
-            //     balanceFlagHeader.textContent = "Balance Flag";
-            //     headerRow.appendChild(balanceFlagHeader);
-
-            //     table.appendChild(headerRow);
-
-            //     if (formattedAverageOutflowData.length <= 6) {
-            //         const messageRow = document.createElement("tr");
-            //         const messageCell = document.createElement("td");
-            //         messageCell.colSpan = 6; // adjust depending on how many columns your table has
-            //         messageCell.style.textAlign = "center";
-            //         messageCell.style.padding = "10px";
-            //         messageCell.style.fontWeight = "bold";
-            //         messageCell.style.color = "red";
-            //         if (lake === "Mark Twain Lk-Salt") {
-            //             messageCell.textContent = `Save "Gate Settings" and "Generation and Release" data first then click the refresh button.`;
-            //         } else {
-            //             messageCell.textContent = `Save "Gate Settings" data first then click the refresh button.`;
-            //         }
-
-            //         messageRow.appendChild(messageCell);
-            //         table.appendChild(messageRow);
-            //     } else {
-            //         // Combine the data based on matching timestamps
-            //         let i = 0;
-            //         let j = 0;
-
-            //         while (i < formattedStorageData.length - 1 && j < formattedAverageOutflowData.length - 1) {
-            //             if (formattedStorageData[i].formattedTimestamp === formattedAverageOutflowData[j].formattedTimestamp) {
-            //                 const row = document.createElement("tr");
-
-            //                 // Date Time
-            //                 const dateCell = document.createElement("td");
-            //                 dateCell.textContent = formattedStorageData[i].formattedTimestamp.split(' ')[0]; // Display formattedTimestamp as Date
-            //                 row.appendChild(dateCell);
-
-            //                 // Change in Storage
-            //                 const chgStorageCell = document.createElement("td");
-            //                 const delta = formattedStorageData[i].delta;
-
-            //                 if (delta == null) {
-            //                     chgStorageCell.textContent = '—'; // or 'N/A'
-            //                 } else if (delta < 0) {
-            //                     chgStorageCell.textContent = `-${Math.abs(delta).toFixed(0)}`;
-            //                 } else {
-            //                     chgStorageCell.textContent = `+${(delta).toFixed(0)}`;
-            //                 }
-
-            //                 row.appendChild(chgStorageCell);
-
-            //                 // Average Outflow
-            //                 const averageOutflowCell = document.createElement("td");
-            //                 if (formattedAverageOutflowData[j].value !== null && formattedAverageOutflowData[j].value !== undefined) {
-            //                     averageOutflowCell.textContent = formattedAverageOutflowData[j].value.toFixed(0);
-            //                 } else {
-            //                     // Handle the case where the value is null or undefined
-            //                     averageOutflowCell.textContent = 'N/A'; // Or any default value you'd prefer
-            //                 }
-
-            //                 row.appendChild(averageOutflowCell);
-
-            //                 // Storage + Average Outflow + Evaporation
-            //                 const datePart = formattedStorageData[i].formattedTimestamp.split(' ')[0]; // "04-30-2025"
-            //                 const currentMonth = datePart.split('-')[0]; // "04"
-
-            //                 // You can now use `currentMonth` inside your loop
-            //                 // console.log("currentMonth: ", currentMonth);
-
-            //                 const curentDayEvapValue = getEvapValueForMonth(tsidEvapLevelData, currentMonth);
-            //                 // console.log("curentDayEvapValue:", curentDayEvapValue);
-
-            //                 const val = Math.round((parseFloat(formattedAverageOutflowData[j]?.value)) / 10) * 10;
-            //                 const deltaVal = Math.round(parseFloat(delta));
-            //                 const evapVal = Math.round(parseFloat(curentDayEvapValue));
-            //                 console.log("Storage + Average Outflow + Evaporation: ", deltaVal, val, evapVal, " = ", (deltaVal + val + evapVal));
-            //                 let storageOutflowEvapCell = document.createElement("td");
-            //                 let total = null;
-
-            //                 // Check if any of the values are NaN (which means they were null, undefined, or not numeric)
-            //                 if (isNaN(val) || isNaN(deltaVal) || isNaN(evapVal)) {
-            //                     storageOutflowEvapCell.textContent = 'N/A';
-            //                     storageOutflowEvapCell.type = "text";
-            //                     storageOutflowEvapCell.value = 'N/A';
-            //                     storageOutflowEvapCell.title = ''; // Clear title when not applicable
-            //                 } else {
-            //                     total = (val + deltaVal + evapVal).toFixed(0);
-            //                     storageOutflowEvapCell.textContent = total;
-            //                     storageOutflowEvapCell.type = "number";
-            //                     storageOutflowEvapCell.value = total;
-            //                     storageOutflowEvapCell.title = `Val: ${val}, ΔVal: ${deltaVal}, Evap: ${evapVal}`;
-            //                 }
-
-            //                 storageOutflowEvapCell.id = `storage-outflow-evap-${formattedStorageData[i].formattedTimestamp}`;
-            //                 row.appendChild(storageOutflowEvapCell);
-
-            //                 // Consensus
-            //                 const consensusCell = document.createElement("td");
-            //                 consensusCell.style.textAlign = "center"; // Horizontally center the cell content
-            //                 consensusCell.style.verticalAlign = "middle"; // Vertically center the content
-
-            //                 const input = document.createElement("input");
-            //                 input.type = "number";
-
-            //                 const consensusEntry = hourlyConsensusData[i];
-            //                 const isMissingValue = !consensusEntry || consensusEntry.value == null;
-
-            //                 const consensusValue = isMissingValue ? Math.round(total / 10) * 10 : consensusEntry.value;
-            //                 input.value = Number(consensusValue).toFixed(0);
-
-            //                 // Set background color to pink if original value was null/undefined
-            //                 if (isMissingValue) {
-            //                     input.style.backgroundColor = '#e6ccff';
-            //                 }
-
-
-            //                 input.style.width = "60px";
-            //                 input.style.textAlign = "center"; // Horizontally center text inside the input
-
-            //                 input.id = `consensus-${formattedStorageData[i].formattedTimestamp}`;
-            //                 consensusCell.appendChild(input);
-            //                 row.appendChild(consensusCell);
-
-            //                 // Quality Code
-            //                 const qualityCodeCell = document.createElement("td");
-            //                 qualityCodeCell.style.textAlign = "center"; // Horizontally center the cell content
-            //                 qualityCodeCell.style.verticalAlign = "middle"; // Vertically center the content
-
-            //                 const qualityInput = document.createElement("input");
-            //                 qualityInput.type = "text";
-            //                 qualityInput.value = consensusEntry && consensusEntry.qualityCode != null ? consensusEntry.qualityCode : '';
-
-            //                 qualityInput.style.width = "60px";
-            //                 qualityInput.style.textAlign = "center"; // Center text inside input
-            //                 qualityInput.id = `quality-code-${formattedStorageData[i].formattedTimestamp}`;
-
-            //                 qualityCodeCell.appendChild(qualityInput);
-            //                 row.appendChild(qualityCodeCell);
-
-            //                 table.appendChild(row);
-
-            //                 // Move to next entry in both datasets
-            //                 i++;
-            //                 j++;
-            //             } else if (formattedStorageData[i].formattedTimestamp < formattedAverageOutflowData[j].formattedTimestamp) {
-            //                 // If the timestamp in formattedStorageData is earlier, just move to the next entry in formattedStorageData
-            //                 i++;
-            //             } else {
-            //                 // If the timestamp in formattedAverageOutflowData is earlier, just move to the next entry in formattedAverageOutflowData
-            //                 j++;
-            //             }
-            //         }
-            //     }
-
-            //     // Append the table to the specific container
-            //     const output5Div = document.getElementById("output5");
-            //     output5Div.innerHTML = "";
-            //     output5Div.appendChild(table);
-
-            //     // Save Button
-            //     const cdaSaveBtn = document.createElement("button");
-            //     cdaSaveBtn.textContent = "Submit";
-            //     cdaSaveBtn.id = "cda-btn-inflow";
-            //     cdaSaveBtn.disabled = true;
-            //     output5Div.appendChild(cdaSaveBtn);
-
-            //     // Status Button
-            //     const statusDiv = document.createElement("div");
-            //     statusDiv.className = "status-inflow";
-            //     output5Div.appendChild(statusDiv);
-
-            //     // Estimated Value Div
-            //     const buttonEstimatedValue = document.createElement('div');
-            //     buttonEstimatedValue.textContent = 'Signifies estimated value';
-            //     buttonEstimatedValue.id = 'estimated-value';
-            //     buttonEstimatedValue.style.backgroundColor = '#e6ccff';
-            //     output5Div.appendChild(buttonEstimatedValue);
-
-            //     // Refresh Button
-            //     const buttonRefresh = document.createElement('button');
-            //     buttonRefresh.textContent = 'Refresh';
-            //     buttonRefresh.id = 'refresh-inflow-button';
-            //     buttonRefresh.className = 'fetch-btn';
-            //     output5Div.appendChild(buttonRefresh);
-
-            //     buttonRefresh.addEventListener('click', () => {
-            //         // Remove existing table
-            //         const existingTable = document.getElementById('inflow');
-            //         if (existingTable) {
-            //             existingTable.remove();
-            //         }
-
-            //         // Remove existing save button
-            //         const existingButton = document.getElementById('cda-btn-inflow');
-            //         if (existingButton) {
-            //             existingButton.remove();
-            //         }
-
-            //         const estimatedValueRefresh = document.getElementById('estimated-value');
-            //         if (estimatedValueRefresh) {
-            //             estimatedValueRefresh.remove();
-            //         }
-
-            //         // Fetch and create new table
-            //         fetchTsidData();
-            //     });
-
-            //     cdaSaveBtn.addEventListener("click", async () => {
-            //         const payloadStorageOutflowEvap = {
-            //             "name": tsidComputedInflow,
-            //             "office-id": "MVS",
-            //             "units": "cfs",
-            //             "values": formattedStorageData.map(entry => {
-            //                 const timestamp = entry.formattedTimestamp;
-            //                 const outflowInput = document.getElementById(`storage-outflow-evap-${timestamp}`);
-
-            //                 if (!outflowInput) {
-            //                     console.warn(`Missing input for timestamp: ${timestamp}`);
-            //                     return null; // Or handle this more gracefully
-            //                 }
-
-            //                 const outflowValue = outflowInput.value;
-
-            //                 const timestampUnix = new Date(timestamp).getTime();
-
-            //                 return [
-            //                     timestampUnix,
-            //                     parseFloat(outflowValue),
-            //                     0
-            //                 ];
-            //             }).filter(Boolean) // remove any null entries
-            //         };
-            //         console.log("payloadStorageOutflowEvap:", payloadStorageOutflowEvap);
-
-            //         const payloadConsensus = {
-            //             "name": tsidInflowQpf,
-            //             "office-id": "MVS",
-            //             "units": "cfs",
-            //             "values": formattedStorageData.map(entry => {
-            //                 const timestamp = entry.formattedTimestamp;
-            //                 const outflowInput = document.getElementById(`consensus-${timestamp}`);
-            //                 const qualityInput = document.getElementById(`quality-code-${timestamp}`);
-
-            //                 if (!outflowInput || !qualityInput) {
-            //                     console.warn(`Missing input for timestamp: ${timestamp}`);
-            //                     return null; // Or handle this more gracefully
-            //                 }
-
-            //                 const outflowValue = outflowInput.value;
-            //                 const qualityCodeValue = qualityInput.value;
-
-            //                 const timestampUnix = new Date(timestamp).getTime();
-
-            //                 return [
-            //                     timestampUnix,
-            //                     parseFloat(outflowValue),
-            //                     parseFloat(qualityCodeValue)
-            //                 ];
-            //             }).filter(Boolean) // remove any null entries
-            //         };
-            //         console.log("payloadConsensus:", payloadConsensus);
-
-            //         async function loginCDA() {
-            //             if (await isLoggedIn()) return true;
-            //             window.location.href = `https://wm.mvs.ds.usace.army.mil:8243/CWMSLogin/login?OriginalLocation=${encodeURIComponent(window.location.href)}`;
-            //         }
-
-            //         async function isLoggedIn() {
-            //             try {
-            //                 const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", { method: "GET" });
-            //                 return response.status !== 401;
-            //             } catch (error) {
-            //                 console.error('Error checking login status:', error);
-            //                 return false;
-            //             }
-            //         }
-
-            //         async function createTS(payload) {
-            //             if (!payload) throw new Error("You must specify a payload!");
-            //             const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?store-rule=REPLACE%20ALL", {
-            //                 method: "POST",
-            //                 headers: { "Content-Type": "application/json;version=2" },
-            //                 body: JSON.stringify(payload)
-            //             });
-
-            //             if (!response.ok) {
-            //                 const errorText = await response.text();
-            //                 throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-            //             }
-            //         }
-
-            //         async function fetchUpdatedData(isoDateMinus6Days, isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidInflowQpf) {
-            //             let response = null;
-            //             const beginDate = lookback !== null ? lookback : isoDateMinus6Days;
-            //             response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsidInflowQpf}&begin=${beginDate}&end=${isoDateToday}&office=MVS`, {
-            //                 headers: {
-            //                     "Accept": "application/json;version=2", // Ensuring the correct version is used
-            //                     "cache-control": "no-cache"
-            //                 }
-            //             });
-
-            //             if (!response.ok) {
-            //                 throw new Error(`Failed to fetch updated data: ${response.status}`);
-            //             }
-
-            //             const data = await response.json();
-
-            //             // Log the raw data received
-            //             console.log('Fetched Data:', data);
-
-            //             return data;
-            //         }
-
-            //         // Function to show the spinner while waiting
-            //         function showSpinner() {
-            //             const spinner = document.createElement('img');
-            //             spinner.src = 'images/loading4.gif';
-            //             spinner.id = 'loadingSpinner';
-            //             spinner.style.width = '40px';  // Set the width to 40px
-            //             spinner.style.height = '40px'; // Set the height to 40px
-            //             document.body.appendChild(spinner);
-            //         }
-
-            //         // Function to hide the spinner once the operation is complete
-            //         function hideSpinner() {
-            //             const spinner = document.getElementById('loadingSpinner');
-            //             if (spinner) {
-            //                 spinner.remove();
-            //             }
-            //         }
-
-            //         if (cdaSaveBtn.innerText === "Login") {
-            //             showSpinner(); // Show the spinner before the login
-            //             const loginResult = await loginCDA();
-            //             hideSpinner(); // Hide the spinner after login is complete
-
-            //             cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
-            //             cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
-            //         } else {
-            //             try {
-            //                 showSpinner(); // Show the spinner before creating the version
-            //                 await createTS(payloadConsensus);
-            //                 await createTS(payloadStorageOutflowEvap);
-            //                 statusDiv.innerText = "Write successful!";
-
-            //                 // Optional: small delay to allow backend to process the new data
-            //                 await new Promise(resolve => setTimeout(resolve, 1000));
-
-            //                 // // Fetch updated data and refresh the table
-            //                 const updatedData = await fetchUpdatedData(isoDateMinus6Days, isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidInflowQpf);
-            //                 const hourlyConsensusData = getMidnightData(updatedData, tsidInflowQpf);
-            //                 createTable(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData);
-            //             } catch (error) {
-            //                 hideSpinner(); // Hide the spinner if an error occurs
-            //                 statusDiv.innerText = "Failed to write data!";
-            //                 console.error(error);
-            //             }
-
-            //             hideSpinner(); // Hide the spinner after the operation completes
-            //         }
-            //     });
-            // }
-
+            loadingIndicator.style.display = 'none';
         } catch (error) {
             console.error("Error fetching tsid data:", error);
         }
@@ -639,6 +323,44 @@ document.addEventListener('DOMContentLoaded', async function () {
         const hh = String(date.getHours()).padStart(2, '0'); // Hours
         const min = String(date.getMinutes()).padStart(2, '0'); // Minutes
         return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
+    }
+
+    function get6amData(data, tsid) {
+        const sixAmData = [];
+
+        data.values.forEach(entry => {
+            const [timestamp, value, qualityCode] = entry;
+
+            // Normalize the timestamp
+            let date;
+            if (typeof timestamp === "string") {
+                date = new Date(timestamp.replace(/-/g, '/')); // Replace hyphens with slashes for iOS
+            } else if (typeof timestamp === "number") {
+                date = new Date(timestamp); // Assume it's a UNIX timestamp
+            } else {
+                console.warn("Unrecognized timestamp format:", timestamp);
+                return; // Skip invalid entries
+            }
+
+            // Validate date
+            if (isNaN(date.getTime())) {
+                console.warn("Invalid date:", timestamp);
+                return; // Skip invalid dates
+            }
+
+            // Check if the time is exactly 6:00:00 AM
+            if (date.getHours() === 6 && date.getMinutes() === 0 && date.getSeconds() === 0) {
+                sixAmData.push({ timestamp, value, qualityCode, tsid });
+            }
+        });
+
+        return sixAmData;
+    }
+
+    function doubleRoundToOneDecimal(value) {
+        const roundedToTwo = Number(value.toFixed(2)); // e.g., 600.146 → 600.15
+        const roundedToOne = Number(roundedToTwo.toFixed(1)); // e.g., 600.15 → 600.2
+        return roundedToOne.toFixed(1); // ensure one decimal, returns as string (e.g., "10.0")
     }
 
     function getMidnightData(data, tsid) {
@@ -728,6 +450,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         return matchingValue ? matchingValue.value : null;
     }
 
+    // Precip images
     if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Lk Shelbyville") {
         // Reformat MM-DD-YYYY to YYYY-MM-DD for safe Date parsing
         const [month, day, year] = datetime.split('-');
