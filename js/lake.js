@@ -391,3 +391,10 @@ function melPriceDrawdown(datetime) {
     // Open the URL in a new tab
     window.open(url, '_blank');
 }
+
+function reservoirSummaryPage(datetime) {
+    // Define the URL to open in a new tab
+    const url = `https://wm.mvs.ds.usace.army.mil/mvs/reservoir_summary_page/index.html?office=MVS&datetime=${datetime}`;
+    // Open the URL in a new tab
+    window.open(url, '_blank');
+}

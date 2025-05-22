@@ -93,7 +93,22 @@
     <!-- Add these in the <head> of your HTML -->
     <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
+    <style>
+        #commits {
+            font-family: Arial, sans-serif;
+            padding: 1em;
+            border: 1px solid #ccc;
+            max-width: 600px;
+            margin: 20px auto;
+            background: #f9f9f9;
+        }
 
+        .commit {
+            margin-bottom: 1em;
+            padding-bottom: 1em;
+            border-bottom: 1px dashed #ddd;
+        }
+    </style>
 </head>
 
 <body>
@@ -128,9 +143,12 @@
                                             <button class="test-btn" onclick="morningShef(datetime)">Morning Shef
                                                 (Cloud)</button>
                                             <button class="test-btn" onclick="morningShefExisting(datetime)">Morning
-                                                Shef (Existing)</button>
+                                                Shef (Current)</button>
                                             <button class="test-btn" onclick="plotMacro(lake, datetime)">Plot
                                                 Macro</button>
+                                            <button class="test-btn"
+                                                onclick="reservoirSummaryPage(lake, datetime)">Reservoir Summary
+                                                Page</button>
                                             <button class="test-btn" onclick="netmissShef(lake, datetime)">Netmiss
                                                 Shef</button>
                                             <button class="test-btn" onclick="melPriceDrawdown(lake, datetime)">Mel
@@ -215,7 +233,7 @@
                                         </div>
 
                                         <div class="widget half-width" id="widget8">
-                                            <h3>Widget 8: Lake Precipitation</h3>
+                                            <h3>Widget 8: Lake Precipitation (6am to 6am)/(Office 24-hour)</h3>
                                             <!-- <button class="save-btn" onclick="saveData(8)">Save</button>
                                             <button class="fetch-btn" onclick="fetchData(8)">Fetch Data</button> -->
                                             <button class="test-btn" onclick="testData(8, lake, datetime)">Test</button>
@@ -279,6 +297,38 @@
                                             </div>
                                             <div class="output" id="output166"></div>
                                             <div class="output" id="output16"></div>
+                                        </div>
+                                        <div class="widget half-width" id="widget1">
+                                            <h2 style="text-align:center;">Latest Commits</h2>
+                                            <div id="commits">Loading...</div>
+
+                                            <script>
+                                                const owner = 'oinguyen314ctocat'; // replace with actual owner
+                                                const repo = 'lake-cloud'; // replace with actual repo
+                                                const commitsDiv = document.getElementById('commits');
+
+                                                fetch(`https://api.github.com/repos/inguyen314/lake-cloud/commits`)
+                                                    .then(response => response.json())
+                                                    .then(commits => {
+                                                        commitsDiv.innerHTML = ''; // Clear loading text
+
+                                                        commits.slice(0, 5).forEach(commit => {
+                                                            const commitEl = document.createElement('div');
+                                                            commitEl.className = 'commit';
+
+                                                            commitEl.innerHTML = `
+                                                                <strong>${commit.commit.author.name}</strong> - 
+                                                                <em>${new Date(commit.commit.author.date).toLocaleString()}</em>
+                                                                <p>${commit.commit.message}</p>
+                                                                <a href="${commit.html_url}" target="_blank">View Commit</a>
+                                                            `;
+                                                            commitsDiv.appendChild(commitEl);
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        commitsDiv.innerHTML = `<p>Error fetching commits: ${error.message}</p>`;
+                                                    });
+                                            </script>
                                         </div>
                                     </div>
                                     <script src='js/lake.js'></script>
