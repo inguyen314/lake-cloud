@@ -14,7 +14,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (titleSpan) {
             // titleSpan.textContent = `${lake.split("-")[0].trim()}: ${datetime}`;
-            titleSpan.textContent = `${lake.split("-")[0].trim()}`;
+            // titleSpan.textContent = `${lake.split("-")[0].trim()}`;
+            if (typeof lake === 'string') {
+                const cleanedLake = lake.replace('Lk', '').trim();
+                titleSpan.textContent = `${cleanedLake.split("-")[0].trim()} Lake Sheet`;
+            }
         }
 
         // Set the title in the header
@@ -352,13 +356,6 @@ function morningShef(datetime) {
     window.open(url, '_blank');
 }
 
-function morningShefExisting(datetime) {
-    // Define the URL to open in a new tab
-    const url = `https://wm.mvs.ds.usace.army.mil/mvs/morning_shef/index.php`;
-    // Open the URL in a new tab
-    window.open(url, '_blank');
-}
-
 function plotMacro(lake, datetime) {
     // Define the URL to open in a new tab
     let url = null;
@@ -395,6 +392,13 @@ function melPriceDrawdown(datetime) {
 function reservoirSummaryPage(datetime) {
     // Define the URL to open in a new tab
     const url = `https://wm.mvs.ds.usace.army.mil/mvs/reservoir_summary_page/index.html?office=MVS&datetime=${datetime}`;
+    // Open the URL in a new tab
+    window.open(url, '_blank');
+}
+
+function morningReport(datetime) {
+    // Define the URL to open in a new tab
+    const url = `https://wm.mvs.ds.usace.army.mil/mvs/river_reservoir/index.html?office=MVS&type=morning&office=MVS&datetime=${datetime}`;
     // Open the URL in a new tab
     window.open(url, '_blank');
 }
