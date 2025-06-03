@@ -264,7 +264,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 row.appendChild(stationRow);
 
                 const parameterRow = document.createElement("td");
-                parameterRow.textContent = (formattedStageData[0]['tsid']).split(".")[1];
+                parameterRow.textContent = (formattedStageData[0]['tsid']).split(".")[1] + " (ft)";
                 row.appendChild(parameterRow);
 
                 const hrs06Row = document.createElement("td");
@@ -311,31 +311,31 @@ document.addEventListener('DOMContentLoaded', async function () {
                 row2.appendChild(stationRow2);
 
                 const parameterRow2 = document.createElement("td");
-                parameterRow2.textContent = (formattedStorageData[0]['tsid']).split(".")[1];
+                parameterRow2.textContent = (formattedStorageData[0]['tsid']).split(".")[1] + " (dsf)";
                 row2.appendChild(parameterRow2);
 
                 const hrs06Row2 = document.createElement("td");
-                hrs06Row2.textContent = (formattedStorageData[1]['value']).toFixed(0);
+                hrs06Row2.textContent = ((formattedStorageData[1]['value'])/1.9834591996927).toFixed(0);
                 row2.appendChild(hrs06Row2);
 
                 const hrs12Row2 = document.createElement("td");
-                hrs12Row2.textContent = (formattedStorageData[2]['value']).toFixed(0);
+                hrs12Row2.textContent = ((formattedStorageData[2]['value'])/1.9834591996927).toFixed(0);
                 row2.appendChild(hrs12Row2);
 
                 const hrs18Row2 = document.createElement("td");
-                hrs18Row2.textContent = (formattedStorageData[3]['value']).toFixed(0);
+                hrs18Row2.textContent = ((formattedStorageData[3]['value'])/1.9834591996927).toFixed(0);
                 row2.appendChild(hrs18Row2);
 
                 const hrs24Row2 = document.createElement("td");
-                hrs24Row2.textContent = (formattedStorageData[4]['value']).toFixed(0);
+                hrs24Row2.textContent = ((formattedStorageData[4]['value'])/1.9834591996927).toFixed(0);
                 row2.appendChild(hrs24Row2);
 
                 const hrs06TodayRow2 = document.createElement("td");
-                hrs06TodayRow2.textContent = (formattedStorageData[5]['value']).toFixed(0);
+                hrs06TodayRow2.textContent = ((formattedStorageData[5]['value'])/1.9834591996927).toFixed(0);
                 row2.appendChild(hrs06TodayRow2);
 
                 const deltaRow2 = document.createElement("td");
-                deltaRow2.textContent = ((formattedStorageData[5]['value']) - (formattedStorageData[1]['value'])).toFixed(0);
+                deltaRow2.textContent = (((formattedStorageData[5]['value']) - (formattedStorageData[1]['value']))/1.9834591996927).toFixed(0);
                 row2.appendChild(deltaRow2);
 
                 // Append the data row to the table
