@@ -387,12 +387,41 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Create first span (e.g., icon or label)
                 const iconSpan = document.createElement('span');
-                iconSpan.textContent = `Conservation Pool Utilization = 100%`;
+                const midnightStorageValue = (formattedStorageData[4]['value']).toFixed(0);
+                console.log("midnightStorageValue:", midnightStorageValue);
+
+                const topOfConservationValue = topOfConservationData['constant-value'];
+                console.log("topOfConservationValue:", topOfConservationValue);
+
+                const topOfFloodValue = topOfFloodData['constant-value'];
+                console.log("topOfFloodValue:", topOfFloodValue);
+
+                const bottomOfConservationValue = bottomOfConservationData['constant-value'];
+                console.log("bottomOfConservationValue:", bottomOfConservationValue);
+
+                const bottomOfFloodValue = bottomOfFloodData['constant-value'];
+                console.log("bottomOfFloodValue:", bottomOfFloodValue);
+
+                let conservationUtilization = "--";
+                let floodUtilization = "--";
+                if (midnightStorageValue > topOfConservationValue) {
+                    conservationUtilization = "100%";
+                } else {
+                    conservationUtilization = (((midnightStorageValue - bottomOfConservationValue) / (topOfConservationValue - bottomOfConservationValue)) * 100).toFixed(2) + "%";
+                }
+
+                if (midnightStorageValue > topOfConservationValue && midnightStorageValue < topOfFloodValue) {
+                    floodUtilization = (((midnightStorageValue - bottomOfFloodValue) / (topOfFloodValue - bottomOfFloodValue)) * 100).toFixed(2) + "%";
+                } else {
+                    floodUtilization = "--";
+                }
+
+                iconSpan.innerHTML = `Conservation Pool Utilization = <b>${conservationUtilization}</b>`;
                 iconSpan.style.paddingRight = '12px';
 
                 // Create second span (e.g., description)
                 const textSpan = document.createElement('span');
-                textSpan.textContent = `Flood Pool Utilization = 100%`;
+                textSpan.innerHTML = `Flood Pool Utilization = <b>${floodUtilization}</b>`;
 
                 // Append both spans to the div
                 buttonEstimatedValue.appendChild(iconSpan);
