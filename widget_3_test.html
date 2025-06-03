@@ -35,6 +35,9 @@
     var datetime = urlParams.get('datetime') || formatDate(new Date());
     console.log('datetime: ', datetime);
 
+    var lookback = urlParams.get('lookback');
+    console.log('lookback: ', lookback);
+
     function formatDate(date) {
         let month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure two-digit month
         let day = String(date.getDate()).padStart(2, '0'); // Ensure two-digit day
@@ -87,10 +90,15 @@
                                     <div id="container_date_selection"></div>
                                     <div class="widgets-container">
                                         <div class="widget full-width" id="widget3">
-                                            <h3>Widget 3: Regulation Pool (Optional)</h3>
+                                            <h3>Widget 3: TW and Regulation Pool</h3>
                                             <button class="save-btn" onclick="saveData(3)">Save</button>
                                             <button class="fetch-btn" onclick="fetchData(3)">Fetch Data</button>
                                             <button class="test-btn" onclick="testData(3, lake, datetime)">Test</button>
+                                            <div id="loading_03"
+                                                style="display: none; align-items: center; text-align: center;">
+                                                <img src="images/loading4.gif" style='height: 50px; width: 50px;'
+                                                    alt="Loading..." />
+                                            </div>
                                             <div class="output" id="output3"></div>
                                         </div>
                                     </div>
