@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("formattedStorageData:", formattedStorageData);
 
             if (formattedStageData.length > 0) {
-                createTable(formattedStageData, formattedStorageData, topOfConservationData, topOfFloodData, bottomOfConservationData, bottomOfFloodData);
+                createTable(formattedStageData, formattedStorageData, topOfConservationData, topOfFloodData, bottomOfConservationData, bottomOfFloodData, tsidStage, tsidStorage);
 
                 loadingIndicator.style.display = 'none';
 
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }, 10000);
             }
 
-            function createTable(formattedStageData, formattedStorageData, topOfConservationData, topOfFloodData, bottomOfConservationData, bottomOfFloodData) {
+            function createTable(formattedStageData, formattedStorageData, topOfConservationData, topOfFloodData, bottomOfConservationData, bottomOfFloodData, tsidStage, tsidStorage) {
                 // Create the table element
                 const table = document.createElement("table");
 
@@ -280,21 +280,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                 row.appendChild(hrs18Row);
 
                 const hrs24Row = document.createElement("td");
-                hrs24Row.textContent = (formattedStageData[4]['value']).toFixed(2);
+                const hrs24Value = formattedStageData?.[4]?.value;
+                const input = document.createElement("input");
+                input.type = "text";
+                input.id = "hrs24Input"; // Unique ID for hrs24
+                input.style.textAlign = "center"; // Center the text
+                input.value = (hrs24Value == null || isNaN(hrs24Value))
+                    ? "N/A"
+                    : parseFloat(hrs24Value).toFixed(2);
+
+                hrs24Row.appendChild(input);
                 row.appendChild(hrs24Row);
 
                 const hrs06TodayRow = document.createElement("td");
-
-                const hrs06TodayValue = formattedStageData?.[5]?.value;
-                const input = document.createElement("input");
-                input.type = "text";
-                input.id = "hrs06TodayInput"; // assign an ID to grab later
-                input.style.textAlign = "center"; // center the text
-                input.value = (hrs06TodayValue == null || isNaN(hrs06TodayValue))
-                    ? "N/A"
-                    : parseFloat(hrs06TodayValue).toFixed(2);
-
-                hrs06TodayRow.appendChild(input);
+                hrs06TodayRow.textContent = (formattedStageData[5]['value']).toFixed(2);
                 row.appendChild(hrs06TodayRow);
 
                 const deltaRow = document.createElement("td");
@@ -361,23 +360,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 buttonRefresh.className = 'fetch-btn';
                 output2Div.appendChild(buttonRefresh);
 
-                buttonRefresh.addEventListener('click', () => {
-                    // Remove existing table
-                    const existingTable = document.getElementById('inflow');
-                    if (existingTable) {
-                        existingTable.remove();
-                    }
-
-                    // Remove existing save button
-                    const existingButton = document.getElementById('cda-btn-pool');
-                    if (existingButton) {
-                        existingButton.remove();
-                    }
-
-                    // Fetch and create new table
-                    fetchTsidData();
-                });
-
                 const buttonEstimatedValue = document.createElement('div');
                 buttonEstimatedValue.id = 'utilization-value';
                 buttonEstimatedValue.style.backgroundColor = '#ffffff';
@@ -387,6 +369,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Create first span (e.g., icon or label)
                 const iconSpan = document.createElement('span');
+                iconSpan.id = 'conservation-span';
                 const midnightStorageValue = (formattedStorageData[4]['value']).toFixed(0);
                 console.log("midnightStorageValue:", midnightStorageValue);
 
@@ -421,6 +404,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Create second span (e.g., description)
                 const textSpan = document.createElement('span');
+                textSpan.id = 'flood-span';
                 textSpan.innerHTML = `Flood Pool Utilization = <b>${floodUtilization}</b>`;
 
                 // Append both spans to the div
@@ -429,6 +413,180 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Append the final div to your container
                 output2Div.appendChild(buttonEstimatedValue);
+
+                buttonRefresh.addEventListener('click', () => {
+                    // Remove existing table
+                    const existingTable = document.getElementById('inflow');
+                    if (existingTable) {
+                        existingTable.remove();
+                    }
+
+                    // Remove existing save button
+                    const existingButton = document.getElementById('cda-btn-pool');
+                    if (existingButton) {
+                        existingButton.remove();
+                    }
+
+                    // Remove existing spans
+                    const existingConservationSpan = document.getElementById('conservation-span');
+                    if (existingConservationSpan) {
+                        existingConservationSpan.remove();
+                    }
+
+                    const existingFloodSpan = document.getElementById('flood-span');
+                    if (existingFloodSpan) {
+                        existingFloodSpan.remove();
+                    }
+
+                    // Fetch and create new table
+                    fetchTsidData();
+                });
+
+                cdaSaveBtn.addEventListener("click", async () => {
+                    const values = [];
+
+                    // No data, only today's input (single row scenario)
+                    const midnightInput = document.getElementById(`hrs24Input`).value;
+                    let midnightValue = midnightInput ? parseFloat(parseFloat(midnightInput).toFixed(2)) : 909;
+                    const timestampUnix = formattedStageData?.[4]?.timestamp;
+
+                    values.push([timestampUnix, midnightValue, 0]);
+                    console.log("values:", values);
+
+
+                    const payload = {
+                        "name": formattedStageData?.[4]?.tsid,
+                        "office-id": "MVS",
+                        "units": "ft",
+                        "values": values
+                    };
+
+                    console.log("payload:", payload);
+
+                    async function loginCDA() {
+                        if (await isLoggedIn()) return true;
+                        window.location.href = `https://wm.mvs.ds.usace.army.mil:8243/CWMSLogin/login?OriginalLocation=${encodeURIComponent(window.location.href)}`;
+                    }
+
+                    async function isLoggedIn() {
+                        try {
+                            const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", { method: "GET" });
+                            return response.status !== 401;
+                        } catch (error) {
+                            console.error('Error checking login status:', error);
+                            return false;
+                        }
+                    }
+
+                    async function createTS(payload) {
+                        if (!payload) throw new Error("You must specify a payload!");
+                        const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?store-rule=REPLACE%20ALL", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json;version=2" },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                        }
+                    }
+
+                    async function fetchUpdatedData(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip) {
+                        // Convert to Date object
+                        const date = new Date(isoDateDay1);
+
+                        // Add 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
+                        date.setTime(date.getTime() - (1 * 60 * 60 * 1000));
+
+                        // Convert back to ISO string (preserve UTC format)
+                        const isoDateDay1Minus1Hour = date.toISOString();
+
+                        let response = null;
+                        response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsidPrecip}&begin=${isoDateToday}&end=${isoDateDay1Minus1Hour}&office=MVS`, {
+                            headers: {
+                                "Accept": "application/json;version=2", // Ensuring the correct version is used
+                                "cache-control": "no-cache"
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch updated data: ${response.status}`);
+                        }
+
+                        const data = await response.json();
+
+                        // Log the raw data received
+                        console.log('Fetched Data:', data);
+
+                        return data;
+                    }
+
+                    function showSpinner() {
+                        const spinner = document.createElement('img');
+                        spinner.src = 'images/loading4.gif';
+                        spinner.id = 'loadingSpinner';
+                        spinner.style.width = '40px';  // Set the width to 40px
+                        spinner.style.height = '40px'; // Set the height to 40px
+                        document.body.appendChild(spinner);
+                    }
+
+                    function hideSpinner() {
+                        const spinner = document.getElementById('loadingSpinner');
+                        if (spinner) {
+                            spinner.remove();
+                        }
+                    }
+
+                    if (cdaSaveBtn.innerText === "Login") {
+                        showSpinner(); // Show the spinner before the login
+                        const loginResult = await loginCDA();
+                        hideSpinner(); // Hide the spinner after login is complete
+
+                        cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
+                        statusDiv.innerText = loginResult ? "" : "Failed to Login!";
+                    } else {
+                        try {
+                            showSpinner(); // Show the spinner before creating the version
+                            await createTS(payload);
+                            statusDiv.innerText = "Write successful!";
+
+                            // Optional: small delay to allow backend to process the new data
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+
+                            const existingTable = document.getElementById('inflow');
+                            if (existingTable) {
+                                existingTable.remove();
+                            }
+
+                            // Remove existing save button
+                            const existingButton = document.getElementById('cda-btn-pool');
+                            if (existingButton) {
+                                existingButton.remove();
+                            }
+
+                            // Remove existing spans
+                            const existingConservationSpan = document.getElementById('conservation-span');
+                            if (existingConservationSpan) {
+                                existingConservationSpan.remove();
+                            }
+
+                            const existingFloodSpan = document.getElementById('flood-span');
+                            if (existingFloodSpan) {
+                                existingFloodSpan.remove();
+                            }
+
+                            // Fetch and create new table
+                            fetchTsidData();
+                        } catch (error) {
+                            hideSpinner(); // Hide the spinner if an error occurs
+                            statusDiv.innerText = "Failed to write data!";
+                            console.error(error);
+                        }
+
+                        hideSpinner(); // Hide the spinner after the operation completes
+                    }
+                });
             }
 
         } catch (error) {
