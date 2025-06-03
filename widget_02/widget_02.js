@@ -2,6 +2,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("lake: ", lake);
     console.log('datetime: ', datetime);
 
+    const loadingIndicator = document.getElementById('loading_02');
+    loadingIndicator.style.display = 'block';
+
     let setBaseUrl = null;
     if (cda === "internal") {
         setBaseUrl = `https://wm.${office.toLowerCase()}.ds.usace.army.mil/${office.toLowerCase()}-data/`;
@@ -57,33 +60,33 @@ document.addEventListener('DOMContentLoaded', async function () {
     urlTsidStage = `${setBaseUrl}timeseries/group/Stage?office=${office}&category-id=${lake}`;
     urlTsidStorage = `${setBaseUrl}timeseries/group/Storage?office=${office}&category-id=${lake}`;
 
-    const levelIdTopOfConservation = `${lake}.Elev.Inst.0.Top of Conservation`;
+    const levelIdTopOfConservation = `${lake.split('-')[0]}.Stor.Inst.0.Top of Conservation`;
     console.log("levelIdTopOfConservation:", levelIdTopOfConservation);
 
-    const levelIdTopOfFlood = `${lake}.Elev.Inst.0.Top of Flood`;
+    const levelIdTopOfFlood = `${lake.split('-')[0]}.Stor.Inst.0.Top of Flood`;
     console.log("levelIdTopOfFlood:", levelIdTopOfFlood);
 
-    const levelIdBottomOfConservation = `${lake}.Elev.Inst.0.Bottom of Conservation`;
+    const levelIdBottomOfConservation = `${lake.split('-')[0]}.Stor.Inst.0.Bottom of Conservation`;
     console.log("levelIdBottomOfConservation:", levelIdBottomOfConservation);
 
-    const levelIdBottomOfFlood = `${lake}.Elev.Inst.0.Bottom of Flood`;
+    const levelIdBottomOfFlood = `${lake.split('-')[0]}.Stor.Inst.0.Bottom of Flood`;
     console.log("levelIdBottomOfFlood:", levelIdBottomOfFlood);
 
-    const levelIdTopOfConservationUrl = `${setBaseUrl}levels/${levelIdTopOfConservation}?office=MVS&effective-date=${isoDateToday}&unit=ft`;
+    const levelIdTopOfConservationUrl = `${setBaseUrl}levels/${levelIdTopOfConservation}?office=${office}&effective-date=${isoDateToday}&unit=ac-ft`;
     console.log("levelIdTopOfConservationUrl:", levelIdTopOfConservationUrl);
 
-    const levelIdTopOfFloodUrl = `${setBaseUrl}levels/${levelIdTopOfFlood}?office=MVS&effective-date=${isoDateToday}&unit=ft`;
+    const levelIdTopOfFloodUrl = `${setBaseUrl}levels/${levelIdTopOfFlood}?office=${office}&effective-date=${isoDateToday}&unit=ac-ft`;
     console.log("levelIdTopOfFloodUrl:", levelIdTopOfFloodUrl);
 
-    const levelIdBottomOfConservationUrl = `${setBaseUrl}levels/${levelIdBottomOfConservation}?office=MVS&effective-date=${isoDateToday}&unit=ft`;
+    const levelIdBottomOfConservationUrl = `${setBaseUrl}levels/${levelIdBottomOfConservation}?office=${office}&effective-date=${isoDateToday}&unit=ac-ft`;
     console.log("levelIdBottomOfConservationUrl:", levelIdBottomOfConservationUrl);
 
-    const levelIdBottomOfFloodUrl = `${setBaseUrl}levels/${levelIdBottomOfFlood}?office=MVS&effective-date=${isoDateToday}&unit=ft`;
+    const levelIdBottomOfFloodUrl = `${setBaseUrl}levels/${levelIdBottomOfFlood}?office=${office}&effective-date=${isoDateToday}&unit=ac-ft`;
     console.log("levelIdBottomOfFloodUrl:", levelIdBottomOfFloodUrl);
 
     const fetchTimeSeriesData = async (tsid) => {
-        const beginDate = lookback !== null ? lookback : isoDateMinus2Days;
-        const tsidData = `${setBaseUrl}timeseries?page-size=1000000&name=${tsid}&begin=${beginDate}&end=${isoDateToday}&office=${office}`;
+        const beginDate = lookback !== null ? lookback : isoDateMinus1Day;
+        const tsidData = `${setBaseUrl}timeseries?page-size=1000000&name=${tsid}&begin=${beginDate}&end=${isoDateDay1}&office=${office}`;
         console.log('tsidData:', tsidData);
         try {
             const response = await fetch(tsidData, {
@@ -108,35 +111,25 @@ document.addEventListener('DOMContentLoaded', async function () {
             const response5 = await fetch(urlTsidStage);
             const response6 = await fetch(urlTsidStorage);
 
-            const tsidTopOfConservationData = await response1.json();
-            const tsidTopOfFloodData = await response2.json();
-            const tsidBottomOfConservationData = await response3.json();
-            const tsidBottomOfFloodData = await response4.json();
+            const topOfConservationData = await response1.json();
+            const topOfFloodData = await response2.json();
+            const bottomOfConservationData = await response3.json();
+            const bottomOfFloodData = await response4.json();
             const tsidStageData = await response5.json();
             const tsidStorageData = await response6.json();
 
-            console.log("tsidTopOfConservationData:", tsidTopOfConservationData);
-            console.log("tsidTopOfFloodData:", tsidTopOfFloodData);
-            console.log("tsidBottomOfConservationData:", tsidBottomOfConservationData);
-            console.log("tsidBottomOfFloodData:", tsidBottomOfFloodData);
+            console.log("topOfConservationData:", topOfConservationData);
+            console.log("topOfFloodData:", topOfFloodData);
+            console.log("bottomOfConservationData:", bottomOfConservationData);
+            console.log("bottomOfFloodData:", bottomOfFloodData);
             console.log("tsidStageData:", tsidStageData);
             console.log("tsidStorageData:", tsidStorageData);
 
-            const tsidTopOfConservation = tsidTopOfConservationData['location-level-id'];
-            const tsidTopOfFlood = tsidTopOfFloodData['location-level-id'];
-            const tsidBottomOfConservation = tsidBottomOfConservationData['location-level-id'];
-            const tsidBottomOfFlood= tsidBottomOfFloodData['location-level-id'];
             const tsidStage = tsidStageData['assigned-time-series'][0]['timeseries-id'];
             const tsidStorage = tsidStorageData['assigned-time-series'][0]['timeseries-id'];
 
-
-            console.log("tsidTopOfConservation:", tsidTopOfConservation);
-            console.log("tsidTopOfFlood:", tsidTopOfFlood);
-            console.log("tsidBottomOfConservation:", tsidBottomOfConservation);
-            console.log("tsidBottomOfFlood:", tsidBottomOfFlood);
             console.log("tsidStage:", tsidStage);
             console.log("tsidStorage:", tsidStorage);
-
 
             const timeSeriesData1 = await fetchTimeSeriesData(tsidStage);
             const timeSeriesData2 = await fetchTimeSeriesData(tsidStorage);
@@ -144,10 +137,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("timeSeriesData1:", timeSeriesData1);
             console.log("timeSeriesData2:", timeSeriesData2);
 
-
-            const hourlyStageData = getMidnightData(timeSeriesData1, tsidStage);
-            const hourlyStorageData = getMidnightData(timeSeriesData2, tsidStorage);
-
+            const hourlyStageData = getSpecificTimesData(timeSeriesData1, tsidStage);
+            const hourlyStorageData = getSpecificTimesData(timeSeriesData2, tsidStorage);
 
             console.log("hourlyStageData:", hourlyStageData);
             console.log("hourlyStorageData:", hourlyStorageData);
@@ -186,38 +177,37 @@ document.addEventListener('DOMContentLoaded', async function () {
                 cdaSaveBtn.disabled = false; // Re-enable button
             }
 
-            let formattedStorageData = hourlyStageData.map(entry => {
+            let formattedStageData = hourlyStageData.map(entry => {
                 const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
-                // console.log("Original (hourlyData1):", entry.timestamp, "Formatted:", formattedTimestamp);
                 return {
                     ...entry,
                     formattedTimestamp
                 };
             });
 
-            let formattedAverageOutflowData = hourlyStorageData.map(entry => {
+            let formattedStorageData = hourlyStorageData.map(entry => {
                 const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
-                // console.log("Original (hourlyData2):", entry.timestamp, "Formatted:", formattedTimestamp);
                 return {
                     ...entry,
                     formattedTimestamp
                 };
             });
 
-            formattedStorageData = addDeltaAsDsfToData(formattedStorageData);
-            formattedStorageData = shiftDeltaUp(formattedStorageData);
-
+            console.log("formattedStageData:", formattedStageData);
             console.log("formattedStorageData:", formattedStorageData);
-            console.log("formattedAverageOutflowData:", formattedAverageOutflowData);
 
-            createTable(formattedStorageData, formattedAverageOutflowData, hourlyStageData);
+            if (formattedStageData.length > 0) {
+                createTable(formattedStageData, formattedStorageData, topOfConservationData, topOfFloodData, bottomOfConservationData, bottomOfFloodData);
 
-            loginStateController()
-            setInterval(async () => {
+                loadingIndicator.style.display = 'none';
+
                 loginStateController()
-            }, 10000);
+                setInterval(async () => {
+                    loginStateController()
+                }, 10000);
+            }
 
-            function createTable(formattedStorageData, formattedAverageOutflowData, hourlyStageData) {
+            function createTable(formattedStageData, formattedStorageData, topOfConservationData, topOfFloodData, bottomOfConservationData, bottomOfFloodData) {
                 // Create the table element
                 const table = document.createElement("table");
 
@@ -227,33 +217,33 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Create the table header row
                 const headerRow = document.createElement("tr");
 
-                const chgStorageHeader = document.createElement("th");
-                chgStorageHeader.textContent = "Station";
-                headerRow.appendChild(chgStorageHeader);
+                const stationHeader = document.createElement("th");
+                stationHeader.textContent = "Station";
+                headerRow.appendChild(stationHeader);
 
-                const stageHeader = document.createElement("th");
-                stageHeader.textContent = "Parameter";
-                headerRow.appendChild(stageHeader);
+                const parameterHeader = document.createElement("th");
+                parameterHeader.textContent = "Parameter";
+                headerRow.appendChild(parameterHeader);
 
-                const averageOutflowHeader = document.createElement("th");
-                averageOutflowHeader.textContent = "06:00 hrs";
-                headerRow.appendChild(averageOutflowHeader);
+                const hrs06Header = document.createElement("th");
+                hrs06Header.textContent = "06:00 hrs";
+                headerRow.appendChild(hrs06Header);
 
-                const storageOutflowEvapHeader = document.createElement("th");
-                storageOutflowEvapHeader.textContent = "12:00 hrs";
-                headerRow.appendChild(storageOutflowEvapHeader);
+                const hrs12Header = document.createElement("th");
+                hrs12Header.textContent = "12:00 hrs";
+                headerRow.appendChild(hrs12Header);
 
-                const consensusHeader = document.createElement("th");
-                consensusHeader.textContent = "18:00 hrs";
-                headerRow.appendChild(consensusHeader);
+                const hrs18Header = document.createElement("th");
+                hrs18Header.textContent = "18:00 hrs";
+                headerRow.appendChild(hrs18Header);
 
-                const balanceFlagHeader = document.createElement("th");
-                balanceFlagHeader.textContent = "24:00 hrs";
-                headerRow.appendChild(balanceFlagHeader);
+                const hrs24Header = document.createElement("th");
+                hrs24Header.textContent = "24:00 hrs";
+                headerRow.appendChild(hrs24Header);
 
-                const today06Header = document.createElement("th");
-                today06Header.textContent = "06:00 hrs today";
-                headerRow.appendChild(today06Header);
+                const hrs06TodayHeader = document.createElement("th");
+                hrs06TodayHeader.textContent = "06:00 hrs today";
+                headerRow.appendChild(hrs06TodayHeader);
 
                 const deltaHeader = document.createElement("th");
                 deltaHeader.textContent = "24 hours change";
@@ -261,181 +251,108 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 table.appendChild(headerRow);
 
-                // if (formattedAverageOutflowData.length <= 6) {
-                //     const messageRow = document.createElement("tr");
-                //     const messageCell = document.createElement("td");
-                //     messageCell.colSpan = 6; // adjust depending on how many columns your table has
-                //     messageCell.style.textAlign = "center";
-                //     messageCell.style.padding = "10px";
-                //     messageCell.style.fontWeight = "bold";
-                //     messageCell.style.color = "red";
-                //     if (lake === "Mark Twain Lk-Salt") {
-                //         messageCell.textContent = `Save "Gate Settings" and "Generation and Release" data first then click the refresh button.`;
-                //     } else {
-                //         messageCell.textContent = `Save "Gate Settings" data first then click the refresh button.`;
-                //     }
-
-                //     messageRow.appendChild(messageCell);
-                //     table.appendChild(messageRow);
-                // } else {
-                //     // Combine the data based on matching timestamps
-                //     let i = 0;
-                //     let j = 0;
-
-                //     while (i < formattedStorageData.length - 1 && j < formattedAverageOutflowData.length - 1) {
-                //         if (formattedStorageData[i].formattedTimestamp === formattedAverageOutflowData[j].formattedTimestamp) {
-                //             const row = document.createElement("tr");
-
-                //             // Date Time
-                //             const dateCell = document.createElement("td");
-                //             dateCell.textContent = formattedStorageData[i].formattedTimestamp.split(' ')[0]; // Display formattedTimestamp as Date
-                //             row.appendChild(dateCell);
-
-                //             // Change in Storage
-                //             const chgStorageCell = document.createElement("td");
-                //             const delta = formattedStorageData[i].delta;
-
-                //             if (delta == null) {
-                //                 chgStorageCell.textContent = '—'; // or 'N/A'
-                //             } else {
-                //                 // Round to 2 decimal places first, then to whole number
-                //                 const roundedToTwo = Math.round(delta * 100) / 100;
-                //                 const deltaFinalRounded = Math.round(roundedToTwo);
-
-                //                 // Add sign accordingly
-                //                 chgStorageCell.textContent =
-                //                     deltaFinalRounded > 0 ? `+${deltaFinalRounded}` :
-                //                         deltaFinalRounded < 0 ? `${deltaFinalRounded}` : '0';
-                //             }
-
-                //             row.appendChild(chgStorageCell);
-
-                //             // Average Outflow
-                //             const averageOutflowCell = document.createElement("td");
-                //             if (formattedAverageOutflowData[j].value !== null && formattedAverageOutflowData[j].value !== undefined) {
-                //                 averageOutflowCell.textContent = formattedAverageOutflowData[j].value.toFixed(0);
-                //             } else {
-                //                 // Handle the case where the value is null or undefined
-                //                 averageOutflowCell.textContent = 'N/A'; // Or any default value you'd prefer
-                //             }
-
-                //             row.appendChild(averageOutflowCell);
-
-                //             // Storage + Average Outflow + Evaporation
-                //             const datePart = formattedStorageData[i].formattedTimestamp.split(' ')[0]; // "04-30-2025"
-                //             const currentMonth = datePart.split('-')[0]; // "04"
-
-                //             // You can now use `currentMonth` inside your loop
-                //             // console.log("currentMonth: ", currentMonth);
-
-                //             const curentDayEvapValue = getEvapValueForMonth(tsidEvapLevelData, currentMonth);
-                //             // console.log("curentDayEvapValue:", curentDayEvapValue);
-
-                //             const val = Math.round((parseFloat(formattedAverageOutflowData[j]?.value)) / 10) * 10;
-                //             const deltaVal = Math.round(Math.round(delta * 100) / 100);
-                //             const evapVal = Math.round(parseFloat(curentDayEvapValue));
-                //             console.log("Storage + Average Outflow + Evaporation: ", deltaVal, val, evapVal, " = ", (deltaVal + val + evapVal));
-                //             let storageOutflowEvapCell = document.createElement("td");
-                //             let total = null;
-
-                //             // Check if any of the values are NaN (which means they were null, undefined, or not numeric)
-                //             if (isNaN(val) || isNaN(deltaVal) || isNaN(evapVal)) {
-                //                 storageOutflowEvapCell.textContent = 'N/A';
-                //                 storageOutflowEvapCell.type = "text";
-                //                 storageOutflowEvapCell.value = 'N/A';
-                //                 storageOutflowEvapCell.title = ''; // Clear title when not applicable
-                //             } else {
-                //                 total = (val + deltaVal + evapVal).toFixed(0);
-                //                 storageOutflowEvapCell.textContent = total;
-                //                 storageOutflowEvapCell.type = "number";
-                //                 storageOutflowEvapCell.value = total;
-                //                 storageOutflowEvapCell.title = `Val: ${val}, ΔVal: ${deltaVal}, Evap: ${evapVal}`;
-                //             }
-
-                //             storageOutflowEvapCell.id = `storage-outflow-evap-${formattedStorageData[i].formattedTimestamp}`;
-                //             row.appendChild(storageOutflowEvapCell);
-
-                //             // Consensus
-                //             const consensusCell = document.createElement("td");
-                //             consensusCell.style.textAlign = "center"; // Horizontally center the cell content
-                //             consensusCell.style.verticalAlign = "middle"; // Vertically center the content
-
-                //             const input = document.createElement("input");
-                //             input.type = "number";
-
-                //             const consensusEntry = hourlyStageData[i];
-                //             const isMissingValue = !consensusEntry || consensusEntry.value == null;
-
-                //             const consensusValue = isMissingValue ? Math.round(total / 10) * 10 : consensusEntry.value;
-                //             input.value = Number(consensusValue).toFixed(0);
-
-                //             // Set background color to pink if original value was null/undefined
-                //             if (isMissingValue) {
-                //                 input.style.backgroundColor = '#e6ccff';
-                //             }
-
-
-                //             input.style.width = "60px";
-                //             input.style.textAlign = "center"; // Horizontally center text inside the input
-
-                //             input.id = `consensus-${formattedStorageData[i].formattedTimestamp}`;
-                //             consensusCell.appendChild(input);
-                //             row.appendChild(consensusCell);
-
-                //             // Quality Code
-                //             const qualityCodeCell = document.createElement("td");
-                //             qualityCodeCell.style.textAlign = "center"; // Horizontally center the cell content
-                //             qualityCodeCell.style.verticalAlign = "middle"; // Vertically center the content
-
-                //             const qualityInput = document.createElement("input");
-                //             qualityInput.type = "text";
-                //             qualityInput.value = consensusEntry && consensusEntry.qualityCode != null ? consensusEntry.qualityCode : '';
-
-                //             qualityInput.style.width = "60px";
-                //             qualityInput.style.textAlign = "center"; // Center text inside input
-                //             qualityInput.id = `quality-code-${formattedStorageData[i].formattedTimestamp}`;
-
-                //             qualityCodeCell.appendChild(qualityInput);
-                //             row.appendChild(qualityCodeCell);
-
-                //             table.appendChild(row);
-
-                //             // Move to next entry in both datasets
-                //             i++;
-                //             j++;
-                //         } else if (formattedStorageData[i].formattedTimestamp < formattedAverageOutflowData[j].formattedTimestamp) {
-                //             // If the timestamp in formattedStorageData is earlier, just move to the next entry in formattedStorageData
-                //             i++;
-                //         } else {
-                //             // If the timestamp in formattedAverageOutflowData is earlier, just move to the next entry in formattedAverageOutflowData
-                //             j++;
-                //         }
-                //     }
-                // }
-
-                // Append the table to the specific container
+                // Clear existing content and append the table
                 const output2Div = document.getElementById("output2");
                 output2Div.innerHTML = "";
                 output2Div.appendChild(table);
 
-                // // Save Button
-                // const cdaSaveBtn = document.createElement("button");
-                // cdaSaveBtn.textContent = "Submit";
-                // cdaSaveBtn.id = "cda-btn-pool";
-                // cdaSaveBtn.disabled = true;
-                // output2Div.appendChild(cdaSaveBtn);
+                // Create the data row (was incorrectly using a <td> instead of <tr>)
+                const row = document.createElement("tr");
+
+                const stationRow = document.createElement("td");
+                stationRow.textContent = (formattedStageData[0]['tsid']).split("-")[0];
+                row.appendChild(stationRow);
+
+                const parameterRow = document.createElement("td");
+                parameterRow.textContent = (formattedStageData[0]['tsid']).split(".")[1];
+                row.appendChild(parameterRow);
+
+                const hrs06Row = document.createElement("td");
+                hrs06Row.textContent = (formattedStageData[1]['value']).toFixed(2);
+                row.appendChild(hrs06Row);
+
+                const hrs12Row = document.createElement("td");
+                hrs12Row.textContent = (formattedStageData[2]['value']).toFixed(2);
+                row.appendChild(hrs12Row);
+
+                const hrs18Row = document.createElement("td");
+                hrs18Row.textContent = (formattedStageData[3]['value']).toFixed(2);
+                row.appendChild(hrs18Row);
+
+                const hrs24Row = document.createElement("td");
+                hrs24Row.textContent = (formattedStageData[4]['value']).toFixed(2);
+                row.appendChild(hrs24Row);
+
+                const hrs06TodayRow = document.createElement("td");
+
+                const hrs06TodayValue = formattedStageData?.[5]?.value;
+                const input = document.createElement("input");
+                input.type = "text";
+                input.id = "hrs06TodayInput"; // assign an ID to grab later
+                input.style.textAlign = "center"; // center the text
+                input.value = (hrs06TodayValue == null || isNaN(hrs06TodayValue))
+                    ? "N/A"
+                    : parseFloat(hrs06TodayValue).toFixed(2);
+
+                hrs06TodayRow.appendChild(input);
+                row.appendChild(hrs06TodayRow);
+
+                const deltaRow = document.createElement("td");
+                deltaRow.textContent = ((formattedStageData[5]['value']) - (formattedStageData[1]['value'])).toFixed(2);
+                row.appendChild(deltaRow);
+
+                // Append the data row to the table
+                table.appendChild(row);
+
+                // Create the data row (was incorrectly using a <td> instead of <tr>)
+                const row2 = document.createElement("tr");
+
+                const stationRow2 = document.createElement("td");
+                stationRow2.textContent = "";
+                row2.appendChild(stationRow2);
+
+                const parameterRow2 = document.createElement("td");
+                parameterRow2.textContent = (formattedStorageData[0]['tsid']).split(".")[1];
+                row2.appendChild(parameterRow2);
+
+                const hrs06Row2 = document.createElement("td");
+                hrs06Row2.textContent = (formattedStorageData[1]['value']).toFixed(0);
+                row2.appendChild(hrs06Row2);
+
+                const hrs12Row2 = document.createElement("td");
+                hrs12Row2.textContent = (formattedStorageData[2]['value']).toFixed(0);
+                row2.appendChild(hrs12Row2);
+
+                const hrs18Row2 = document.createElement("td");
+                hrs18Row2.textContent = (formattedStorageData[3]['value']).toFixed(0);
+                row2.appendChild(hrs18Row2);
+
+                const hrs24Row2 = document.createElement("td");
+                hrs24Row2.textContent = (formattedStorageData[4]['value']).toFixed(0);
+                row2.appendChild(hrs24Row2);
+
+                const hrs06TodayRow2 = document.createElement("td");
+                hrs06TodayRow2.textContent = (formattedStorageData[5]['value']).toFixed(0);
+                row2.appendChild(hrs06TodayRow2);
+
+                const deltaRow2 = document.createElement("td");
+                deltaRow2.textContent = ((formattedStorageData[5]['value']) - (formattedStorageData[1]['value'])).toFixed(0);
+                row2.appendChild(deltaRow2);
+
+                // Append the data row to the table
+                table.appendChild(row2);
+
+                // Save Button
+                const cdaSaveBtn = document.createElement("button");
+                cdaSaveBtn.textContent = "Submit";
+                cdaSaveBtn.id = "cda-btn-pool";
+                cdaSaveBtn.disabled = true;
+                output2Div.appendChild(cdaSaveBtn);
 
                 // Status Button
                 const statusDiv = document.createElement("div");
-                statusDiv.className = "status-inflow";
+                statusDiv.className = "status-pool";
                 output2Div.appendChild(statusDiv);
-
-                // // Estimated Value Div
-                // const buttonEstimatedValue = document.createElement('div');
-                // buttonEstimatedValue.textContent = 'Signifies estimated value';
-                // buttonEstimatedValue.id = 'estimated-value';
-                // buttonEstimatedValue.style.backgroundColor = '#e6ccff';
-                // output2Div.appendChild(buttonEstimatedValue);
 
                 // Refresh Button
                 const buttonRefresh = document.createElement('button');
@@ -457,178 +374,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                         existingButton.remove();
                     }
 
-                    const estimatedValueRefresh = document.getElementById('estimated-value');
-                    if (estimatedValueRefresh) {
-                        estimatedValueRefresh.remove();
-                    }
-
                     // Fetch and create new table
                     fetchTsidData();
                 });
 
-                // cdaSaveBtn.addEventListener("click", async () => {
-                //     const payloadStorageOutflowEvap = {
-                //         "name": tsidStorage,
-                //         "office-id": "MVS",
-                //         "units": "cfs",
-                //         "values": formattedStorageData.map(entry => {
-                //             const timestamp = entry.formattedTimestamp;
-                //             const outflowInput = document.getElementById(`storage-outflow-evap-${timestamp}`);
-
-                //             if (!outflowInput) {
-                //                 console.warn(`Missing input for timestamp: ${timestamp}`);
-                //                 return null; // Or handle this more gracefully
-                //             }
-
-                //             const outflowValue = outflowInput.value;
-
-                //             const timestampUnix = new Date(timestamp).getTime();
-
-                //             return [
-                //                 timestampUnix,
-                //                 parseFloat(outflowValue),
-                //                 0
-                //             ];
-                //         }).filter(Boolean) // remove any null entries
-                //     };
-                //     console.log("payloadStorageOutflowEvap:", payloadStorageOutflowEvap);
-
-                //     const payloadConsensus = {
-                //         "name": tsidStage,
-                //         "office-id": "MVS",
-                //         "units": "cfs",
-                //         "values": formattedStorageData.map(entry => {
-                //             const timestamp = entry.formattedTimestamp;
-                //             const outflowInput = document.getElementById(`consensus-${timestamp}`);
-                //             const qualityInput = document.getElementById(`quality-code-${timestamp}`);
-
-                //             if (!outflowInput || !qualityInput) {
-                //                 console.warn(`Missing input for timestamp: ${timestamp}`);
-                //                 return null; // Or handle this more gracefully
-                //             }
-
-                //             const outflowValue = outflowInput.value;
-                //             const qualityCodeValue = qualityInput.value;
-
-                //             const timestampUnix = new Date(timestamp).getTime();
-
-                //             return [
-                //                 timestampUnix,
-                //                 parseFloat(outflowValue),
-                //                 parseFloat(qualityCodeValue)
-                //             ];
-                //         }).filter(Boolean) // remove any null entries
-                //     };
-                //     console.log("payloadConsensus:", payloadConsensus);
-
-                //     async function loginCDA() {
-                //         if (await isLoggedIn()) return true;
-                //         window.location.href = `https://wm.mvs.ds.usace.army.mil:8243/CWMSLogin/login?OriginalLocation=${encodeURIComponent(window.location.href)}`;
-                //     }
-
-                //     async function isLoggedIn() {
-                //         try {
-                //             const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", { method: "GET" });
-                //             return response.status !== 401;
-                //         } catch (error) {
-                //             console.error('Error checking login status:', error);
-                //             return false;
-                //         }
-                //     }
-
-                //     async function createTS(payload) {
-                //         if (!payload) throw new Error("You must specify a payload!");
-                //         const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?store-rule=REPLACE%20ALL", {
-                //             method: "POST",
-                //             headers: { "Content-Type": "application/json;version=2" },
-                //             body: JSON.stringify(payload)
-                //         });
-
-                //         if (!response.ok) {
-                //             const errorText = await response.text();
-                //             throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-                //         }
-                //     }
-
-                //     async function fetchUpdatedData(isoDateMinus6Days, isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidStage) {
-                //         let response = null;
-                //         const beginDate = lookback !== null ? lookback : isoDateMinus6Days;
-                //         response = await fetch(`https://wm.mvs.ds.usace.army.mil/mvs-data/timeseries?name=${tsidStage}&begin=${beginDate}&end=${isoDateToday}&office=MVS`, {
-                //             headers: {
-                //                 "Accept": "application/json;version=2", // Ensuring the correct version is used
-                //                 "cache-control": "no-cache"
-                //             }
-                //         });
-
-                //         if (!response.ok) {
-                //             throw new Error(`Failed to fetch updated data: ${response.status}`);
-                //         }
-
-                //         const data = await response.json();
-
-                //         // Log the raw data received
-                //         console.log('Fetched Data:', data);
-
-                //         return data;
-                //     }
-
-                //     // Function to show the spinner while waiting
-                //     function showSpinner() {
-                //         const spinner = document.createElement('img');
-                //         spinner.src = 'images/loading4.gif';
-                //         spinner.id = 'loadingSpinner';
-                //         spinner.style.width = '40px';  // Set the width to 40px
-                //         spinner.style.height = '40px'; // Set the height to 40px
-                //         document.body.appendChild(spinner);
-                //     }
-
-                //     // Function to hide the spinner once the operation is complete
-                //     function hideSpinner() {
-                //         const spinner = document.getElementById('loadingSpinner');
-                //         if (spinner) {
-                //             spinner.remove();
-                //         }
-                //     }
-
-                //     if (cdaSaveBtn.innerText === "Login") {
-                //         showSpinner(); // Show the spinner before the login
-                //         const loginResult = await loginCDA();
-                //         hideSpinner(); // Hide the spinner after login is complete
-
-                //         cdaSaveBtn.innerText = loginResult ? "Submit" : "Login";
-                //         cdaStatusBtn.innerText = loginResult ? "" : "Failed to Login!";
-                //     } else {
-                //         try {
-                //             showSpinner(); // Show the spinner before creating the version
-                //             await createTS(payloadConsensus);
-                //             await createTS(payloadStorageOutflowEvap);
-                //             statusDiv.innerText = "Write successful!";
-
-                //             // Optional: small delay to allow backend to process the new data
-                //             await new Promise(resolve => setTimeout(resolve, 1000));
-
-                //             // // Fetch updated data and refresh the table
-                //             const updatedData = await fetchUpdatedData(isoDateMinus6Days, isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidStage);
-                //             const hourlyStageData = getMidnightData(updatedData, tsidStage);
-                //             createTable(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyStageData);
-                //         } catch (error) {
-                //             hideSpinner(); // Hide the spinner if an error occurs
-                //             statusDiv.innerText = "Failed to write data!";
-                //             console.error(error);
-                //         }
-
-                //         hideSpinner(); // Hide the spinner after the operation completes
-                //     }
-                // });
-
-                // Estimated Value Div
-
-                // Utilization 
                 const buttonEstimatedValue = document.createElement('div');
                 buttonEstimatedValue.id = 'utilization-value';
                 buttonEstimatedValue.style.backgroundColor = '#ffffff';
                 buttonEstimatedValue.style.padding = '8px';
-                buttonEstimatedValue.style.marginTop = '10px'; 
+                buttonEstimatedValue.style.marginTop = '10px';
                 buttonEstimatedValue.style.width = '100%';
 
                 // Create first span (e.g., icon or label)
@@ -675,37 +429,73 @@ document.addEventListener('DOMContentLoaded', async function () {
         return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
     }
 
-    function getMidnightData(data, tsid) {
-        const midnightData = [];
+    function getSpecificTimesData(data, tsid) {
+        const specificTimesData = [];
+        const validHours = [0, 6, 12, 18]; // Local CST/CDT hours we care about
 
         data.values.forEach(entry => {
             const [timestamp, value, qualityCode] = entry;
 
-            // Normalize the timestamp
             let date;
             if (typeof timestamp === "string") {
-                date = new Date(timestamp.replace(/-/g, '/')); // Replace hyphens with slashes for iOS
+                date = new Date(timestamp.replace(/-/g, '/'));
             } else if (typeof timestamp === "number") {
-                date = new Date(timestamp); // Assume it's a UNIX timestamp
+                date = new Date(timestamp);
             } else {
                 console.warn("Unrecognized timestamp format:", timestamp);
-                return; // Skip invalid entries
+                return;
             }
 
-            // Validate date
             if (isNaN(date.getTime())) {
                 console.warn("Invalid date:", timestamp);
-                return; // Skip invalid dates
+                return;
             }
 
-            // Check if the time is exactly midnight (00:00:00)
-            if (date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0) {
-                midnightData.push({ timestamp, value, qualityCode, tsid });
+            // Convert to Central Time and extract components
+            const formatter = new Intl.DateTimeFormat('en-US', {
+                timeZone: 'America/Chicago',
+                hour12: false,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            const parts = formatter.formatToParts(date).reduce((acc, part) => {
+                acc[part.type] = part.value;
+                return acc;
+            }, {});
+
+            const localHour = parseInt(parts.hour, 10);
+            const localMinute = parseInt(parts.minute, 10);
+            const localSecond = parseInt(parts.second, 10);
+
+            if (validHours.includes(localHour) && localMinute === 0 && localSecond === 0) {
+                // Reconstruct ISO 8601 timestamp with offset
+                const localDate = new Date(`${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}`);
+                const offsetMinutes = -localDate.getTimezoneOffset(); // in minutes
+                const offsetHours = Math.floor(offsetMinutes / 60);
+                const offsetMins = Math.abs(offsetMinutes % 60);
+                const offsetSign = offsetHours >= 0 ? '+' : '-';
+                const pad = n => n.toString().padStart(2, '0');
+                const timezoneOffset = `${offsetSign}${pad(Math.abs(offsetHours))}:${pad(offsetMins)}`;
+
+                const timestampCst = `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}${timezoneOffset}`;
+
+                specificTimesData.push({
+                    timestamp,
+                    value,
+                    qualityCode,
+                    tsid,
+                    timestampCst
+                });
             }
         });
 
-        return midnightData;
-    };
+        return specificTimesData;
+    }
 
     function getIsoDateWithOffsetDynamic(year, month, day, offset) {
         // Create a date object at 6 AM UTC
@@ -728,24 +518,5 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Return the ISO string
         return date.toISOString();
-    }
-
-    function addDeltaAsDsfToData(data) {
-        return data.map((entry, index) => {
-            if (index === 0) {
-                return { ...entry, delta: null };
-            }
-            const delta = (entry.value - data[index - 1].value) / 1.9834591996927;
-            return { ...entry, delta };
-        });
-    }
-
-    function shiftDeltaUp(data) {
-        for (let i = 0; i < data.length - 1; i++) {
-            data[i].delta = data[i + 1].delta;
-        }
-        // Optional: set the last delta to null since there's no next value
-        data[data.length - 1].delta = null;
-        return data;
     }
 });

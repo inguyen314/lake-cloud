@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output166Div.appendChild(forecastDateTitle);
 
                 const forecastEvapTitle = document.createElement("h3");
-                forecastEvapTitle.textContent = `OBS 24hr Precip ~ 0.1" // OBS 7-Day Precip ~ 1.5" // Total QPF ~ 1.8" // Percent Runoff ~ 16%`;
+                forecastEvapTitle.textContent = `OBS 24hr Precip ~ 0.1" // OBS 7-Day Precip ~ 1.5" // Total QPF ~ 1.8"`;
                 forecastEvapTitle.style.marginBottom = "20px";
                 forecastEvapTitle.style.color = "red";
                 output166Div.appendChild(forecastEvapTitle);
@@ -820,3 +820,5 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 // Wappapello Lk-St Francis.Flow-Out.Inst.1Hour.0.CWMS-Forecast-NoQPF
 // Wappapello Lk-St Francis.Flow-Out.Inst.1Hour.0.CWMS-Forecast-QPF
+
+// Remvove Percent Runoff ~ 16% from the title
