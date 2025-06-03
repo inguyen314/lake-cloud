@@ -303,7 +303,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Append the data row to the table
                 table.appendChild(row);
 
-                // Create the data row (was incorrectly using a <td> instead of <tr>)
                 const row2 = document.createElement("tr");
 
                 const stationRow2 = document.createElement("td");
@@ -311,31 +310,39 @@ document.addEventListener('DOMContentLoaded', async function () {
                 row2.appendChild(stationRow2);
 
                 const parameterRow2 = document.createElement("td");
-                parameterRow2.textContent = (formattedStorageData[0]['tsid']).split(".")[1] + " (dsf)";
+                parameterRow2.textContent = (formattedStorageData[0]?.tsid || "").split(".")[1] + " (dsf)";
                 row2.appendChild(parameterRow2);
 
+                // Helper to format values with commas, handling nulls
+                const formatValue = (v) => {
+                    if (v == null || isNaN(v)) return "N/A";
+                    return (v / 1.9834591996927).toLocaleString(undefined, { maximumFractionDigits: 0 });
+                };
+
                 const hrs06Row2 = document.createElement("td");
-                hrs06Row2.textContent = ((formattedStorageData[1]['value'])/1.9834591996927).toFixed(0);
+                hrs06Row2.textContent = formatValue(formattedStorageData[1]?.value);
                 row2.appendChild(hrs06Row2);
 
                 const hrs12Row2 = document.createElement("td");
-                hrs12Row2.textContent = ((formattedStorageData[2]['value'])/1.9834591996927).toFixed(0);
+                hrs12Row2.textContent = formatValue(formattedStorageData[2]?.value);
                 row2.appendChild(hrs12Row2);
 
                 const hrs18Row2 = document.createElement("td");
-                hrs18Row2.textContent = ((formattedStorageData[3]['value'])/1.9834591996927).toFixed(0);
+                hrs18Row2.textContent = formatValue(formattedStorageData[3]?.value);
                 row2.appendChild(hrs18Row2);
 
                 const hrs24Row2 = document.createElement("td");
-                hrs24Row2.textContent = ((formattedStorageData[4]['value'])/1.9834591996927).toFixed(0);
+                hrs24Row2.textContent = formatValue(formattedStorageData[4]?.value);
                 row2.appendChild(hrs24Row2);
 
                 const hrs06TodayRow2 = document.createElement("td");
-                hrs06TodayRow2.textContent = ((formattedStorageData[5]['value'])/1.9834591996927).toFixed(0);
+                hrs06TodayRow2.textContent = formatValue(formattedStorageData[5]?.value);
                 row2.appendChild(hrs06TodayRow2);
 
+                // Delta calculation with null check
+                const deltaVal = (formattedStorageData[5]?.value ?? null) - (formattedStorageData[1]?.value ?? null);
                 const deltaRow2 = document.createElement("td");
-                deltaRow2.textContent = (((formattedStorageData[5]['value']) - (formattedStorageData[1]['value']))/1.9834591996927).toFixed(0);
+                deltaRow2.textContent = isNaN(deltaVal) ? "N/A" : formatValue(deltaVal);
                 row2.appendChild(deltaRow2);
 
                 // Append the data row to the table
