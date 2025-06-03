@@ -457,7 +457,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const scheduleValue = formattedScheduleData?.["regular-text-values"]?.[0]?.["text-value"];
                     const instructionValue = formattedDataInstruction?.["regular-text-values"]?.[0]?.["text-value"];
 
-                    const subject = encodeURIComponent("Mark Twain Lake Instructions");
+                    const subject = encodeURIComponent("Mark Twain Lake Instructions - Testing");
 
                     const body = encodeURIComponent(
                         `Below is today's Mark Twain Lake Re-Regulation Dam schedule and instructions.\n` +
@@ -532,7 +532,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }).replace(/\//g, '-');
 
 
-                    const subject = encodeURIComponent("Mark Twain Lake Data");
+                    const subject = encodeURIComponent("Mark Twain Lake Data - Testing");
 
                     const getEmailBody = async () => {
                         // your existing logic

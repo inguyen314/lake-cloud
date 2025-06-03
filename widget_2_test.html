@@ -35,6 +35,9 @@
     var datetime = urlParams.get('datetime') || formatDate(new Date());
     console.log('datetime: ', datetime);
 
+    var lookback = urlParams.get('lookback');
+    console.log('lookback: ', lookback);
+
     function formatDate(date) {
         let month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure two-digit month
         let day = String(date.getDate()).padStart(2, '0'); // Ensure two-digit day
