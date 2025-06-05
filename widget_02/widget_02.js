@@ -460,6 +460,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                     values.push([timestampUnix, midnightValue, 0]);
                     console.log("values:", values);
 
+                    let tsidStage = formattedStageData?.[4]?.tsid;
+
+                    let tsidElev = tsidStage
+                        .replace('.Stage.', '.Elev.')
+                        .replace('.29', '.lrgsShef-rev');
+
+                    console.log("tsidElev:", tsidElev);
 
                     const payload = {
                         "name": formattedStageData?.[4]?.tsid,
@@ -469,6 +476,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                     };
 
                     console.log("payload:", payload);
+
+                    const payloadElev = {
+                        "name":tsidElev,
+                        "office-id": "MVS",
+                        "units": "ft",
+                        "values": values
+                    };
+
+                    console.log("payloadElev:", payloadElev);
 
                     async function loginCDA() {
                         if (await isLoggedIn()) return true;
@@ -556,6 +572,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         try {
                             showSpinner(); // Show the spinner before creating the version
                             await createTS(payload);
+                            // TODO: Need NAVD88 and NGVD29 Delta for Elevation. The payload needs to account for this.
+                            // await createTS(payloadElev);
                             statusDiv.innerText = "Write successful!";
 
                             // Optional: small delay to allow backend to process the new data
