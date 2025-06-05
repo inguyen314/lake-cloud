@@ -72,6 +72,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     const levelIdBottomOfFlood = `${lake.split('-')[0]}.Stor.Inst.0.Bottom of Flood`;
     console.log("levelIdBottomOfFlood:", levelIdBottomOfFlood);
 
+    const levelIdNgvd29 = `${lake}.Height.Inst.0.NGVD29`;
+    console.log("levelIdNgvd29:", levelIdNgvd29);
+
     const levelIdTopOfConservationUrl = `${setBaseUrl}levels/${levelIdTopOfConservation}?office=${office}&effective-date=${isoDateToday}&unit=ac-ft`;
     console.log("levelIdTopOfConservationUrl:", levelIdTopOfConservationUrl);
 
@@ -83,6 +86,12 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     const levelIdBottomOfFloodUrl = `${setBaseUrl}levels/${levelIdBottomOfFlood}?office=${office}&effective-date=${isoDateToday}&unit=ac-ft`;
     console.log("levelIdBottomOfFloodUrl:", levelIdBottomOfFloodUrl);
+
+    const levelIdNgvd29Url = `${setBaseUrl}levels/${levelIdNgvd29}?office=${office}&effective-date=${isoDateToday}&unit=ft`;
+    console.log("levelIdNgvd29Url:", levelIdNgvd29Url);
+
+    const metadataUrl = `${setBaseUrl}locations/${lake}?office=${office}`;
+    console.log("metadataUrl:", metadataUrl);
 
     const fetchTimeSeriesData = async (tsid) => {
         const beginDate = lookback !== null ? lookback : isoDateMinus1Day;
@@ -110,6 +119,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             const response4 = await fetch(levelIdBottomOfFloodUrl);
             const response5 = await fetch(urlTsidStage);
             const response6 = await fetch(urlTsidStorage);
+            const response7 = await fetch(levelIdNgvd29Url);
+            const response8 = await fetch(metadataUrl);
 
             const topOfConservationData = await response1.json();
             const topOfFloodData = await response2.json();
@@ -117,6 +128,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             const bottomOfFloodData = await response4.json();
             const tsidStageData = await response5.json();
             const tsidStorageData = await response6.json();
+            const ngvd29Data = await response7.json();
+            const metaData = await response8.json();
 
             console.log("topOfConservationData:", topOfConservationData);
             console.log("topOfFloodData:", topOfFloodData);
@@ -124,6 +137,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("bottomOfFloodData:", bottomOfFloodData);
             console.log("tsidStageData:", tsidStageData);
             console.log("tsidStorageData:", tsidStorageData);
+            console.log("ngvd29Data:", ngvd29Data);
+            console.log("metaData:", metaData);
 
             const tsidStage = tsidStageData['assigned-time-series'][0]['timeseries-id'];
             const tsidStorage = tsidStorageData['assigned-time-series'][0]['timeseries-id'];
@@ -197,7 +212,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("formattedStorageData:", formattedStorageData);
 
             if (formattedStageData.length > 0) {
-                createTable(formattedStageData, formattedStorageData, topOfConservationData, topOfFloodData, bottomOfConservationData, bottomOfFloodData, tsidStage, tsidStorage);
+                createTable(formattedStageData, formattedStorageData, topOfConservationData, topOfFloodData, bottomOfConservationData, bottomOfFloodData, tsidStage, tsidStorage, ngvd29Data, metaData);
 
                 loadingIndicator.style.display = 'none';
 
@@ -207,7 +222,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }, 10000);
             }
 
-            function createTable(formattedStageData, formattedStorageData, topOfConservationData, topOfFloodData, bottomOfConservationData, bottomOfFloodData, tsidStage, tsidStorage) {
+            function createTable(formattedStageData, formattedStorageData, topOfConservationData, topOfFloodData, bottomOfConservationData, bottomOfFloodData, tsidStage, tsidStorage, ngvd29Data, metaData) {
                 // Create the table element
                 const table = document.createElement("table");
 
@@ -477,11 +492,28 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     console.log("payload:", payload);
 
+                    // Get the datum delta
+                    const gageZeroNavd88 = metaData['elevation'];
+                    const gageZeroNgvd29 = ngvd29Data['constant-value'];
+                    console.log("gageZeroNavd88:", gageZeroNavd88);
+                    console.log("gageZeroNgvd29:", gageZeroNgvd29);
+
+                    const gageZeroDelta = gageZeroNgvd29 - gageZeroNavd88;
+                    console.log("gageZeroDelta:", gageZeroDelta);
+
+                    // Create a new array with the adjusted value
+                    const adjustedValues = values.map(entry => [
+                        entry[0],
+                        +(entry[1] - gageZeroDelta).toFixed(2), // keep two decimal places like original
+                        entry[2]
+                    ]);
+                    console.log("adjustedValues:", adjustedValues);
+
                     const payloadElev = {
-                        "name":tsidElev,
+                        "name": tsidElev,
                         "office-id": "MVS",
                         "units": "ft",
-                        "values": values
+                        "values": adjustedValues
                     };
 
                     console.log("payloadElev:", payloadElev);
@@ -572,8 +604,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         try {
                             showSpinner(); // Show the spinner before creating the version
                             await createTS(payload);
-                            // TODO: Need NAVD88 and NGVD29 Delta for Elevation. The payload needs to account for this.
-                            // await createTS(payloadElev);
+                            await createTS(payloadElev);
                             statusDiv.innerText = "Write successful!";
 
                             // Optional: small delay to allow backend to process the new data
