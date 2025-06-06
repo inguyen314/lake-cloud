@@ -525,8 +525,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Append both spans to the div
                 divData.appendChild(conservationSpan);
                 divData.appendChild(floodSpan);
-                divData.appendChild(oneWeekChangeSpan);
-                divData.appendChild(fourWeekChangeSpan);
+                // Append the oneWeekChangeSpan and fourWeekChangeSpan only if the lake is "Mark Twain Lk-Salt"
+                if (lake === "Mark Twain Lk-Salt") {
+                    divData.appendChild(oneWeekChangeSpan);
+                    divData.appendChild(fourWeekChangeSpan);
+                }
 
                 // Append the final div to your container
                 output2Div.appendChild(divData);
