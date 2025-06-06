@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const [month, day, year] = datetime.split('-');
 
     // Generate ISO strings for the previous 7 days and today
+    const isoDateMinus27Days = getIsoDateWithOffsetDynamic(year, month, day, -27);
     const isoDateMinus8Days = getIsoDateWithOffsetDynamic(year, month, day, -8);
     const isoDateMinus7Days = getIsoDateWithOffsetDynamic(year, month, day, -7);
     const isoDateMinus6Days = getIsoDateWithOffsetDynamic(year, month, day, -6);
@@ -37,6 +38,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const isoDateDay6 = getIsoDateWithOffsetDynamic(year, month, day, 6);
     const isoDateDay7 = getIsoDateWithOffsetDynamic(year, month, day, 7);
 
+    console.log("isoDateMinus27Days:", isoDateMinus27Days);
     console.log("isoDateMinus8Days:", isoDateMinus8Days);
     console.log("isoDateMinus7Days:", isoDateMinus7Days);
     console.log("isoDateMinus6Days:", isoDateMinus6Days);
@@ -111,6 +113,24 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     };
 
+    const fetchTimeSeriesData4Weeks = async (tsid) => {
+        const beginDate = lookback !== null ? lookback : isoDateMinus27Days;
+        const tsidData = `${setBaseUrl}timeseries?page-size=1000000&name=${tsid}&begin=${beginDate}&end=${isoDateDay1}&office=${office}`;
+        console.log('tsidData:', tsidData);
+        try {
+            const response = await fetch(tsidData, {
+                headers: {
+                    "Accept": "application/json;version=2",
+                    "cache-control": "no-cache"
+                }
+            });
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error fetching time series data:", error);
+        }
+    };
+
     const fetchTsidData = async () => {
         try {
             const response1 = await fetch(levelIdTopOfConservationUrl);
@@ -147,15 +167,19 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("tsidStorage:", tsidStorage);
 
             const timeSeriesData1 = await fetchTimeSeriesData(tsidStage);
+            const timeSeriesData4Weeks = await fetchTimeSeriesData4Weeks(tsidStage);
             const timeSeriesData2 = await fetchTimeSeriesData(tsidStorage);
 
             console.log("timeSeriesData1:", timeSeriesData1);
+            console.log("timeSeriesData4Weeks:", timeSeriesData4Weeks);
             console.log("timeSeriesData2:", timeSeriesData2);
 
             const hourlyStageData = getSpecificTimesData(timeSeriesData1, tsidStage);
+            const midnightData = getMidnightData(timeSeriesData4Weeks, tsidStage);
             const hourlyStorageData = getSpecificTimesData(timeSeriesData2, tsidStorage);
 
             console.log("hourlyStageData:", hourlyStageData);
+            console.log("midnightData:", midnightData);
             console.log("hourlyStorageData:", hourlyStorageData);
 
             let cdaSaveBtn;
@@ -212,7 +236,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("formattedStorageData:", formattedStorageData);
 
             if (formattedStageData.length > 0) {
-                createTable(formattedStageData, formattedStorageData, topOfConservationData, topOfFloodData, bottomOfConservationData, bottomOfFloodData, tsidStage, tsidStorage, ngvd29Data, metaData);
+                createTable(formattedStageData, formattedStorageData, topOfConservationData, topOfFloodData, bottomOfConservationData, bottomOfFloodData, tsidStage, tsidStorage, ngvd29Data, metaData, midnightData);
 
                 loadingIndicator.style.display = 'none';
 
@@ -222,7 +246,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }, 10000);
             }
 
-            function createTable(formattedStageData, formattedStorageData, topOfConservationData, topOfFloodData, bottomOfConservationData, bottomOfFloodData, tsidStage, tsidStorage, ngvd29Data, metaData) {
+            function createTable(formattedStageData, formattedStorageData, topOfConservationData, topOfFloodData, bottomOfConservationData, bottomOfFloodData, tsidStage, tsidStorage, ngvd29Data, metaData, midnightData) {
                 // Create the table element
                 const columnWidth = "12.5%"; // 100% / 8 columns
 
@@ -406,16 +430,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                 buttonRefresh.className = 'fetch-btn';
                 output2Div.appendChild(buttonRefresh);
 
-                const buttonEstimatedValue = document.createElement('div');
-                buttonEstimatedValue.id = 'utilization-value';
-                buttonEstimatedValue.style.backgroundColor = '#ffffff';
-                buttonEstimatedValue.style.padding = '8px';
-                buttonEstimatedValue.style.marginTop = '10px';
-                buttonEstimatedValue.style.width = '100%';
+                const divData = document.createElement('div');
+                divData.id = 'utilization-value';
+                divData.style.backgroundColor = '#ffffff';
+                divData.style.padding = '8px';
+                divData.style.marginTop = '10px';
+                divData.style.width = '100%';
 
-                // Create first span (e.g., icon or label)
-                const iconSpan = document.createElement('span');
-                iconSpan.id = 'conservation-span';
+                // Create first span (e.g., Conservation Pool Utilization)
+                const conservationSpan = document.createElement('span');
+                conservationSpan.id = 'conservation-span';
                 const midnightStorageValue = (formattedStorageData[4]['value']).toFixed(0);
                 console.log("midnightStorageValue:", midnightStorageValue);
 
@@ -445,20 +469,67 @@ document.addEventListener('DOMContentLoaded', async function () {
                     floodUtilization = "--";
                 }
 
-                iconSpan.innerHTML = `Conservation Pool Utilization = <b>${conservationUtilization}</b>`;
-                iconSpan.style.paddingRight = '12px';
+                conservationSpan.innerHTML = `Conservation Pool Utilization = <b>${conservationUtilization}</b>`;
+                conservationSpan.style.paddingRight = '12px';
 
-                // Create second span (e.g., description)
-                const textSpan = document.createElement('span');
-                textSpan.id = 'flood-span';
-                textSpan.innerHTML = `Flood Pool Utilization = <b>${floodUtilization}</b>`;
+                // Create second span (e.g., Flood Pool Utilization)
+                const floodSpan = document.createElement('span');
+                floodSpan.id = 'flood-span';
+                floodSpan.innerHTML = `Flood Pool Utilization = <b>${floodUtilization}</b>`;
+                floodSpan.style.paddingRight = '12px';
+
+                // Create third span (e.g., 1 Week Change)
+                const oneWeekChangeSpan = document.createElement('span');
+                oneWeekChangeSpan.id = 'flood-span';
+
+                const value20 = midnightData?.[20]?.value;
+                const value27 = midnightData?.[27]?.value;
+
+                let oneWeekChangeText = 'N/A';
+
+                if (
+                    value20 !== null && value20 !== undefined &&
+                    value27 !== null && value27 !== undefined &&
+                    !isNaN(value20) && !isNaN(value27)
+                ) {
+                    const change = (value27 - value20).toFixed(2);
+                    oneWeekChangeText = `<b>${change}</b>`;
+                }
+
+                oneWeekChangeSpan.innerHTML = `1 Week Change = ${oneWeekChangeText} ft`;
+                oneWeekChangeSpan.style.paddingRight = '12px';
+
+                // Create fourWeekChangeSpan (e.g., "4 Week Change")
+                const fourWeekChangeSpan = document.createElement('span');
+                fourWeekChangeSpan.id = 'flood-span';
+
+                // Safely extract values
+                const startValue = midnightData?.[0]?.value;
+                const endValue = midnightData?.[27]?.value;
+
+                let fourWeekChangeText = 'N/A';
+
+                // Check if both values are numbers and not null/undefined
+                if (
+                    startValue !== null && startValue !== undefined &&
+                    endValue !== null && endValue !== undefined &&
+                    !isNaN(startValue) && !isNaN(endValue)
+                ) {
+                    const change = (endValue - startValue).toFixed(2);
+                    fourWeekChangeText = `<b>${change}</b>`;
+                }
+
+                fourWeekChangeSpan.innerHTML = `4 Week Change = ${fourWeekChangeText} ft`;
+                fourWeekChangeSpan.style.paddingRight = '12px';
 
                 // Append both spans to the div
-                buttonEstimatedValue.appendChild(iconSpan);
-                buttonEstimatedValue.appendChild(textSpan);
+                divData.appendChild(conservationSpan);
+                divData.appendChild(floodSpan);
+                divData.appendChild(oneWeekChangeSpan);
+                divData.appendChild(fourWeekChangeSpan);
 
                 // Append the final div to your container
-                output2Div.appendChild(buttonEstimatedValue);
+                output2Div.appendChild(divData);
 
                 buttonRefresh.addEventListener('click', () => {
                     // Remove existing table
@@ -762,6 +833,72 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
 
         return specificTimesData;
+    }
+
+    function getMidnightData(data, tsid) {
+        const midnightData = [];
+
+        data.values.forEach(entry => {
+            const [timestamp, value, qualityCode] = entry;
+
+            let date;
+            if (typeof timestamp === "string") {
+                date = new Date(timestamp.replace(/-/g, '/'));
+            } else if (typeof timestamp === "number") {
+                date = new Date(timestamp);
+            } else {
+                console.warn("Unrecognized timestamp format:", timestamp);
+                return;
+            }
+
+            if (isNaN(date.getTime())) {
+                console.warn("Invalid date:", timestamp);
+                return;
+            }
+
+            const formatter = new Intl.DateTimeFormat('en-US', {
+                timeZone: 'America/Chicago',
+                hour12: false,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            const parts = formatter.formatToParts(date).reduce((acc, part) => {
+                acc[part.type] = part.value;
+                return acc;
+            }, {});
+
+            const localHour = parseInt(parts.hour, 10);
+            const localMinute = parseInt(parts.minute, 10);
+            const localSecond = parseInt(parts.second, 10);
+
+            // Only get midnight data (00:00:00)
+            if (localHour === 0 && localMinute === 0 && localSecond === 0) {
+                const localDate = new Date(`${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}`);
+                const offsetMinutes = -localDate.getTimezoneOffset();
+                const offsetHours = Math.floor(offsetMinutes / 60);
+                const offsetMins = Math.abs(offsetMinutes % 60);
+                const offsetSign = offsetHours >= 0 ? '+' : '-';
+                const pad = n => n.toString().padStart(2, '0');
+                const timezoneOffset = `${offsetSign}${pad(Math.abs(offsetHours))}:${pad(offsetMins)}`;
+
+                const timestampCst = `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}${timezoneOffset}`;
+
+                midnightData.push({
+                    timestamp,
+                    value,
+                    qualityCode,
+                    tsid,
+                    timestampCst
+                });
+            }
+        });
+
+        return midnightData;
     }
 
     function getIsoDateWithOffsetDynamic(year, month, day, offset) {
