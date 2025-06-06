@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("lake: ", lake);
     console.log('datetime: ', datetime);
 
-    const loadingIndicator = document.getElementById('loading_03');
+    const loadingIndicator = document.getElementById('loading_19');
     loadingIndicator.style.display = 'block';
 
     let setBaseUrl = null;
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             async function loginStateController() {
-                cdaSaveBtn = document.getElementById("cda-btn-tw"); // Get the button by its ID
+                cdaSaveBtn = document.getElementById("cda-btn-rereg"); // Get the button by its ID
 
                 cdaSaveBtn.disabled = true; // Disable button while checking login state
 
@@ -175,8 +175,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Create the table element
                 const table = document.createElement("table");
 
-                // Apply the ID "tw" to the table
-                table.id = "tw";
+                // Apply the ID "rereg" to the table
+                table.id = "rereg";
 
                 // Create the table header row
                 const headerRow = document.createElement("tr");
@@ -216,105 +216,105 @@ document.addEventListener('DOMContentLoaded', async function () {
                 table.appendChild(headerRow);
 
                 // Clear existing content and append the table
-                const output3Div = document.getElementById("output3");
-                output3Div.innerHTML = "";
-                output3Div.appendChild(table);
-
-                // Create the data row (was incorrectly using a <td> instead of <tr>)
-                const row = document.createElement("tr");
-
-                const stationRow = document.createElement("td");
-                stationRow.textContent = (formattedTwData[0]['tsid']).split("-")[0];
-                row.appendChild(stationRow);
-
-                const parameterRow = document.createElement("td");
-                parameterRow.textContent = (formattedTwData[0]['tsid']).split(".")[1] + " (ft)";
-                row.appendChild(parameterRow);
-
-                const hrs06Row = document.createElement("td");
-                hrs06Row.textContent = (formattedTwData[1]['value']).toFixed(2);
-                row.appendChild(hrs06Row);
-
-                const hrs12Row = document.createElement("td");
-                hrs12Row.textContent = (formattedTwData[2]['value']).toFixed(2);
-                row.appendChild(hrs12Row);
-
-                const hrs18Row = document.createElement("td");
-                hrs18Row.textContent = (formattedTwData[3]['value']).toFixed(2);
-                row.appendChild(hrs18Row);
-
-                const hrs24Row = document.createElement("td");
-                hrs24Row.textContent = (formattedTwData[4]['value']).toFixed(2);
-                row.appendChild(hrs24Row);
-
-                const hrs06TodayRow = document.createElement("td");
-                hrs06TodayRow.textContent = (formattedTwData[5]['value']).toFixed(2);
-                row.appendChild(hrs06TodayRow);
-
-                const deltaRow = document.createElement("td");
-                deltaRow.textContent = ((formattedTwData[5]['value']) - (formattedTwData[1]['value'])).toFixed(2);
-                row.appendChild(deltaRow);
-
-                // Append the data row to the table
-                table.appendChild(row);
+                const output19Div = document.getElementById("output19");
+                output19Div.innerHTML = "";
+                output19Div.appendChild(table);
 
                 // // Create the data row (was incorrectly using a <td> instead of <tr>)
-                // const row2 = document.createElement("tr");
+                // const row = document.createElement("tr");
 
-                // const stationRow2 = document.createElement("td");
-                // stationRow2.textContent = "";
-                // row2.appendChild(stationRow2);
+                // const stationRow = document.createElement("td");
+                // stationRow.textContent = (formattedTwData[0]['tsid']).split("-")[0];
+                // row.appendChild(stationRow);
 
-                // const parameterRow2 = document.createElement("td");
-                // parameterRow2.textContent = (formattedReRegData[0]['tsid']).split(".")[1] + " (ft)";
-                // row2.appendChild(parameterRow2);
+                // const parameterRow = document.createElement("td");
+                // parameterRow.textContent = (formattedTwData[0]['tsid']).split(".")[1] + " (ft)";
+                // row.appendChild(parameterRow);
 
-                // const hrs06Row2 = document.createElement("td");
-                // hrs06Row2.textContent = ((formattedReRegData[1]['value']) / 1).toFixed(2);
-                // row2.appendChild(hrs06Row2);
+                // const hrs06Row = document.createElement("td");
+                // hrs06Row.textContent = (formattedTwData[1]['value']).toFixed(2);
+                // row.appendChild(hrs06Row);
 
-                // const hrs12Row2 = document.createElement("td");
-                // hrs12Row2.textContent = ((formattedReRegData[2]['value']) / 1).toFixed(2);
-                // row2.appendChild(hrs12Row2);
+                // const hrs12Row = document.createElement("td");
+                // hrs12Row.textContent = (formattedTwData[2]['value']).toFixed(2);
+                // row.appendChild(hrs12Row);
 
-                // const hrs18Row2 = document.createElement("td");
-                // hrs18Row2.textContent = ((formattedReRegData[3]['value']) / 1).toFixed(2);
-                // row2.appendChild(hrs18Row2);
+                // const hrs18Row = document.createElement("td");
+                // hrs18Row.textContent = (formattedTwData[3]['value']).toFixed(2);
+                // row.appendChild(hrs18Row);
 
-                // const hrs24Row2 = document.createElement("td");
-                // hrs24Row2.textContent = ((formattedReRegData[4]['value']) / 1).toFixed(2);
-                // row2.appendChild(hrs24Row2);
+                // const hrs24Row = document.createElement("td");
+                // hrs24Row.textContent = (formattedTwData[4]['value']).toFixed(2);
+                // row.appendChild(hrs24Row);
 
-                // const hrs06TodayRow2 = document.createElement("td");
-                // hrs06TodayRow2.textContent = ((formattedReRegData[5]['value']) / 1).toFixed(2);
-                // row2.appendChild(hrs06TodayRow2);
+                // const hrs06TodayRow = document.createElement("td");
+                // hrs06TodayRow.textContent = (formattedTwData[5]['value']).toFixed(2);
+                // row.appendChild(hrs06TodayRow);
 
-                // const deltaRow2 = document.createElement("td");
-                // deltaRow2.textContent = (((formattedReRegData[5]['value']) - (formattedReRegData[1]['value'])) / 1).toFixed(2);
-                // row2.appendChild(deltaRow2);
+                // const deltaRow = document.createElement("td");
+                // deltaRow.textContent = ((formattedTwData[5]['value']) - (formattedTwData[1]['value'])).toFixed(2);
+                // row.appendChild(deltaRow);
 
                 // // Append the data row to the table
-                // table.appendChild(row2);
+                // table.appendChild(row);
+
+                // Create the data row (was incorrectly using a <td> instead of <tr>)
+                const row2 = document.createElement("tr");
+
+                const stationRow2 = document.createElement("td");
+                stationRow2.textContent = (formattedReRegData[0]['tsid']).split("-")[0];
+                row2.appendChild(stationRow2);
+
+                const parameterRow2 = document.createElement("td");
+                parameterRow2.textContent = (formattedReRegData[0]['tsid']).split(".")[1] + " (ft)";
+                row2.appendChild(parameterRow2);
+
+                const hrs06Row2 = document.createElement("td");
+                hrs06Row2.textContent = ((formattedReRegData[1]['value']) / 1).toFixed(2);
+                row2.appendChild(hrs06Row2);
+
+                const hrs12Row2 = document.createElement("td");
+                hrs12Row2.textContent = ((formattedReRegData[2]['value']) / 1).toFixed(2);
+                row2.appendChild(hrs12Row2);
+
+                const hrs18Row2 = document.createElement("td");
+                hrs18Row2.textContent = ((formattedReRegData[3]['value']) / 1).toFixed(2);
+                row2.appendChild(hrs18Row2);
+
+                const hrs24Row2 = document.createElement("td");
+                hrs24Row2.textContent = ((formattedReRegData[4]['value']) / 1).toFixed(2);
+                row2.appendChild(hrs24Row2);
+
+                const hrs06TodayRow2 = document.createElement("td");
+                hrs06TodayRow2.textContent = ((formattedReRegData[5]['value']) / 1).toFixed(2);
+                row2.appendChild(hrs06TodayRow2);
+
+                const deltaRow2 = document.createElement("td");
+                deltaRow2.textContent = (((formattedReRegData[5]['value']) - (formattedReRegData[1]['value'])) / 1).toFixed(2);
+                row2.appendChild(deltaRow2);
+
+                // Append the data row to the table
+                table.appendChild(row2);
 
                 // Save Button
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
-                cdaSaveBtn.id = "cda-btn-tw";
+                cdaSaveBtn.id = "cda-btn-rereg";
                 cdaSaveBtn.disabled = true;
                 cdaSaveBtn.style.display = "none"; // Hides the button
-                output3Div.appendChild(cdaSaveBtn);
+                output19Div.appendChild(cdaSaveBtn);
 
                 // Status Button
                 const statusDiv = document.createElement("div");
-                statusDiv.className = "status-tw";
-                output3Div.appendChild(statusDiv);
+                statusDiv.className = "status-rereg";
+                output19Div.appendChild(statusDiv);
 
                 // // Refresh Button
                 // const buttonRefresh = document.createElement('button');
                 // buttonRefresh.textContent = 'Refresh';
-                // buttonRefresh.id = 'refresh-tw-button';
+                // buttonRefresh.id = 'refresh-rereg-button';
                 // buttonRefresh.className = 'fetch-btn';
-                // output3Div.appendChild(buttonRefresh);
+                // output19Div.appendChild(buttonRefresh);
 
                 // buttonRefresh.addEventListener('click', () => {
                 //     // Remove existing table

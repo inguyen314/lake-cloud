@@ -1,12 +1,15 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // Control the visibility of widgets based on the lake
     if (lake === "Mark Twain Lk-Salt") {
         document.getElementById("widget3").style.display = "block";
         document.getElementById("widget12").style.display = "block";
         document.getElementById("widget13").style.display = "block";
+        document.getElementById("widget19").style.display = "block";
     } else {
         document.getElementById("widget3").style.display = "none";
         document.getElementById("widget12").style.display = "none";
         document.getElementById("widget13").style.display = "none";
+        document.getElementById("widget19").style.display = "none";
     }
 
     if (lake !== null && datetime !== null) {
