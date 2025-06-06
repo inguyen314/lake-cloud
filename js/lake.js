@@ -16,6 +16,12 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("widget3").style.display = "block";
     }
 
+    if (lake === "Wappapello Lk-St Francis" || lake === "Rend Lk-Big Muddy" ){
+        document.getElementById("widget20").style.display = "none";
+    } else {
+        document.getElementById("widget20").style.display = "block";
+    }
+
     if (lake !== null && datetime !== null) {
         const titleSpan = document.querySelector('.titleLabel.title');
 
