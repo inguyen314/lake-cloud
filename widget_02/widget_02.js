@@ -478,6 +478,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 floodSpan.innerHTML = `Flood Pool Utilization = <b>${floodUtilization}</b>`;
                 floodSpan.style.paddingRight = '12px';
 
+                console.log("month", month);
+
                 // Create third span (e.g., 1 Week Change)
                 const oneWeekChangeSpan = document.createElement('span');
                 oneWeekChangeSpan.id = 'flood-span';
@@ -485,7 +487,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const value20 = midnightData?.[20]?.value;
                 const value27 = midnightData?.[27]?.value;
 
-                let oneWeekChangeText = 'N/A';
+                let oneWeekChangeValue = 'N/A';
 
                 if (
                     value20 !== null && value20 !== undefined &&
@@ -493,10 +495,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                     !isNaN(value20) && !isNaN(value27)
                 ) {
                     const change = (value27 - value20).toFixed(2);
-                    oneWeekChangeText = `<b>${change}</b>`;
+                    const numericChange = parseFloat(change);
+
+                    if (numericChange >= 2.00) {
+                        oneWeekChangeValue = `<span style="color:red"><b>${change}</b></span>`;
+                    } else {
+                        oneWeekChangeValue = `<b>${change}</b>`;
+                    }
                 }
 
-                oneWeekChangeSpan.innerHTML = `1 Week Change = ${oneWeekChangeText} ft`;
+                oneWeekChangeSpan.innerHTML = `1 Week Change = ${oneWeekChangeValue}`;
                 oneWeekChangeSpan.style.paddingRight = '12px';
 
                 // Create fourWeekChangeSpan (e.g., "4 Week Change")
@@ -509,14 +517,20 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 let fourWeekChangeText = 'N/A';
 
-                // Check if both values are numbers and not null/undefined
                 if (
                     startValue !== null && startValue !== undefined &&
                     endValue !== null && endValue !== undefined &&
                     !isNaN(startValue) && !isNaN(endValue)
                 ) {
                     const change = (endValue - startValue).toFixed(2);
-                    fourWeekChangeText = `<b>${change}</b>`;
+                    const numericChange = parseFloat(change);
+
+                    // Check if month is May (5) through October (10)
+                    if (month >= 5 && month <= 10 && numericChange >= 4) {
+                        fourWeekChangeText = `<span style="color:red"><b>${change}</b></span>`;
+                    } else {
+                        fourWeekChangeText = `<b>${change}</b>`;
+                    }
                 }
 
                 fourWeekChangeSpan.innerHTML = `4 Week Change = ${fourWeekChangeText} ft`;
