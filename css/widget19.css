@@ -1,0 +1,51 @@
+#rereg {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+#rereg th,
+#rereg td {
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+#rereg th {
+    background-color: darkblue;
+    font-weight: bold;
+}
+
+#rereg input {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+#rereg tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#rereg tr:hover {
+    background-color: #f1f1f1;
+}
+
+#rereg td {
+    text-align: center;
+}
+
+#rereg td a {
+    color: darkblue;
+    text-decoration: none;
+}
+
+#rereg td a:hover {
+    text-decoration: underline;
+}
+
+#rereg caption {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+

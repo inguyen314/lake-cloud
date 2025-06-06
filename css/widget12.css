@@ -1,0 +1,51 @@
+#generation-release {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+#generation-release th,
+#generation-release td {
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+#generation-release th {
+    background-color: darkblue;
+    font-weight: bold;
+}
+
+#generation-release input {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+#generation-release tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#generation-release tr:hover {
+    background-color: #f1f1f1;
+}
+
+#generation-release td {
+    text-align: center;
+}
+
+#generation-release td a {
+    color: darkblue;
+    text-decoration: none;
+}
+
+#generation-release td a:hover {
+    text-decoration: underline;
+}
+
+#generation-release caption {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+

@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 row.appendChild(hrs06TodayRow);
 
                 const deltaRow = document.createElement("td");
-                deltaRow.textContent = ((formattedStageData[5]['value']) - (formattedStageData[1]['value'])).toFixed(2);
+                deltaRow.textContent = ((formattedStageData[4]['value']) - (formattedStageData[0]['value'])).toFixed(2);
                 row.appendChild(deltaRow);
 
                 // Append the data row to the table
@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 row2.appendChild(hrs06TodayRow2);
 
                 // Delta calculation with null check
-                const deltaVal = (formattedStorageData[5]?.value ?? null) - (formattedStorageData[1]?.value ?? null);
+                const deltaVal = (formattedStorageData[4]?.value ?? null) - (formattedStorageData[0]?.value ?? null);
                 const deltaRow2 = document.createElement("td");
                 deltaRow2.textContent = isNaN(deltaVal) ? "N/A" : formatValue(deltaVal);
                 row2.appendChild(deltaRow2);

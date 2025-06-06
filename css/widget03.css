@@ -1,0 +1,51 @@
+#tw {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+#tw th,
+#tw td {
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+#tw th {
+    background-color: darkblue;
+    font-weight: bold;
+}
+
+#tw input {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+#tw tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#tw tr:hover {
+    background-color: #f1f1f1;
+}
+
+#tw td {
+    text-align: center;
+}
+
+#tw td a {
+    color: darkblue;
+    text-decoration: none;
+}
+
+#tw td a:hover {
+    text-decoration: underline;
+}
+
+#tw caption {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+

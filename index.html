@@ -99,6 +99,8 @@
     <link rel="stylesheet" href="css/widget13.css" />
     <link rel="stylesheet" href="css/widget16.css" />
     <link rel="stylesheet" href="css/widget17.css" />
+    <link rel="stylesheet" href="css/widget18.css" />
+    <link rel="stylesheet" href="css/widget19.css" />
     <script src="js/main.js"></script>
     <script src="js/libraries/moment.min.js"></script>
     <script src="js/libraries/moment-timezone-with-data.js"></script>
@@ -156,8 +158,10 @@
                                             <button class="test-btn" onclick="testData(1, lake, datetime)">Test</button>
                                             <button class="test-btn" onclick="morningReport(datetime)">Morning
                                                 Report</button>
-                                            <button class="test-btn" onclick="morningShef(datetime)">Morning
+                                            <button class="test-btn" onclick="morningShefOld(datetime)">Morning
                                                 Shef (old lake sheets)</button>
+                                            <button class="test-btn" onclick="morningShef(datetime)">Morning
+                                                Shef (new lake sheets)</button>
                                             <button class="test-btn" onclick="plotMacro(lake, datetime)">Plot
                                                 Macro</button>
                                             <button class="test-btn"
@@ -183,20 +187,10 @@
                                             <div class="output" id="output2"></div>
                                         </div>
 
-                                        <div class="widget full-width" id="widget3">
-                                            <h3>Widget 3: TW</h3>
-                                            <button class="test-btn" onclick="testData(3, lake, datetime)">Test</button>
-                                            <div id="loading_03"
-                                                style="display: none; align-items: center; text-align: center;">
-                                                <img src="images/loading4.gif" style='height: 50px; width: 50px;'
-                                                    alt="Loading..." />
-                                            </div>
-                                            <div class="output" id="output3"></div>
-                                        </div>
-
                                         <div class="widget full-width" id="widget19">
-                                            <h3>Widget 19: Regulation Pool</h3>
-                                            <button class="test-btn" onclick="testData(19, lake, datetime)">Test</button>
+                                            <h3>Widget 19: Regulation Pool (Mark Twain Only)</h3>
+                                            <button class="test-btn"
+                                                onclick="testData(19, lake, datetime)">Test</button>
                                             <div id="loading_19"
                                                 style="display: none; align-items: center; text-align: center;">
                                                 <img src="images/loading4.gif" style='height: 50px; width: 50px;'
@@ -299,13 +293,15 @@
                                             <div class="output" id="output11"></div>
                                         </div>
 
-                                        <div class="widget full-width" id="widget14">
-                                            <h3>Widget 14: TW</h3>
-                                            <!-- <button class="save-btn" onclick="saveData(14)">Save</button>
-                                            <button class="fetch-btn" onclick="fetchData(14)">Fetch Data</button> -->
-                                            <button class="test-btn"
-                                                onclick="testData(14, lake, datetime)">Test</button>
-                                            <div class="output" id="output14"></div>
+                                        <div class="widget full-width" id="widget3">
+                                            <h3>Widget 3: TW</h3>
+                                            <button class="test-btn" onclick="testData(3, lake, datetime)">Test</button>
+                                            <div id="loading_03"
+                                                style="display: none; align-items: center; text-align: center;">
+                                                <img src="images/loading4.gif" style='height: 50px; width: 50px;'
+                                                    alt="Loading..." />
+                                            </div>
+                                            <div class="output" id="output3"></div>
                                         </div>
 
                                         <div class="widget full-width" id="widget15">
@@ -315,6 +311,15 @@
                                             <button class="test-btn"
                                                 onclick="testData(15, lake, datetime)">Test</button>
                                             <div class="output" id="output15"></div>
+                                        </div>
+
+                                        <div class="widget full-width" id="widget14">
+                                            <h3>Widget 14: Project Logs</h3>
+                                            <!-- <button class="save-btn" onclick="saveData(14)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(14)">Fetch Data</button> -->
+                                            <button class="test-btn"
+                                                onclick="testData(14, lake, datetime)">Test</button>
+                                            <div class="output" id="output14"></div>
                                         </div>
 
                                         <div class="widget full-width" id="widget17">

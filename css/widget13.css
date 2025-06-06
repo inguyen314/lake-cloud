@@ -1,0 +1,51 @@
+#release-schedule-instruction {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+#release-schedule-instruction th,
+#release-schedule-instruction td {
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+#release-schedule-instruction th {
+    background-color: darkblue;
+    font-weight: bold;
+}
+
+#release-schedule-instruction input {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+#release-schedule-instruction tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#release-schedule-instruction tr:hover {
+    background-color: #f1f1f1;
+}
+
+#release-schedule-instruction td {
+    text-align: center;
+}
+
+#release-schedule-instruction td a {
+    color: darkblue;
+    text-decoration: none;
+}
+
+#release-schedule-instruction td a:hover {
+    text-decoration: underline;
+}
+
+#release-schedule-instruction caption {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+

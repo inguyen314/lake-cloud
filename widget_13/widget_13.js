@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 headerRow.appendChild(dateHeader);
 
                 const textValueHeader = document.createElement("th");
-                textValueHeader.textContent = "Release Schedule and Instruction";
+                textValueHeader.textContent = "Schedule";
                 headerRow.appendChild(textValueHeader);
 
                 table.appendChild(headerRow);

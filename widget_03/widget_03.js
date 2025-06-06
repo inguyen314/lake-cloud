@@ -58,7 +58,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     let urlTsidReReg = null;
 
     urlTsidTw = `${setBaseUrl}timeseries/group/TW?office=${office}&category-id=${lake}`;
-    urlTsidReReg = `${setBaseUrl}timeseries/group/ReReg?office=${office}&category-id=${lake}`;
 
     const fetchTimeSeriesData = async (tsid) => {
         const beginDate = lookback !== null ? lookback : isoDateMinus1Day;
@@ -81,31 +80,22 @@ document.addEventListener('DOMContentLoaded', async function () {
     const fetchTsidData = async () => {
         try {
             const response5 = await fetch(urlTsidTw);
-            const response6 = await fetch(urlTsidReReg);
 
             const tsidTwData = await response5.json();
-            const tsidReRegData = await response6.json();
 
             console.log("tsidTwData:", tsidTwData);
-            console.log("tsidReRegData:", tsidReRegData);
 
             const tsidTw = tsidTwData['assigned-time-series'][0]['timeseries-id'];
-            const tsidReReg = tsidReRegData['assigned-time-series'][0]['timeseries-id'];
 
             console.log("tsidTw:", tsidTw);
-            console.log("tsidReReg:", tsidReReg);
 
             const timeSeriesData1 = await fetchTimeSeriesData(tsidTw);
-            const timeSeriesData2 = await fetchTimeSeriesData(tsidReReg);
 
             console.log("timeSeriesData1:", timeSeriesData1);
-            console.log("timeSeriesData2:", timeSeriesData2);
 
             const hourlyTwData = getSpecificTimesData(timeSeriesData1, tsidTw);
-            const hourlyReRegData = getSpecificTimesData(timeSeriesData2, tsidReReg);
 
             console.log("hourlyTwData:", hourlyTwData);
-            console.log("hourlyReRegData:", hourlyReRegData);
 
             let cdaSaveBtn;
 
@@ -149,19 +139,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             });
 
-            let formattedReRegData = hourlyReRegData.map(entry => {
-                const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
-                return {
-                    ...entry,
-                    formattedTimestamp
-                };
-            });
-
             console.log("formattedTwData:", formattedTwData);
-            console.log("formattedReRegData:", formattedReRegData);
 
             if (formattedTwData.length > 0) {
-                createTable(formattedTwData, formattedReRegData, tsidTw, tsidReReg);
+                createTable(formattedTwData, tsidTw);
 
                 loadingIndicator.style.display = 'none';
 
@@ -171,7 +152,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }, 10000);
             }
 
-            function createTable(formattedTwData, formattedReRegData, tsidTw, tsidReReg) {
+            function createTable(formattedTwData, tsidTw) {
                 const columnWidth = "12.5%"; // Equal width for 8 columns
 
                 const setHeaderStyle = (header) => {
@@ -267,7 +248,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 row.appendChild(hrs06TodayRow);
 
                 const deltaRow = document.createElement("td");
-                deltaRow.textContent = ((formattedTwData[5]['value']) - (formattedTwData[1]['value'])).toFixed(2);
+                deltaRow.textContent = ((formattedTwData[4]['value']) - (formattedTwData[0]['value'])).toFixed(2);
                 row.appendChild(deltaRow);
 
                 // Append the data row to the table
@@ -348,7 +329,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 //     fetchTsidData();
                 // });
             }
-
         } catch (error) {
             console.error("Error fetching tsid data:", error);
         }

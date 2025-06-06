@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 row2.appendChild(hrs06TodayRow2);
 
                 const deltaRow2 = document.createElement("td");
-                deltaRow2.textContent = (((formattedReRegData[5]['value']) - (formattedReRegData[1]['value'])) / 1).toFixed(2);
+                deltaRow2.textContent = (((formattedReRegData[4]['value']) - (formattedReRegData[0]['value'])) / 1).toFixed(2);
                 row2.appendChild(deltaRow2);
 
                 // Append the data row to the table
