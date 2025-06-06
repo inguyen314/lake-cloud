@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 table.appendChild(headerRow);
 
                 // Check if "regular-text-values" exists and is an array
-                if (Array.isArray(formattedScheduleData["regular-text-values"]) && formattedScheduleData["regular-text-values"].length > 0) {
+                if (Array.isArray(formattedScheduleData["regular-text-values"]) && formattedScheduleData["regular-text-values"].length > 0 && formattedScheduleData["regular-text-values"][0]["text-value"] !== "undefined") {
                     // Render rows from "regular-text-values"
                     formattedScheduleData["regular-text-values"].forEach((entry) => {
                         const row = document.createElement("tr");
@@ -280,8 +280,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         table.appendChild(row);
                     });
                 } else {
-                    const fallbackTextValue =
-                        formattedDataScheduleYesterday?.["regular-text-values"]?.[0]?.["text-value"];
+                    const fallbackTextValue = formattedDataScheduleYesterday?.["regular-text-values"]?.[0]?.["text-value"];
 
                     const row = document.createElement("tr");
 
@@ -311,7 +310,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output13Div.innerHTML = "";
                 output13Div.appendChild(table);
 
-                if (Array.isArray(formattedDataInstruction["regular-text-values"]) && formattedDataInstruction["regular-text-values"].length > 0) {
+                if (Array.isArray(formattedDataInstruction["regular-text-values"]) && formattedDataInstruction["regular-text-values"].length > 0 && formattedDataInstruction["regular-text-values"][0]["text-value"] !== "undefined") {
                     formattedDataInstruction["regular-text-values"].forEach((entry) => {
                         const instructionDiv = document.createElement("div");
                         instructionDiv.className = "status";

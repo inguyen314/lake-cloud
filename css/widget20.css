@@ -1,50 +1,51 @@
-#gage_data {
+#do {
     width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
 }
 
-#gage_data th,
-#gage_data td {
+#do th,
+#do td {
     padding: 2px;
     text-align: center;
     border: 1px solid #ddd;
 }
 
-#gage_data th {
+#do th {
     background-color: darkblue;
     font-weight: bold;
 }
 
-#gage_data input {
+#do input {
     width: 100%;
     box-sizing: border-box;
     text-align: center;
 }
 
-#gage_data tr:nth-child(even) {
+#do tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
-#gage_data tr:hover {
+#do tr:hover {
     background-color: #f1f1f1;
 }
 
-#gage_data td {
+#do td {
     text-align: center;
 }
 
-#gage_data td a {
+#do td a {
     color: darkblue;
     text-decoration: none;
 }
 
-#gage_data td a:hover {
+#do td a:hover {
     text-decoration: underline;
 }
 
-#gage_data caption {
+#do caption {
     font-size: 18px;
     font-weight: bold;
     margin-bottom: 10px;
 }
+
