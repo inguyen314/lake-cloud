@@ -172,47 +172,62 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             function createTable(formattedTwData, formattedReRegData, tsidTw, tsidReReg) {
+                const columnWidth = "12.5%"; // 100% / 8 columns
+
+                const setHeaderStyle = (header) => {
+                    header.style.width = columnWidth;
+                    header.style.textAlign = "center";
+                };
+
                 // Create the table element
                 const table = document.createElement("table");
-
-                // Apply the ID "rereg" to the table
                 table.id = "rereg";
+                table.style.width = "100%"; // Stretch full width
 
                 // Create the table header row
                 const headerRow = document.createElement("tr");
 
                 const stationHeader = document.createElement("th");
                 stationHeader.textContent = "Station";
+                setHeaderStyle(stationHeader);
                 headerRow.appendChild(stationHeader);
 
                 const parameterHeader = document.createElement("th");
                 parameterHeader.textContent = "Parameter";
+                setHeaderStyle(parameterHeader);
                 headerRow.appendChild(parameterHeader);
 
                 const hrs06Header = document.createElement("th");
                 hrs06Header.textContent = "06:00 hrs";
+                setHeaderStyle(hrs06Header);
                 headerRow.appendChild(hrs06Header);
 
                 const hrs12Header = document.createElement("th");
                 hrs12Header.textContent = "12:00 hrs";
+                setHeaderStyle(hrs12Header);
                 headerRow.appendChild(hrs12Header);
 
                 const hrs18Header = document.createElement("th");
                 hrs18Header.textContent = "18:00 hrs";
+                setHeaderStyle(hrs18Header);
                 headerRow.appendChild(hrs18Header);
 
                 const hrs24Header = document.createElement("th");
                 hrs24Header.textContent = "24:00 hrs";
+                setHeaderStyle(hrs24Header);
                 headerRow.appendChild(hrs24Header);
 
                 const hrs06TodayHeader = document.createElement("th");
                 hrs06TodayHeader.textContent = "06:00 hrs today";
+                setHeaderStyle(hrs06TodayHeader);
                 headerRow.appendChild(hrs06TodayHeader);
 
                 const deltaHeader = document.createElement("th");
                 deltaHeader.textContent = "24 hours change";
+                setHeaderStyle(deltaHeader);
                 headerRow.appendChild(deltaHeader);
 
+                // Append the header row to the table
                 table.appendChild(headerRow);
 
                 // Clear existing content and append the table

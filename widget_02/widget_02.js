@@ -224,44 +224,59 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             function createTable(formattedStageData, formattedStorageData, topOfConservationData, topOfFloodData, bottomOfConservationData, bottomOfFloodData, tsidStage, tsidStorage, ngvd29Data, metaData) {
                 // Create the table element
-                const table = document.createElement("table");
+                const columnWidth = "12.5%"; // 100% / 8 columns
 
-                // Apply the ID "inflow" to the table
-                table.id = "inflow";
+                const setHeaderStyle = (header) => {
+                    header.style.width = columnWidth;
+                    header.style.textAlign = "center";
+                };
+
+                // Create the table
+                const table = document.createElement("table");
+                table.id = "pool";
+                table.style.width = "100%"; // Ensure table stretches full width
 
                 // Create the table header row
                 const headerRow = document.createElement("tr");
 
                 const stationHeader = document.createElement("th");
                 stationHeader.textContent = "Station";
+                setHeaderStyle(stationHeader);
                 headerRow.appendChild(stationHeader);
 
                 const parameterHeader = document.createElement("th");
                 parameterHeader.textContent = "Parameter";
+                setHeaderStyle(parameterHeader);
                 headerRow.appendChild(parameterHeader);
 
                 const hrs06Header = document.createElement("th");
                 hrs06Header.textContent = "06:00 hrs";
+                setHeaderStyle(hrs06Header);
                 headerRow.appendChild(hrs06Header);
 
                 const hrs12Header = document.createElement("th");
                 hrs12Header.textContent = "12:00 hrs";
+                setHeaderStyle(hrs12Header);
                 headerRow.appendChild(hrs12Header);
 
                 const hrs18Header = document.createElement("th");
                 hrs18Header.textContent = "18:00 hrs";
+                setHeaderStyle(hrs18Header);
                 headerRow.appendChild(hrs18Header);
 
                 const hrs24Header = document.createElement("th");
                 hrs24Header.textContent = "24:00 hrs";
+                setHeaderStyle(hrs24Header);
                 headerRow.appendChild(hrs24Header);
 
                 const hrs06TodayHeader = document.createElement("th");
                 hrs06TodayHeader.textContent = "06:00 hrs today";
+                setHeaderStyle(hrs06TodayHeader);
                 headerRow.appendChild(hrs06TodayHeader);
 
                 const deltaHeader = document.createElement("th");
                 deltaHeader.textContent = "24 hours change";
+                setHeaderStyle(deltaHeader);
                 headerRow.appendChild(deltaHeader);
 
                 table.appendChild(headerRow);
@@ -284,14 +299,17 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const hrs06Row = document.createElement("td");
                 hrs06Row.textContent = (formattedStageData[1]['value']).toFixed(2);
+                hrs06Row.title = `06 AM Stage: ${(formattedStageData[1]['value'])} ft`; // Add a tooltip
                 row.appendChild(hrs06Row);
 
                 const hrs12Row = document.createElement("td");
                 hrs12Row.textContent = (formattedStageData[2]['value']).toFixed(2);
+                hrs12Row.title = `12 PM Stage: ${(formattedStageData[2]['value'])} ft`; // Add a tooltip
                 row.appendChild(hrs12Row);
 
                 const hrs18Row = document.createElement("td");
                 hrs18Row.textContent = (formattedStageData[3]['value']).toFixed(2);
+                hrs18Row.title = `18 PM Stage: ${(formattedStageData[3]['value'])} ft`; // Add a tooltip
                 row.appendChild(hrs18Row);
 
                 const hrs24Row = document.createElement("td");
@@ -309,6 +327,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const hrs06TodayRow = document.createElement("td");
                 hrs06TodayRow.textContent = (formattedStageData[5]['value']).toFixed(2);
+                hrs06TodayRow.title = `06 AM Stage Today: ${(formattedStageData[5]['value'])} ft`; // Add a tooltip
                 row.appendChild(hrs06TodayRow);
 
                 const deltaRow = document.createElement("td");
@@ -336,22 +355,27 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const hrs06Row2 = document.createElement("td");
                 hrs06Row2.textContent = formatValue(formattedStorageData[1]?.value);
+                hrs06Row2.title = `06 AM Storage: ${(((formattedStorageData[1]?.value) / 1.9834591996927) || "N/A")} dsf`; // Add a tooltip
                 row2.appendChild(hrs06Row2);
 
                 const hrs12Row2 = document.createElement("td");
                 hrs12Row2.textContent = formatValue(formattedStorageData[2]?.value);
+                hrs12Row2.title = `12 PM Storage: ${(((formattedStorageData[2]?.value) / 1.9834591996927) || "N/A")} dsf`; // Add a tooltip
                 row2.appendChild(hrs12Row2);
 
                 const hrs18Row2 = document.createElement("td");
                 hrs18Row2.textContent = formatValue(formattedStorageData[3]?.value);
+                hrs18Row2.title = `18 PM Storage: ${(((formattedStorageData[3]?.value) / 1.9834591996927) || "N/A")} dsf`; // Add a tooltip
                 row2.appendChild(hrs18Row2);
 
                 const hrs24Row2 = document.createElement("td");
                 hrs24Row2.textContent = formatValue(formattedStorageData[4]?.value);
+                hrs24Row2.title = `24 PM Storage: ${(((formattedStorageData[4]?.value) / 1.9834591996927) || "N/A")} dsf`; // Add a tooltip
                 row2.appendChild(hrs24Row2);
 
                 const hrs06TodayRow2 = document.createElement("td");
                 hrs06TodayRow2.textContent = formatValue(formattedStorageData[5]?.value);
+                hrs06TodayRow2.title = `06 AM Storage Today: ${(((formattedStorageData[5]?.value) / 1.9834591996927) || "N/A")} dsf`; // Add a tooltip
                 row2.appendChild(hrs06TodayRow2);
 
                 // Delta calculation with null check
@@ -378,7 +402,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Refresh Button
                 const buttonRefresh = document.createElement('button');
                 buttonRefresh.textContent = 'Refresh';
-                buttonRefresh.id = 'refresh-inflow-button';
+                buttonRefresh.id = 'refresh-pool-button';
                 buttonRefresh.className = 'fetch-btn';
                 output2Div.appendChild(buttonRefresh);
 
@@ -438,7 +462,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 buttonRefresh.addEventListener('click', () => {
                     // Remove existing table
-                    const existingTable = document.getElementById('inflow');
+                    const existingTable = document.getElementById('pool');
                     if (existingTable) {
                         existingTable.remove();
                     }
@@ -610,7 +634,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             // Optional: small delay to allow backend to process the new data
                             await new Promise(resolve => setTimeout(resolve, 1000));
 
-                            const existingTable = document.getElementById('inflow');
+                            const existingTable = document.getElementById('pool');
                             if (existingTable) {
                                 existingTable.remove();
                             }
