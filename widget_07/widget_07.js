@@ -55,12 +55,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     const urlTsidComputedInflow = `${setBaseUrl}timeseries/group/Computed-Inflow?office=${office}&category-id=${lake}`;
 
     const fetchTimeSeriesData = async (tsid) => {
-        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus2Years}&end=${isoDateToday}&office=${office}`;
+        const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus2Years}&end=${isoDateToday}&office=${office}&page-size=1000000`;
         console.log('tsidData:', tsidData);
         try {
             const response = await fetch(tsidData, {
                 headers: {
-                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                    "Accept": "application/json;version=2",
                     "cache-control": "no-cache"
                 }
             });
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             let formattedConsensusData = hourlyConsensusData.map(entry => {
                 const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
-                const formattedTimestampUtc =  (new Date(entry.timestamp)).toISOString();
+                const formattedTimestampUtc = (new Date(entry.timestamp)).toISOString();
                 return {
                     ...entry,
                     formattedTimestamp,
@@ -107,9 +107,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
             });
 
-            let formattedComputedInflowData = hourlyComputedInflowData.map(entry => {
+            let formattedComputedData = hourlyComputedInflowData.map(entry => {
                 const formattedTimestamp = formatISODate2ReadableDate(Number(entry.timestamp)); // Ensure timestamp is a number
-                const formattedTimestampUtc =  (new Date(entry.timestamp)).toISOString();
+                const formattedTimestampUtc = (new Date(entry.timestamp)).toISOString();
                 return {
                     ...entry,
                     formattedTimestamp,
@@ -118,9 +118,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             });
 
             console.log("formattedConsensusData:", formattedConsensusData);
-            console.log("formattedComputedInflowData:", formattedComputedInflowData);
+            console.log("formattedComputedData:", formattedComputedData);
 
-            function createTable(formattedConsensusData, formattedComputedInflowData) {
+            function createTable(formattedConsensusData, formattedComputedData) {
                 // Find the most recent consensus data point with qualityCode === 5
                 const latestEntry = formattedConsensusData
                     .filter(d => d.qualityCode === 5)
@@ -132,19 +132,31 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const latestTimestamp = new Date(latestEntry.timestamp).getTime();
                 const formattedDateTime = latestEntry.formattedTimestamp.split(' ')[0]; // includes date and time
                 console.log("latestTimestamp:", latestTimestamp);
-                console.log("formattedDateTimep:", formattedDateTime);
+                console.log("formattedDateTime:", formattedDateTime);
 
                 // Sum values after the latest consensus timestamp
-                const sumConsensusAfter = formattedConsensusData
-                    .filter(d => new Date(d.timestamp).getTime() > latestTimestamp)
+                const sumConsensus = formattedConsensusData
+                    .filter(d => d.timestamp > latestTimestamp)
                     .reduce((sum, d) => sum + d.value, 0);
 
-                const sumComputedInflowAfter = formattedComputedInflowData
-                    .filter(entry => entry.timestamp > latestTimestamp)
-                    .reduce((sum, entry) => sum + entry.value, 0);
+                // Sum values after the latest computed timestamp    
+                let runningSum = 0;
 
-                console.log("Sum (Consensus After):", sumConsensusAfter);
-                console.log("Sum (Computed Inflow After):", sumComputedInflowAfter);
+                const filteredData = formattedComputedData
+                    .filter(entry => entry.timestamp > latestTimestamp);
+
+                filteredData.forEach((entry, index) => {
+                    runningSum += entry.value;
+                    console.log(`Entry ${index + 1}:`, entry);
+                    console.log(`Running sum: ${runningSum}`);
+                });
+
+                console.log("Final sumComputed:", runningSum);
+
+                const sumComputed = filteredData.reduce((sum, entry) => sum + entry.value, 0);
+
+                console.log("sumConsensus:", sumConsensus);
+                console.log("sumComputed:", sumComputed);
 
                 // Create table
                 const table = document.createElement("table");
@@ -167,7 +179,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Add data row
                 const dataRow = table.insertRow();
-                [formattedDateTime, sumComputedInflowAfter, sumConsensusAfter].forEach(value => {
+                [formattedDateTime, sumComputed, sumConsensus].forEach(value => {
                     const cell = dataRow.insertCell();
                     cell.textContent = typeof value === 'number' ? parseFloat(value).toFixed(0) : value;
                 });
@@ -221,7 +233,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 });
             }
 
-            createTable(formattedConsensusData, formattedComputedInflowData);
+            createTable(formattedConsensusData, formattedComputedData);
         } catch (error) {
             console.error("Error fetching tsid data:", error);
         }
