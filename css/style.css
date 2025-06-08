@@ -103,8 +103,6 @@ button {
 
 .prev-btn,
 .next-btn {
-    /* background-color: darkorange; */
-    /* color: white; */
     text-align: center;
 }
 
@@ -117,9 +115,8 @@ button {
 #refresh-crest-forecast-button,
 #refresh-notes-button,
 #refresh-generation-release-button,
-#cda-btn-schedule-instruction {
-    /* background-color: green; */
-    /* color: white; */
+#cda-btn-schedule-instruction,
+#email-table-btn {
     text-align: center;
     margin-right: 5px;
 }

@@ -2022,9 +2022,45 @@ document.addEventListener('DOMContentLoaded', async function () {
                     cdaSaveBtn.disabled = true;
                     output6Div.appendChild(cdaSaveBtn);
 
+                    // Create the status container
                     const statusDiv = document.createElement("div");
                     statusDiv.className = "status-gate";
                     output6Div.appendChild(statusDiv);
+
+                    // Email email snapshot button
+                    const emailButton = document.createElement("button");
+                    emailButton.textContent = "Email Table (Snapshot)";
+                    emailButton.style.margin = "10px";
+                    emailButton.id = "email-table-btn";
+                    output6Div.appendChild(emailButton);
+
+                    emailButton.addEventListener("click", async function () {
+                        const table = document.getElementById("gate-settings");
+                        if (!table) {
+                            alert('Table with ID "gate-settings" not found.');
+                            return;
+                        }
+
+                        html2canvas(table).then(canvas => {
+                            canvas.toBlob(blob => {
+                                // Try to copy the image to clipboard
+                                navigator.clipboard.write([
+                                    new ClipboardItem({ "image/png": blob })
+                                ]).then(() => {
+                                    alert("Snapshot copied. It will be ready to paste into your email.");
+
+                                    // Open the user's default mail client
+                                    const to = "dll-cemvs-water-managers@usace.army.mil";
+                                    const subject = encodeURIComponent(`Gate Settings Table Snapshot - ${lake}`);
+                                    const body = encodeURIComponent("See attached snapshot below (paste it here):");
+                                    window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+                                }).catch(err => {
+                                    console.error("Clipboard copy failed", err);
+                                    alert("Snapshot not copied. Your browser may not support image clipboard.");
+                                });
+                            });
+                        });
+                    });
 
                     // Create the buttonRefresh button
                     const buttonRefresh = document.createElement('button');
