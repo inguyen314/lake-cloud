@@ -443,10 +443,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 });
 
                 sendMvkBtn.addEventListener("click", async () => {
-                    // const recipient = "cemvs-cwms@usace.army.mil; brian.k.bean@usace.army.mil; Bryan.E.Bennett@usace.army.mil; Gregory.S.Kimery@usace.army.mil; Rocky.L.Reed@usace.army.mil; Larry.J.Hurt@usace.army.mil; Michael.D.Tate@usace.army.mil; James.A.McKeon@usace.army.mil; DLL-CEMVS-OD-JP@usace.army.mil";
-                    const recipient = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil";
-                    // const cc = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil; Allen.Phillips@usace.army.mil; Edward.J.Brauer@usace.army.mil; David.R.Busse@usace.army.mil; Bradley.J.Krischel@usace.army.mil; Kevin.P.Slattery@usace.army.mil";
-                    const cc = "Allen.Phillips@usace.army.mil";
+                    const recipient = "cemvs-cwms@usace.army.mil; brian.k.bean@usace.army.mil; Bryan.E.Bennett@usace.army.mil; Gregory.S.Kimery@usace.army.mil; Rocky.L.Reed@usace.army.mil; Larry.J.Hurt@usace.army.mil; Michael.D.Tate@usace.army.mil; James.A.McKeon@usace.army.mil; DLL-CEMVS-OD-JP@usace.army.mil";
+                    // const recipient = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil";
+                    const cc = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil; Allen.Phillips@usace.army.mil; Edward.J.Brauer@usace.army.mil; David.R.Busse@usace.army.mil; Bradley.J.Krischel@usace.army.mil; Kevin.P.Slattery@usace.army.mil";
+                    // const cc = "Allen.Phillips@usace.army.mil;";
                     // const bcc = "chn262@gmail.com";
 
                     const today = new Date();
@@ -456,7 +456,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const scheduleValue = formattedScheduleData?.["regular-text-values"]?.[0]?.["text-value"];
                     const instructionValue = formattedDataInstruction?.["regular-text-values"]?.[0]?.["text-value"];
 
-                    const subject = encodeURIComponent("Mark Twain Lake Instructions - Testing");
+                    const subject = encodeURIComponent("Mark Twain Lake Instructions (FOR INTERNAL USE ONLY)");
 
                     const body = encodeURIComponent(
                         `Below is today's Mark Twain Lake Re-Regulation Dam schedule and instructions.\n` +
@@ -484,10 +484,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 });
 
                 sendSwpaBtn.addEventListener("click", async () => {
-                    // const recipient = "cemvs-cwms@usace.army.mil; ResourcesData@swpa.gov; brian.k.bean@usace.army.mil; Bryan.E.Bennett@usace.army.mil; Gregory.S.Kimery@usace.army.mil; Rocky.L.Reed@usace.army.mil; Larry.J.Hurt@usace.army.mil; Michael.D.Tate@usace.army.mil; James.A.McKeon@usace.army.mil; Joseph.P.Gibbs@usace.army.mil; Deric.K.Bishop@usace.army.mil; Joshua.W.Lewis@usace.army.mil; DLL-CEMVS-OD-JP@usace.army.mil";
-                    const recipient = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil";
-                    // const cc = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil; Allen.Phillips@usace.army.mil; Edward.J.Brauer@usace.army.mil; David.R.Busse@usace.army.mil; Bradley.J.Krischel@usace.army.mil; Kevin.P.Slattery@usace.army.mil";
-                    const cc = "Allen.Phillips@usace.army.mil";
+                    const recipient = "cemvs-cwms@usace.army.mil; ResourcesData@swpa.gov; brian.k.bean@usace.army.mil; Bryan.E.Bennett@usace.army.mil; Gregory.S.Kimery@usace.army.mil; Rocky.L.Reed@usace.army.mil; Larry.J.Hurt@usace.army.mil; Michael.D.Tate@usace.army.mil; James.A.McKeon@usace.army.mil; Joseph.P.Gibbs@usace.army.mil; Deric.K.Bishop@usace.army.mil; Joshua.W.Lewis@usace.army.mil; DLL-CEMVS-OD-JP@usace.army.mil";
+                    // const recipient = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil";
+                    const cc = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil; Allen.Phillips@usace.army.mil; Edward.J.Brauer@usace.army.mil; David.R.Busse@usace.army.mil; Bradley.J.Krischel@usace.army.mil; Kevin.P.Slattery@usace.army.mil";
+                    // const cc = "Allen.Phillips@usace.army.mil";
 
                     // const recipient = "cemvs-cwms@usace.army.mil";
                     // const cc = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil";
@@ -530,8 +530,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         day: '2-digit'
                     }).replace(/\//g, '-');
 
-
-                    const subject = encodeURIComponent("Mark Twain Lake Data - Testing");
+                    const subject = encodeURIComponent("Mark Twain Lake Data (FOR INTERNAL USE ONLY)");
 
                     const getEmailBody = async () => {
                         // your existing logic
@@ -630,15 +629,15 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             `Outflow:\n` +
                             `DATE${' '.repeat(18 - 'DATE'.length)}| TURBINE${' '.repeat(3)}| SPILL${' '.repeat(5)}| TOTAL\n` +
-                            `${formattedDateYesterday} | ${valueTurbEmail.padEnd(8)}| ${valueSpillwayEmail.padEnd(8)}| ${valueTotalEmail}\n\n` +
+                            `${formattedDateYesterday} | ${valueTurbEmail} dsf | ${valueSpillwayEmail} dsf | ${valueTotalEmail} dsf \n\n` +
 
                             `Inflow:\n` +
                             `DATE${' '.repeat(18 - 'DATE'.length)}| INFLOW\n` +
                             `${formattedDateYesterday} | ${valueInflowEmail}\n\n` +
 
-                            `Forecast:\n` +
+                            `Forecast Inflow:\n` +
                             `${formattedDateToday.padEnd(12)}| ${formattedDateDay1.padEnd(12)}| ${formattedDateDay2.padEnd(12)}| ${formattedDateDay3.padEnd(12)}\n` +
-                            `${valueForecastDay1Email.padEnd(18)}| ${valueForecastDay2Email.padEnd(12)}| ${valueForecastDay3Email.padEnd(12)}| ${valueForecastDay4Email.padEnd(12)}\n\n` +
+                            `${valueForecastDay1Email} dsf | ${valueForecastDay2Email} dsf | ${valueForecastDay3Email} dsf | ${valueForecastDay4Email} dsf \n\n` +
 
                             `Rereg Pool:\n` +
                             `DATE${' '.repeat(18 - 'DATE'.length)}| LEVEL\n` +
@@ -650,10 +649,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     const body = await getEmailBody();
                     // Use body for your email send logic
-
-
-
-
 
                     const mailtoUrl = `mailto:${recipient}?cc=${cc}&subject=${subject}&body=${body}`;
 
