@@ -2051,7 +2051,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                                     // Open the user's default mail client
                                     const to = "dll-cemvs-water-managers@usace.army.mil";
-                                    const subject = encodeURIComponent(`Gate Settings Table Snapshot - ${lake}`);
+                                    const subject = encodeURIComponent(`Gate Settings Table Snapshot - ${lake} - ${datetime}`);
                                     const body = encodeURIComponent("See attached snapshot below (paste it here):");
                                     window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
                                 }).catch(err => {
