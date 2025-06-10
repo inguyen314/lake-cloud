@@ -227,55 +227,38 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         const lines = [];
 
-        if (lake !== "Mark Twain Lk-Salt") {
-            // Line 1: formattedOutflowAverageData (single value)
-            if (formattedOutflowAverageData.length > 0 && formattedOutflowData.length > 0) {
-                const avg = formattedOutflowAverageData[0]["1"];
-                const dateStr = getDateString(formattedOutflowData[0].formattedTimestampUTC);
-                const avgValue = (avg / 1000).toFixed(2).replace(/^0+([.])/, '$1');
+        // Line 1: formattedOutflowAverageData (single value)
+        if (formattedOutflowAverageData.length > 0 && formattedOutflowData.length > 0) {
+            const avg = formattedOutflowAverageData[0]["1"];
+            const dateStr = getDateString(formattedOutflowData[0].formattedTimestampUTC);
+            const avgValue = (avg / 1000).toFixed(2).replace(/^0+([.])/, '$1');
+
+            if (lake === "Mark Twain Lk-Salt") {
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- replace with Norton Bridge Flow`);
+            } else {
                 lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue}`);
             }
+        }
 
-            // Line 2: formattedOutflowData (5 values)
-            if (formattedOutflowData.length > 1) {
-                const startDate = getDateString(formattedOutflowData[1].formattedTimestampUTC);
-                const values = [];
+        // Line 2: formattedOutflowData (5 values)
+        if (formattedOutflowData.length > 1) {
+            const startDate = getDateString(formattedOutflowData[1].formattedTimestampUTC);
+            const values = [];
 
-                for (let i = 0; i < 5 && i < formattedOutflowData.length; i++) {
-                    const v = formattedOutflowData[i]["1"];
-                    const val = (v / 1000).toFixed(2).replace(/^0+([.])/, '$1');
-                    values.push(val);
-                }
+            for (let i = 0; i < 5 && i < formattedOutflowData.length; i++) {
+                const v = formattedOutflowData[i]["1"];
+                const val = (v / 1000).toFixed(2).replace(/^0+([.])/, '$1');
+                values.push(val);
+            }
 
+            if (lake === "Mark Twain Lk-Salt") {
+                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')} ------------- replace with Total Generation and Release Flow`);
+                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')}`);
+            } else {
                 lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')}`);
             }
         }
 
-        // <-- Break line added here for clarity between lake conditions -->
-
-        if (lake === "Mark Twain Lk-Salt") {
-            // Line 1: formattedOutflowAverageData (single value)
-            if (formattedOutflowAverageData.length > 0 && formattedOutflowData.length > 0) {
-                const avg = formattedOutflowAverageData[0]["1"];
-                const dateStr = getDateString(formattedOutflowData[0].formattedTimestampUTC);
-                const avgValue = (avg / 1000).toFixed(2).replace(/^0+([.])/, '$1');
-                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue}`);
-            }
-
-            // Line 2: formattedOutflowData (5 values)
-            if (formattedOutflowData.length > 1) {
-                const startDate = getDateString(formattedOutflowData[1].formattedTimestampUTC);
-                const values = [];
-
-                for (let i = 0; i < 5 && i < formattedOutflowData.length; i++) {
-                    const v = formattedOutflowData[i]["1"];
-                    const val = (v / 1000).toFixed(2).replace(/^0+([.])/, '$1');
-                    values.push(val);
-                }
-
-                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')}`);
-            }
-        }
 
         return lines;
     }
