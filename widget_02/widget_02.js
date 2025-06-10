@@ -315,25 +315,27 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const stationRow = document.createElement("td");
                 stationRow.textContent = (formattedStageData[0]['tsid']).split("-")[0];
+                stationRow.title = `Station: ${(formattedStageData[0]['tsid'])}`;
                 row.appendChild(stationRow);
 
                 const parameterRow = document.createElement("td");
                 parameterRow.textContent = (formattedStageData[0]['tsid']).split(".")[1] + " (ft)";
+                parameterRow.title = `Station: ${(formattedStageData[0]['tsid'])}`;
                 row.appendChild(parameterRow);
 
                 const hrs06Row = document.createElement("td");
                 hrs06Row.textContent = (formattedStageData[1]['value']).toFixed(2);
-                hrs06Row.title = `06 AM Stage: ${(formattedStageData[1]['value'])} ft`; // Add a tooltip
+                hrs06Row.title = `Station: ${(formattedStageData[0]['tsid'])} - Time: 06 AM Stage: ${(formattedStageData[1]['value'])} ft`;
                 row.appendChild(hrs06Row);
 
                 const hrs12Row = document.createElement("td");
                 hrs12Row.textContent = (formattedStageData[2]['value']).toFixed(2);
-                hrs12Row.title = `12 PM Stage: ${(formattedStageData[2]['value'])} ft`; // Add a tooltip
+                hrs12Row.title = `Station: ${(formattedStageData[0]['tsid'])} - Time: 12 PM Stage: ${(formattedStageData[2]['value'])} ft`; // Add a tooltip
                 row.appendChild(hrs12Row);
 
                 const hrs18Row = document.createElement("td");
                 hrs18Row.textContent = (formattedStageData[3]['value']).toFixed(2);
-                hrs18Row.title = `18 PM Stage: ${(formattedStageData[3]['value'])} ft`; // Add a tooltip
+                hrs18Row.title = `Station: ${(formattedStageData[0]['tsid'])} - Time: 18 PM Stage: ${(formattedStageData[3]['value'])} ft`; // Add a tooltip
                 row.appendChild(hrs18Row);
 
                 const hrs24Row = document.createElement("td");
@@ -351,7 +353,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const hrs06TodayRow = document.createElement("td");
                 hrs06TodayRow.textContent = (formattedStageData[5]['value']).toFixed(2);
-                hrs06TodayRow.title = `06 AM Stage Today: ${(formattedStageData[5]['value'])} ft`; // Add a tooltip
+                hrs06TodayRow.title = `Station: ${(formattedStageData[0]['tsid'])} - Time: 06 AM Stage Today: ${(formattedStageData[5]['value'])} ft`; // Add a tooltip
                 row.appendChild(hrs06TodayRow);
 
                 const deltaRow = document.createElement("td");
@@ -364,7 +366,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const row2 = document.createElement("tr");
 
                 const stationRow2 = document.createElement("td");
-                stationRow2.textContent = "";
+                stationRow2.textContent = (formattedStorageData[0]['tsid']).split("-")[0];
                 row2.appendChild(stationRow2);
 
                 const parameterRow2 = document.createElement("td");
@@ -379,27 +381,27 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const hrs06Row2 = document.createElement("td");
                 hrs06Row2.textContent = formatValue(formattedStorageData[1]?.value);
-                hrs06Row2.title = `06 AM Storage: ${(((formattedStorageData[1]?.value) / 1.9834591996927) || "N/A")} dsf`; // Add a tooltip
+                hrs06Row2.title = `Station: ${(formattedStorageData[0]['tsid'])} - Time: 06 AM Storage: ${(((formattedStorageData[1]?.value) / 1.9834591996927) || "N/A")} dsf`; // Add a tooltip
                 row2.appendChild(hrs06Row2);
 
                 const hrs12Row2 = document.createElement("td");
                 hrs12Row2.textContent = formatValue(formattedStorageData[2]?.value);
-                hrs12Row2.title = `12 PM Storage: ${(((formattedStorageData[2]?.value) / 1.9834591996927) || "N/A")} dsf`; // Add a tooltip
+                hrs12Row2.title = `Station: ${(formattedStorageData[0]['tsid'])} - Time: 12 PM Storage: ${(((formattedStorageData[2]?.value) / 1.9834591996927) || "N/A")} dsf`; // Add a tooltip
                 row2.appendChild(hrs12Row2);
 
                 const hrs18Row2 = document.createElement("td");
                 hrs18Row2.textContent = formatValue(formattedStorageData[3]?.value);
-                hrs18Row2.title = `18 PM Storage: ${(((formattedStorageData[3]?.value) / 1.9834591996927) || "N/A")} dsf`; // Add a tooltip
+                hrs18Row2.title = `Station: ${(formattedStorageData[0]['tsid'])} - Time: 18 PM Storage: ${(((formattedStorageData[3]?.value) / 1.9834591996927) || "N/A")} dsf`; // Add a tooltip
                 row2.appendChild(hrs18Row2);
 
                 const hrs24Row2 = document.createElement("td");
                 hrs24Row2.textContent = formatValue(formattedStorageData[4]?.value);
-                hrs24Row2.title = `24 PM Storage: ${(((formattedStorageData[4]?.value) / 1.9834591996927) || "N/A")} dsf`; // Add a tooltip
+                hrs24Row2.title = `Station: ${(formattedStorageData[0]['tsid'])} - Time: 24 PM Storage: ${(((formattedStorageData[4]?.value) / 1.9834591996927) || "N/A")} dsf`; // Add a tooltip
                 row2.appendChild(hrs24Row2);
 
                 const hrs06TodayRow2 = document.createElement("td");
                 hrs06TodayRow2.textContent = formatValue(formattedStorageData[5]?.value);
-                hrs06TodayRow2.title = `06 AM Storage Today: ${(((formattedStorageData[5]?.value) / 1.9834591996927) || "N/A")} dsf`; // Add a tooltip
+                hrs06TodayRow2.title = `Station: ${(formattedStorageData[0]['tsid'])} - Time: 06 AM Storage Today: ${(((formattedStorageData[5]?.value) / 1.9834591996927) || "N/A")} dsf`; // Add a tooltip
                 row2.appendChild(hrs06TodayRow2);
 
                 // Delta calculation with null check
@@ -498,13 +500,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const numericChange = parseFloat(change);
 
                     if (numericChange >= 2.00) {
-                        oneWeekChangeValue = `<span style="color:red"><b>${change}</b></span>`;
+                        oneWeekChangeValue = `<span title="numericChange >= 2.00" style="color:red"><b>${change}</b></span>`;
                     } else {
                         oneWeekChangeValue = `<b>${change}</b>`;
                     }
                 }
 
-                oneWeekChangeSpan.innerHTML = `1 Week Change = ${oneWeekChangeValue}`;
+                oneWeekChangeSpan.innerHTML = `1 Week Change = ${oneWeekChangeValue} ft`;
                 oneWeekChangeSpan.style.paddingRight = '12px';
 
                 // Create fourWeekChangeSpan (e.g., "4 Week Change")
@@ -527,7 +529,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // Check if month is May (5) through October (10)
                     if (month >= 5 && month <= 10 && numericChange >= 4) {
-                        fourWeekChangeText = `<span style="color:red"><b>${change}</b></span>`;
+                        fourWeekChangeText = `<span title="month >= 5 && month <= 10 && numericChange >= 4" style="color:red"><b>${change}</b></span>`;
                     } else {
                         fourWeekChangeText = `<b>${change}</b>`;
                     }
