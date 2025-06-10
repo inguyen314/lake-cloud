@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const sendCannonBtn = document.createElement("button");
                 sendCannonBtn.textContent = "Send Cannon Requirements";
-                sendCannonBtn.id = "send-cannon";
+                sendCannonBtn.id = "send-cannon-btn";
                 sendCannonBtn.disabled = false;
                 sendCannonBtn.className = "fetch-btn";
                 // Set the URL you want to open
@@ -389,14 +389,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const sendMvkBtn = document.createElement("button");
                 sendMvkBtn.textContent = "Send MVK Instructions";
-                sendMvkBtn.id = "send-mvk";
+                sendMvkBtn.id = "send-mvk-btn";
                 sendMvkBtn.disabled = false;
                 sendMvkBtn.className = "fetch-btn";
                 output13Div.appendChild(sendMvkBtn);
 
                 const sendSwpaBtn = document.createElement("button");
                 sendSwpaBtn.textContent = "Send SWPA Message";
-                sendSwpaBtn.id = "send-swpa";
+                sendSwpaBtn.id = "send-swpa-btn";
                 sendSwpaBtn.disabled = false;
                 sendSwpaBtn.className = "fetch-btn";
                 output13Div.appendChild(sendSwpaBtn);

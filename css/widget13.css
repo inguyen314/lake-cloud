@@ -49,3 +49,14 @@
     margin-bottom: 10px;
 }
 
+#send-cannon-btn,
+#send-mvk-btn,
+#send-swpa-btn {
+    text-align: center;
+    margin-right: 5px;
+}
+
+#cda-btn-schedule-instruction {
+    text-align: center;
+    margin-right: 5px;
+}

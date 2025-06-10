@@ -106,21 +106,6 @@ button {
     text-align: center;
 }
 
-#refresh-gate-settings-button,
-#refresh-inflow-button,
-#refresh-lake-forecast-button,
-#refresh-balance-window-button,
-#refresh-lake-office-precipitation-button,
-#refresh-rule-curve-button,
-#refresh-crest-forecast-button,
-#refresh-notes-button,
-#refresh-generation-release-button,
-#cda-btn-schedule-instruction,
-#email-table-btn {
-    text-align: center;
-    margin-right: 5px;
-}
-
 .modern-button {
     background-color: darkblue;
     color: white;
