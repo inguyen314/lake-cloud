@@ -81,11 +81,31 @@ document.addEventListener('DOMContentLoaded', async function () {
     urlTsidPrecipForecast = `${setBaseUrl}timeseries/group/CWMS-Forecast-Precip-Forecast?office=${office}&category-id=${lake}`;
     console.log("urlTsidPrecipForecast:", urlTsidPrecipForecast);
 
+    urlTsidPrecip = `${setBaseUrl}timeseries/group/Precip?office=${office}&category-id=${lake}`;
+    console.log("urlTsidPrecip:", urlTsidPrecip);
+
     const levelIdUrl = `${setBaseUrl}levels/${lake}.Evap.Inst.0.Evaporation?office=MVS&effective-date=${isoDateToday}&unit=ft`;
     console.log("levelIdUrl:", levelIdUrl);
 
     const fetchTimeSeriesData = async (tsid) => {
         const tsidData = `${setBaseUrl}timeseries?page-size=1000000&name=${tsid}&begin=${isoDateToday}&end=${isoDateDay14}&office=${office}`;
+        console.log('tsidData:', tsidData);
+        try {
+            const response = await fetch(tsidData, {
+                headers: {
+                    "Accept": "application/json;version=2",
+                    "cache-control": "no-cache"
+                }
+            });
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error fetching time series data:", error);
+        }
+    };
+
+    const fetchTimeSeriesDataYesterday = async (tsid) => {
+        const tsidData = `${setBaseUrl}timeseries?page-size=1000000&name=${tsid}&begin=${isoDateMinus8Days}&end=${isoDateDay1}&office=${office}`;
         console.log('tsidData:', tsidData);
         try {
             const response = await fetch(tsidData, {
@@ -110,6 +130,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const response5 = await fetch(urlTsidOutflowQpf);
             const response6 = await fetch(urlTsidOutflowNoQpf);
             const response7 = await fetch(levelIdUrl);
+            const response8 = await fetch(urlTsidPrecip);
 
             const tsidStageQpfData = await response1.json();
             const tsidStageNoQpfData = await response2.json();
@@ -118,6 +139,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const tsidOutflowQpfData = await response5.json();
             const tsidOutflowNoQpfData = await response6.json();
             const tsidEvapLevelData = await response7.json();
+            const tsidPrecipData = await response8.json();
 
             const tsidStageQpf = tsidStageQpfData['assigned-time-series'][0]['timeseries-id'];
             const tsidStageNoQpf = tsidStageNoQpfData['assigned-time-series'][0]['timeseries-id'];
@@ -126,6 +148,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const tsidOutflowQpf = tsidOutflowQpfData['assigned-time-series'][0]['timeseries-id'];
             const tsidOutflowNoQpf = tsidOutflowNoQpfData['assigned-time-series'][0]['timeseries-id'];
             const tsidEvaporation = tsidEvapLevelData['location-level-id'];
+            const tsidPrecip = tsidPrecipData['assigned-time-series'][0]['timeseries-id'];
 
             const curentMonthEvapValue = getEvapValueForMonth(tsidEvapLevelData, month);
             console.log("curentMonthEvapValue:", curentMonthEvapValue);
@@ -137,6 +160,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("tsidOutflowQpf:", tsidOutflowQpf);
             console.log("tsidOutflowNoQpf:", tsidOutflowNoQpf);
             console.log("tsidEvaporation:", tsidEvaporation);
+            console.log("tsidPrecip:", tsidPrecip);
 
             const timeSeriesStageQpfData = await fetchTimeSeriesData(tsidStageQpf);
             const timeSeriesStageNoQpfData = await fetchTimeSeriesData(tsidStageNoQpf);
@@ -144,6 +168,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const timeSeriesInflowNoQpfData = await fetchTimeSeriesData(tsidInflowNoQpf);
             const timeSeriesOutflowQpfData = await fetchTimeSeriesData(tsidOutflowQpf);
             const timeSeriesOutflowNoQpfData = await fetchTimeSeriesData(tsidOutflowNoQpf);
+            const timeSeriesPrecipData = await fetchTimeSeriesDataYesterday(tsidPrecip);
 
             console.log("timeSeriesStageQpfData:", timeSeriesStageQpfData);
             console.log("timeSeriesStageNoQpfData:", timeSeriesStageNoQpfData);
@@ -151,16 +176,18 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("timeSeriesInflowNoQpfData:", timeSeriesInflowNoQpfData);
             console.log("timeSeriesOutflowQpfData:", timeSeriesOutflowQpfData);
             console.log("timeSeriesOutflowNoQpfData:", timeSeriesOutflowNoQpfData);
+            console.log("timeSeriesPrecipData:", timeSeriesPrecipData);
 
-            createTable(timeSeriesStageQpfData, timeSeriesStageNoQpfData, timeSeriesInflowQpfData, timeSeriesInflowNoQpfData, timeSeriesOutflowQpfData, timeSeriesOutflowNoQpfData);
+            createTable(timeSeriesStageQpfData, timeSeriesStageNoQpfData, timeSeriesInflowQpfData, timeSeriesInflowNoQpfData, timeSeriesOutflowQpfData, timeSeriesOutflowNoQpfData, timeSeriesPrecipData);
 
-            function createTable(timeSeriesStageQpfData, timeSeriesStageNoQpfData, timeSeriesInflowQpfData, timeSeriesInflowNoQpfData, timeSeriesOutflowQpfData, timeSeriesOutflowNoQpfData) {
+            function createTable(timeSeriesStageQpfData, timeSeriesStageNoQpfData, timeSeriesInflowQpfData, timeSeriesInflowNoQpfData, timeSeriesOutflowQpfData, timeSeriesOutflowNoQpfData, timeSeriesPrecipData) {
                 const amStageQpf = get6amData(timeSeriesStageQpfData, tsidStageQpf);
                 const amStageNoQpf = get6amData(timeSeriesStageNoQpfData, tsidStageNoQpf);
                 const amInflowQpf = get6amData(timeSeriesInflowQpfData, tsidInflowQpf);
                 const amInflowNoQpf = get6amData(timeSeriesInflowNoQpfData, tsidInflowNoQpf);
                 const amOutflowQpf = get6amData(timeSeriesOutflowQpfData, tsidOutflowQpf);
                 const amOutflowNoQpf = get6amData(timeSeriesOutflowNoQpfData, tsidOutflowNoQpf);
+                const amPrecip = get6amData(timeSeriesPrecipData, tsidPrecip);
 
                 // Helper to format any 6AM data array
                 const formatTimeSeries = (dataArray) => {
@@ -179,6 +206,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const timeSeriesInflowNoQpfDataFormatted = formatTimeSeries(amInflowNoQpf);
                 const timeSeriesOutflowQpfDataFormatted = formatTimeSeries(amOutflowQpf);
                 const timeSeriesOutflowNoQpfDataFormatted = formatTimeSeries(amOutflowNoQpf);
+                const timeSeriesPrecipDataFormatted = formatTimeSeries(amPrecip);
 
                 console.log("Stage QPF:", timeSeriesStageQpfDataFormatted);
                 console.log("Stage No QPF:", timeSeriesStageNoQpfDataFormatted);
@@ -186,7 +214,24 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log("Inflow No QPF:", timeSeriesInflowNoQpfDataFormatted);
                 console.log("Outflow QPF:", timeSeriesOutflowQpfDataFormatted);
                 console.log("Outflow No QPF:", timeSeriesOutflowNoQpfDataFormatted);
+                console.log("Precip:", timeSeriesPrecipDataFormatted);
 
+                // Calculate OBS 24hr Precip
+                let obsPrecip24h = null;
+                let obsPrecip7d = null;
+
+                if (
+                    timeSeriesPrecipDataFormatted.length >= 9 &&
+                    typeof timeSeriesPrecipDataFormatted[8]?.value === 'number' &&
+                    typeof timeSeriesPrecipDataFormatted[7]?.value === 'number' &&
+                    typeof timeSeriesPrecipDataFormatted[1]?.value === 'number'
+                ) {
+                    obsPrecip24h = (timeSeriesPrecipDataFormatted[8].value - timeSeriesPrecipDataFormatted[7].value).toFixed(1);
+                    obsPrecip7d = (timeSeriesPrecipDataFormatted[8].value - timeSeriesPrecipDataFormatted[1].value).toFixed(1);
+                } else {
+                    obsPrecip24h = 909;
+                    obsPrecip7d = 909;
+                }
 
                 const output166Div = document.getElementById("output166");
                 output166Div.innerHTML = "";
@@ -194,13 +239,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const forecastDateTitle = document.createElement("h2");
                 forecastDateTitle.textContent = `Forecast Date: ${datetime}`;
                 forecastDateTitle.style.marginBottom = "10px";
-                forecastDateTitle.style.color = "red";
+                // forecastDateTitle.style.color = "red";
                 output166Div.appendChild(forecastDateTitle);
 
                 const forecastEvapTitle = document.createElement("h3");
-                forecastEvapTitle.textContent = `OBS 24hr Precip ~ 0.1" // OBS 7-Day Precip ~ 1.5" // Total QPF ~ 1.8"`;
+                forecastEvapTitle.textContent = `OBS 24hr Precip ~ ${obsPrecip24h}" // OBS 7-Day Precip ~ ${obsPrecip7d}" // Total QPF ~ TBD"`;
                 forecastEvapTitle.style.marginBottom = "20px";
-                forecastEvapTitle.style.color = "red";
+                // forecastEvapTitle.style.color = "red";
                 output166Div.appendChild(forecastEvapTitle);
 
                 // Create the table
@@ -253,8 +298,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 if (timeSeriesStageQpfDataFormatted.length === 14) {
                     timeSeriesStageQpfDataFormatted.forEach((dataPoint, index) => {
                         const row = document.createElement("tr");
-
-                        console.log("index: ", index);
 
                         // Date
                         const dateCell = document.createElement("td");
@@ -468,6 +511,30 @@ document.addEventListener('DOMContentLoaded', async function () {
         // console.log("matchingValue: ", matchingValue)
 
         return matchingValue ? matchingValue.value : null;
+    }
+
+    function convertUnixTimestamp(timestamp, toCST = false) {
+        if (typeof timestamp !== "number") {
+            console.error("Invalid timestamp:", timestamp);
+            return "Invalid Date";
+        }
+
+        const dateUTC = new Date(timestamp); // Convert milliseconds to Date object
+        if (isNaN(dateUTC.getTime())) {
+            console.error("Invalid date conversion:", timestamp);
+            return "Invalid Date";
+        }
+
+        if (!toCST) {
+            return dateUTC.toISOString(); // Return UTC time
+        }
+
+        // Convert to CST/CDT (America/Chicago) while adjusting for daylight saving time
+        const options = { timeZone: "America/Chicago", hour12: false };
+        const cstDateString = dateUTC.toLocaleString("en-US", options);
+        const cstDate = new Date(cstDateString + " UTC"); // Convert back to Date
+
+        return cstDate.toISOString();
     }
 
     // Precip images
