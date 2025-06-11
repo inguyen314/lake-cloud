@@ -253,6 +253,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                     outflowInput.id = `outflowInput-${entry[0]}`;
                     outflowInput.style.textAlign = "center";
                     outflowInput.style.verticalAlign = "middle";
+                    if (index === 0) {
+                    outflowInput.title = "Evening Outflow";
+                    }
                     outflowCell.appendChild(outflowInput);
                     row.appendChild(outflowCell);
 

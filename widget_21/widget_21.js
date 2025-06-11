@@ -57,9 +57,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     const lakeLocs = [
         "Lk Shelbyville-Kaskaskia",
         "Carlyle Lk-Kaskaskia",
-        "Rend Lk-Big Muddy",
         "Wappapello Lk-St Francis",
-        "Mark Twain Lk-Salt"
+        "Mark Twain Lk-Salt",
+        "Rend Lk-Big Muddy"
     ];
 
     async function fetchTsidDataForAllLakes() {
@@ -69,76 +69,97 @@ document.addEventListener('DOMContentLoaded', async function () {
         outputLines.push(...createTableHeader());
 
         for (const lake of lakeLocs) {
+            const isMarkTwain = lake === "Mark Twain Lk-Salt";
+            const isRend = lake === "Rend Lk-Big Muddy";
+            const isWappapello = lake === "Wappapello Lk-St Francis";
+
             const urltsid = `${setBaseUrl}timeseries/group/Forecast-Lake?office=${office}&category-id=${lake}`;
-            const urltsid2 = `${setBaseUrl}timeseries/group/Outflow-Average-Lake-Test?office=${office}&category-id=${lake}`;
+            const urltsid2 = isRend
+                ? `${setBaseUrl}timeseries/group/Outflow-Average-Lake-Test?office=${office}&category-id=${lake}`
+                : null;
             const levelId = `${lake}.Code.Inst.0.NWS HB5`;
             const urltsid3 = `${setBaseUrl}levels/${levelId}?office=MVS&effective-date=${isoDateToday}&unit=n/a`;
 
-            // Only define/fetch urltsid4 if lake is "Mark Twain Lk-Salt"
-            const isMarkTwain = lake === "Mark Twain Lk-Salt";
             const urltsid4 = isMarkTwain
                 ? `${setBaseUrl}timeseries/group/Lake-Shef-Flow?office=${office}&category-id=${lake}`
                 : null;
 
+            const urltsid5 = isWappapello
+                ? `${setBaseUrl}timeseries/group/Gate-Total-Lake-Test?office=${office}&category-id=${lake}`
+                : null;
+
             console.log("Lake:", lake);
             console.log("urltsid:", urltsid);
-            console.log("urltsid2:", urltsid2);
+            if (isRend) {
+                console.log("urltsid2:", urltsid2);
+            }
             console.log("urltsid3:", urltsid3);
             if (isMarkTwain) {
                 console.log("urltsid4:", urltsid4);
+            }
+            if (isWappapello) {
+                console.log("urltsid5:", urltsid5);
             }
 
             try {
                 // Conditionally fetch urltsid4
                 const fetchPromises = [
                     fetch(urltsid),
-                    fetch(urltsid2),
+                    isRend ? fetch(urltsid2) : Promise.resolve,
                     fetch(urltsid3),
-                    isMarkTwain ? fetch(urltsid4) : Promise.resolve({ json: () => ({}) })
+                    isMarkTwain ? fetch(urltsid4) : Promise.resolve,
+                    isWappapello ? fetch(urltsid5) : Promise.resolve({ json: () => ({}) })
                 ];
 
-                const [response, response2, response3, response4] = await Promise.all(fetchPromises);
+                const [response, response2, response3, response4, response5] = await Promise.all(fetchPromises);
 
                 const tsidData = await response.json();
-                const tsidData2 = await response2.json();
+                const tsidData2 = isRend ? await response2.json() : null;
                 const tsidData3 = await response3.json();
                 const tsidData4 = isMarkTwain ? await response4.json() : null;
+                const tsidData5 = isWappapello ? await response5.json() : null;
 
                 const tsidOutflow = tsidData['assigned-time-series']?.[0]?.['timeseries-id'];
-                const tsidOutflowAverage = tsidData2['assigned-time-series']?.[0]?.['timeseries-id'];
+                const tsidOutflowAverage = isRend
+                    ? tsidData2['assigned-time-series']?.[0]?.['timeseries-id']
+                    : null;
                 const tsidNortonBridge = isMarkTwain
                     ? tsidData4?.['assigned-time-series']?.[0]?.['timeseries-id']
                     : null;
-
+                const tsidGateTotal = isWappapello
+                    ? tsidData5['assigned-time-series']?.[0]?.['timeseries-id']
+                    : null;
                 console.log("tsidOutflow:", tsidOutflow);
-                console.log("tsidOutflowAverage:", tsidOutflowAverage);
+                if (isRend) {
+                    console.log("tsidOutflowAverage:", tsidOutflowAverage);
+                }
                 if (isMarkTwain) {
                     console.log("tsidNortonBridge:", tsidNortonBridge);
                 }
-
-                if (!tsidOutflow || !tsidOutflowAverage) {
-                    console.log("Missing timeseries-id data for lake:", lake);
-                    continue;
+                if (isWappapello) {
+                    console.log("tsidGateTotal:", tsidGateTotal);
                 }
-
                 const timeSeriesFetchPromises = [
-                    fetchTimeSeriesData(tsidOutflow),
-                    fetchTimeSeriesDataYesterday(tsidOutflowAverage),
-                    isMarkTwain ? fetchTimeSeriesDataNortonBridge(tsidNortonBridge) : Promise.resolve(null)
+                    fetchVersionedTimeSeriesData(tsidOutflow),
+                    isRend ? fetchTimeSeriesDataToday(tsidOutflowAverage) : Promise.resolve(null),
+                    isMarkTwain ? fetchTimeSeriesDataNortonBridge(tsidNortonBridge) : Promise.resolve(null),
+                    isWappapello ? fetchTimeSeriesDataToday(tsidGateTotal) : Promise.resolve(null)
                 ];
 
-                const [timeSeriesDataOutflow, timeSeriesDataOutflowAverage, timeSeriesDataNortonBridge] = await Promise.all(timeSeriesFetchPromises);
+                const [timeSeriesDataOutflow, timeSeriesDataOutflowAverage, timeSeriesDataNortonBridge, timeSeriesDataGateTotal] = await Promise.all(timeSeriesFetchPromises);
 
                 console.log("timeSeriesDataOutflow:", timeSeriesDataOutflow);
-                console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage);
+                if (isRend) {
+                    console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage);
+                }
                 if (isMarkTwain) {
                     console.log("timeSeriesDataNortonBridge:", timeSeriesDataNortonBridge);
                 }
+                if (isWappapello) {
+                    console.log("timeSeriesDataGateTotal:", timeSeriesDataGateTotal);
+                }
 
-                if (
-                    timeSeriesDataOutflow?.values?.length > 0 &&
-                    timeSeriesDataOutflowAverage?.values?.length > 0
-                ) {
+                if (timeSeriesDataOutflow?.values?.length > 0) {
                     console.log("Calling createTable for lake:", lake);
                     const lakeLines = createTable(
                         isoDateMinus1Day, isoDateToday,
@@ -146,7 +167,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         isoDateDay5, isoDateDay6, isoDateDay7,
                         tsidOutflow, timeSeriesDataOutflow,
                         tsidOutflowAverage, timeSeriesDataOutflowAverage,
-                        tsidData3, lake, timeSeriesDataNortonBridge
+                        tsidData3, lake, timeSeriesDataNortonBridge,
+                        timeSeriesDataGateTotal
                     );
 
                     outputLines.push(...lakeLines);
@@ -189,7 +211,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         timeSeriesDataOutflowAverage,
         tsidData3,
         lake,
-        timeSeriesDataNortonBridge
+        timeSeriesDataNortonBridge,
+        timeSeriesDataGateTotal
     ) {
         console.log("timeSeriesDataOutflow:", timeSeriesDataOutflow);
         console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage);
@@ -215,32 +238,65 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
         console.log("formattedOutflowData:", formattedOutflowData);
 
-        const formattedOutflowAverageData = timeSeriesDataOutflowAverage.values.map(entry => {
-            const timestamp = Number(entry[0]); // Ensure timestamp is a number
-            return {
-                ...entry,
-                formattedTimestampUTC: convertUnixTimestamp(timestamp, true),
-                formattedTimestampCST: convertUnixTimestamp(timestamp, false),
-            };
-        });
-        console.log("formattedOutflowAverageData:", formattedOutflowAverageData);
+        let formattedOutflowAverageData = null;
+        if (lake === "Rend Lk-Big Muddy") {
+            formattedOutflowAverageData = timeSeriesDataOutflowAverage.values.map(entry => {
+                const timestamp = Number(entry[0]); // Ensure timestamp is a number
+                return {
+                    ...entry,
+                    formattedTimestampUTC: convertUnixTimestamp(timestamp, true),
+                    formattedTimestampCST: convertUnixTimestamp(timestamp, false),
+                };
+            });
+            console.log("formattedOutflowAverageData:", formattedOutflowAverageData);
+        }
+
+        let formattedGateTotalData = null;
+        if (lake === "Wappapello Lk-St Francis") {
+            formattedGateTotalData = timeSeriesDataGateTotal.values.map(entry => {
+                const timestamp = Number(entry[0]); // Ensure timestamp is a number
+                return {
+                    ...entry,
+                    formattedTimestampUTC: convertUnixTimestamp(timestamp, true),
+                    formattedTimestampCST: convertUnixTimestamp(timestamp, false),
+                };
+            });
+            console.log("formattedGateTotalData:", formattedGateTotalData);
+        }
 
         const lines = [];
 
-        // Line 1: formattedOutflowAverageData (single value)
-        if (formattedOutflowAverageData.length > 0 && formattedOutflowData.length > 0) {
-            const avg = formattedOutflowAverageData[0]["1"];
-            const dateStr = getDateString(formattedOutflowData[0].formattedTimestampUTC);
-            const avgValue = (avg / 1000).toFixed(2).replace(/^0+([.])/, '$1');
+        if (formattedOutflowData.length > 0) {
+            let avg = null;
+            let dateStr = null;
+            let avgValue = null;
+            if (lake === "Rend Lk-Big Muddy") {
+                avg = formattedOutflowAverageData[0]["1"];
+                dateStr = getDateString(formattedOutflowData[0].formattedTimestampUTC);
+                avgValue = (avg / 1000).toFixed(2).replace(/^0+([.])/, '$1');
+            } else if (lake === "Mark Twain Lk-Salt") {
+                avg = timeSeriesDataNortonBridge?.values?.[0]?.[1];
+                avgValue = (avg / 1000).toFixed(2).replace(/^0+([.])/, '$1');
+            } else if (lake === "Wappapello Lk-St Francis") {
+                avg = timeSeriesDataGateTotal?.values?.[0]?.[1];
+                avgValue = (avg / 1000).toFixed(2).replace(/^0+([.])/, '$1');
+            }
 
-            if (lake === "Mark Twain Lk-Salt") {
-                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- replace with Norton Bridge Flow`);
+            if (lake === "Lk Shelbyville-Kaskaskia") {
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Outflow Total)`);
+            } else if (lake === "Carlyle Lk-Kaskaskia") {
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Outflow Total)`);
+            } else if (lake === "Wappapello Lk-St Francis") {
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Gate Total) ✓`);
+            } else if (lake === "Mark Twain Lk-Salt") {
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Norton Bridge Flow) ✓`);
+            } else if (lake === "Rend Lk-Big Muddy") {
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Yesterday Average Outflow) ✓`);
             } else {
                 lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue}`);
             }
         }
 
-        // Line 2: formattedOutflowData (5 values)
         if (formattedOutflowData.length > 1) {
             const startDate = getDateString(formattedOutflowData[1].formattedTimestampUTC);
             const values = [];
@@ -252,10 +308,10 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             if (lake === "Mark Twain Lk-Salt") {
-                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')} ------------- replace with Total Generation and Release Flow`);
-                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')}`);
+                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')} ------------- (Total Generation and Release Flow)`);
+                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')} ------------- (Lake Forecast) ✓`);
             } else {
-                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')}`);
+                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')} ------------- (Lake Forecast) ✓`);
             }
         }
 
@@ -263,7 +319,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         return lines;
     }
 
-    const fetchTimeSeriesData = async (tsid) => {
+    const fetchVersionedTimeSeriesData = async (tsid) => {
         let tsidData = null;
         tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${isoDateDay6}&office=${office}&version-date=${convertTo6AMCST(isoDateToday)}`;
 
@@ -288,7 +344,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     };
 
-    const fetchTimeSeriesDataYesterday = async (tsid) => {
+    const fetchTimeSeriesDataToday = async (tsid) => {
         let tsidData = null;
         tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${isoDateToday}&office=${office}`;
 
