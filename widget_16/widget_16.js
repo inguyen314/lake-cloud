@@ -250,63 +250,71 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Append the complete table to the container div
                 output166Div.appendChild(table);
 
-                timeSeriesStageQpfDataFormatted.forEach((dataPoint, index) => {
-                    const row = document.createElement("tr");
+                if (timeSeriesStageQpfDataFormatted.length === 14) {
+                    timeSeriesStageQpfDataFormatted.forEach((dataPoint, index) => {
+                        const row = document.createElement("tr");
 
-                    // Date
-                    const dateCell = document.createElement("td");
-                    dateCell.textContent = dataPoint.formattedTimestamp;
-                    row.appendChild(dateCell);
+                        console.log("index: ", index);
 
-                    // Pool No QPF
-                    const poolNoQpfCell = document.createElement("td");
-                    poolNoQpfCell.innerHTML = timeSeriesStageNoQpfDataFormatted?.[index]?.value != null
-                        ? "<span title='" + timeSeriesStageNoQpfDataFormatted[index]['tsid'] + "'>" + doubleRoundToOneDecimal(timeSeriesStageNoQpfDataFormatted[index].value) + "</span>"
-                        : "";
-                    row.appendChild(poolNoQpfCell);
+                        // Date
+                        const dateCell = document.createElement("td");
+                        dateCell.textContent = dataPoint.formattedTimestamp;
+                        row.appendChild(dateCell);
 
-                    // Pool QPF
-                    const poolQpfCell = document.createElement("td");
-                    poolQpfCell.textContent = doubleRoundToOneDecimal(dataPoint.value); // from QPF array
-                    row.appendChild(poolQpfCell);
+                        // Pool No QPF
+                        const poolNoQpfCell = document.createElement("td");
+                        poolNoQpfCell.innerHTML = timeSeriesStageNoQpfDataFormatted?.[index]?.value != null
+                            ? "<span title='" + timeSeriesStageNoQpfDataFormatted[index]['tsid'] + "'>" + doubleRoundToOneDecimal(timeSeriesStageNoQpfDataFormatted[index].value) + "</span>"
+                            : "";
+                        row.appendChild(poolNoQpfCell);
 
-                    // Inflow No QPF
-                    const inflowNoQpfCell = document.createElement("td");
-                    inflowNoQpfCell.textContent = timeSeriesInflowNoQpfDataFormatted?.[index]?.value != null
-                        ? Math.round((timeSeriesInflowNoQpfDataFormatted[index].value) / 10) * 10
-                        : "";
-                    row.appendChild(inflowNoQpfCell);
+                        // Pool QPF
+                        const poolQpfCell = document.createElement("td");
+                        poolQpfCell.textContent = doubleRoundToOneDecimal(dataPoint.value); // from QPF array
+                        row.appendChild(poolQpfCell);
 
-                    // Inflow QPF
-                    const inflowQpfCell = document.createElement("td");
-                    inflowQpfCell.textContent = timeSeriesInflowQpfDataFormatted?.[index]?.value != null
-                        ? Math.round((timeSeriesInflowQpfDataFormatted[index].value) / 10) * 10
-                        : "";
-                    row.appendChild(inflowQpfCell);
+                        // Inflow No QPF
+                        const inflowNoQpfCell = document.createElement("td");
+                        inflowNoQpfCell.textContent = timeSeriesInflowNoQpfDataFormatted?.[index]?.value != null
+                            ? Math.round((timeSeriesInflowNoQpfDataFormatted[index].value) / 10) * 10
+                            : "";
+                        row.appendChild(inflowNoQpfCell);
 
-                    // Outflow No QPF
-                    const outflowNoQpfCell = document.createElement("td");
-                    outflowNoQpfCell.textContent = timeSeriesOutflowNoQpfDataFormatted?.[index]?.value != null
-                        ? Math.round((timeSeriesOutflowNoQpfDataFormatted[index].value) / 10) * 10
-                        : "";
-                    row.appendChild(outflowNoQpfCell);
+                        // Inflow QPF
+                        const inflowQpfCell = document.createElement("td");
+                        inflowQpfCell.textContent = timeSeriesInflowQpfDataFormatted?.[index]?.value != null
+                            ? Math.round((timeSeriesInflowQpfDataFormatted[index].value) / 10) * 10
+                            : "";
+                        row.appendChild(inflowQpfCell);
 
-                    // Outflow QPF
-                    const outflowQpfCell = document.createElement("td");
-                    outflowQpfCell.textContent = timeSeriesOutflowQpfDataFormatted?.[index]?.value != null
-                        ? Math.round((timeSeriesOutflowQpfDataFormatted[index].value) / 10) * 10
-                        : "";
-                    row.appendChild(outflowQpfCell);
+                        // Outflow No QPF
+                        const outflowNoQpfCell = document.createElement("td");
+                        outflowNoQpfCell.textContent = timeSeriesOutflowNoQpfDataFormatted?.[index]?.value != null
+                            ? Math.round((timeSeriesOutflowNoQpfDataFormatted[index].value) / 10) * 10
+                            : "";
+                        row.appendChild(outflowNoQpfCell);
 
-                    // Precip
-                    const precipCell = document.createElement("td");
-                    precipCell.textContent = "--"; // Placeholder
-                    precipCell.style.color = "red";
-                    row.appendChild(precipCell);
+                        // Outflow QPF
+                        const outflowQpfCell = document.createElement("td");
+                        outflowQpfCell.textContent = timeSeriesOutflowQpfDataFormatted?.[index]?.value != null
+                            ? Math.round((timeSeriesOutflowQpfDataFormatted[index].value) / 10) * 10
+                            : "";
+                        row.appendChild(outflowQpfCell);
 
-                    // Append row
-                    table.appendChild(row);
-                });
+                        // Precip
+                        const precipCell = document.createElement("td");
+                        precipCell.textContent = "--"; // Placeholder
+                        precipCell.style.color = "red";
+                        row.appendChild(precipCell);
+
+                        // Append row
+                        table.appendChild(row);
+                    });
+                } else {
+                    const titleSpan = document.createElement("h2");
+                    titleSpan.textContent = "No Forecast Run Today";
+                    output166Div.appendChild(titleSpan);
+                }
             }
 
             loadingIndicator.style.display = 'none';
