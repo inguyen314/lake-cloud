@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     urlTsidPrecipForecast = `${setBaseUrl}timeseries/group/CWMS-Forecast-Precip-Forecast?office=${office}&category-id=${lake}`;
     console.log("urlTsidPrecipForecast:", urlTsidPrecipForecast);
 
-    urlTsidPrecip = `${setBaseUrl}timeseries/group/Precip?office=${office}&category-id=${lake}`;
+    urlTsidPrecip = `${setBaseUrl}timeseries/group/Precip-Lake-Raw?office=${office}&category-id=${lake}`;
     console.log("urlTsidPrecip:", urlTsidPrecip);
 
     const levelIdUrl = `${setBaseUrl}levels/${lake}.Evap.Inst.0.Evaporation?office=MVS&effective-date=${isoDateToday}&unit=ft`;
