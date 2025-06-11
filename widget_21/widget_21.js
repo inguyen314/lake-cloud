@@ -68,6 +68,42 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Add header lines once
         outputLines.push(...createTableHeader());
 
+        let cdaSaveBtn;
+
+        async function isLoggedIn() {
+            try {
+                const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", {
+                    method: "GET"
+                });
+
+                if (response.status === 401) return false;
+
+                console.log('status', response.status);
+                return true;
+
+            } catch (error) {
+                console.error('Error checking login status:', error);
+                return false;
+            }
+        }
+
+        async function loginStateController() {
+            cdaSaveBtn = document.getElementById("cda-btn-lake-shef"); // Get the button by its ID
+
+            cdaSaveBtn.disabled = true; // Disable button while checking login state
+
+            // Update button text based on login status
+            if (await isLoggedIn()) {
+                cdaSaveBtn.innerText = "Save";
+            } else {
+                cdaSaveBtn.innerText = "Login";
+            }
+
+            cdaSaveBtn.disabled = false; // Re-enable button
+        }
+
+        allLines = [];
+
         for (const lake of lakeLocs) {
             const isMarkTwain = lake === "Mark Twain Lk-Salt";
             const isRend = lake === "Rend Lk-Big Muddy";
@@ -186,6 +222,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         timeSeriesDataGenerationRelease
                     );
 
+                    allLines.push(lakeLines);
+
                     outputLines.push(...lakeLines);
                 } else {
                     console.log("No Forecast Data for lake:", lake);
@@ -195,10 +233,58 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         }
 
+        console.log("allLines:", allLines);
+
+        // Build the output string
+        let output = [
+            ": GENERATION DATE YYYYMMDD",
+            ": TODAYS LAKE FLOW 6AM INSTANTANEOUS VALUE",
+            ": 5 DAYS LAKE FORECAST 6AM INSTANTANEOUS FORECAST VALUE"
+        ].join('\n') + '\n\n';
+
+        allLines.forEach(group => {
+            group.forEach(line => {
+                output += line + '\n';
+            });
+        });
+
+        // Add final blank line
+        output += '\n';
+
+        console.log("output:", output);
+
+        // Display in output21 with formatting and a button
         const output21Div = document.getElementById("output21");
+        output21Div.innerHTML = "";
+
         if (output21Div) {
-            output21Div.innerText = outputLines.join('\n');
+            // Preserve line breaks using <pre>
+            const pre = document.createElement("pre");
+            pre.innerText = output;
+            output21Div.appendChild(pre);
+
+            // Add visual gap between text and button
+            const spacer = document.createElement("div");
+            spacer.style.height = "16px";
+            output21Div.appendChild(spacer);
+
+            // Create the button
+            const cdaSaveBtn = document.createElement("button");
+            cdaSaveBtn.textContent = "Submit";
+            cdaSaveBtn.id = "cda-btn-lake-shef";
+            cdaSaveBtn.disabled = true;
+            output21Div.appendChild(cdaSaveBtn);
+
+            // Optional login logic
+            loginStateController();
+            setInterval(loginStateController, 10000);
+
+            cdaSaveBtn.addEventListener("click", async () => {
+                // Your submit logic here
+                alert("Submit clicked.");
+            });
         }
+
     }
 
     function createTableHeader() {
@@ -321,7 +407,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         let formattedGenerationRelease = null;
         if (lake === "Mark Twain Lk-Salt") {
-             formattedGenerationRelease = timeSeriesDataGenerationRelease.values.map(entry => {
+            formattedGenerationRelease = timeSeriesDataGenerationRelease.values.map(entry => {
                 const timestamp = Number(entry[0]); // Ensure timestamp is a number
                 return {
                     ...entry,
@@ -397,7 +483,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')} ------------- (Lake Forecast) ${lake} ✓`);
             }
         }
-
 
         return lines;
     }
