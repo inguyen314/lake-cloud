@@ -261,13 +261,27 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (output21Div) {
             // Preserve line breaks using <pre>
             const pre = document.createElement("pre");
+            pre.id = "pre";
             pre.innerText = output;
             output21Div.appendChild(pre);
 
+            // Create anchor link
+            const linkSpan = document.createElement("a");
+            linkSpan.href = "https://cwms-data.usace.army.mil/cwms-data/blobs/LAKE_SHEF.TXT?office=MVS";
+            linkSpan.textContent = "https://cwms-data.usace.army.mil/cwms-data/blobs/LAKE_SHEF.TXT?office=MVS";
+            linkSpan.target = "_blank";
+            linkSpan.rel = "noopener noreferrer"; // security best practice
+            output21Div.appendChild(linkSpan);
+
             // Add visual gap between text and button
-            const spacer = document.createElement("div");
-            spacer.style.height = "16px";
-            output21Div.appendChild(spacer);
+            const spacer2 = document.createElement("div");
+            spacer2.style.height = "20px";
+            output21Div.appendChild(spacer2);
+
+            // Create status div
+            const statusDiv = document.createElement("div");
+            statusDiv.className = "status-lake-shef";
+            output21Div.appendChild(statusDiv);
 
             // Create the button
             const cdaSaveBtn = document.createElement("button");
@@ -276,13 +290,66 @@ document.addEventListener('DOMContentLoaded', async function () {
             cdaSaveBtn.disabled = true;
             output21Div.appendChild(cdaSaveBtn);
 
+            // Create the buttonRefresh button
+            const buttonRefresh = document.createElement('button');
+            buttonRefresh.textContent = 'Refresh';
+            buttonRefresh.id = 'refresh-lake-shef-button';
+            buttonRefresh.className = 'fetch-btn';
+            output21Div.appendChild(buttonRefresh);
+
             // Optional login logic
             loginStateController();
             setInterval(loginStateController, 10000);
 
+            buttonRefresh.addEventListener('click', () => {
+                // Remove existing table
+                const existingTable = document.getElementById('pre');
+                if (existingTable) {
+                    existingTable.remove();
+                }
+
+                // Fetch and create new table
+                fetchTsidDataForAllLakes();
+            });
+
+            // Use CDA to write a file to a BLOB
+            // NOTE: https://cwms-data.usace.army.mil/cwms-data/blobs/LAKE_SHEF.TXT?office=MVS
+            // curl -O https://cwms-data.usace.army.mil/cwms-data/blobs/LAKE_SHEF.TXT?office=MVS
+
             cdaSaveBtn.addEventListener("click", async () => {
-                // Your submit logic here
-                alert("Submit clicked.");
+                statusDiv.innerText = "Saving...";
+
+                try {
+                    const response = await fetch(`${setBaseUrl.replace(":8243", "")}blobs?fail-if-exists=false`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json;version=2",
+                            "cache-control": "no-cache",
+                        },
+                        body: JSON.stringify({
+                            "office-id": office,
+                            "media-type-id": "text/plain",
+                            "id": "LAKE_SHEF.TXT",
+                            "description": `Updated ${moment().format()}`,
+                            "value": btoa(output),
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`HTTP ${response.status}: ${errorText}`);
+                    }
+
+                    statusDiv.innerText = "Write successful!";
+
+                    // Wait 2 seconds before fetching data
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    fetchTsidDataForAllLakes();
+
+                } catch (error) {
+                    console.error("Error saving file to CDA:", error);
+                    statusDiv.innerText = `Write failed: ${error.message}`;
+                }
             });
         }
 
