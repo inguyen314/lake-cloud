@@ -357,15 +357,15 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             if (lake === "Lk Shelbyville-Kaskaskia") {
-                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Outflow Total) ✓`);
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Outflow Total) ${lake} ✓`);
             } else if (lake === "Carlyle Lk-Kaskaskia") {
-                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Outflow Total) ✓`);
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Outflow Total) ${lake} ✓`);
             } else if (lake === "Wappapello Lk-St Francis") {
-                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Gate Total) ✓`);
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Gate Total) ${lake} ✓`);
             } else if (lake === "Mark Twain Lk-Salt") {
-                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Norton Bridge Flow) ✓`);
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Norton Bridge Flow) ${lake} ✓`);
             } else if (lake === "Rend Lk-Big Muddy") {
-                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Yesterday Average Outflow) ✓`);
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Yesterday Average Outflow) ${lake} ✓`);
             } else {
                 lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue}`);
             }
@@ -391,10 +391,10 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             if (lake === "Mark Twain Lk-Salt") {
-                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTD/DID1/${avgValue2} ------------- (Total Flow - Generation and Release)`);
-                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')} ------------- (Lake Forecast) ✓`);
+                lines.push(`.ER ${id} ${dateStr2} Z DH${hour}/QTD/DID1/${avgValue2} ------------- (Total Flow - Generation and Release) ${lake} ✓`);
+                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')} ------------- (Lake Forecast) ${lake} ✓`);
             } else {
-                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')} ------------- (Lake Forecast) ✓`);
+                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')} ------------- (Lake Forecast) ${lake} ✓`);
             }
         }
 
