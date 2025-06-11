@@ -94,91 +94,84 @@ document.addEventListener('DOMContentLoaded', async function () {
                 ? `${setBaseUrl}timeseries/group/Outflow-Total-Lake-Test?office=${office}&category-id=${lake}`
                 : null;
 
+            const urltsid7 = isMarkTwain
+                ? `${setBaseUrl}timeseries/group/Generation-Release-Lake-Test?office=${office}&category-id=${lake}`
+                : null;
+
             console.log("Lake:", lake);
             console.log("urltsid:", urltsid);
-            if (isRend) {
-                console.log("urltsid2:", urltsid2);
-            }
+            if (isRend) console.log("urltsid2:", urltsid2);
             console.log("urltsid3:", urltsid3);
-            if (isMarkTwain) {
-                console.log("urltsid4:", urltsid4);
-            }
-            if (isWappapello) {
-                console.log("urltsid5:", urltsid5);
-            }
-            if (isShelbyville || isCarlyle) {
-                console.log("urltsid6:", urltsid6);
-            }
+            if (isMarkTwain) console.log("urltsid4:", urltsid4);
+            if (isWappapello) console.log("urltsid5:", urltsid5);
+            if (isShelbyville || isCarlyle) console.log("urltsid6:", urltsid6);
+            if (isMarkTwain) console.log("urltsid7:", urltsid7);
 
             try {
-                // Conditionally fetch urltsid4
                 const fetchPromises = [
                     fetch(urltsid),
-                    isRend ? fetch(urltsid2) : Promise.resolve,
+                    isRend ? fetch(urltsid2) : Promise.resolve(null),
                     fetch(urltsid3),
-                    isMarkTwain ? fetch(urltsid4) : Promise.resolve,
-                    isWappapello ? fetch(urltsid5) : Promise.resolve({ json: () => ({}) })
+                    isMarkTwain ? fetch(urltsid4) : Promise.resolve(null),
+                    isWappapello ? fetch(urltsid5) : Promise.resolve(null),
+                    isMarkTwain ? fetch(urltsid7) : Promise.resolve(null),
                 ];
 
-                const [response, response2, response3, response4, response5] = await Promise.all(fetchPromises);
+                const [response, response2, response3, response4, response5, response6] = await Promise.all(fetchPromises);
 
                 const tsidData = await response.json();
-                const tsidData2 = isRend ? await response2.json() : null;
+                const tsidData2 = isRend && response2 ? await response2.json() : null;
                 const tsidData3 = await response3.json();
-                const tsidData4 = isMarkTwain ? await response4.json() : null;
-                const tsidData5 = isWappapello ? await response5.json() : null;
-                const tsidData6 = isShelbyville || isCarlyle ? await fetch(urltsid6).then(res => res.json()) : null;
+                const tsidData4 = isMarkTwain && response4 ? await response4.json() : null;
+                const tsidData5 = isWappapello && response5 ? await response5.json() : null;
+                const tsidData7 = isMarkTwain && response6 ? await response6.json() : null;
+
+                let tsidData6 = null;
+                if (urltsid6) {
+                    const res6 = await fetch(urltsid6);
+                    tsidData6 = await res6.json();
+                }
 
                 const tsidOutflow = tsidData['assigned-time-series']?.[0]?.['timeseries-id'];
-                const tsidOutflowAverage = isRend
-                    ? tsidData2['assigned-time-series']?.[0]?.['timeseries-id']
-                    : null;
-                const tsidNortonBridge = isMarkTwain
-                    ? tsidData4?.['assigned-time-series']?.[0]?.['timeseries-id']
-                    : null;
-                const tsidGateTotal = isWappapello
-                    ? tsidData5['assigned-time-series']?.[0]?.['timeseries-id']
-                    : null;
+                const tsidOutflowAverage = isRend ? tsidData2?.['assigned-time-series']?.[0]?.['timeseries-id'] : null;
+                const tsidNortonBridge = isMarkTwain ? tsidData4?.['assigned-time-series']?.[0]?.['timeseries-id'] : null;
+                const tsidGateTotal = isWappapello ? tsidData5?.['assigned-time-series']?.[0]?.['timeseries-id'] : null;
                 const tsidOutflowTotal = isShelbyville || isCarlyle
-                    ? tsidData6['assigned-time-series']?.[0]?.['timeseries-id']
+                    ? tsidData6?.['assigned-time-series']?.[0]?.['timeseries-id']
                     : null;
+                const tsidGenerationRelease = isMarkTwain ? tsidData7?.['assigned-time-series']?.[0]?.['timeseries-id'] : null;
+
                 console.log("tsidOutflow:", tsidOutflow);
-                if (isRend) {
-                    console.log("tsidOutflowAverage:", tsidOutflowAverage);
-                }
-                if (isMarkTwain) {
-                    console.log("tsidNortonBridge:", tsidNortonBridge);
-                }
-                if (isWappapello) {
-                    console.log("tsidGateTotal:", tsidGateTotal);
-                }
-                if (isShelbyville || isCarlyle) {
-                    console.log("tsidOutflowTotal:", tsidOutflowTotal);
-                }
+                if (isRend) console.log("tsidOutflowAverage:", tsidOutflowAverage);
+                if (isMarkTwain) console.log("tsidNortonBridge:", tsidNortonBridge);
+                if (isWappapello) console.log("tsidGateTotal:", tsidGateTotal);
+                if (isShelbyville || isCarlyle) console.log("tsidOutflowTotal:", tsidOutflowTotal);
+                if (isMarkTwain) console.log("tsidGenerationRelease:", tsidGenerationRelease);
 
                 const timeSeriesFetchPromises = [
                     fetchVersionedTimeSeriesData(tsidOutflow),
                     isRend ? fetchTimeSeriesDataToday(tsidOutflowAverage) : Promise.resolve(null),
                     isMarkTwain ? fetchTimeSeriesDataNortonBridge(tsidNortonBridge) : Promise.resolve(null),
                     isWappapello ? fetchTimeSeriesDataToday(tsidGateTotal) : Promise.resolve(null),
-                    isCarlyle || isShelbyville ? fetchTimeSeriesDataYesterday(tsidOutflowTotal) : Promise.resolve(null)
+                    isCarlyle || isShelbyville ? fetchTimeSeriesDataYesterday(tsidOutflowTotal) : Promise.resolve(null),
+                    isMarkTwain ? fetchTimeSeriesDataYesterday(tsidGenerationRelease) : Promise.resolve(null),
                 ];
 
-                const [timeSeriesDataOutflow, timeSeriesDataOutflowAverage, timeSeriesDataNortonBridge, timeSeriesDataGateTotal, timeSeriesDataOutflowTotal] = await Promise.all(timeSeriesFetchPromises);
+                const [
+                    timeSeriesDataOutflow,
+                    timeSeriesDataOutflowAverage,
+                    timeSeriesDataNortonBridge,
+                    timeSeriesDataGateTotal,
+                    timeSeriesDataOutflowTotal,
+                    timeSeriesDataGenerationRelease
+                ] = await Promise.all(timeSeriesFetchPromises);
 
                 console.log("timeSeriesDataOutflow:", timeSeriesDataOutflow);
-                if (isRend) {
-                    console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage);
-                }
-                if (isMarkTwain) {
-                    console.log("timeSeriesDataNortonBridge:", timeSeriesDataNortonBridge);
-                }
-                if (isWappapello) {
-                    console.log("timeSeriesDataGateTotal:", timeSeriesDataGateTotal);
-                }
-                if (isCarlyle || isShelbyville) {
-                    console.log("timeSeriesDataOutflowTotal:", timeSeriesDataOutflowTotal);
-                }
+                if (isRend) console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage);
+                if (isMarkTwain) console.log("timeSeriesDataNortonBridge:", timeSeriesDataNortonBridge);
+                if (isWappapello) console.log("timeSeriesDataGateTotal:", timeSeriesDataGateTotal);
+                if (isCarlyle || isShelbyville) console.log("timeSeriesDataOutflowTotal:", timeSeriesDataOutflowTotal);
+                if (isMarkTwain) console.log("timeSeriesDataGenerationRelease:", timeSeriesDataGenerationRelease);
 
                 if (timeSeriesDataOutflow?.values?.length > 0) {
                     console.log("Calling createTable for lake:", lake);
@@ -189,7 +182,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         tsidOutflow, timeSeriesDataOutflow,
                         tsidOutflowAverage, timeSeriesDataOutflowAverage,
                         tsidData3, lake, timeSeriesDataNortonBridge,
-                        timeSeriesDataGateTotal, timeSeriesDataOutflowTotal
+                        timeSeriesDataGateTotal, timeSeriesDataOutflowTotal,
+                        timeSeriesDataGenerationRelease
                     );
 
                     outputLines.push(...lakeLines);
@@ -201,7 +195,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         }
 
-        // Output all lines at once
         const output21Div = document.getElementById("output21");
         if (output21Div) {
             output21Div.innerText = outputLines.join('\n');
@@ -234,7 +227,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         lake,
         timeSeriesDataNortonBridge,
         timeSeriesDataGateTotal,
-        timeSeriesDataOutflowTotal
+        timeSeriesDataOutflowTotal,
+        timeSeriesDataGenerationRelease
     ) {
         console.log("timeSeriesDataOutflow:", timeSeriesDataOutflow);
         console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage);
@@ -299,6 +293,45 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("formattedOutflowTotal:", formattedOutflowTotal);
         }
 
+        let formattedNortonBridge = null;
+        if (lake === "Mark Twain Lk-Salt") {
+            formattedNortonBridge = timeSeriesDataNortonBridge.values.map(entry => {
+                const timestamp = Number(entry[0]); // Ensure timestamp is a number
+                return {
+                    ...entry,
+                    formattedTimestampUTC: convertUnixTimestamp(timestamp, true),
+                    formattedTimestampCST: convertUnixTimestamp(timestamp, false),
+                };
+            });
+            console.log("formattedNortonBridge:", formattedNortonBridge);
+        }
+
+        let formattedGateTotal = null;
+        if (lake === "Wappapello Lk-St Francis") {
+            formattedGateTotal = timeSeriesDataGateTotal.values.map(entry => {
+                const timestamp = Number(entry[0]); // Ensure timestamp is a number
+                return {
+                    ...entry,
+                    formattedTimestampUTC: convertUnixTimestamp(timestamp, true),
+                    formattedTimestampCST: convertUnixTimestamp(timestamp, false),
+                };
+            });
+            console.log("formattedGateTotal:", formattedGateTotal);
+        }
+
+        let formattedGenerationRelease = null;
+        if (lake === "Mark Twain Lk-Salt") {
+             formattedGenerationRelease = timeSeriesDataGenerationRelease.values.map(entry => {
+                const timestamp = Number(entry[0]); // Ensure timestamp is a number
+                return {
+                    ...entry,
+                    formattedTimestampUTC: convertUnixTimestamp(timestamp, true),
+                    formattedTimestampCST: convertUnixTimestamp(timestamp, false),
+                };
+            });
+            console.log("formattedGenerationRelease:", formattedGenerationRelease);
+        }
+
         const lines = [];
 
         if (formattedOutflowData.length > 0) {
@@ -310,13 +343,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                 dateStr = getDateString(formattedOutflowData[0].formattedTimestampUTC);
                 avgValue = (avg / 1000).toFixed(2).replace(/^0+([.])/, '$1');
             } else if (lake === "Mark Twain Lk-Salt") {
-                avg = timeSeriesDataNortonBridge?.values?.[0]?.[1];
+                avg = formattedNortonBridge[0]["1"];
+                dateStr = getDateString(formattedNortonBridge[0].formattedTimestampUTC);
                 avgValue = (avg / 1000).toFixed(2).replace(/^0+([.])/, '$1');
             } else if (lake === "Wappapello Lk-St Francis") {
-                avg = timeSeriesDataGateTotal?.values?.[0]?.[1];
+                avg = formattedGateTotal[0]["1"];
+                dateStr = getDateString(formattedGateTotal[0].formattedTimestampUTC);
                 avgValue = (avg / 1000).toFixed(2).replace(/^0+([.])/, '$1');
             } else if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Carlyle Lk-Kaskaskia") {
                 avg = formattedOutflowTotal[0]["1"];
+                dateStr = getDateString(formattedOutflowData[0].formattedTimestampUTC);
                 avgValue = (avg / 1000).toFixed(2).replace(/^0+([.])/, '$1');
             }
 
@@ -345,8 +381,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                 values.push(val);
             }
 
+            let avg2 = null;
+            let dateStr2 = null;
+            let avgValue2 = null;
             if (lake === "Mark Twain Lk-Salt") {
-                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')} ------------- (Total Generation and Release Flow)`);
+                avg2 = formattedGenerationRelease[0]["1"];
+                dateStr2 = getDateString(formattedGenerationRelease[0].formattedTimestampUTC);
+                avgValue2 = (avg2 / 1000).toFixed(2).replace(/^0+([.])/, '$1');
+            }
+
+            if (lake === "Mark Twain Lk-Salt") {
+                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTD/DID1/${avgValue2} ------------- (Total Flow - Generation and Release)`);
                 lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')} ------------- (Lake Forecast) ✓`);
             } else {
                 lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')} ------------- (Lake Forecast) ✓`);
