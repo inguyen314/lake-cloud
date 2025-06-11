@@ -72,6 +72,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             const isMarkTwain = lake === "Mark Twain Lk-Salt";
             const isRend = lake === "Rend Lk-Big Muddy";
             const isWappapello = lake === "Wappapello Lk-St Francis";
+            const isShelbyville = lake === "Lk Shelbyville-Kaskaskia";
+            const isCarlyle = lake === "Carlyle Lk-Kaskaskia";
 
             const urltsid = `${setBaseUrl}timeseries/group/Forecast-Lake?office=${office}&category-id=${lake}`;
             const urltsid2 = isRend
@@ -88,6 +90,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 ? `${setBaseUrl}timeseries/group/Gate-Total-Lake-Test?office=${office}&category-id=${lake}`
                 : null;
 
+            const urltsid6 = isShelbyville || isCarlyle
+                ? `${setBaseUrl}timeseries/group/Outflow-Total-Lake-Test?office=${office}&category-id=${lake}`
+                : null;
+
             console.log("Lake:", lake);
             console.log("urltsid:", urltsid);
             if (isRend) {
@@ -99,6 +105,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
             if (isWappapello) {
                 console.log("urltsid5:", urltsid5);
+            }
+            if (isShelbyville || isCarlyle) {
+                console.log("urltsid6:", urltsid6);
             }
 
             try {
@@ -118,6 +127,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const tsidData3 = await response3.json();
                 const tsidData4 = isMarkTwain ? await response4.json() : null;
                 const tsidData5 = isWappapello ? await response5.json() : null;
+                const tsidData6 = isShelbyville || isCarlyle ? await fetch(urltsid6).then(res => res.json()) : null;
 
                 const tsidOutflow = tsidData['assigned-time-series']?.[0]?.['timeseries-id'];
                 const tsidOutflowAverage = isRend
@@ -129,6 +139,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const tsidGateTotal = isWappapello
                     ? tsidData5['assigned-time-series']?.[0]?.['timeseries-id']
                     : null;
+                const tsidOutflowTotal = isShelbyville || isCarlyle
+                    ? tsidData6['assigned-time-series']?.[0]?.['timeseries-id']
+                    : null;
                 console.log("tsidOutflow:", tsidOutflow);
                 if (isRend) {
                     console.log("tsidOutflowAverage:", tsidOutflowAverage);
@@ -139,14 +152,19 @@ document.addEventListener('DOMContentLoaded', async function () {
                 if (isWappapello) {
                     console.log("tsidGateTotal:", tsidGateTotal);
                 }
+                if (isShelbyville || isCarlyle) {
+                    console.log("tsidOutflowTotal:", tsidOutflowTotal);
+                }
+
                 const timeSeriesFetchPromises = [
                     fetchVersionedTimeSeriesData(tsidOutflow),
                     isRend ? fetchTimeSeriesDataToday(tsidOutflowAverage) : Promise.resolve(null),
                     isMarkTwain ? fetchTimeSeriesDataNortonBridge(tsidNortonBridge) : Promise.resolve(null),
-                    isWappapello ? fetchTimeSeriesDataToday(tsidGateTotal) : Promise.resolve(null)
+                    isWappapello ? fetchTimeSeriesDataToday(tsidGateTotal) : Promise.resolve(null),
+                    isCarlyle || isShelbyville ? fetchTimeSeriesDataYesterday(tsidOutflowTotal) : Promise.resolve(null)
                 ];
 
-                const [timeSeriesDataOutflow, timeSeriesDataOutflowAverage, timeSeriesDataNortonBridge, timeSeriesDataGateTotal] = await Promise.all(timeSeriesFetchPromises);
+                const [timeSeriesDataOutflow, timeSeriesDataOutflowAverage, timeSeriesDataNortonBridge, timeSeriesDataGateTotal, timeSeriesDataOutflowTotal] = await Promise.all(timeSeriesFetchPromises);
 
                 console.log("timeSeriesDataOutflow:", timeSeriesDataOutflow);
                 if (isRend) {
@@ -158,6 +176,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 if (isWappapello) {
                     console.log("timeSeriesDataGateTotal:", timeSeriesDataGateTotal);
                 }
+                if (isCarlyle || isShelbyville) {
+                    console.log("timeSeriesDataOutflowTotal:", timeSeriesDataOutflowTotal);
+                }
 
                 if (timeSeriesDataOutflow?.values?.length > 0) {
                     console.log("Calling createTable for lake:", lake);
@@ -168,7 +189,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         tsidOutflow, timeSeriesDataOutflow,
                         tsidOutflowAverage, timeSeriesDataOutflowAverage,
                         tsidData3, lake, timeSeriesDataNortonBridge,
-                        timeSeriesDataGateTotal
+                        timeSeriesDataGateTotal, timeSeriesDataOutflowTotal
                     );
 
                     outputLines.push(...lakeLines);
@@ -212,7 +233,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         tsidData3,
         lake,
         timeSeriesDataNortonBridge,
-        timeSeriesDataGateTotal
+        timeSeriesDataGateTotal,
+        timeSeriesDataOutflowTotal
     ) {
         console.log("timeSeriesDataOutflow:", timeSeriesDataOutflow);
         console.log("timeSeriesDataOutflowAverage:", timeSeriesDataOutflowAverage);
@@ -264,6 +286,19 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("formattedGateTotalData:", formattedGateTotalData);
         }
 
+        let formattedOutflowTotal = null;
+        if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Carlyle Lk-Kaskaskia") {
+            formattedOutflowTotal = timeSeriesDataOutflowTotal.values.map(entry => {
+                const timestamp = Number(entry[0]); // Ensure timestamp is a number
+                return {
+                    ...entry,
+                    formattedTimestampUTC: convertUnixTimestamp(timestamp, true),
+                    formattedTimestampCST: convertUnixTimestamp(timestamp, false),
+                };
+            });
+            console.log("formattedOutflowTotal:", formattedOutflowTotal);
+        }
+
         const lines = [];
 
         if (formattedOutflowData.length > 0) {
@@ -280,12 +315,15 @@ document.addEventListener('DOMContentLoaded', async function () {
             } else if (lake === "Wappapello Lk-St Francis") {
                 avg = timeSeriesDataGateTotal?.values?.[0]?.[1];
                 avgValue = (avg / 1000).toFixed(2).replace(/^0+([.])/, '$1');
+            } else if (lake === "Lk Shelbyville-Kaskaskia" || lake === "Carlyle Lk-Kaskaskia") {
+                avg = formattedOutflowTotal[0]["1"];
+                avgValue = (avg / 1000).toFixed(2).replace(/^0+([.])/, '$1');
             }
 
             if (lake === "Lk Shelbyville-Kaskaskia") {
-                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Outflow Total)`);
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Outflow Total) ✓`);
             } else if (lake === "Carlyle Lk-Kaskaskia") {
-                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Outflow Total)`);
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Outflow Total) ✓`);
             } else if (lake === "Wappapello Lk-St Francis") {
                 lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Gate Total) ✓`);
             } else if (lake === "Mark Twain Lk-Salt") {
@@ -347,6 +385,31 @@ document.addEventListener('DOMContentLoaded', async function () {
     const fetchTimeSeriesDataToday = async (tsid) => {
         let tsidData = null;
         tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${isoDateToday}&office=${office}`;
+
+        console.log('tsidData:', tsidData);
+
+        try {
+            const response = await fetch(tsidData, {
+                headers: {
+                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                    "cache-control": "no-cache"
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error fetching time series data:", error);
+        }
+    };
+
+    const fetchTimeSeriesDataYesterday = async (tsid) => {
+        let tsidData = null;
+        tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateMinus1Day}&office=${office}`;
 
         console.log('tsidData:', tsidData);
 
