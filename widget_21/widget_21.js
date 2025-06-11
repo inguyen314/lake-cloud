@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     const [month, day, year] = datetime.split('-');
 
+    const genDate = `${year}${month}${day}`;
+
     // Generate ISO strings for the previous 7 days and today
     const isoDateMinus8Days = getIsoDateWithOffsetDynamic(year, month, day, -8);
     const isoDateMinus7Days = getIsoDateWithOffsetDynamic(year, month, day, -7);
@@ -64,9 +66,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     async function fetchTsidDataForAllLakes() {
         const outputLines = [];
-
-        // Add header lines once
-        outputLines.push(...createTableHeader());
 
         let cdaSaveBtn;
 
@@ -237,9 +236,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Build the output string
         let output = [
-            ": GENERATION DATE YYYYMMDD",
+            `: GENERATION DATE ${genDate}`,
             ": TODAYS LAKE FLOW 6AM INSTANTANEOUS VALUE",
-            ": 5 DAYS LAKE FORECAST 6AM INSTANTANEOUS FORECAST VALUE"
+            ": FIVE DAYS 6AM LAKE FORECAST INSTANTANEOUS VALUE",
+            ": TODAY 6AM INST FLOW (KCFS) VALUE AT NORTON BRIDGE)",
+            ": YESTERDAY DAILY AVERAGE MIDNIGHT TO MIDNIGHT FLOW"
         ].join('\n') + '\n\n';
 
         allLines.forEach(group => {
@@ -285,14 +286,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             });
         }
 
-    }
-
-    function createTableHeader() {
-        return [
-            ": GENERATION DATE YYYYMMDD",
-            ": TODAYS LAKE FLOW 6AM INSTANTANEOUS VALUE",
-            ": 5 DAYS LAKE FORECAST 6AM INSTANTANEOUS FORECAST VALUE"
-        ];
     }
 
     function createTable(
@@ -443,15 +436,15 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             if (lake === "Lk Shelbyville-Kaskaskia") {
-                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Outflow Total) ${lake} ✓`);
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue}`); //------------- (Outflow Total) ${lake} ✓
             } else if (lake === "Carlyle Lk-Kaskaskia") {
-                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Outflow Total) ${lake} ✓`);
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue}`); // ------------- (Outflow Total) ${lake} ✓
             } else if (lake === "Wappapello Lk-St Francis") {
-                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Gate Total) ${lake} ✓`);
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue}`); // ------------- (Gate Total) ${lake} ✓
             } else if (lake === "Mark Twain Lk-Salt") {
-                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Norton Bridge Flow) ${lake} ✓`);
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue}`); // ------------- (Norton Bridge Flow) ${lake} ✓
             } else if (lake === "Rend Lk-Big Muddy") {
-                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue} ------------- (Yesterday Average Outflow) ${lake} ✓`);
+                lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue}`); // ------------- (Yesterday Average Outflow) ${lake} ✓
             } else {
                 lines.push(`.ER ${id} ${dateStr} Z DH${hour}/QT/DID1/${avgValue}`);
             }
@@ -477,10 +470,10 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             if (lake === "Mark Twain Lk-Salt") {
-                lines.push(`.ER ${id} ${dateStr2} Z DH${hour}/QTD/DID1/${avgValue2} ------------- (Total Flow - Generation and Release) ${lake} ✓`);
-                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')} ------------- (Lake Forecast) ${lake} ✓`);
+                lines.push(`.ER ${id} ${dateStr2} Z DH${hour}/QTD/DID1/${avgValue2}`); // ------------- (Total Flow - Generation and Release) ${lake} ✓
+                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')}`); // ------------- (Lake Forecast) ${lake} ✓
             } else {
-                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')} ------------- (Lake Forecast) ${lake} ✓`);
+                lines.push(`.ER ${id} ${startDate} Z DH${hour}/QTIF/DID1/${values.join('/')}`); // ------------- (Lake Forecast) ${lake} ✓
             }
         }
 
