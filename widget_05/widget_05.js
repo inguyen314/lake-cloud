@@ -249,15 +249,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                     messageCell.style.fontWeight = "bold";
                     messageCell.style.color = "red";
                     if (lake === "Mark Twain Lk-Salt") {
-                        messageCell.textContent = `Save "Gate Settings" and "Generation and Release" data first then click the refresh button.`;
+                        messageCell.textContent = `Please complete both the "Gate Settings" and "Generation and Release" widgets, then click the refresh button.`;
                     } else {
-                        messageCell.textContent = `Save "Gate Settings" data first then click the refresh button.`;
+                        messageCell.textContent = `Please complete the "Gate Settings" widget, then click the refresh button.`;
                     }
 
                     messageRow.appendChild(messageCell);
                     table.appendChild(messageRow);
                 } else {
-                    // Combine the data based on matching timestamps
                     let i = 0;
                     let j = 0;
 
@@ -352,7 +351,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                             if (isMissingValue) {
                                 input.style.backgroundColor = '#e6ccff';
                             }
-
 
                             input.style.width = "60px";
                             input.style.textAlign = "center"; // Horizontally center text inside the input

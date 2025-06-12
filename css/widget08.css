@@ -53,3 +53,10 @@
     text-align: center;
     margin-right: 5px;
 }
+
+#cda-btn-precip {
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 1em; /* optional spacing below */
+    text-align: center;
+}

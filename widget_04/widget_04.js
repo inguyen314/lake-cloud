@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     col2.style.width = "33%";
 
                     // Add a title for the tooltip when hovering over col2
-                    col2.title = `The average outflow value for yesterday is: ${averageOutflowYesterdayValue.toFixed(0)}`;
+                    col2.title = `Midnight Outflow. The average outflow value for yesterday is: ${averageOutflowYesterdayValue.toFixed(0)}`;
 
                     // Insert the table into the "output4" div
                     const outputDiv = document.getElementById("output4");
@@ -1638,10 +1638,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                             errorSpan = document.createElement('span');
                             errorSpan.id = 'error-message';
                             errorSpan.style.color = 'red';
-                            errorSpan.style.display = 'block'; // Ensures it breaks onto a new line
-                            errorSpan.setAttribute('role', 'alert'); // For accessibility
-
-                            errorSpan.textContent = 'If "Total Gate" or "Outflow Total" differs from yesterday\'s input, please return to the previous day and recalculate the average outflow.';
+                            errorSpan.style.display = 'block';
+                            errorSpan.setAttribute('role', 'alert');
+                            errorSpan.style.fontWeight = "bold";
+                            errorSpan.textContent = 'If "Gate Total" or "Outflow Total" differs from the 6 AM plot macro value, enter the correct value here. Then return to the previous day and recalculate the average outflow. If the values match, simply save the data and proceed with any necessary gate changes.';
                         });
                     }
 
@@ -1789,6 +1789,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                             const gateTotalCell = document.createElement("td");
                             const gateTotalInput = document.createElement("input");
                             gateTotalInput.type = "number";
+                            if (lake === "Wappapello Lk-St Francis" && index === 0) {
+                                gateTotalInput.title = `Midnight Outflow`;
+                            }
                             gateTotalInput.step = "10.0";
                             gateTotalInput.value = formattedDataGateTotal[index][1].toFixed(0);
                             gateTotalInput.id = `gateTotalInput-${index}`;
@@ -1801,7 +1804,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 const gateOutflowTotalCell = document.createElement("td");
                                 const gateOutflowTotalInput = document.createElement("input");
                                 gateOutflowTotalInput.type = "number";
-
+                                // Only show the first value which is the midnight
+                                if (index === 0) {
+                                    gateOutflowTotalInput.title = `Midnight Outflow`;
+                                }
                                 const gateValue = formattedDataGateTotal[index]?.[1] || 0;
                                 const sluiceValue = formattedDataSluiceTotal ? (formattedDataSluiceTotal[index]?.[1] || 0) : 0;
 
@@ -1967,7 +1973,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // Estimated Value Div
                         const buttonEstimatedValue = document.createElement('div');
-                        buttonEstimatedValue.textContent = 'Yesterday Values';
+                        buttonEstimatedValue.textContent = 'Yesterday Gate Setting Values';
                         buttonEstimatedValue.id = 'estimated-value';
                         buttonEstimatedValue.style.backgroundColor = 'pink';
                         output6Div.appendChild(buttonEstimatedValue);

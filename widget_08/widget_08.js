@@ -244,6 +244,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output8Div.innerHTML = "";
                 output8Div.appendChild(table);
 
+                // Display message if no precip entered for today
+                if (formattedData.length === 0) {
+                    const instructionWidget8 = document.createElement("span");
+                    instructionWidget8.textContent = `The 24-hour precipitation (6 AM to 6 AM) was calculated and used as the starting point. If the lake office provides a different value, use that instead; otherwise, use the calculated value. This time series uses: "${timeSeriesDataRawPrecip['name']}".`;
+                    instructionWidget8.style.color = "red";
+                    instructionWidget8.style.fontWeight = "bold";
+                    instructionWidget8.id = "instruction-span";
+                    instructionWidget8.disabled = false;
+                    output8Div.appendChild(instructionWidget8);
+                }
+
                 const cdaSaveBtn = document.createElement("button");
                 cdaSaveBtn.textContent = "Submit";
                 cdaSaveBtn.id = "cda-btn-precip";
@@ -370,10 +381,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const fetchUndatedRawData = async (tsid) => {
                         const begin = getCentralTimeISOString(isoDateMinus1Day, dstOffsetHours);
                         const end = getCentralTimeISOString(isoDateToday, dstOffsetHours);
-                
+
                         const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${begin}&end=${end}&office=${office}`;
                         console.log('tsidData:', tsidData);
-                
+
                         try {
                             const response = await fetch(tsidData, {
                                 headers: {
@@ -381,11 +392,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     "Cache-Control": "no-cache"
                                 }
                             });
-                
+
                             if (!response.ok) {
                                 throw new Error(`HTTP error ${response.status}`);
                             }
-                
+
                             return await response.json();
                         } catch (error) {
                             console.error("Error fetching time series data:", error);
@@ -429,7 +440,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             // Fetch updated data and refresh the table
                             const updatedData = await fetchUpdatedData(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip);
-                            const undatedRawData =  await fetchUndatedRawData(tsidPrecip);
+                            const undatedRawData = await fetchUndatedRawData(tsidPrecip);
                             createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, tsidPrecip, updatedData, null, undatedRawData);
                         } catch (error) {
                             hideSpinner(); // Hide the spinner if an error occurs

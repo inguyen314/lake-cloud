@@ -283,6 +283,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                         : 0;
                     totalSpan.textContent = valueTotal;
                     totalSpan.className = "total-value";
+                    if (index === 0) {
+                        totalSpan.title = `Midnight Outflow`;
+                    }
                     totalSpan.id = `totalInput-${entry[0]}`;
                     totalCell.appendChild(totalSpan);
                     row.appendChild(totalCell);
@@ -579,13 +582,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const statusDiv = document.createElement("div");
                 statusDiv.className = "status";
-                const cdaStatusBtn = document.createElement("button");
-                cdaStatusBtn.textContent = "Save 'Gate Settings', then Click Refresh!";
-                cdaStatusBtn.style.color = "red";
-                cdaStatusBtn.style.fontWeight = "bold";
-                cdaStatusBtn.id = "cda-btn-generation";
-                cdaStatusBtn.disabled = false;
-                statusDiv.appendChild(cdaStatusBtn);
+
+                const instructionSpan = document.createElement("span");
+                instructionSpan.textContent = `Please complete the "Gate Settings" widget, then click the refresh button.`;
+                instructionSpan.style.color = "red";
+                instructionSpan.style.fontWeight = "bold";
+                instructionSpan.id = "instruction-span";
+                instructionSpan.disabled = false;
+                statusDiv.appendChild(instructionSpan);
                 output6Div.appendChild(statusDiv);
 
                 // Create the refresh button
