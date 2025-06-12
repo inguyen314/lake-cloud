@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // Precip
                         const precipCell = document.createElement("td");
-                        precipCell.textContent = "--"; // Placeholder
+                        precipCell.textContent = "TBD"; // Placeholder
                         precipCell.style.color = "red";
                         row.appendChild(precipCell);
 
