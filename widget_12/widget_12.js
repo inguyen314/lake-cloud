@@ -283,9 +283,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         : 0;
                     totalSpan.textContent = valueTotal;
                     totalSpan.className = "total-value";
-                    if (index === 0) {
-                        totalSpan.title = `Midnight Outflow`;
-                    }
                     totalSpan.id = `totalInput-${entry[0]}`;
                     totalCell.appendChild(totalSpan);
                     row.appendChild(totalCell);

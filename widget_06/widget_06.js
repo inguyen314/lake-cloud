@@ -257,8 +257,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                     outflowInput.style.textAlign = "center";
                     outflowInput.style.verticalAlign = "middle";
                     if (index === 0 && (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk")) {
-                        outflowInput.title = "Evening Outflow - Yesterday Generation and Release Total";
-                    } else {
+                        outflowInput.title = "Midnight Outflow";
+                    } else if (index === 1 && (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk")) {
+                        outflowInput.title = "Evening Outflow";
+                    } else if (index === 0) {
                         outflowInput.title = "Evening Outflow";
                     }
                     outflowCell.appendChild(outflowInput);
