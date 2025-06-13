@@ -418,7 +418,7 @@ function reservoirSummaryPage(datetime) {
 
 function morningReport(datetime) {
     // Define the URL to open in a new tab
-    const url = `https://wm.mvs.ds.usace.army.mil/mvs/river_reservoir/index.html?office=MVS&type=morning&office=MVS&datetime=${datetime}`;
+    const url = `https://wm.mvs.ds.usace.army.mil/mvs/river_reservoir/dev.html?office=MVS&type=morning&office=MVS&datetime=${datetime}`;
     // Open the URL in a new tab
     window.open(url, '_blank');
 }

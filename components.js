@@ -51,3 +51,7 @@ await new Promise(resolve => setTimeout(resolve, 1000));
 
 
 Math.round(averageOutflowPayload / 10) * 10;
+
+// First, round 734.999488521653 to the nearest whole number → 735
+// Then, round 735 to the nearest 10 → 740
+Math.round(Math.round(averageOutflowYesterdayValue) / 10) * 10; // round 734.9999 to 740

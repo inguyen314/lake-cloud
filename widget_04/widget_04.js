@@ -56,16 +56,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const urltsid3 = `${setBaseUrl}timeseries/group/Outflow-Average-Lake-Test?office=${office}&category-id=${lake}`;
 
         const fetchTimeSeriesData = async (tsid) => {
-            // Convert to Date object
-            const date = new Date(isoDateToday);
-
-            // Minus 1 minute (1 minutes * 60 seconds * 1000 milliseconds)
-            date.setTime(date.getTime() - (1 * 1 * 60 * 1000));
-
-            // Convert back to ISO string (preserve UTC format)
-            const end = date.toISOString();
-
-            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus7Days}&end=${end}&office=${office}`;
+            const tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus7Days}&end=${isoDateToday}&office=${office}`;
             console.log('tsidData:', tsidData);
             try {
                 const response = await fetch(tsidData, {
@@ -235,7 +226,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const averagesOutflow = calculateDailyAverages(formattedData2);
                     console.log("averagesOutflow: ", averagesOutflow);
 
-                    const averageOutflowYesterday = averagesOutflow[averagesOutflow.length - 1];
+                    // Grab the one before the last array
+                    // const averageOutflowYesterday = averagesOutflow[averagesOutflow.length - 2];
+                    const averageOutflowYesterday = averagesOutflow.find(entry => entry.date === prevDay);
                     console.log("averageOutflowYesterday: ", averageOutflowYesterday);
 
                     const table = document.createElement("table");
@@ -289,6 +282,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     // Calculate the average of the last two values
                     let averageOutflowYesterdayValue = averageOutflowYesterday.average;
+                    console.log("averageOutflowYesterdayValue: ", averageOutflowYesterdayValue);
 
                     let isSaved = false; // Flag to track if the data has been saved
                     if (formattedData3.midnight.length > formattedData1.midnight.length) {
@@ -305,7 +299,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const col2 = headerOutflowRow.insertCell();
 
                     col1.textContent = "Yesterday Average Outflow:";
-                    col2.textContent = (Math.round(averageOutflowYesterdayValue / 10) * 10).toFixed(0);
+                    col2.textContent = Math.round(Math.round(averageOutflowYesterdayValue) / 10) * 10;
                     col2.value = averageOutflowYesterdayValue;
                     if (isSaved === false) {
                         col2.style.backgroundColor = "pink";

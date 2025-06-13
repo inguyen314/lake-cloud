@@ -26,7 +26,20 @@
     }
     console.log("cda: ", cda);
 
-    var type = urlParams.get('type') || null;
+    function formatDate(date) {
+        let month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure two-digit month
+        let day = String(date.getDate()).padStart(2, '0'); // Ensure two-digit day
+        let year = date.getFullYear();
+        return `${month}-${day}-${year}`;
+    }
+
+    function parseDate(str) {
+        // Assumes format MM-DD-YYYY
+        let [month, day, year] = str.split('-');
+        return new Date(Number(year), Number(month) - 1, Number(day)); // Local time, no ambiguity
+    }
+
+    var type = urlParams.get('type') || 'cum';
     console.log('type: ', type);
 
     var lake = urlParams.get('lake') || 'Lk Shelbyville';
@@ -35,12 +48,16 @@
     var datetime = urlParams.get('datetime') || formatDate(new Date());
     console.log('datetime: ', datetime);
 
-    function formatDate(date) {
-        let month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure two-digit month
-        let day = String(date.getDate()).padStart(2, '0'); // Ensure two-digit day
-        let year = date.getFullYear();
-        return `${month}-${day}-${year}`;
-    }
+    var baseDate = parseDate(datetime);
+
+    var nextDay = urlParams.get('nextDay') || formatDate(new Date(baseDate.getTime() + 86400000));
+    console.log('nextDay:', nextDay);
+
+    var prevDay = urlParams.get('prevDay') || formatDate(new Date(baseDate.getTime() - 86400000));
+    console.log('prevDay:', prevDay);
+
+    var lookback = urlParams.get('lookback');
+    console.log('lookback: ', lookback);
 </script>
 
 <head>
@@ -103,9 +120,11 @@
                                             <h3>Widget 4: Gate Settings</h3>
                                             <!-- <button class="save-btn" onclick="saveData(4)">Save</button>
                                             <button class="fetch-btn" onclick="fetchData(4)">Fetch Data</button> -->
-                                            <div id="loading_json" style="display: none; align-items: center; text-align: center;">
-                                                <img src="images/loading4.gif" style='height: 50px; width: 50px;' alt="Loading..." />
-                                            </div>  
+                                            <div id="loading_json"
+                                                style="display: none; align-items: center; text-align: center;">
+                                                <img src="images/loading4.gif" style='height: 50px; width: 50px;'
+                                                    alt="Loading..." />
+                                            </div>
                                             <div class="output" id="output4"></div>
                                             <button id="reportIssueBtn" style="display: none;"
                                                 onclick="sendEmail()">Report Issue</button>
