@@ -74,6 +74,23 @@
 }
 
 #refresh-balance-window-button {
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 1em; /* optional spacing below */
     text-align: center;
-    margin-right: 5px;
+}
+
+#instruction-span-widget7 {
+  color: red;
+  font-weight: bold;
+  animation: blink 3.5s infinite;
+}
+
+@keyframes blink {
+  0%, 50%, 100% {
+    opacity: 1;
+  }
+  25%, 75% {
+    opacity: 0;
+  }
 }

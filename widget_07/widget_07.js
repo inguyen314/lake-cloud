@@ -185,8 +185,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 });
 
                 // Insert table into DOM
-                const outputDiv = document.getElementById("output7");
-                outputDiv.appendChild(table);
+                const output7Div = document.getElementById("output7");
+                output7Div.appendChild(table);
 
                 // Create the first button
                 const div = document.createElement('div');
@@ -200,14 +200,22 @@ document.addEventListener('DOMContentLoaded', async function () {
                     window.open(`widget_5_Inflow.html?office=${office}&lake=${lake}&datetime=${datetime}&lookback=${isoDateLastBalance}`, '_blank');
                 });
 
-                outputDiv.appendChild(div);
+                output7Div.appendChild(div);
+
+                const instructionWidget7 = document.createElement("h2");
+                instructionWidget7.textContent = `Ensure the Computed and Consensus Inflow values match those in the old lake sheets each day.`;
+                instructionWidget7.style.color = "red";
+                instructionWidget7.style.fontWeight = "bold";
+                instructionWidget7.id = "instruction-span-widget7";
+                instructionWidget7.disabled = false;
+                output7Div.appendChild(instructionWidget7);
 
                 // Create the refresh button
                 const buttonRefresh = document.createElement('button');
                 buttonRefresh.textContent = 'Refresh';
                 buttonRefresh.id = 'refresh-balance-window-button';
                 buttonRefresh.className = 'fetch-btn';
-                outputDiv.appendChild(buttonRefresh);
+                output7Div.appendChild(buttonRefresh);
 
                 // Add click event to refresh the table and remove buttons
                 buttonRefresh.addEventListener('click', () => {

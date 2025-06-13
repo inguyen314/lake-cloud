@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Display message if no precip entered for today
                 if (formattedData.length === 0) {
                     const instructionWidget8 = document.createElement("span");
-                    instructionWidget8.textContent = `The 24-hour precipitation (6 AM to 6 AM) was calculated and used as the starting point. If the lake office provides a different value, use that instead; otherwise, use the calculated value. This time series uses: "${timeSeriesDataRawPrecip['name']}".`;
+                    instructionWidget8.textContent = `The 24-hour precipitation (6 AM to 6 AM) was calculated and used as the starting point. If the lake office provides a different value, use that instead; otherwise, use the calculated value. The following time series was used: "${timeSeriesDataRawPrecip['name']}".`;
                     instructionWidget8.style.color = "red";
                     instructionWidget8.style.fontWeight = "bold";
                     instructionWidget8.id = "instruction-span";

@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     console.log("averageOutflowYesterdayValue: ", averageOutflowYesterdayValue);
 
                     let isSaved = false; // Flag to track if the data has been saved
-                    if (formattedData3.midnight.length > formattedData1.midnight.length) {
+                    if ((formattedData3.midnight.length + 1) > formattedData1.midnight.length) {
                         isSaved = true; // Set to true if the lengths match
                     }
 
@@ -317,16 +317,26 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const outputDiv = document.getElementById("output4");
                     outputDiv.appendChild(tableOutflow);
 
+                    if (isSaved === false) {
+                        const instructionRendWidget4 = document.createElement("span");
+                        instructionRendWidget4.textContent = `Yesterday Average Outflow: The function processes an array of time-stamped data entries to compute the average value for each unique date. It extracts the date from each timestamp, groups values by date, and keeps a running total and count for each day. The following time series was used: "${formattedData2['name']}".`;
+                        instructionRendWidget4.style.color = "red";
+                        instructionRendWidget4.style.fontWeight = "bold";
+                        instructionRendWidget4.id = "instruction-span";
+                        instructionRendWidget4.disabled = false;
+                        output4Div.appendChild(instructionRendWidget4);
+                    }
+
+                    const statusDiv = document.createElement("div");
+                    statusDiv.className = "status-gate";
+                    outputDiv.appendChild(statusDiv);
+
                     // Save and Status Button
                     const cdaSaveBtn = document.createElement("button");
                     cdaSaveBtn.textContent = "Submit";
                     cdaSaveBtn.id = "cda-btn-gate";
                     cdaSaveBtn.disabled = true;
                     outputDiv.appendChild(cdaSaveBtn);
-
-                    const statusDiv = document.createElement("div");
-                    statusDiv.className = "status-gate";
-                    outputDiv.appendChild(statusDiv);
 
                     cdaSaveBtn.addEventListener("click", async () => {
                         const values = [];
