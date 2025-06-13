@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             output21Div.appendChild(spacer2);
 
             const instructionWidget21 = document.createElement("span");
-            instructionWidget21.textContent = `Once all lake forecasts are complete, remember to save the SHEF file and confirm that the public link above displays the correct generation date.`;
+            instructionWidget21.textContent = `Once all lake forecasts are complete, remember to save the SHEF file and confirm that the public link above shows the correct generation date. It may take 5 to 10 seconds for the changes to appear.`;
             instructionWidget21.style.color = "red";
             instructionWidget21.style.fontWeight = "bold";
             instructionWidget21.id = "instruction-span";
