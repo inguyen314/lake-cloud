@@ -236,6 +236,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                         inflowInput.type = "number";
                         inflowInput.value = formattedDataInflow[index][1].toFixed(0); // Use inflow data if available
                         inflowInput.className = "inflow-input";
+                        if (index === 0) {
+                            inflowCell.title = "Yesterday Consensus Value";
+                        }
                         inflowInput.id = `inflowInput-${entry[0]}`;
                         inflowInput.style.textAlign = "center";
                         inflowInput.style.verticalAlign = "middle";
@@ -253,8 +256,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                     outflowInput.id = `outflowInput-${entry[0]}`;
                     outflowInput.style.textAlign = "center";
                     outflowInput.style.verticalAlign = "middle";
-                    if (index === 0) {
-                    outflowInput.title = "Evening Outflow";
+                    if (index === 0 && (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk")) {
+                        outflowInput.title = "Evening Outflow - Yesterday Generation and Release Total";
+                    } else {
+                        outflowInput.title = "Evening Outflow";
                     }
                     outflowCell.appendChild(outflowInput);
                     row.appendChild(outflowCell);
@@ -525,6 +530,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                         inflowInput.type = "text";
                         inflowInput.value = "";
                         inflowInput.id = `inflowInput-${date}`;
+                        if (index === 0) {
+                            inflowCell.title = "Yesterday Consensus Value";
+                        }
                         inflowInput.style.backgroundColor = "pink";  // Set pink background
                         inflowCell.appendChild(inflowInput);
                         row.appendChild(inflowCell);
@@ -536,6 +544,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                     outflowInput.type = "text";
                     outflowInput.value = "";
                     outflowInput.id = `outflowInput-${date}`;
+                    if (index === 0 && (lake === "Mark Twain Lk-Salt" || lake === "Mark Twain Lk")) {
+                        outflowInput.title = "Evening Outflow - Yesterday Generation and Release Total";
+                    } else {
+                        outflowInput.title = "Evening Outflow";
+                    }
                     outflowInput.style.backgroundColor = "pink";  // Set pink background
                     outflowCell.appendChild(outflowInput);
                     row.appendChild(outflowCell);
