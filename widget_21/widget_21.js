@@ -278,6 +278,14 @@ document.addEventListener('DOMContentLoaded', async function () {
             spacer2.style.height = "20px";
             output21Div.appendChild(spacer2);
 
+            const instructionWidget21 = document.createElement("span");
+            instructionWidget21.textContent = `Once all lake forecasts are complete, remember to save the SHEF file and confirm that the public link above displays the correct generation date.`;
+            instructionWidget21.style.color = "red";
+            instructionWidget21.style.fontWeight = "bold";
+            instructionWidget21.id = "instruction-span";
+            instructionWidget21.disabled = false;
+            output21Div.appendChild(instructionWidget21);
+
             // Create status div
             const statusDiv = document.createElement("div");
             statusDiv.className = "status-lake-shef";
