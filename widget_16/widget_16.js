@@ -355,7 +355,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     });
                 } else {
                     const titleSpan = document.createElement("h2");
-                    titleSpan.textContent = "No Forecast Run Today";
+                    titleSpan.textContent = "No Forecast Was Run Today";
+                    titleSpan.style.color = "red";
                     output166Div.appendChild(titleSpan);
                 }
             }

@@ -236,11 +236,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Build the output string
         let output = [
-            `: GENERATION DATE ${genDate}`,
-            ": TODAYS LAKE FLOW 6AM INSTANTANEOUS VALUE",
-            ": FIVE DAYS 6AM LAKE FORECAST INSTANTANEOUS VALUE",
-            ": TODAY 6AM INST FLOW (KCFS) VALUE AT NORTON BRIDGE)",
-            ": YESTERDAY DAILY AVERAGE MIDNIGHT TO MIDNIGHT FLOW"
+            `: GENERATION DATE: ${genDate}`,
+            ": TODAY'S 6 AM LAKE FLOW INSTANTANEOUS VALUE (EXCLUDES MARK TWAIN)",
+            ": 6 AM INSTANTANEOUS LAKE FLOW FORECAST FOR THE NEXT FIVE DAYS",
+            ": TODAY'S 6 AM INSTANTANEOUS FLOW AT NORTON BRIDGE (MARK TWAIN ONLY, KCFS)",
+            ": YESTERDAY'S DAILY AVERAGE FLOW (MIDNIGHT TO MIDNIGHT REND ONLY, KCFS)"
         ].join('\n') + '\n\n';
 
         allLines.forEach(group => {
