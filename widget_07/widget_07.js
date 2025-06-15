@@ -121,6 +121,29 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("formattedComputedData:", formattedComputedData);
 
             function createTable(formattedConsensusData, formattedComputedData) {
+
+                let isUpToDate = formattedConsensusData[formattedConsensusData.length - 1]['formattedTimestamp'];
+                isUpToDate = isUpToDate.split(" ")[0];
+                console.log("isUpToDate:", isUpToDate);
+
+                // Parse isUpToDate
+                const date1 = new Date(isUpToDate);
+
+                // Add one day (milliseconds in a day = 24 * 60 * 60 * 1000)
+                const date1PlusOne = new Date(date1.getTime() + 24 * 60 * 60 * 1000);
+
+                // Parse datetime
+                const date2 = new Date(datetime);
+
+                // Compare dates (ignoring time of day)
+                const sameDate = date1PlusOne.toDateString() === date2.toDateString();
+
+                if (sameDate) {
+                    console.log("After adding one day, the dates are the same.");
+                } else {
+                    console.log("After adding one day, the dates are different.");
+                }
+
                 // Find the most recent consensus data point with qualityCode === 5
                 const latestEntry = formattedConsensusData
                     .filter(d => d.qualityCode === 5)
@@ -158,35 +181,38 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log("sumConsensus:", sumConsensus);
                 console.log("sumComputed:", sumComputed);
 
-                // Create table
-                const table = document.createElement("table");
-                table.id = "balance-window";
-                table.style.margin = "10px 0";
-
-                // Add table title
-                const titleRow = table.insertRow();
-                const titleCell = document.createElement("th");
-                titleCell.colSpan = 3;
-                titleCell.textContent = "Balance Window";
-                titleRow.appendChild(titleCell);
-
-                // Add header row
-                const headerRow = table.insertRow();
-                ["Date of Last Balance", "Sum of Computed Inflow", "Sum of Consensus Inflow"].forEach(text => {
-                    const cell = headerRow.insertCell();
-                    cell.textContent = text;
-                });
-
-                // Add data row
-                const dataRow = table.insertRow();
-                [formattedDateTime, sumComputed, sumConsensus].forEach(value => {
-                    const cell = dataRow.insertCell();
-                    cell.textContent = typeof value === 'number' ? parseFloat(value).toFixed(0) : value;
-                });
-
-                // Insert table into DOM
                 const output7Div = document.getElementById("output7");
-                output7Div.appendChild(table);
+
+                if (sameDate) {
+                    // Create table
+                    const table = document.createElement("table");
+                    table.id = "balance-window";
+                    table.style.margin = "10px 0";
+
+                    // Add table title
+                    const titleRow = table.insertRow();
+                    const titleCell = document.createElement("th");
+                    titleCell.colSpan = 3;
+                    titleCell.textContent = "Balance Window";
+                    titleRow.appendChild(titleCell);
+
+                    // Add header row
+                    const headerRow = table.insertRow();
+                    ["Date of Last Balance", "Sum of Computed Inflow", "Sum of Consensus Inflow"].forEach(text => {
+                        const cell = headerRow.insertCell();
+                        cell.textContent = text;
+                    });
+
+                    // Add data row
+                    const dataRow = table.insertRow();
+                    [formattedDateTime, sumComputed, sumConsensus].forEach(value => {
+                        const cell = dataRow.insertCell();
+                        cell.textContent = typeof value === 'number' ? parseFloat(value).toFixed(0) : value;
+                    });
+
+                    // Insert table into DOM
+                    output7Div.appendChild(table);
+                }
 
                 // Create the first button
                 const div = document.createElement('div');
@@ -202,11 +228,18 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 output7Div.appendChild(div);
 
-                const instructionWidget7 = document.createElement("h2");
-                instructionWidget7.textContent = `Ensure the Computed and Consensus Inflow values match those in the old lake sheets each day.`;
+                let instructionWidget7 = null;
+                if (sameDate) {
+                    instructionWidget7 = document.createElement("h2");
+                    instructionWidget7.textContent = `Ensure the Computed and Consensus Inflow values match those in the old lake sheets each day.`;
+                    instructionWidget7.id = "instruction-span-blinking-widget7";
+                } else {
+                    instructionWidget7 = document.createElement("span");
+                    instructionWidget7.textContent = `Complete Widget 5: Inflow, then click refresh button to Ensure the Computed and Consensus Inflow values match those in the old lake sheets each day.`;
+                    instructionWidget7.id = "instruction-span-widget7";
+                }
                 instructionWidget7.style.color = "red";
                 instructionWidget7.style.fontWeight = "bold";
-                instructionWidget7.id = "instruction-span-widget7";
                 instructionWidget7.disabled = false;
                 output7Div.appendChild(instructionWidget7);
 
@@ -239,6 +272,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const existingInstructionWidget7 = document.getElementById('instruction-span-widget7');
                     if (existingInstructionWidget7) {
                         existingInstructionWidget7.remove();
+                    }
+
+                    const existingInstructionBlinkingWidget7 = document.getElementById('instruction-span-blinking-widget7');
+                    if (existingInstructionBlinkingWidget7) {
+                        existingInstructionBlinkingWidget7.remove();
                     }
 
                     // Fetch and create new table

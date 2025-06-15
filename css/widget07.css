@@ -80,10 +80,22 @@
     text-align: center;
 }
 
-#instruction-span-widget7 {
+#instruction-span-blinking-widget7 {
   color: red;
   font-weight: bold;
   animation: blink 3.5s infinite;
+}
+
+#instruction-span-widget7 {
+  color: red;
+  font-weight: bold;
+}
+
+#refresh-balance-window-button {
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 1em; /* optional spacing below */
+    text-align: center;
 }
 
 @keyframes blink {

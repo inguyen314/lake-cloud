@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     deltaCell.textContent += " (ft) Below 6am Pool Stage";
                 }
                 // Apply color based on value
-                if (Math.abs(rawDelta) > 1) {
+                if (Math.abs(rawDelta) > 0.1) {
                     deltaCell.style.color = rawDelta > 0 ? 'green' : 'red';
                 } else {
                     deltaCell.style.color = ''; // default

@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', async function () {
     console.log('datetime: ', datetime);
 
+    const loading5 = document.getElementById('loading5');
+        loading5.style.display = 'block';
+
     let setBaseUrl = null;
     if (cda === "internal") {
         setBaseUrl = `https://wm.${office.toLowerCase()}.ds.usace.army.mil/${office.toLowerCase()}-data/`;
@@ -198,6 +201,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log("formattedAverageOutflowData:", formattedAverageOutflowData);
 
             createTable(formattedStorageData, formattedAverageOutflowData, curentMonthEvapValue, hourlyConsensusData);
+
+            loading5.style.display = 'none';
 
             loginStateController()
             setInterval(async () => {

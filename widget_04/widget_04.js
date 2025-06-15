@@ -1645,7 +1645,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             errorSpan.style.display = 'block';
                             errorSpan.setAttribute('role', 'alert');
                             errorSpan.style.fontWeight = "bold";
-                            errorSpan.textContent = 'If "Gate Total" or "Outflow Total" differs from the 6 AM plot macro value, enter the correct value here. Then return to the previous day and recalculate the average outflow. If the values match, simply save the data and proceed with any necessary gate changes.';
+                            errorSpan.innerHTML = '<u>If "Gate Total" or "Outflow Total" differs from the 6 AM plot macro value</u>, enter the correct value here and click save. Then <u>return to the previous day and recalculate the average outflow</u>. If the values match, simply save the data and proceed with any necessary gate changes.';
                         });
                     }
 
