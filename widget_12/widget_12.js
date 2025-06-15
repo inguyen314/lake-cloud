@@ -256,6 +256,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                         : 909;
                     turbInput.value = value;
                     turbInput.className = "turb-input";
+                    if (index === 0) {
+                        turbInput.title = "Cannon Radiogram Email - POWER DISCHARGE";
+                    } else if (index === 1) {
+                        turbInput.title = "Today Estimated POWER DISCHARGE - https://www.energy.gov/swpa/generation-schedules";
+                    }
                     turbInput.id = `turbInput-${entry[0]}`;
                     turbInput.style.textAlign = "center";
                     turbInput.style.verticalAlign = "middle";

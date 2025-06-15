@@ -299,9 +299,21 @@ document.addEventListener('DOMContentLoaded', async function () {
                     timeSeriesStageQpfDataFormatted.forEach((dataPoint, index) => {
                         const row = document.createElement("tr");
 
+                        function prependDayOfWeek(timestampStr) {
+                            // Expecting format "MM-DD-YYYY HH:MM"
+                            const [month, day, yearAndTime] = timestampStr.split("-");
+                            const [year, time] = yearAndTime.split(" ");
+                            const isoString = `${year}-${month}-${day}T${time}:00`;
+
+                            const date = new Date(isoString);
+                            const dayOfWeek = date.toLocaleDateString("en-US", { weekday: "short" });
+
+                            return `${dayOfWeek} ${timestampStr}`;
+                        }
+
                         // Date
                         const dateCell = document.createElement("td");
-                        dateCell.textContent = dataPoint.formattedTimestamp;
+                        dateCell.textContent = prependDayOfWeek(dataPoint.formattedTimestamp);
                         row.appendChild(dateCell);
 
                         // Pool No QPF
@@ -427,38 +439,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         return roundedToOne.toFixed(1); // ensure one decimal, returns as string (e.g., "10.0")
     }
 
-    function getMidnightData(data, tsid) {
-        const midnightData = [];
-
-        data.values.forEach(entry => {
-            const [timestamp, value, qualityCode] = entry;
-
-            // Normalize the timestamp
-            let date;
-            if (typeof timestamp === "string") {
-                date = new Date(timestamp.replace(/-/g, '/')); // Replace hyphens with slashes for iOS
-            } else if (typeof timestamp === "number") {
-                date = new Date(timestamp); // Assume it's a UNIX timestamp
-            } else {
-                console.warn("Unrecognized timestamp format:", timestamp);
-                return; // Skip invalid entries
-            }
-
-            // Validate date
-            if (isNaN(date.getTime())) {
-                console.warn("Invalid date:", timestamp);
-                return; // Skip invalid dates
-            }
-
-            // Check if the time is exactly midnight (00:00:00)
-            if (date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0) {
-                midnightData.push({ timestamp, value, qualityCode, tsid });
-            }
-        });
-
-        return midnightData;
-    };
-
     function getIsoDateWithOffsetDynamic(year, month, day, offset) {
         // Create a date object at 6 AM UTC
         const date = new Date(Date.UTC(year, month - 1, day, 6, 0, 0, 0));
@@ -482,25 +462,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         return date.toISOString();
     }
 
-    function addDeltaAsDsfToData(data) {
-        return data.map((entry, index) => {
-            if (index === 0) {
-                return { ...entry, delta: null };
-            }
-            const delta = (entry.value - data[index - 1].value) / 1.9834591996927;
-            return { ...entry, delta };
-        });
-    }
-
-    function shiftDeltaUp(data) {
-        for (let i = 0; i < data.length - 1; i++) {
-            data[i].delta = data[i + 1].delta;
-        }
-        // Optional: set the last delta to null since there's no next value
-        data[data.length - 1].delta = null;
-        return data;
-    }
-
     function getEvapValueForMonth(data, month) {
         // Convert string or number month to integer and adjust for 0-based offset
         const offset = parseInt(month, 10) - 1;
@@ -512,30 +473,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         // console.log("matchingValue: ", matchingValue)
 
         return matchingValue ? matchingValue.value : null;
-    }
-
-    function convertUnixTimestamp(timestamp, toCST = false) {
-        if (typeof timestamp !== "number") {
-            console.error("Invalid timestamp:", timestamp);
-            return "Invalid Date";
-        }
-
-        const dateUTC = new Date(timestamp); // Convert milliseconds to Date object
-        if (isNaN(dateUTC.getTime())) {
-            console.error("Invalid date conversion:", timestamp);
-            return "Invalid Date";
-        }
-
-        if (!toCST) {
-            return dateUTC.toISOString(); // Return UTC time
-        }
-
-        // Convert to CST/CDT (America/Chicago) while adjusting for daylight saving time
-        const options = { timeZone: "America/Chicago", hour12: false };
-        const cstDateString = dateUTC.toLocaleString("en-US", options);
-        const cstDate = new Date(cstDateString + " UTC"); // Convert back to Date
-
-        return cstDate.toISOString();
     }
 
     // Precip images
@@ -842,7 +779,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     }
 });
-
 
 // Lk Shelbyville-Kaskaskia
 // Lk Shelbyville-Kaskaskia.Elev.Inst.1Hour.0.CWMS-Forecast-NoQPF

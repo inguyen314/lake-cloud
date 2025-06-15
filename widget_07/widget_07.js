@@ -236,6 +236,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                         existingRefresh.remove();
                     }
 
+                    const existingInstructionWidget7 = document.getElementById('instruction-span-widget7');
+                    if (existingInstructionWidget7) {
+                        existingInstructionWidget7.remove();
+                    }
+
                     // Fetch and create new table
                     fetchTsidData();
                 });

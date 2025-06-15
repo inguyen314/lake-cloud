@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 });
 
                 sendMvkBtn.addEventListener("click", async () => {
-                    const recipient = "cemvs-cwms@usace.army.mil; brian.k.bean@usace.army.mil; Bryan.E.Bennett@usace.army.mil; Gregory.S.Kimery@usace.army.mil; Rocky.L.Reed@usace.army.mil; Larry.J.Hurt@usace.army.mil; Michael.D.Tate@usace.army.mil; James.A.McKeon@usace.army.mil; DLL-CEMVS-OD-JP@usace.army.mil";
+                    const recipient = "brian.k.bean@usace.army.mil; Bryan.E.Bennett@usace.army.mil; Gregory.S.Kimery@usace.army.mil; Rocky.L.Reed@usace.army.mil; Larry.J.Hurt@usace.army.mil; Michael.D.Tate@usace.army.mil; James.A.McKeon@usace.army.mil; DLL-CEMVS-OD-JP@usace.army.mil";
                     // const recipient = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil";
                     const cc = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil; Allen.Phillips@usace.army.mil; Edward.J.Brauer@usace.army.mil; David.R.Busse@usace.army.mil; Bradley.J.Krischel@usace.army.mil; Kevin.P.Slattery@usace.army.mil";
                     // const cc = "Allen.Phillips@usace.army.mil;";
@@ -484,12 +484,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                 });
 
                 sendSwpaBtn.addEventListener("click", async () => {
-                    const recipient = "cemvs-cwms@usace.army.mil; ResourcesData@swpa.gov; brian.k.bean@usace.army.mil; Bryan.E.Bennett@usace.army.mil; Gregory.S.Kimery@usace.army.mil; Rocky.L.Reed@usace.army.mil; Larry.J.Hurt@usace.army.mil; Michael.D.Tate@usace.army.mil; James.A.McKeon@usace.army.mil; Joseph.P.Gibbs@usace.army.mil; Deric.K.Bishop@usace.army.mil; Joshua.W.Lewis@usace.army.mil; DLL-CEMVS-OD-JP@usace.army.mil";
+                    const recipient = "ResourcesData@swpa.gov; brian.k.bean@usace.army.mil; Bryan.E.Bennett@usace.army.mil; Gregory.S.Kimery@usace.army.mil; Rocky.L.Reed@usace.army.mil; Larry.J.Hurt@usace.army.mil; Michael.D.Tate@usace.army.mil; James.A.McKeon@usace.army.mil; Joseph.P.Gibbs@usace.army.mil; Deric.K.Bishop@usace.army.mil; Joshua.W.Lewis@usace.army.mil; DLL-CEMVS-OD-JP@usace.army.mil";
                     // const recipient = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil";
                     const cc = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil; Allen.Phillips@usace.army.mil; Edward.J.Brauer@usace.army.mil; David.R.Busse@usace.army.mil; Bradley.J.Krischel@usace.army.mil; Kevin.P.Slattery@usace.army.mil";
                     // const cc = "Allen.Phillips@usace.army.mil";
 
-                    // const recipient = "cemvs-cwms@usace.army.mil";
+                    // const recipient = "";
                     // const cc = "DLL-CEMVS-WATER-MANAGERS@usace.army.mil";
 
                     const today = new Date();
