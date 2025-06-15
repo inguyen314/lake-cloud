@@ -63,6 +63,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     const url2 = `${setBaseUrl}levels/${levelId2}?office=MVS&effective-date=${isoDateToday}&unit=ft`;
     console.log("url2:", url2);
 
+    const url3 = `${setBaseUrl}timeseries/group/Stage?office=${office}&category-id=${lake}`;
+
     // Setup data to check for Seasonal Rule Curve
     let offsetMonths = month === 0 ? 11 : month - 1; // One month behind
     console.log("offsetMonths: ", offsetMonths);
@@ -70,16 +72,46 @@ document.addEventListener('DOMContentLoaded', async function () {
     let offsetMinutes = day * 24 * 60;
     console.log("offsetMinutes: ", offsetMinutes);
 
+    const fetchTimeSeriesData = async (tsid) => {
+        const beginDate = lookback !== null ? lookback : isoDateMinus1Day;
+        const tsidData = `${setBaseUrl}timeseries?page-size=1000000&name=${tsid}&begin=${beginDate}&end=${isoDateDay1}&office=${office}`;
+        console.log('tsidData:', tsidData);
+        try {
+            const response = await fetch(tsidData, {
+                headers: {
+                    "Accept": "application/json;version=2",
+                    "cache-control": "no-cache"
+                }
+            });
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error fetching time series data:", error);
+        }
+    };
+
     const fetchTsidData = async () => {
         try {
             const response1 = await fetch(url);
             const response2 = await fetch(url2);
+            const response3 = await fetch(url3);
 
             const data1 = await response1.json();
             console.log("data1:", data1);
 
             const data2 = await response2.json();
             console.log("data2:", data2);
+
+            const data3 = await response3.json();
+            console.log("data3:", data3);
+
+            const tsidStage = data3['assigned-time-series'][0]['timeseries-id'];
+
+            const timeSeriesData1 = await fetchTimeSeriesData(tsidStage);
+            console.log("timeSeriesData1:", timeSeriesData1);
+
+            const hourlyStageData = getSpecificTimesData(timeSeriesData1, tsidStage);
+            console.log("hourlyStageData:", hourlyStageData);
 
             let cdaSaveBtn;
 
@@ -116,7 +148,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             console.log("Calling createTable ...");
-            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, levelId2, data2);
+            createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, levelId2, data2, hourlyStageData);
 
             loginStateController()
             setInterval(async () => {
@@ -124,7 +156,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }, 10000)
 
 
-            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, levelId2, data2) {
+            function createTable(isoDateMinus1Day, isoDateToday, isoDateDay1, isoDateDay2, isoDateDay3, isoDateDay4, isoDateDay5, isoDateDay6, isoDateDay7, levelId2, data2, hourlyStageData) {
                 console.log("levelId2:", levelId2);
                 console.log("data2:", data2);
 
@@ -144,28 +176,31 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 table.appendChild(headerRow);
 
-                // No data, create a single row using isoDateToday and a blank outflow cell
+                // No data: create a single row using isoDateToday and a blank outflow cell
                 const row = document.createElement("tr");
 
+                // Create and append the date cell in MM-DD-YYYY format
                 const dateCell = document.createElement("td");
-                // dateCell.textContent = isoDateToday;
-                dateCell.textContent = new Date(isoDateToday).toISOString().slice(5, 7) + '-' + new Date(isoDateToday).toISOString().slice(8, 10) + '-' + new Date(isoDateToday).toISOString().slice(0, 4);
+                const dateObj = new Date(isoDateToday);
+                const formattedDate = String(dateObj.getMonth() + 1).padStart(2, '0') + '-' +
+                    String(dateObj.getDate()).padStart(2, '0') + '-' +
+                    dateObj.getFullYear();
+                dateCell.textContent = formattedDate;
                 row.appendChild(dateCell);
 
+                // Create and append the rule curve input cell
                 const ruleCurveCell = document.createElement("td");
                 const ruleCurveInput = document.createElement("input");
                 ruleCurveInput.type = "number";
-                ruleCurveInput.value = data2['constant-value'].toFixed(2);  // Blank entry box
-                ruleCurveInput.step = "0.01";  // Ensure the step increment is 0.01
+                ruleCurveInput.value = data2['constant-value'].toFixed(2);
+                ruleCurveInput.step = "0.01";
                 ruleCurveInput.className = "outflow-input";
-                ruleCurveInput.id = `ruleCurveInput`;
+                ruleCurveInput.id = "ruleCurveInput";
                 ruleCurveInput.style.textAlign = "center";
                 ruleCurveInput.style.verticalAlign = "middle";
 
+                // Apply highlight if the value doesn't match seasonal pattern
                 if (!checkSeasonalValueMatch(data1, data2['constant-value'], offsetMonths, offsetMinutes)) {
-                    console.log(checkSeasonalValueMatch(data1, data2['constant-value'], offsetMonths, offsetMinutes));  // true - all match
-
-                    // Add styles to make text bold and red
                     ruleCurveInput.style.fontWeight = "bold";
                     ruleCurveInput.style.color = "red";
                 }
@@ -173,7 +208,37 @@ document.addEventListener('DOMContentLoaded', async function () {
                 ruleCurveCell.appendChild(ruleCurveInput);
                 row.appendChild(ruleCurveCell);
 
+                // Create second row with blank cells
+                const row2 = document.createElement("tr");
+
+                const blankCell = document.createElement("td");
+                blankCell.textContent = '';
+                row2.appendChild(blankCell);
+
+                const deltaCell = document.createElement("td");
+                deltaCell.style.fontWeight = 'bold';
+                const rawDelta = hourlyStageData[4]['value'] - data2['constant-value'];
+                const delta = rawDelta.toFixed(2);
+
+                // Set the text with "+" if positive
+                deltaCell.textContent = `${rawDelta > 0 ? '+' : ''}${delta}`;
+
+                if (rawDelta > 0.00) {
+                   deltaCell.textContent += " (ft) Above 6am Pool Stage"; 
+                } else {
+                    deltaCell.textContent += " (ft) Below 6am Pool Stage";
+                }
+                // Apply color based on value
+                if (Math.abs(rawDelta) > 1) {
+                    deltaCell.style.color = rawDelta > 0 ? 'green' : 'red';
+                } else {
+                    deltaCell.style.color = ''; // default
+                }
+                row2.appendChild(deltaCell);
+
+                // Append both rows to the table
                 table.appendChild(row);
+                table.appendChild(row2);
 
                 const output9Div = document.getElementById("output9");
                 output9Div.innerHTML = "";
@@ -417,5 +482,73 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
 
         return false;
+    }
+
+    function getSpecificTimesData(data, tsid) {
+        const specificTimesData = [];
+        const validHours = [0, 6, 12, 18]; // Local CST/CDT hours we care about
+
+        data.values.forEach(entry => {
+            const [timestamp, value, qualityCode] = entry;
+
+            let date;
+            if (typeof timestamp === "string") {
+                date = new Date(timestamp.replace(/-/g, '/'));
+            } else if (typeof timestamp === "number") {
+                date = new Date(timestamp);
+            } else {
+                console.warn("Unrecognized timestamp format:", timestamp);
+                return;
+            }
+
+            if (isNaN(date.getTime())) {
+                console.warn("Invalid date:", timestamp);
+                return;
+            }
+
+            // Convert to Central Time and extract components
+            const formatter = new Intl.DateTimeFormat('en-US', {
+                timeZone: 'America/Chicago',
+                hour12: false,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            const parts = formatter.formatToParts(date).reduce((acc, part) => {
+                acc[part.type] = part.value;
+                return acc;
+            }, {});
+
+            const localHour = parseInt(parts.hour, 10);
+            const localMinute = parseInt(parts.minute, 10);
+            const localSecond = parseInt(parts.second, 10);
+
+            if (validHours.includes(localHour) && localMinute === 0 && localSecond === 0) {
+                // Reconstruct ISO 8601 timestamp with offset
+                const localDate = new Date(`${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}`);
+                const offsetMinutes = -localDate.getTimezoneOffset(); // in minutes
+                const offsetHours = Math.floor(offsetMinutes / 60);
+                const offsetMins = Math.abs(offsetMinutes % 60);
+                const offsetSign = offsetHours >= 0 ? '+' : '-';
+                const pad = n => n.toString().padStart(2, '0');
+                const timezoneOffset = `${offsetSign}${pad(Math.abs(offsetHours))}:${pad(offsetMins)}`;
+
+                const timestampCst = `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}${timezoneOffset}`;
+
+                specificTimesData.push({
+                    timestamp,
+                    value,
+                    qualityCode,
+                    tsid,
+                    timestampCst
+                });
+            }
+        });
+
+        return specificTimesData;
     }
 });
