@@ -231,6 +231,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 averageOutflowHeader.textContent = "Average Outflow (dsf)";
                 headerRow.appendChild(averageOutflowHeader);
 
+                const evapHeader = document.createElement("th");
+                evapHeader.textContent = "Evaporation (dsf)";
+                headerRow.appendChild(evapHeader);
+
                 const storageOutflowEvapHeader = document.createElement("th");
                 storageOutflowEvapHeader.textContent = "Inflow Storage w/ Evap (dsf)";
                 headerRow.appendChild(storageOutflowEvapHeader);
@@ -269,17 +273,19 @@ document.addEventListener('DOMContentLoaded', async function () {
                         if (formattedStorageData[i].formattedTimestamp === formattedAverageOutflowData[j].formattedTimestamp) {
                             const row = document.createElement("tr");
 
-                            // Date Time
+                            // ===== Date Time =====
                             const dateCell = document.createElement("td");
-                            dateCell.textContent = formattedStorageData[i].formattedTimestamp.split(' ')[0]; // Display formattedTimestamp as Date
+                            dateCell.textContent = formattedStorageData[i].formattedTimestamp.split(' ')[0];
                             row.appendChild(dateCell);
 
-                            // Change in Storage
+                            // ===== Change in Storage =====
                             const chgStorageCell = document.createElement("td");
                             const delta = formattedStorageData[i].delta;
 
+                            chgStorageCell.title = formattedStorageData[i]['tsid'];
+
                             if (delta == null) {
-                                chgStorageCell.textContent = '—'; // or 'N/A'
+                                chgStorageCell.textContent = '—';
                             } else {
                                 // Round to 2 decimal places first, then to whole number
                                 const roundedToTwo = Math.round(delta * 100) / 100;
@@ -293,30 +299,41 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             row.appendChild(chgStorageCell);
 
-                            // Average Outflow
+                            // ===== Average Outflow =====
                             const averageOutflowCell = document.createElement("td");
+
+                            averageOutflowCell.title = formattedAverageOutflowData[i]['tsid'];
+
                             if (formattedAverageOutflowData[j].value !== null && formattedAverageOutflowData[j].value !== undefined) {
                                 averageOutflowCell.textContent = formattedAverageOutflowData[j].value.toFixed(0);
                             } else {
-                                // Handle the case where the value is null or undefined
-                                averageOutflowCell.textContent = 'N/A'; // Or any default value you'd prefer
+                                averageOutflowCell.textContent = 'N/A';
                             }
 
                             row.appendChild(averageOutflowCell);
 
-                            // Storage + Average Outflow + Evaporation
-                            const datePart = formattedStorageData[i].formattedTimestamp.split(' ')[0]; // "04-30-2025"
-                            const currentMonth = datePart.split('-')[0]; // "04"
+                            // ===== Avap =====
+                            const evaporationCell = document.createElement("td");
 
-                            // You can now use `currentMonth` inside your loop
-                            // console.log("currentMonth: ", currentMonth);
+                            evaporationCell.title = tsidEvapLevelData['location-level-id'];
+
+                            const datePart = formattedStorageData[i].formattedTimestamp.split(' ')[0];
+                            const currentMonth = datePart.split('-')[0];
 
                             const curentDayEvapValue = getEvapValueForMonth(tsidEvapLevelData, currentMonth);
                             // console.log("curentDayEvapValue:", curentDayEvapValue);
 
+                            const evapVal = Math.round(parseFloat(curentDayEvapValue));
+
+                            evaporationCell.textContent = evapVal;
+
+                            row.appendChild(evaporationCell);
+
+                            // ===== Storage + Average Outflow + Evaporation =====
+                            
+
                             const val = Math.round((parseFloat(formattedAverageOutflowData[j]?.value)) / 10) * 10;
                             const deltaVal = Math.round(Math.round(delta * 100) / 100);
-                            const evapVal = Math.round(parseFloat(curentDayEvapValue));
                             console.log("Storage + Average Outflow + Evaporation: ", deltaVal, val, evapVal, " = ", (deltaVal + val + evapVal));
                             let storageOutflowEvapCell = document.createElement("td");
                             let total = null;
@@ -332,7 +349,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 storageOutflowEvapCell.textContent = total;
                                 storageOutflowEvapCell.type = "number";
                                 storageOutflowEvapCell.value = total;
-                                storageOutflowEvapCell.title = `Val: ${val}, ΔVal: ${deltaVal}, Evap: ${evapVal}`;
+                                storageOutflowEvapCell.title = `Val (Average Outflow): ${val}, ΔVal (Change Storage): ${deltaVal}, Evap: ${evapVal}`;
                             }
 
                             storageOutflowEvapCell.id = `storage-outflow-evap-${formattedStorageData[i].formattedTimestamp}`;
@@ -340,8 +357,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             // Consensus
                             const consensusCell = document.createElement("td");
-                            consensusCell.style.textAlign = "center"; // Horizontally center the cell content
-                            consensusCell.style.verticalAlign = "middle"; // Vertically center the content
+                            consensusCell.style.textAlign = "center";
+                            consensusCell.style.verticalAlign = "middle";
+
+                            consensusCell.title = hourlyConsensusData[i]['tsid'];
 
                             const input = document.createElement("input");
                             input.type = "number";
@@ -366,8 +385,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             // Quality Code
                             const qualityCodeCell = document.createElement("td");
-                            qualityCodeCell.style.textAlign = "center"; // Horizontally center the cell content
-                            qualityCodeCell.style.verticalAlign = "middle"; // Vertically center the content
+                            qualityCodeCell.style.textAlign = "center";
+                            qualityCodeCell.style.verticalAlign = "middle";
+
+                            qualityCodeCell.title = hourlyConsensusData[i]['tsid'] + " " + hourlyConsensusData[i]['qualityCode'];
 
                             const qualityInput = document.createElement("input");
                             qualityInput.type = "text";

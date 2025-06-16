@@ -80,12 +80,6 @@
     text-align: center;
 }
 
-#instruction-span-blinking-widget7 {
-  color: red;
-  font-weight: bold;
-  animation: blink 3.5s infinite;
-}
-
 #instruction-span-widget7 {
   color: red;
   font-weight: bold;

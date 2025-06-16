@@ -231,8 +231,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 let instructionWidget7 = null;
                 if (sameDate) {
                     instructionWidget7 = document.createElement("h2");
-                    instructionWidget7.textContent = `Ensure the Computed and Consensus Inflow values match those in the old lake sheets each day.`;
-                    instructionWidget7.id = "instruction-span-blinking-widget7";
+                    instructionWidget7.innerHTML = `Ensure the <u>Computed</u> and <u>Consensus</u> Inflow values match those in the old lake sheets each day.`;
+                    instructionWidget7.id = "instruction-span-widget7";
                 } else {
                     instructionWidget7 = document.createElement("span");
                     instructionWidget7.textContent = `Complete Widget 5: Inflow, then click refresh button to Ensure the Computed and Consensus Inflow values match those in the old lake sheets each day.`;
@@ -272,11 +272,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const existingInstructionWidget7 = document.getElementById('instruction-span-widget7');
                     if (existingInstructionWidget7) {
                         existingInstructionWidget7.remove();
-                    }
-
-                    const existingInstructionBlinkingWidget7 = document.getElementById('instruction-span-blinking-widget7');
-                    if (existingInstructionBlinkingWidget7) {
-                        existingInstructionBlinkingWidget7.remove();
                     }
 
                     // Fetch and create new table
