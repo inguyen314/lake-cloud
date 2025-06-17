@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (location) {
                     locationFound = true;
                     const link = document.createElement("a");
-                    link.href = `https://wm.mvs.ds.usace.army.mil/mvs/lake/index.html?office=MVS&lake=${encodeURIComponent(location["location-id"])}`;
+                    link.href = `index.html?office=MVS&lake=${encodeURIComponent(location["location-id"])}`;
                     link.textContent = location["location-id"].split("-")[0];  // Location name before the dash
                     link.style.fontWeight = "bold";
                     cell.appendChild(link);

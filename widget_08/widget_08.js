@@ -204,6 +204,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // dateCell.textContent = convertTo6AMCST(isoDateToday);
                     dateCell.textContent = new Date(isoDateToday).toISOString().slice(5, 7) + '-' + new Date(isoDateToday).toISOString().slice(8, 10) + '-' + new Date(isoDateToday).toISOString().slice(0, 4);
                     row.appendChild(dateCell);
+
                     const precipCell = document.createElement("td");
                     const precipInput = document.createElement("input");
                     precipInput.type = "number";
@@ -225,7 +226,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                         // dateCell.textContent = entry.formattedTimestampCST ? entry.formattedTimestampCST : entry.timestamp;
                         dateCell.textContent = new Date(entry.formattedTimestampCST).toISOString().slice(5, 7) + '-' + new Date(entry.formattedTimestampCST).toISOString().slice(8, 10) + '-' + new Date(entry.formattedTimestampCST).toISOString().slice(0, 4);
                         row.appendChild(dateCell);
+
                         const precipCell = document.createElement("td");
+                        precipCell.title = timeSeriesDataPrecip['name'];
                         const precipInput = document.createElement("input");
                         precipInput.type = "number";
                         precipInput.value = parseFloat(entry[1]).toFixed(2);

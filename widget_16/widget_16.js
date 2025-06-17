@@ -208,13 +208,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const timeSeriesOutflowNoQpfDataFormatted = formatTimeSeries(amOutflowNoQpf);
                 const timeSeriesPrecipDataFormatted = formatTimeSeries(amPrecip);
 
-                console.log("Stage QPF:", timeSeriesStageQpfDataFormatted);
-                console.log("Stage No QPF:", timeSeriesStageNoQpfDataFormatted);
-                console.log("Inflow QPF:", timeSeriesInflowQpfDataFormatted);
-                console.log("Inflow No QPF:", timeSeriesInflowNoQpfDataFormatted);
-                console.log("Outflow QPF:", timeSeriesOutflowQpfDataFormatted);
-                console.log("Outflow No QPF:", timeSeriesOutflowNoQpfDataFormatted);
-                console.log("Precip:", timeSeriesPrecipDataFormatted);
+                console.log("timeSeriesStageQpfDataFormatted:", timeSeriesStageQpfDataFormatted);
+                console.log("timeSeriesStageNoQpfDataFormatted:", timeSeriesStageNoQpfDataFormatted);
+                console.log("timeSeriesInflowQpfDataFormatted:", timeSeriesInflowQpfDataFormatted);
+                console.log("timeSeriesInflowNoQpfDataFormatted:", timeSeriesInflowNoQpfDataFormatted);
+                console.log("timeSeriesOutflowQpfDataFormatted:", timeSeriesOutflowQpfDataFormatted);
+                console.log("timeSeriesOutflowNoQpfDataFormatted:", timeSeriesOutflowNoQpfDataFormatted);
+                console.log("timeSeriesPrecipDataFormatted:", timeSeriesPrecipDataFormatted);
 
                 // Calculate OBS 24hr Precip
                 let obsPrecip24h = null;
@@ -237,7 +237,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                 output166Div.innerHTML = "";
 
                 const forecastDateTitle = document.createElement("h2");
-                forecastDateTitle.textContent = `Forecast Date: ${datetime}`;
+                if (timeSeriesStageQpfDataFormatted.length === 14) {
+                    forecastDateTitle.textContent = `Forecast Date: ${datetime}`;
+                } else if (timeSeriesStageQpfDataFormatted.length === 13) {
+                    forecastDateTitle.textContent = `Forecast Date: ${isoDateMinus1Day}`;
+                } else if (timeSeriesStageQpfDataFormatted.length === 12) {
+                    forecastDateTitle.textContent = `Forecast Date: ${isoDateMinus2Days}`;
+                } else if (timeSeriesStageQpfDataFormatted.length === 11) {
+                    forecastDateTitle.textContent = `Forecast Date: ${isoDateMinus3Days}`;
+                } else {
+                    forecastDateTitle.textContent = `Forecast Date: --`;
+                }
                 forecastDateTitle.style.marginBottom = "10px";
                 // forecastDateTitle.style.color = "red";
                 output166Div.appendChild(forecastDateTitle);
@@ -295,7 +305,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Append the complete table to the container div
                 output166Div.appendChild(table);
 
-                if (timeSeriesStageQpfDataFormatted.length === 14) {
+                if (timeSeriesStageQpfDataFormatted.length === 14 || timeSeriesStageQpfDataFormatted.length === 13 || timeSeriesStageQpfDataFormatted.length === 12) {
                     timeSeriesStageQpfDataFormatted.forEach((dataPoint, index) => {
                         const row = document.createElement("tr");
 

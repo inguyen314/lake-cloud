@@ -12,7 +12,7 @@
     const documentRoot = window.location.protocol + "//" + window.location.host + "/";
     console.log("documentRoot: ", documentRoot);
 
-    if (documentRoot === `https://wm.${office.toLocaleLowerCase()}.ds.usace.army.mil/`) {
+    if (documentRoot === `https://wm.${office.toLocaleLowerCase()}.ds.usace.army.mil/` || `http://localhost:5173/` || `https://wm.rsgis.dev/` || `https://wm-${office.toLocaleLowerCase()}coop.mvk.ds.usace.army.mil/`) {
         cdaDefault = "internal";
     } else if (documentRoot === `https://wm-${office.toLocaleLowerCase()}coop.mvk.ds.usace.army.mil/`) {
         cdaDefault = "internal-coop";
@@ -35,7 +35,7 @@
     var datetime = urlParams.get('datetime') || formatDate(new Date());
     console.log('datetime: ', datetime);
 
-    var lookback = urlParams.get('lookback') || '2025-01-01T05:00:00.000Z';
+    var lookback = urlParams.get('lookback');
     console.log('lookback: ', lookback);
 
     function formatDate(date) {
@@ -50,14 +50,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Widget 5 Test</title>
+    <title>Widget 22 Test</title>
     <meta name="Description" content="U.S. Army Corps of Engineers St. Louis District Home Page" />
     <link rel="stylesheet" href="css/body.css" />
     <link rel="stylesheet" href="css/breadcrumbs.css" />
     <link rel="stylesheet" href="css/jumpMenu.css" />
     <link rel="stylesheet" href="css/sidebar.css" />
     <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="css/widget05.css" />
+    <link rel="stylesheet" href="css/widget22.css" />
     <script src="js/main.js"></script>
     <script src="js/libraries/moment.min.js"></script>
     <script src="js/libraries/moment-timezone-with-data.js"></script>
@@ -79,31 +79,26 @@
                     <div id="topPane" class="col-md backend-cp-collapsible">
                         <div class="box-usace">
                             <h2 class="box-header-striped">
-                                <span class="titleLabel title">Widget 5 Test</span>
+                                <span class="titleLabel title">Widget 22 Test</span>
                                 <span class="rss"></span>
                             </h2>
                             <div class="box-content" style="background-color:white;margin:auto">
                                 <div class="content">
-                                    <div id="loading_05" style="display: none;"><img src="images/loading4.gif"
+                                    <div id="loading_22" style="display: none;"><img src="images/loading4.gif"
                                             style='height: 50px; width: 50px;' alt="Loading..." /></div>
                                     <div id="container"></div>
                                     <div id="container_date_selection"></div>
                                     <div class="widgets-container">
-                                        <div class="widget half-width" id="widget5">
-                                            <h3>Widget 5: Balance Inflow Module</h3>
-                                            <button class="save-btn" onclick="saveData(5)">Save</button>
-                                            <button class="fetch-btn" onclick="fetchData(5)">Fetch Data</button>
-                                            <!-- <button class="test-btn" onclick="testData(5, lake, datetime)">Test</button> -->
-                                            <div id="loading5"
-                                                style="display: none; align-items: center; text-align: center;">
-                                                <img src="images/loading4.gif" style='height: 50px; width: 50px;'
-                                                    alt="Loading..." />
-                                            </div>
-                                            <div class="output" id="output5"></div>
+                                        <div class="widget full-width" id="widget21">
+                                            <h3>Widget 21: River Shef</h3>
+                                            <button class="save-btn" onclick="saveData(2)">Save</button>
+                                            <button class="fetch-btn" onclick="fetchData(2)">Fetch Data</button>
+                                            <button class="test-btn" onclick="testData(2, lake, datetime)">Test</button>
+                                            <div class="output" id="output22"></div>
                                         </div>
                                     </div>
                                     <script src='js/lake.js'></script>
-                                    <script src='widget_05/widget_05.js'></script>
+                                    <script src='widget_22/widget_22.js'></script>
                                 </div>
                             </div>
                         </div>

@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log('datetime: ', datetime);
 
     const loading5 = document.getElementById('loading5');
-        loading5.style.display = 'block';
+    loading5.style.display = 'block';
 
     let setBaseUrl = null;
     if (cda === "internal") {
@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 if (formattedAverageOutflowData.length <= 6) {
                     const messageRow = document.createElement("tr");
                     const messageCell = document.createElement("td");
-                    messageCell.colSpan = 6; // adjust depending on how many columns your table has
+                    messageCell.colSpan = 7; // adjust depending on how many columns your table has
                     messageCell.style.textAlign = "center";
                     messageCell.style.padding = "10px";
                     messageCell.style.fontWeight = "bold";
@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             row.appendChild(evaporationCell);
 
                             // ===== Storage + Average Outflow + Evaporation =====
-                            
+
 
                             const val = Math.round((parseFloat(formattedAverageOutflowData[j]?.value)) / 10) * 10;
                             const deltaVal = Math.round(Math.round(delta * 100) / 100);
@@ -360,7 +360,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             consensusCell.style.textAlign = "center";
                             consensusCell.style.verticalAlign = "middle";
 
-                            consensusCell.title = hourlyConsensusData[i]['tsid'];
+                            consensusCell.title = hourlyConsensusData[i]?.tsid ?? '';
 
                             const input = document.createElement("input");
                             input.type = "number";
@@ -388,7 +388,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                             qualityCodeCell.style.textAlign = "center";
                             qualityCodeCell.style.verticalAlign = "middle";
 
-                            qualityCodeCell.title = hourlyConsensusData[i]['tsid'] + " " + hourlyConsensusData[i]['qualityCode'];
+                            qualityCodeCell.title =
+                                (hourlyConsensusData[i]?.tsid ?? '') + ' ' + (hourlyConsensusData[i]?.qualityCode ?? '');
 
                             const qualityInput = document.createElement("input");
                             qualityInput.type = "text";
