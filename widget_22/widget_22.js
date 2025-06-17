@@ -450,6 +450,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                             instructionWidget22.disabled = false;
                             output22Div.appendChild(instructionWidget22);
 
+                            const noticeWidget22 = document.createElement("h2");
+                            noticeWidget22.innerHTML = `Check forecast values before saving.`;
+                            noticeWidget22.style.color = "red";
+                            noticeWidget22.style.fontWeight = "bold";
+                            noticeWidget22.id = "notice-span-river-shef";
+                            noticeWidget22.disabled = false;
+                            output22Div.appendChild(noticeWidget22);
+
                             // Create status div
                             const statusDiv = document.createElement("div");
                             statusDiv.className = "status-river-shef";
@@ -542,6 +550,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     function createTable(combinedData) {
         const lines = [];
+
+         lines.push(`: GENERATION DATE: ${genDate}\n`);
 
         for (const data of combinedData[0][`assigned-locations`]) {
             console.log("location: ", data['location-id']);
