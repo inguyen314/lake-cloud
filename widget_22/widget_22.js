@@ -377,8 +377,155 @@ document.addEventListener('DOMContentLoaded', async function () {
                     .then(() => {
                         console.log('All time series data fetched successfully:', combinedData);
 
+                        let cdaSaveBtn;
+
+                        async function isLoggedIn() {
+                            try {
+                                const response = await fetch("https://wm.mvs.ds.usace.army.mil/mvs-data/auth/keys", {
+                                    method: "GET"
+                                });
+
+                                if (response.status === 401) return false;
+
+                                console.log('status', response.status);
+                                return true;
+
+                            } catch (error) {
+                                console.error('Error checking login status:', error);
+                                return false;
+                            }
+                        }
+
+                        async function loginStateController() {
+                            cdaSaveBtn = document.getElementById("cda-btn-river-shef"); // Get the button by its ID
+
+                            cdaSaveBtn.disabled = true; // Disable button while checking login state
+
+                            // Update button text based on login status
+                            if (await isLoggedIn()) {
+                                cdaSaveBtn.innerText = "Save";
+                            } else {
+                                cdaSaveBtn.innerText = "Login";
+                            }
+
+                            cdaSaveBtn.disabled = false; // Re-enable button
+                        }
+
+                        // Display in output22 with formatting and a button
+                        const output22Div = document.getElementById("output22");
+                        output22Div.innerHTML = "";
+
+                        const outputLines = [];
+
                         // Append the table to the specified container
-                        const table = createTable(combinedData);
+                        const tableLines = createTable(combinedData);
+
+                        outputLines.push(tableLines);
+
+                        if (output22Div) {
+                            // Preserve line breaks using <pre>
+                            const pre = document.createElement("pre");
+                            pre.id = "pre";
+                            pre.innerText = outputLines;
+                            output22Div.appendChild(pre);
+
+                            // Create anchor link
+                            const linkSpan = document.createElement("a");
+                            linkSpan.href = "https://cwms-data.usace.army.mil/cwms-data/blobs/RIVER_SHEF.TXT?office=MVS";
+                            linkSpan.textContent = "https://cwms-data.usace.army.mil/cwms-data/blobs/RIVER_SHEF.TXT?office=MVS";
+                            linkSpan.target = "_blank";
+                            linkSpan.rel = "noopener noreferrer"; // security best practice
+                            output22Div.appendChild(linkSpan);
+
+                            // Add visual gap between text and button
+                            const spacer2 = document.createElement("div");
+                            spacer2.style.height = "20px";
+                            output22Div.appendChild(spacer2);
+
+                            const instructionWidget22 = document.createElement("span");
+                            instructionWidget22.innerHTML = `Once all netmiss forecasts are complete, remember to save the SHEF file and confirm that the public link above shows the correct generation date.<br>It may take 5 to 10 seconds for the changes to appear.`;
+                            instructionWidget22.style.color = "red";
+                            instructionWidget22.style.fontWeight = "bold";
+                            instructionWidget22.id = "instruction-span-river-shef";
+                            instructionWidget22.disabled = false;
+                            output22Div.appendChild(instructionWidget22);
+
+                            // Create status div
+                            const statusDiv = document.createElement("div");
+                            statusDiv.className = "status-river-shef";
+                            output22Div.appendChild(statusDiv);
+
+                            // Create the button
+                            const cdaSaveBtn = document.createElement("button");
+                            cdaSaveBtn.textContent = "Submit";
+                            cdaSaveBtn.id = "cda-btn-river-shef";
+                            cdaSaveBtn.disabled = true;
+                            output22Div.appendChild(cdaSaveBtn);
+
+                            // Create the buttonRefresh button
+                            const buttonRefresh = document.createElement('button');
+                            buttonRefresh.textContent = 'Refresh';
+                            buttonRefresh.id = 'refresh-river-shef-button';
+                            buttonRefresh.className = 'fetch-btn';
+                            output22Div.appendChild(buttonRefresh);
+
+                            // Optional login logic
+                            loginStateController();
+                            setInterval(loginStateController, 10000);
+
+                            buttonRefresh.addEventListener('click', () => {
+                                // Remove existing table
+                                const existingTable = document.getElementById('pre');
+                                if (existingTable) {
+                                    existingTable.remove();
+                                }
+
+                                // Fetch and create new table
+                                fetchTsidDataForAllLakes();
+                            });
+
+                            // Use CDA to write a file to a BLOB
+                            // NOTE: https://cwms-data.usace.army.mil/cwms-data/blobs/RIVER_SHEF.TXT?office=MVS
+                            // curl -O https://cwms-data.usace.army.mil/cwms-data/blobs/RIVER_SHEF.TXT?office=MVS
+
+                            cdaSaveBtn.addEventListener("click", async () => {
+                                statusDiv.innerText = "Saving...";
+
+                                try {
+                                    const response = await fetch(`${setBaseUrl.replace(":8243", "")}blobs?fail-if-exists=false`, {
+                                        method: "POST",
+                                        headers: {
+                                            "Content-Type": "application/json;version=2",
+                                            "cache-control": "no-cache",
+                                        },
+                                        body: JSON.stringify({
+                                            "office-id": office,
+                                            "media-type-id": "text/plain",
+                                            "id": "RIVER_SHEF.TXT",
+                                            "description": `Updated ${moment().format()}`,
+                                            "value": btoa(outputLines),
+                                        }),
+                                    });
+
+                                    if (!response.ok) {
+                                        const errorText = await response.text();
+                                        throw new Error(`HTTP ${response.status}: ${errorText}`);
+                                    }
+
+                                    statusDiv.innerText = "Write successful!";
+
+                                    // Wait 2 seconds before fetching data
+                                    await new Promise(resolve => setTimeout(resolve, 2000));
+                                    statusDiv.innerText = "";
+                                    
+                                    // fetchTsidDataForAllLakes();
+
+                                } catch (error) {
+                                    console.error("Error saving file to CDA:", error);
+                                    statusDiv.innerText = `Write failed: ${error.message}`;
+                                }
+                            });
+                        }
 
                         // loadingIndicator.style.display = 'none';
                     })
@@ -393,139 +540,47 @@ document.addEventListener('DOMContentLoaded', async function () {
             });
     }
 
-    function createTable(
-        isoDateMinus1Day,
-        isoDateToday,
-        isoDateDay1,
-        isoDateDay2,
-        isoDateDay3,
-        isoDateDay4,
-        isoDateDay5,
-        isoDateDay6,
-        isoDateDay7,
-        tsidOutflow,
-        timeSeriesDataOutflow,
-        tsidOutflowAverage,
-        timeSeriesDataOutflowAverage,
-        tsidData3,
-        lake,
-        timeSeriesDataNortonBridge,
-        timeSeriesDataGateTotal,
-        timeSeriesDataOutflowTotal,
-        timeSeriesDataGenerationRelease
-    ) {
+    function createTable(combinedData) {
         const lines = [];
 
-        return lines;
+        for (const data of combinedData[0][`assigned-locations`]) {
+            console.log("location: ", data['location-id']);
+
+            // Check HP/HT/HG
+            let H = '';
+            if (data['location-id'] === "LD 24 Pool-Mississippi") {
+                H = 'HP';
+            } else if (data['location-id'] === "LD 24 TW-Mississippi") {
+                H = 'HT';
+            } else if (data['location-id'] === "LD 25 Pool-Mississippi") {
+                H = 'HP';
+            } else if (data['location-id'] === "LD 25 TW-Mississippi") {
+                H = 'HT';
+            } else if (data['location-id'] === "Mel Price Pool-Mississippi") {
+                H = 'HP';
+            } else if (data['location-id'] === "Mel Price TW-Mississippi") {
+                H = 'HT';
+            } else if (data['location-id'] === "St Louis-Mississippi") {
+                H = 'HG';
+            } else if (data['location-id'] === "Chester-Mississippi") {
+                H = 'HG';
+            } else if (data['location-id'] === "Cape Girardeau-Mississippi") {
+                H = 'HG';
+            }
+
+            const values = data.formattedNetmissData.map(d => Number(d["1"]).toFixed(1)).join(",");
+
+            // Stage at 6am CST 
+            lines.push(`.ER ${data['nwsHB5']['level-comment']} ${data['formattedStageData'][0]['formattedTimestampCST'].slice(0, 10).replace(/-/g, '')} Z DH1200 /${H} ${Number(data['formattedStageData'][0][1]).toFixed(1)}\n`);
+
+            // River Forecast at 6am CST
+            lines.push(`.ER ${data['nwsHB5']['level-comment']} ${data['formattedNetmissData'][0]['formattedTimestampCST'].slice(0, 10).replace(/-/g, '')} Z DH1200/${H}IF/DID1/${values}\n`);
+
+        }
+
+        return lines.join(''); // Join without commas
     }
 
-    const fetchVersionedTimeSeriesData = async (tsid) => {
-        let tsidData = null;
-        tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${isoDateDay6}&office=${office}&version-date=${convertTo6AMCST(isoDateToday)}`;
-
-        console.log('tsidData:', tsidData);
-
-        try {
-            const response = await fetch(tsidData, {
-                headers: {
-                    "Accept": "application/json;version=2", // Ensuring the correct version is used
-                    "cache-control": "no-cache"
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error("Error fetching time series data:", error);
-        }
-    };
-
-    const fetchTimeSeriesDataToday = async (tsid) => {
-        let tsidData = null;
-        tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateToday}&end=${isoDateToday}&office=${office}`;
-
-        console.log('tsidData:', tsidData);
-
-        try {
-            const response = await fetch(tsidData, {
-                headers: {
-                    "Accept": "application/json;version=2", // Ensuring the correct version is used
-                    "cache-control": "no-cache"
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error("Error fetching time series data:", error);
-        }
-    };
-
-    const fetchTimeSeriesDataYesterday = async (tsid) => {
-        let tsidData = null;
-        tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateMinus1Day}&end=${isoDateMinus1Day}&office=${office}`;
-
-        console.log('tsidData:', tsidData);
-
-        try {
-            const response = await fetch(tsidData, {
-                headers: {
-                    "Accept": "application/json;version=2", // Ensuring the correct version is used
-                    "cache-control": "no-cache"
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error("Error fetching time series data:", error);
-        }
-    };
-
-    const fetchTimeSeriesDataNortonBridge = async (tsid) => {
-        let tsidData = null;
-
-        // Parse isoDateToday and add 6 hours, considering local time and DST
-        const baseDate = new Date(isoDateToday);
-        const adjustedDate = new Date(baseDate.getTime() + 6 * 60 * 60 * 1000); // Add 6 hours
-
-        const begin = adjustedDate.toISOString().split('.')[0]; // Trim milliseconds
-        const end = adjustedDate.toISOString().split('.')[0]; // Trim milliseconds
-
-        tsidData = `${setBaseUrl}timeseries?name=${tsid}&begin=${begin}&end=${end}&office=${office}`;
-
-        console.log('tsidData:', tsidData);
-
-        try {
-            const response = await fetch(tsidData, {
-                headers: {
-                    "Accept": "application/json;version=2",
-                    "cache-control": "no-cache"
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error("Error fetching time series data:", error);
-        }
-    };
 
     fetchTsidDataForAllLakes();
 
@@ -592,47 +647,12 @@ document.addEventListener('DOMContentLoaded', async function () {
         return cstDate.toISOString();
     }
 
-    function convertTo6AMCST(isoDateToday) {
-        // Parse the input date
-        let date = new Date(isoDateToday);
-
-        // Add 6 hours (6 * 60 * 60 * 1000 ms)
-        date = new Date(date.getTime() + 6 * 60 * 60 * 1000);
-
-        // Return the new ISO string
-        return date.toISOString();
-    }
-
     function filterByLocationCategory(array, setCategory) {
         return array.filter(item =>
             item['location-category'] &&
             item['location-category']['office-id'] === setCategory['office-id'] &&
             item['location-category']['id'] === setCategory['id']
         );
-    }
-
-    const reorderByAttribute = (data) => {
-        data['assigned-time-series'].sort((a, b) => a.attribute - b.attribute);
-    };
-
-    function formatISODate2ReadableDate(timestamp) {
-        if (typeof timestamp !== "number") {
-            console.error("Invalid timestamp:", timestamp);
-            return "Invalid Date";
-        }
-
-        const date = new Date(timestamp); // Ensure timestamp is in milliseconds
-        if (isNaN(date.getTime())) {
-            console.error("Invalid date conversion:", timestamp);
-            return "Invalid Date";
-        }
-
-        const mm = String(date.getMonth() + 1).padStart(2, '0'); // Month
-        const dd = String(date.getDate()).padStart(2, '0'); // Day
-        const yyyy = date.getFullYear(); // Year
-        const hh = String(date.getHours()).padStart(2, '0'); // Hours
-        const min = String(date.getMinutes()).padStart(2, '0'); // Minutes
-        return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
     }
 
     function convertUnixTimestamp(timestamp, toCST = false) {
